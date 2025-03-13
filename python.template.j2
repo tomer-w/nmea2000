@@ -1,0 +1,160 @@
+from .utils import *
+from .message import *
+
+{% for lookup in lookups %}
+lookup_dict_{{ lookup.Name }} = {
+    {%- for item in lookup.EnumValues %}
+    {{ item.Value }}: "{{ item.Name }}",
+    {%- endfor %}
+}
+def lookup_{{ lookup.Name }}(value):
+    return lookup_dict_{{ lookup.Name }}.get(value, "Unknown")
+
+lookup_dict_encode_{{ lookup.Name }} = {
+    {%- for item in lookup.EnumValues %}
+    "{{ item.Name }}" : {{ item.Value }},
+    {%- endfor %}
+}
+def lookup_encode_{{ lookup.Name }}(value):
+    result = lookup_dict_encode_{{ lookup.Name }}.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from {{lookup.Name}}")
+    return result
+{% endfor %}
+
+{%- set groups_ns = namespace(pgn_groups={}) %}
+
+{%- for pgn in pgns %}
+    {%- set name = pgn.PGN %}
+    {%- if name in groups_ns.pgn_groups %}
+        {%- set _ = groups_ns.pgn_groups[name].append(pgn) %}
+    {%- else %}
+        {%- set _ = groups_ns.pgn_groups.update({name: [pgn]}) %}
+    {%- endif %}
+{%- endfor %}
+
+
+{%- for name, pgns_in_group in groups_ns.pgn_groups.items() %}
+def is_fast_pgn_{{ pgns_in_group[0].PGN }}() -> bool:
+    """Return True if PGN {{ pgns_in_group[0].PGN }} is a fast PGN."""
+{%- if pgns_in_group[0].Type == 'Fast' %}
+    return True
+{%- elif pgns_in_group[0].Type == 'Single' %}
+    return False
+{%- else %}
+    raise Exception('PGEN type {{ pgns_in_group[0].Type }} not supported')
+{% endif %}
+
+{%- set ns = namespace(has_match=false) %}
+
+{%- for pgn in pgns_in_group %}
+{%- for field in pgn.Fields %}
+    {%- if field.Match is defined %}
+        {%- set ns.has_match = true %}
+    {%- endif %}
+{%- endfor %}
+{%- endfor %}
+
+{%- if pgns_in_group | length  > 1 and ns.has_match == false %}
+# ERROR: This PGN is corrupted. It has multiple fields but none of them have a match attribute.
+{%- endif %}
+
+{%- if pgns_in_group | length  > 1 and ns.has_match == true %}
+# Complex PGN. number of matches: {{ pgns_in_group | length }}
+def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message:
+    {%- for pgn in pgns_in_group %}
+    match_ok = True
+    if (
+        {%- for field in pgn.Fields if field.Match is defined%}
+        {%- set field_FF = bits_to_hex(field.BitLength) %}
+        (((data_raw >> {{ field.BitOffset }}) & {{ field_FF }}) == {{ field.Match }}){% if not loop.last %} and{% endif %}
+        {%- endfor%}
+        ):
+        return decode_pgn_{{ pgn.PGN }}_{{ pgn.Id }}(data_raw)
+    {% endfor%}
+    raise Exception("No matching sub-PGN found")
+
+{%- endif %}
+{%- for pgn in pgns_in_group %}
+{%- if pgns_in_group | length  > 1 and ns.has_match == true %}
+{%- set func_name_suffix = pgn.PGN | string + '_' + pgn.Id %}
+{%- else %}
+{%- set func_name_suffix = pgn.PGN %}
+{%- endif %}
+def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
+    """Decode PGN {{ pgn.PGN }}."""
+    nmea2000Message = NMEA2000Message({{pgn.PGN}}, '{{pgn.Id}}', '{{pgn.Description}}')
+    {%- for field in pgn.Fields %}
+        {%- if field.BitLength is defined and field.BitOffset is defined %}
+    {%- set field_name = generate_field_name(field.Name, field.FieldType, field.BitOffset) %}
+    {%- set field_FF = bits_to_hex(field.BitLength) %}
+    {%- if field.FieldType == 'STRING_FIX' or field.FieldType == 'STRING_LZ'%}
+    # {{ field_name }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Resolution: 1, Field Type: {{ field.FieldType }}
+    # Skipping STRING field types
+    {%- elif field.BitLength > 256 %}
+    # {{ field_name }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}
+    # Skipping fields longer than 256
+    {%- else %}
+    # {{ field_name }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}, Match: {{ field.Match }}
+        {%- if field.FieldType == 'NUMBER'%}
+    {{ field_name }}_raw = decode_number((data_raw >> {{ field.BitOffset }}) & {{ field_FF }}, {{ field.BitLength }})
+        {%- elif field.FieldType == 'LOOKUP' %}
+    {{ field_name }}_raw = (data_raw >> {{ field.BitOffset }}) & {{ field_FF }}
+    {{ field_name }} = lookup_{{ field.LookupEnumeration }}({{ field_name }}_raw)
+        {%- elif field.FieldType == 'FLOAT'%}
+    {{ field_name }}_raw = decode_float((data_raw >> {{ field.BitOffset }}) & {{ field_FF }})
+        {%- else %}
+    {{ field_name }}_raw = (data_raw >> {{ field.BitOffset }}) & {{ field_FF }}
+        {%- endif%}
+        {%- if field.Signed %}
+    if {{ field_name }}_raw is not None and {{ field_name }}_raw & (1 << ({{ field.BitLength }} - 1)):
+        {{ field_name }}_raw -= (1 << {{ field.BitLength }})
+        {%- endif %}
+        {%- if field.FieldType == 'TIME' %}
+    {{ field_name }} = decode_time({{ field_name }}_raw * {{ field.Resolution }})
+        {%- elif field.FieldType == 'DATE' %}
+    {{ field_name }} = decode_date({{ field_name }}_raw * {{ field.Resolution }})
+        {%- elif field.FieldType == 'LOOKUP' %}
+        {%- else %}
+    {{ field_name }} = {{ field_name }}_raw * {{ field.Resolution }} if {{ field_name }}_raw is not None else None
+        {%- endif %}
+    nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', '{{ field.Name }}', "{{ field.Description }}", '{{ field.Unit }}', {{ field_name }}, {{ field_name }}_raw))
+    {%- endif %}
+    {%- endif %}
+{%endfor %}
+    return nmea2000Message
+
+def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
+    """Encode Nmea2000Message object to binary data for PGN {{ pgn.PGN }}."""
+    data_raw = 0
+    {%- for field in pgn.Fields %}
+    {%- if field.BitLength is not defined or field.BitOffset is not defined %}
+    raise Exception ("PGN {{pgn.PGN}} not supporting encoding for now as {{field.Name}} is missing BitLength or BitOffset")
+    {%- else %}
+    {%- set field_name = generate_field_name(field.Name, field.FieldType, field.BitOffset) %}
+    # {{ field_name }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}
+    {%- if field.FieldType == 'NUMBER'%}
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == '{{ field_name }}'), None)
+    {%- elif field.FieldType == 'FLOAT'%}
+    field_value = next((encode_float(f.value) for f in nmea2000Message.fields if f.id == '{{ field_name }}'), None)
+    {%- elif field.FieldType == 'LOOKUP' %}
+    field_value = next((f.raw_value if f.raw_value is not None else lookup_encode_{{field.LookupEnumeration}}(f.value) for f in nmea2000Message.fields if f.id == '{{ field_name }}'), None)
+    {%- elif field.FieldType == 'STRING_FIX' or field.FieldType == 'STRING_LZ' %}
+    # Skipping STRING field types
+    {%- elif field.BitLength > 256 %}
+    # Skipping fields longer than 256
+    {%- else %}
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == '{{ field_name }}'), None)
+    {%- endif %}
+    if field_value is None:
+        raise Exception(f"Cant encode this message, missing '{{field.Name}}'")
+    {%- if field.Resolution is defined and field.Resolution != 1 %}        
+    data_raw |= (int(field_value / {{ field.Resolution }}) & {{ bits_to_hex(field.BitLength) }}) << {{ field.BitOffset }}
+    {% else %}
+    data_raw |= (field_value & {{ bits_to_hex(field.BitLength) }}) << {{ field.BitOffset }}
+    {%- endif %}
+    {%- endif %}
+    {%- endfor %}
+    return data_raw
+{% endfor %}
+{% endfor %}
