@@ -22,7 +22,7 @@ pip install nmea2000
 Or you can clone the repository and install it locally:
 
 ```bash
-git clone https://github.com/yourusername/nmea2000.git
+git clone https://github.com/tomer-w/nmea2000.git
 cd nmea2000
 pip install .
 ```
