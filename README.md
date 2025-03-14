@@ -89,7 +89,7 @@ Please don't hesitate to reach out with any questions, comments, or suggestions.
 To contribute to this library, clone the repository and install the required dependencies:
 
 ```bash
-git clone https://github.com/yourusername/nmea2000.git
+git clone https://github.com/tomer-w/nmea2000.git
 cd nmea2000
 pip install -e .[dev]
 ```
