@@ -10,8 +10,8 @@ def int_to_bytes(value, length):
 @dataclass
 class NMEA2000Message:
     PGN: int
-    id: str
-    description: str
+    id: str = ''
+    description: str = ''
     fields: list = field(default_factory=list)
     source: int = 0
     destination: int = 0

@@ -33,11 +33,12 @@ class NMEA2000Encoder:
             raise ValueError("CAN data must be between 0 and 8 bytes long")
         
         # Construct frame ID
-        frame_id_int = (nmea2000Message.PGN << 8) | nmea2000Message.source
+        frame_id_int = (nmea2000Message.PGN << 8) | nmea2000Message.source | ((nmea2000Message.priority & 0x07) << 5)
+
         frame_id_bytes = frame_id_int.to_bytes(4, byteorder='big')[::-1]  # Reverse to match decode
         
         # Construct type byte (priority in top 3 bits, data length in bottom 4 bits)
-        type_byte = ((nmea2000Message.priority & 0x07) << 5) | (len(can_data_bytes) & 0x0F)
+        type_byte = (len(can_data_bytes) & 0x0F) | (1 << 7)  # Set the FF bit
         
         # Reverse CAN data to match decode behavior
         can_data_reversed = can_data_bytes[::-1]

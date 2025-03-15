@@ -93,12 +93,14 @@ def main():
     tcp_client_parser = subparsers.add_parser("tcp_client", help="start TCP client to CANBUS gateway (for example, ECAN-E01 or ECAN-W01)")
     tcp_client_parser.add_argument(
         "--server", 
-        type=str, 
+        type=str,
+        required=True, 
         help="Server IP address"
     )
     tcp_client_parser.add_argument(
         "--port", 
         type=int, 
+        required=True, 
         help="Server port number"
     )
 
