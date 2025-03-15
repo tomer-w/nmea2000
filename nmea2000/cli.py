@@ -47,18 +47,8 @@ def parse(filename: str, decoder: NMEA2000Decoder):
                 if line.startswith('#') or len(line) <= 1:
                     continue
                 line = line.strip()
-                parts = line.split(',')
-                date = parts[0]
-                priority = int(parts[1])
-                pgn = int(parts[2])
-                src = int(parts[3])
-                dest = int(parts[4])
-                no_idea = parts[5]
-                can_data = parts[6:6 + data_length][::-1]
-                can_data_bytes = [int(byte, 16) for byte in can_data]
-                can_data_hex = binascii.hexlify(bytes(can_data_bytes)).decode('ascii')
-                logger.info(f'Processing: {can_data_hex}')
-                decoder.decode(date, priority, pgn, src, dest, can_data_hex)
+                logger.info(f'Processing: {line}')
+                decoder.decode_string(line)
     except KeyboardInterrupt:
         sys.stdout.flush()
         pass

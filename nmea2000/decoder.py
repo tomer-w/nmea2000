@@ -17,7 +17,7 @@ class NMEA2000Decoder():
     def __init__(self) -> None:
         self.data = {}
 
-    def _decode_fast_message(self, pgn, priority, src, dest, can_data_hex) -> NMEA2000Message:
+    def _decode_fast_message(self, pgn, priority, src, dest, can_data) -> NMEA2000Message:
         """Parse a fast packet message and store the data until all frames are received."""
         fast_packet_key = f"{pgn}_{src}_{dest}"
         
@@ -27,8 +27,8 @@ class NMEA2000Decoder():
             
         fast_pgn = self.data[fast_packet_key]
 
-        # Convert the last two characters to an integer to get the sequence and frame counters
-        last_byte = int(can_data_hex[-2:], 16)  # Convert the last two hex digits to an integer
+        # the last byte has the sequence_counter and frame_counter
+        last_byte = can_data[-1]
         
         # Extract the sequence counter (high 3 bits) and frame counter (low 5 bits) from the last byte
         sequence_counter = (last_byte >> 5) & 0b111  # Extract high 3 bits
@@ -44,9 +44,8 @@ class NMEA2000Decoder():
         if frame_counter == 0:
             
             # Extract the total number of frames from the second-to-last byte
-            total_bytes_hex = can_data_hex[-4:-2]  # Get the second-to-last byte in hex
-            total_bytes = int(total_bytes_hex, 16)  # Convert hex to int
-            
+            total_bytes = can_data[-4:-2]  # Get the second-to-last byte in hex
+           
             # Start a new pgn hass structure 
         
             fast_pgn.payload_length = total_bytes
@@ -55,7 +54,7 @@ class NMEA2000Decoder():
             fast_pgn.frames.clear()  # Clear previous frames
                     
             # For the first frame, exclude the last 4 hex characters (2 bytes) from the payload
-            data_payload_hex = can_data_hex[:-4]
+            data_payload = can_data[:-4]
             
         else:       
             if sequence_counter != fast_pgn.sequence_counter:
@@ -66,12 +65,12 @@ class NMEA2000Decoder():
                 return None
             else:
                 # For subsequent frames, exclude the last 2 hex characters (1 byte) from the payload
-                data_payload_hex = can_data_hex[:-2]
+                data_payload = can_data[:-2]
         
-        byte_length = len(data_payload_hex) // 2
+        byte_length = len(data_payload)
 
         # Store the frame data
-        fast_pgn.frames[frame_counter] = data_payload_hex
+        fast_pgn.frames[frame_counter] = data_payload
         fast_pgn.bytes_stored += byte_length  # Update the count of bytes stored
         
         # Log the extracted values
@@ -80,7 +79,7 @@ class NMEA2000Decoder():
         if total_bytes is not None:
             logger.debug(f"Total Payload Bytes: {total_bytes}")
 
-        logger.debug(f"Orig Payload (hex): {can_data_hex}, Data Payload (hex): {data_payload_hex}")
+        logger.debug(f"Orig Payload (hex): {can_data}, Data Payload (hex): {data_payload}")
         
         logger.debug("HASS PGN Data: %s", fast_pgn)
         
@@ -90,15 +89,12 @@ class NMEA2000Decoder():
             logger.debug("All Fast packet frames collected for PGN: %d", pgn)
 
             # All data for this PGN has been received, proceed to publish
-            combined_payload_hex = self._combine_pgn_frames(fast_pgn)
-            combined_payload_int = int(combined_payload_hex, 16)
+            combined_payload = self._combine_pgn_frames(fast_pgn)
             
             nmea = None
-            if combined_payload_int is not None:
-                logger.debug(f"Combined Payload (hex): {combined_payload_hex})")
-                logger.debug(f"Combined Payload (hex): (hex: {combined_payload_int:x})")
-
-                nmea = self._call_decode_function(pgn, priority, src, dest, combined_payload_int)
+            if combined_payload is not None:
+                logger.debug(f"Combined Payload (hex): {combined_payload})")
+                nmea = self._call_decode_function(pgn, priority, src, dest, combined_payload)
 
             # Reset the structure for this PGN
             del self.data[fast_packet_key]
@@ -110,13 +106,13 @@ class NMEA2000Decoder():
     def _combine_pgn_frames(self, fast_pgn):
         """Combine stored frame data for a PGN into a single hex string, preserving the original byte lengths."""
         
-        combined_payload_hex = ""  # Start with an empty string
+        combined_payload = ""  # Start with an empty string
 
         for frame_counter in sorted(fast_pgn.frames):
-            frame_data_hex = fast_pgn.frames[frame_counter]
-            combined_payload_hex = frame_data_hex + combined_payload_hex
+            frame_data = fast_pgn.frames[frame_counter]
+            combined_payload = frame_data + combined_payload
 
-        return combined_payload_hex
+        return combined_payload
 
     def decode_actisense_string(self, actisense_string: str) -> NMEA2000Message:
         """Process an Actisense packet string and extract the PGN, source ID, and CAN data."""
@@ -145,8 +141,32 @@ class NMEA2000Decoder():
         # Log the extracted information
         logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {src}, PGN: {pgn}, CAN Data: {reversed_bytes}")
         
+        # not calling _decode as in this format the fast frames are already combined
         return self._call_decode_function(pgn, priority, src, dest, reversed_bytes)
         
+    def decode_basic_string(self, basic_string: str) -> NMEA2000Message:
+        """Process an Actisense packet string and extract the PGN, source ID, and CAN data."""
+        # Split the Actisense string by spaces
+        parts = basic_string.split(",")
+        
+        if len(parts) < 7: # should have at least one data bytes probably
+            raise ValueError("Invalid string format")
+        
+        # Extract the fields
+        priority = int(parts[1])
+        pgn_id = int(parts[2])
+        src = int(parts[3])
+        dest = int(parts[4])
+        length = int(parts[5])
+        # Extract the CAN data from the remaining parts
+        can_data = parts[6:6 + length][::-1]
+        can_data_bytes = [int(byte, 16) for byte in can_data]
+        # Log the extracted information
+        logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {src}, PGN: {pgn_id}, CAN Data: {can_data_bytes}")
+        
+        # not calling _decode as in this format the fast frames are already combined
+        return self._decode(pgn_id, priority, src, dest, can_data_bytes)
+
     def decode(self, packet: bytes) -> NMEA2000Message:
         """Process a single packet and extract the PGN, source ID, and CAN data."""
         
@@ -176,7 +196,10 @@ class NMEA2000Decoder():
             binascii.hexlify(frame_id).decode('ascii'),
             can_data,
             source_id)
+        
+        return self._decode(pgn_id, priority, source_id, 255, can_data) # TODO: destination is hardcoded to 255
 
+    def _decode(self, pgn_id: int, priority: int, source_id: int, destination_id: int, can_data: bytes) -> NMEA2000Message:
         is_fast_func_name = f'is_fast_pgn_{pgn_id}'
         is_fast_func = globals().get(is_fast_func_name)
 
@@ -188,9 +211,9 @@ class NMEA2000Decoder():
             return None
 
         if (is_fast):
-            return self._decode_fast_message(pgn_id, priority, source_id, 255, can_data) # TODO: destination is hardcoded to 255
+            return self._decode_fast_message(pgn_id, priority, source_id, destination_id, can_data)
         else:
-            return self._call_decode_function(pgn_id, priority, source_id, 255, can_data) # TODO: destination is hardcoded to 255
+            return self._call_decode_function(pgn_id, priority, source_id, destination_id, can_data)
 
     def _call_decode_function(self, pgn:int, priority: int, src: int, dest: int, data:bytes) -> NMEA2000Message:
         decode_func_name = f'decode_pgn_{pgn}'

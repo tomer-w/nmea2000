@@ -23,7 +23,7 @@ class NMEA2000Message:
         self.priority = priority
 
     def __repr__(self):
-        return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, description={self.description}, fields={self.fields})"
+        return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, dest={self.destination}, description={self.description}, fields={self.fields})"
 
     def to_string_test_style(self):
         fields_str = ', '.join([field.to_string_test_style() for field in self.fields])

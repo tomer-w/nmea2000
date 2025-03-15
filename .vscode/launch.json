@@ -20,6 +20,14 @@
             "args": ["decode", "--frame", "09FF7 0FF00 3F9FDCFFFFFFFFFF"]
         },
         {
+            "name": "cli decode file",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "nmea2000.cli",
+            "console": "integratedTerminal",
+            "args": ["--verbose", "decode", "--file", "tests\\recombine-frames.in"]
+        },
+        {
             "name": "cli tcp_client",
             "type": "debugpy",
             "request": "launch",

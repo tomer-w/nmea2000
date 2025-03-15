@@ -41,7 +41,6 @@ def test_fast_parse():
     assert msg.fields[11].id == "i"
     assert msg.fields[11].value == 0
 
-
 def test_encode():
     decoder = NMEA2000Decoder()
     encoder = NMEA2000Encoder()
