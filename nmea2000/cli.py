@@ -48,7 +48,7 @@ def parse(filename: str, decoder: NMEA2000Decoder):
                     continue
                 line = line.strip()
                 logger.info(f'Processing: {line}')
-                decoder.decode_string(line)
+                decoder.decode_basic_string(line)
     except KeyboardInterrupt:
         sys.stdout.flush()
         pass
