@@ -10,6 +10,22 @@
             "request": "launch",
             "program": "canboat2python.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "cli decode",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "nmea2000.cli",
+            "console": "integratedTerminal",
+            "args": ["decode", "--frame", "09FF7 0FF00 3F9FDCFFFFFFFFFF"]
+        },
+        {
+            "name": "cli tcp_client",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "nmea2000.cli",
+            "console": "externalTerminal",
+            "args": ["--verbose", "tcp_client", "--server", "192.168.0.46", "--port", "8881"]
         }
     ]
 }

@@ -188,9 +188,9 @@ class NMEA2000Decoder():
             return None
 
         if (is_fast):
-            return self._decode_fast_message(pgn_id, priority, source_id, 0, can_data) # TODO: destination is hardcoded to 0
+            return self._decode_fast_message(pgn_id, priority, source_id, 255, can_data) # TODO: destination is hardcoded to 255
         else:
-            return self._call_decode_function(pgn_id, priority, source_id, 0, can_data) # TODO: destination is hardcoded to 0
+            return self._call_decode_function(pgn_id, priority, source_id, 255, can_data) # TODO: destination is hardcoded to 255
 
     def _call_decode_function(self, pgn:int, priority: int, src: int, dest: int, data:bytes) -> NMEA2000Message:
         decode_func_name = f'decode_pgn_{pgn}'

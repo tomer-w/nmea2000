@@ -18,6 +18,33 @@ class NMEA2000Encoder:
             logger.error(f"No function found for PGN: {nmea2000Message.PGN}\n")
             return None
             
+    def encode(self, nmea2000Message: NMEA2000Message) -> bytes:
+        """Construct a single NMEA 2000 packet from PGN, source ID, priority, and CAN data."""
+        if not (0 <= nmea2000Message.priority <= 7):
+            raise ValueError("Priority must be between 0 and 7")
+        if not (0 <= nmea2000Message.source <= 255):
+            raise ValueError("Source ID must be between 0 and 255")
+        if not (0 <= nmea2000Message.PGN <= 0x3FFFF):  # PGN is 18 bits
+            raise ValueError("PGN ID must be between 0 and 0x3FFFF")
+
+        can_data_int = self._call_encode_function(nmea2000Message)
+        can_data_bytes = can_data_int.to_bytes(8, "big") #TODO: Probably should not be always the same size
+        if not (0 <= len(can_data_bytes) <= 8):
+            raise ValueError("CAN data must be between 0 and 8 bytes long")
+        
+        # Construct frame ID
+        frame_id_int = (nmea2000Message.PGN << 8) | nmea2000Message.source
+        frame_id_bytes = frame_id_int.to_bytes(4, byteorder='big')[::-1]  # Reverse to match decode
+        
+        # Construct type byte (priority in top 3 bits, data length in bottom 4 bits)
+        type_byte = ((nmea2000Message.priority & 0x07) << 5) | (len(can_data_bytes) & 0x0F)
+        
+        # Reverse CAN data to match decode behavior
+        can_data_reversed = can_data_bytes[::-1]
+        
+        # Construct and return the full packet
+        return bytes([type_byte]) + frame_id_bytes + can_data_reversed
+
     def encode_actisense(self, nmea2000Message: NMEA2000Message) -> str:
         """Convert an Nmea2000Message object into an Actisense packet string."""
         # Extract necessary fields
