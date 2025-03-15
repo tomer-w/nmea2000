@@ -50,7 +50,7 @@ class AsyncIOClient:
             self.queue.task_done()
 
 
-class AsyncTCPClient(AsyncIOClient):
+class TcpNmea2000Gateway(AsyncIOClient):
     """TCP implementation of AsyncIOClient"""
     def __init__(self, host: str, port: int, reconnect_delay: int = 5):
         super().__init__(reconnect_delay)
@@ -104,7 +104,7 @@ class AsyncTCPClient(AsyncIOClient):
             await self.connect()
 
 
-class AsyncSerialClient(AsyncIOClient):
+class UsbNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient using serial_asyncio"""
     def __init__(self, port: str, reconnect_delay: int = 5):
         super().__init__(reconnect_delay)

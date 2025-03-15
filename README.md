@@ -7,6 +7,8 @@ A Python library for encoding and decoding NMEA 2000 frames. This library provid
 
 - **Decode NMEA 2000 frames**: Parse and interpret raw NMEA 2000 data.
 - **Encode NMEA 2000 frames**: Convert structured data back into the NMEA 2000 frame format.
+- **USB client**: Send and receive NMEA 2000 data over CANBUS USB devices like [Waveshare USB-CAN-A](https://www.waveshare.com/wiki/USB-CAN-A)
+- **TCP client**: Send and receive NMEA 2000 data over CANBUS TCP devices like [ECAN-W01S](https://www.cdebyte.com/products/ECAN-W01S) or [ECAN-E01](https://www.cdebyte.com/products/ECAN-E01)
 - **PGN-specific parsing**: Handle various PGNs with specific parsing rules.
 - **Stateful decoder**: The decoder stores state across multiple decode calls.
 - **CLI support**: Built-in command-line interface for encoding and decoding frames.
@@ -53,17 +55,28 @@ decoded_frame = decoder.decode_actisense_string(frame_str)
 print(decoded_frame)
 ```
 
-### Encode NMEA 2000 Frame (CLI)
+### TCP Client
+
+```python
+async def handle_received_data(message: NMEA2000Message):
+    """User-defined callback function for received data."""
+    print(f"Callback: Received {message}")
+    
+client = AsyncTCPClient(ip, port)
+client.set_receive_callback(handle_received_data)  # Register callback
+```
+
+<!--### Encode NMEA 2000 Frame (CLI)
 TBD
-<!-- You can also encode data into NMEA 2000 frames using the `encode` command:
+You can also encode data into NMEA 2000 frames using the `encode` command:
 
 ```bash
 python -m nmea2000.cli encode --data "your_data_to_encode"
-``` -->
+``` 
 
 ### Example Code
 TBD
-<!-- ```python
+```python
 from nmea2000.encoder import NMEA2000Encoder
 
 # Initialize encoder

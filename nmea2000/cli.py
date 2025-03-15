@@ -4,7 +4,7 @@ import sys
 import logging
 import binascii
 
-from .ioclient import AsyncTCPClient
+from .ioclient import TcpNmea2000Gateway
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 from .pgns import *
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 async def tcp_client(ip, port):
     print(f"Connecting to {ip}:{port}")
-    client = AsyncTCPClient(ip, port)
+    client = TcpNmea2000Gateway(ip, port)
     client.set_receive_callback(handle_received_data)  # Register callback
     await client.connect()
 
