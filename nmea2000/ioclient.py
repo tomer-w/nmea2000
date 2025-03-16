@@ -30,12 +30,14 @@ class AsyncIOClient:
         """Sends data (must be implemented by subclasses)."""
         raise NotImplementedError
 
-    async def close(self):
+    def close(self):
         """Closes the connection."""
+        self.connected = False
         if self.writer:
             self.writer.close()
-            self.connected = False
-            self.logger.info("Connection closed.")
+        if self.reader:
+            self.reader.close()
+        self.logger.info("Connection closed.")
 
     def set_receive_callback(self, callback):
         """Registers a callback to be executed when data is received."""
