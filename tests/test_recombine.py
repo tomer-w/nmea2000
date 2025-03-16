@@ -46,7 +46,7 @@ def test_decode_strings_from_file():
             assert msg.fields[13].value == -33.63
             assert msg.fields[14].value == 0
             assert msg.fields[15].value == 'Unknown'
-            assert msg.fields[16].value == None
+            assert msg.fields[16].value is None
             assert msg.fields[17].value == time(0, 10, 55)
         else:
-            assert msg == None
+            assert msg is None

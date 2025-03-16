@@ -1,23 +1,6 @@
+from datetime import date, time
 import pytest
-from nmea2000.utils import *
-
-def test_decode_decimal_single_byte():
-    assert decode_decimal(0x12) == 12
-
-def test_decode_decimal_multiple_bytes():
-    assert decode_decimal(0x1234) == 1234
-
-def test_decode_decimal_leading_zero():
-    assert decode_decimal(0x0123) == 123
-
-def test_decode_decimal_all_zeros():
-    assert decode_decimal(0x0000) == 0
-
-def test_decode_decimal_large_number():
-    assert decode_decimal(0x12345678) == 12345678
-
-def test_decode_decimal_zero():
-    assert decode_decimal(0x00) == 0
+from nmea2000.utils import decode_decimal, encode_decimal, decode_float, encode_float, decode_date, encode_date, decode_time, encode_time
 
 def test_decode_decimal_single_byte():
     assert decode_decimal(0x12) == 12
@@ -55,43 +38,6 @@ def test_encode_decimal_large_number():
 def test_encode_decode_decimal():
     for i in range (0,99999):
          assert decode_decimal(encode_decimal(i)) == i
-
-def test_decode_decimal_single_byte():
-    assert decode_decimal(0x12) == 12
-
-def test_decode_decimal_multiple_bytes():
-    assert decode_decimal(0x1234) == 1234
-
-def test_decode_decimal_leading_zero():
-    assert decode_decimal(0x0123) == 123
-
-def test_decode_decimal_all_zeros():
-    assert decode_decimal(0x0000) == 0
-
-def test_decode_decimal_large_number():
-    assert decode_decimal(0x12345678) == 12345678
-
-def test_decode_decimal_zero():
-    assert decode_decimal(0x00) == 0
-
-def test_encode_decimal_single_byte():
-    assert encode_decimal(12) == 0x12
-
-def test_encode_decimal_multiple_bytes():
-    assert encode_decimal(1234) == 0x1234
-
-def test_encode_decimal_leading_zero():
-    assert encode_decimal(123) == 0x0123
-
-def test_encode_decimal_all_zeros():
-    assert encode_decimal(0) == 0x0000
-
-def test_encode_decimal_large_number():
-    assert encode_decimal(12345678) == 0x12345678
-
-def test_encode_decode_decimal():
-    for i in range(0, 99999):
-        assert decode_decimal(encode_decimal(i)) == i
 
 def test_decode_float_zero():
     assert decode_float(0x00000000) == 0.0

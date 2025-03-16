@@ -34,7 +34,7 @@ def test_fast_parse():
     assert msg.fields[3].id == "a"
     assert msg.fields[3].value == 36
     assert msg.fields[4].id == "b"
-    assert msg.fields[4].value == None
+    assert msg.fields[4].value is None
     assert msg.fields[5].id == "c"
     assert msg.fields[5].value == -17
     assert msg.fields[11].id == "i"
