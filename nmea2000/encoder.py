@@ -1,8 +1,6 @@
-import sys
 import logging
-import binascii
-from .message import *
-from .pgns import *
+from .message import NMEA2000Message
+from .pgns import *  # noqa: F403
 
 logger = logging.getLogger(__name__)
 

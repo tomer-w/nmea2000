@@ -1,5 +1,5 @@
 from .utils import *
-from .message import *
+from .message import NMEA2000Message, NMEA2000Field
 
 
 lookup_dict_LIGHTING_COMMAND = {

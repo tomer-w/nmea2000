@@ -2,12 +2,11 @@ import argparse
 import asyncio
 import sys
 import logging
-import binascii
 
+from .message import NMEA2000Message
 from .ioclient import TcpNmea2000Gateway
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
-from .pgns import *
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +36,6 @@ async def handle_received_data(message: NMEA2000Message):
 
 
 def parse(filename: str, decoder: NMEA2000Decoder):
-    data_length = 8
     try:
         with open(filename, 'r') as file:
             while True:

@@ -74,7 +74,7 @@ class TcpNmea2000Gateway(AsyncIOClient):
 
     async def _receive_loop(self):
         """Continuously receives 13-byte buffers and adds them to the queue."""
-        self.logger.info(f"TCP received loop started")
+        self.logger.info("TCP received loop started")
         while self.connected:
             try:
                 data = await self.reader.readexactly(13)
