@@ -1,4 +1,3 @@
-import pytest
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
 

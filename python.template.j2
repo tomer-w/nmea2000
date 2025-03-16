@@ -147,7 +147,7 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
     field_value = next((f.value for f in nmea2000Message.fields if f.id == '{{ field_name }}'), None)
     {%- endif %}
     if field_value is None:
-        raise Exception(f"Cant encode this message, missing '{{field.Name}}'")
+        raise Exception("Cant encode this message, missing '{{field.Name}}'")
     {%- if field.Resolution is defined and field.Resolution != 1 %}        
     data_raw |= (int(field_value / {{ field.Resolution }}) & {{ bits_to_hex(field.BitLength) }}) << {{ field.BitOffset }}
     {% else %}

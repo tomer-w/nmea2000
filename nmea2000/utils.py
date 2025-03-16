@@ -3,7 +3,6 @@
 from datetime import date, timedelta
 import struct
 import math
-import logging
 from datetime import time
 
 def kelvin_to_fahrenheit(kelvin):

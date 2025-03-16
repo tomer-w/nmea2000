@@ -1,5 +1,4 @@
 from datetime import date, time
-import pytest
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
 
 def test_decode_strings_from_file():
