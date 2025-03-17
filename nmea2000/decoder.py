@@ -18,8 +18,18 @@ class fast_pgn_metadata():
         return f"<fast_pgn_metadata frames={len(self.frames)} payload_length={self.payload_length} bytes_stored={self.bytes_stored} sequence_counter={self.sequence_counter}>"
 
 class NMEA2000Decoder():
-    def __init__(self) -> None:
+    def __init__(self, exclude_pgns=[], include_pgns=[]) -> None:
         self.data = {}
+        if not isinstance(exclude_pgns, list):
+            raise ValueError("exclude_pgns must be a list")
+        if not isinstance(include_pgns, list):
+            raise ValueError("include_pgns must be a list")
+        if len(exclude_pgns) > 0 and len(include_pgns) > 0:
+            raise ValueError("Only one of exclude_pgns or include_pgns can be used")
+        
+        self.exclude_pgns = exclude_pgns
+        self.include_pgns = include_pgns
+        
 
     def _decode_fast_message(self, pgn, priority, src, dest, timestamp, can_data) -> NMEA2000Message:
         """Parse a fast packet message and store the data until all frames are received."""
@@ -142,8 +152,7 @@ class NMEA2000Decoder():
         # Log the extracted information
         logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {src}, PGN: {pgn}, CAN Data: {reversed_bytes}")
         
-        # not calling _decode as in this format the fast frames are already combined
-        return self._call_decode_function(pgn, priority, src, dest, timestamp, reversed_bytes)
+        return self._decode(pgn, priority, src, dest, timestamp, reversed_bytes, True)
         
     def decode_basic_string(self, basic_string: str) -> NMEA2000Message:
         """Process an Actisense packet string and extract the PGN, source ID, and CAN data."""
@@ -201,16 +210,28 @@ class NMEA2000Decoder():
         
         return self._decode(pgn_id, priority, source_id, 255, datetime.now(), can_data) # TODO: destination is hardcoded to 255
 
-    def _decode(self, pgn_id: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes) -> NMEA2000Message:
-        is_fast_func_name = f'is_fast_pgn_{pgn_id}'
-        is_fast_func = globals().get(is_fast_func_name)
+    def _decode(self, pgn_id: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes, already_combined: bool = False) -> NMEA2000Message:
+        """Decode a single PGN message."""
 
-        if is_fast_func:
-            is_fast = is_fast_func()
-            logger.info(f"Is fast PGN: {is_fast}")
-        else:
-            logger.error(f"No function found for PGN: {pgn_id}\n")
+        # Check if the PGN should be excluded or included
+        if pgn_id in self.exclude_pgns:
+            logger.debug(f"Excluding PGN: {pgn_id}")
             return None
+        if len(self.include_pgns) > 0 and pgn_id not in self.include_pgns:
+            logger.debug(f"Excluding PGN: {pgn_id}")
+            return None
+
+        is_fast = False
+        if not already_combined:
+            is_fast_func_name = f'is_fast_pgn_{pgn_id}'
+            is_fast_func = globals().get(is_fast_func_name)
+
+            if is_fast_func:
+                is_fast = is_fast_func()
+                logger.info(f"Is fast PGN: {is_fast}")
+            else:
+                logger.error(f"No function found for PGN: {pgn_id}\n")
+                return None
 
         if (is_fast):
             return self._decode_fast_message(pgn_id, priority, source_id, destination_id, timestamp, can_data)

@@ -84,3 +84,14 @@ def test_encode():
     assert isinstance(msg, NMEA2000Message)
     nmea_str = encoder.encode_actisense(msg)
     assert  nmea_str == "09FF7 0FF00 3F9FDCFFFFFFFFFF"
+
+def test_exclude():
+    decoder = NMEA2000Decoder(exclude_pgns=[65280])
+    msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
+    assert msg is None
+
+def test_include():
+    decoder = NMEA2000Decoder(include_pgns=[65280])
+    msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 65280
