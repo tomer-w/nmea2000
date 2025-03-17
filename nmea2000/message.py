@@ -1,3 +1,4 @@
+from datetime import datetime
 import binascii
 from dataclasses import dataclass, field
 import orjson
@@ -16,11 +17,13 @@ class NMEA2000Message:
     source: int = 0
     destination: int = 0
     priority: int = 0
+    timestamp: datetime = datetime.now()
 
-    def add_data(self, src, dest, priority):
+    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime):
         self.source = src
         self.destination = dest
         self.priority = priority
+        self.timestamp = timestamp
 
     def __repr__(self):
         return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, dest={self.destination}, description={self.description}, fields={self.fields})"
@@ -35,13 +38,8 @@ class NMEA2000Message:
     @staticmethod
     def from_json(json_str):
         data = orjson.loads(json_str)
-        msg = NMEA2000Message(
-            PGN=data["PGN"],
-            id=data["id"],
-            description=data["description"],
-        )
+        msg = NMEA2000Message(**data)
         msg.fields = [NMEA2000Field(**field) for field in data.get("fields", [])]
-        msg.add_data(data["source"], data["destination"], data["priority"])
         return msg
 
 # NMEA2000Field class represents a single NMEA 2000 field

@@ -1,6 +1,7 @@
 import sys
 import logging
 import binascii
+from datetime import datetime, timedelta
 from .message import NMEA2000Message
 from .pgns import *  # noqa: F403
 
@@ -20,7 +21,7 @@ class NMEA2000Decoder():
     def __init__(self) -> None:
         self.data = {}
 
-    def _decode_fast_message(self, pgn, priority, src, dest, can_data) -> NMEA2000Message:
+    def _decode_fast_message(self, pgn, priority, src, dest, timestamp, can_data) -> NMEA2000Message:
         """Parse a fast packet message and store the data until all frames are received."""
         fast_packet_key = f"{pgn}_{src}_{dest}"
         
@@ -97,7 +98,7 @@ class NMEA2000Decoder():
             nmea = None
             if combined_payload is not None:
                 logger.debug(f"Combined Payload (hex): {combined_payload})")
-                nmea = self._call_decode_function(pgn, priority, src, dest, combined_payload)
+                nmea = self._call_decode_function(pgn, priority, src, dest, timestamp, combined_payload)
 
             # Reset the structure for this PGN
             del self.data[fast_packet_key]
@@ -111,21 +112,29 @@ class NMEA2000Decoder():
         # Split the Actisense string by spaces
         parts = actisense_string.split()
         
-        if len(parts) < 2:
+        if len(parts) < 3:
             raise ValueError("Invalid Actisense string format")
         
-        # Extract the priority, destination, and source from the first part
-        n = int(parts[0], 16)
+        if not parts[0].startswith("A"):
+            raise ValueError("Invalid format: should start with 'A'")
+    
+        # Extract the timestamp from the first part
+        seconds, milliseconds = map(int, parts[0][1:].split("."))
+        offset = timedelta(seconds=seconds, milliseconds=milliseconds)
+        timestamp = datetime.now() + offset
+
+        # Extract the priority, destination, and source from the second part
+        n = int(parts[1], 16)
         priority = n & 0xF
         dest = (n >> 4) & 0xFF
         src = (n >> 12) & 0xFF
         
-        # Extract the PGN from the second part
-        pgn = int(parts[1], 16)
+        # Extract the PGN from the third part
+        pgn = int(parts[2], 16)
         
         # Extract the CAN data from the remaining parts
         # Convert to bytes
-        bytes_data = bytes.fromhex(parts[2])
+        bytes_data = bytes.fromhex(parts[3])
 
         # Reverse the byte order
         reversed_bytes = bytes_data[::-1]
@@ -134,7 +143,7 @@ class NMEA2000Decoder():
         logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {src}, PGN: {pgn}, CAN Data: {reversed_bytes}")
         
         # not calling _decode as in this format the fast frames are already combined
-        return self._call_decode_function(pgn, priority, src, dest, reversed_bytes)
+        return self._call_decode_function(pgn, priority, src, dest, timestamp, reversed_bytes)
         
     def decode_basic_string(self, basic_string: str) -> NMEA2000Message:
         """Process an Actisense packet string and extract the PGN, source ID, and CAN data."""
@@ -145,6 +154,7 @@ class NMEA2000Decoder():
             raise ValueError("Invalid string format")
         
         # Extract the fields
+        timestamp = datetime.strptime(parts[0], "%Y-%m-%d-%H:%M:%S.%f")
         priority = int(parts[1])
         pgn_id = int(parts[2])
         src = int(parts[3])
@@ -157,7 +167,7 @@ class NMEA2000Decoder():
         logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {src}, PGN: {pgn_id}, CAN Data: {can_data_bytes}")
         
         # not calling _decode as in this format the fast frames are already combined
-        return self._decode(pgn_id, priority, src, dest, can_data_bytes)
+        return self._decode(pgn_id, priority, src, dest, timestamp, can_data_bytes)
 
     def decode(self, packet: bytes) -> NMEA2000Message:
         """Process a single packet and extract the PGN, source ID, and CAN data."""
@@ -189,9 +199,9 @@ class NMEA2000Decoder():
             can_data,
             source_id)
         
-        return self._decode(pgn_id, priority, source_id, 255, can_data) # TODO: destination is hardcoded to 255
+        return self._decode(pgn_id, priority, source_id, 255, datetime.now(), can_data) # TODO: destination is hardcoded to 255
 
-    def _decode(self, pgn_id: int, priority: int, source_id: int, destination_id: int, can_data: bytes) -> NMEA2000Message:
+    def _decode(self, pgn_id: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes) -> NMEA2000Message:
         is_fast_func_name = f'is_fast_pgn_{pgn_id}'
         is_fast_func = globals().get(is_fast_func_name)
 
@@ -203,11 +213,11 @@ class NMEA2000Decoder():
             return None
 
         if (is_fast):
-            return self._decode_fast_message(pgn_id, priority, source_id, destination_id, can_data)
+            return self._decode_fast_message(pgn_id, priority, source_id, destination_id, timestamp, can_data)
         else:
-            return self._call_decode_function(pgn_id, priority, source_id, destination_id, can_data)
+            return self._call_decode_function(pgn_id, priority, source_id, destination_id, timestamp, can_data)
 
-    def _call_decode_function(self, pgn:int, priority: int, src: int, dest: int, data:bytes) -> NMEA2000Message:
+    def _call_decode_function(self, pgn:int, priority: int, src: int, dest: int, timestamp: datetime, data:bytes) -> NMEA2000Message:
         decode_func_name = f'decode_pgn_{pgn}'
         decode_func = globals().get(decode_func_name)
 
@@ -215,7 +225,7 @@ class NMEA2000Decoder():
             raise ValueError(f"No function found for PGN: {pgn}")
 
         nmea2000Message = decode_func(int.from_bytes(data, "big"))
-        nmea2000Message.add_data(src, dest, priority)
+        nmea2000Message.add_data(src, dest, priority, timestamp)
         sys.stdout.write(nmea2000Message.to_string_test_style()+"\n")
         return nmea2000Message
         
