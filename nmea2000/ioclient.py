@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import socket
 import serial_asyncio
 
 from .decoder import NMEA2000Decoder
@@ -61,9 +62,17 @@ class TcpNmea2000Gateway(AsyncIOClient):
 
     async def connect(self):
         """Connects to the TCP server with automatic reconnection."""
+        self.logger.info(f"Connecting to {self.host}:{self.port}")
         while not self.connected:
             try:
                 self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+                # Get the underlying socket
+                sock = self.writer.get_extra_info("socket")
+                if sock:
+                    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
+                    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60)  # Idle time before keepalive probes (Linux/macOS)
+                    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
+                    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
                 self.connected = True
                 self.logger.info(f"Connected to {self.host}:{self.port}")
 
@@ -77,19 +86,18 @@ class TcpNmea2000Gateway(AsyncIOClient):
     async def _receive_loop(self):
         """Continuously receives 13-byte buffers and adds them to the queue."""
         self.logger.info("TCP received loop started")
-        while self.connected:
-            try:
+        try:
+            while self.connected:
                 data = await self.reader.readexactly(13)
                 self.logger.info(f"Received: {data.hex()}")
                 message = self.decoder.decode(data)
                 self.logger.info(f"Received message: {message}")
                 if message is not None:
                     await self.queue.put(message)
-            except asyncio.IncompleteReadError:
-                self.logger.error("Connection lost while reading. Reconnecting...")
-                self.connected = False
-                await self.connect()
-                break
+        except (asyncio.IncompleteReadError, ConnectionResetError):
+            self.logger.error("Connection lost while reading. Reconnecting...")
+            self.connected = False
+            await self.connect()
 
     async def send(self, nmea2000Message: NMEA2000Message):
         """Sends data over TCP."""
