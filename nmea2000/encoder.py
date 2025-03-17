@@ -26,16 +26,18 @@ class NMEA2000Encoder:
             raise ValueError("PGN ID must be between 0 and 0x3FFFF")
 
         can_data_int = self._call_encode_function(nmea2000Message)
-        can_data_bytes = can_data_int.to_bytes(8, "big") #TODO: Probably should not be always the same size
+        can_data_bytes = can_data_int.to_bytes(8, "big")
         if not (0 <= len(can_data_bytes) <= 8):
             raise ValueError("CAN data must be between 0 and 8 bytes long")
         
-        # Construct frame ID
-        frame_id_int = (nmea2000Message.PGN << 8) | nmea2000Message.source | ((nmea2000Message.priority & 0x07) << 5)
+        # Construct frame ID: 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
+        frame_id_int = nmea2000Message.source & 0xFF #lowest 8 bits are source
+        frame_id_int |= (nmea2000Message.PGN & 0x3FFFF) << 8  # Shift left by 8 bits and mask to 18 bits
+        frame_id_int |= (nmea2000Message.priority & 0x07) << 18   # ID26-ID28 bits represent the priority
 
-        frame_id_bytes = frame_id_int.to_bytes(4, byteorder='big')[::-1]  # Reverse to match decode
+        frame_id_bytes = frame_id_int.to_bytes(4, byteorder='big')
         
-        # Construct type byte (priority in top 3 bits, data length in bottom 4 bits)
+        # Construct type byte: data length in bottom 4 bits
         type_byte = (len(can_data_bytes) & 0x0F) | (1 << 7)  # Set the FF bit
         
         # Reverse CAN data to match decode behavior

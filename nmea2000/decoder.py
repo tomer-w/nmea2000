@@ -179,24 +179,22 @@ class NMEA2000Decoder():
         return self._decode(pgn_id, priority, src, dest, timestamp, can_data_bytes)
 
     def decode(self, packet: bytes) -> NMEA2000Message:
-        """Process a single packet and extract the PGN, source ID, and CAN data."""
+        """Tested with ECAN devices. Process a single packet and extract the PGN, source ID, and CAN data."""
         
-        # Extract the priority (first 3 bits) and data length (last 4 bits) from the type byte
+        # First byte has the data length in the lowest 4 bits
         type_byte = packet[0]
-        priority = (type_byte >> 5) & 0x07  # first 3 bits represent the priority
         data_length = type_byte & 0x0F  # last 4 bits represent the data length
         
         # Extract and reverse the frame ID
-        frame_id = packet[1:5][::-1]
+        frame_id = packet[1:5]
         
         # Convert frame_id bytes to an integer
         frame_id_int = int.from_bytes(frame_id, byteorder='big')
         
-        # Extracting Source ID from the frame ID
-        source_id = frame_id_int & 0xFF
-        
-        # Extracting PGN ID from the frame ID
+        # Parse the 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
+        source_id = frame_id_int & 0xFF #lowest 8 bits are source
         pgn_id = (frame_id_int >> 8) & 0x3FFFF  # Shift right by 8 bits and mask to 18 bits
+        priority = (frame_id_int >> 18) & 0x07  # ID26-ID28 bits represent the priority
         
         # Extract and reverse the CAN data
         can_data = packet[5:5 + data_length][::-1]
