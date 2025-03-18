@@ -210,21 +210,21 @@ class NMEA2000Decoder():
 
     def decode_usb(self, packet: bytes) -> NMEA2000Message:
         """Tested with Waveshare-usb-a device. Process a single packet and extract the PGN, source ID, and CAN data."""
-        if packet[0] != 0x55 or packet[-1 ] != 0x55:
+        if packet[0] != 0xaa or packet[-1 ] != 0x55:
             raise Exception ("Packet does not have the right prefix and suffix")
         
         if len(packet) < 2 + 4 + 1: # 2 headers, 4 id, 1 data
-            raise Exception ("Packet is too short")
+            raise Exception ("Packet is too short")    
         
         # First byte has the data length in the lowest 4 bits
-        type_byte = packet[0]
+        type_byte = packet[1]
         data_length = type_byte & 0x0F  # last 4 bits represent the data length
         
         # Extract and reverse the frame ID
-        frame_id = packet[1:5]
+        frame_id = packet[2:6]
         
         # Convert frame_id bytes to an integer
-        frame_id_int = int.from_bytes(frame_id, byteorder='big')
+        frame_id_int = int.from_bytes(frame_id, byteorder='little')
         
         # Parse the 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
         source_id = frame_id_int & 0xFF #lowest 8 bits are source
@@ -232,7 +232,7 @@ class NMEA2000Decoder():
         priority = (frame_id_int >> 18) & 0x07  # ID26-ID28 bits represent the priority
         
         # Extract and reverse the CAN data
-        can_data = packet[5:5 + data_length][::-1]
+        can_data = packet[6:6 + data_length][::-1]
                
         # Log the extracted information including the combined string
         logger.debug("PGN ID: %s, Frame ID: %s, CAN Data: %s, Source ID: %s",
