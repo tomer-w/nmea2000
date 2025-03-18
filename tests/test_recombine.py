@@ -2,7 +2,7 @@ from datetime import date, time
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
 
 def test_decode_strings_from_file():
-    with open("tests\\recombine-frames-1.in", "r") as f:
+    with open("tests/recombine-frames-1.in", "r") as f:
         lines = f.read().splitlines()
 
     decoder = NMEA2000Decoder()
