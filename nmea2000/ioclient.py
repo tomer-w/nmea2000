@@ -136,7 +136,7 @@ class UsbNmea2000Gateway(AsyncIOClient):
                 )
 
                 self.connected = True
-                self.logger.info(f"Connected to serial port {self.port} at {self.baudrate} baud")
+                self.logger.info(f"Connected to serial port {self.port}")
 
                 asyncio.create_task(self._receive_loop())  # Start background receiver
                 asyncio.create_task(self._process_queue())  # Start processing queue
@@ -165,7 +165,7 @@ class UsbNmea2000Gateway(AsyncIOClient):
                         break
 
                     # Extract the complete packet, including the end delimiter
-                    packet = buffer[start : end + 1]
+                    packet = buffer[start + 1 : end]
 
                     # Process the packet
                     if (len(packet) > 2):  # Make sure it's not just the header and end code

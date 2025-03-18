@@ -4,15 +4,13 @@ import sys
 import logging
 
 from .message import NMEA2000Message
-from .ioclient import TcpNmea2000Gateway
+from .ioclient import TcpNmea2000Gateway, UsbNmea2000Gateway
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 
 logger = logging.getLogger(__name__)
 
-async def tcp_client(ip, port):
-    print(f"Connecting to {ip}:{port}")
-    client = TcpNmea2000Gateway(ip, port)
+async def tcp_client(client):
     client.set_receive_callback(handle_received_data)  # Register callback
     await client.connect()
 
@@ -102,6 +100,14 @@ def main():
         help="Server port number"
     )
 
+    # USB client command
+    usb_client_parser = subparsers.add_parser("usb_client", help="start USB client to CANBUS gateway (for example, ECAN-E01 or ECAN-W01)")
+    usb_client_parser.add_argument(
+        "--port", 
+        type=str, 
+        required=True, 
+        help="Serial port"
+    )
 
     # Parse arguments
     args = parser.parse_args()
@@ -145,7 +151,9 @@ def main():
             print(encoded)
             
     elif args.command == "tcp_client":
-        asyncio.run(tcp_client(args.server, args.port))
+        asyncio.run(tcp_client(TcpNmea2000Gateway(args.server, args.port)))
+    elif args.command == "usb_client":
+        asyncio.run(tcp_client(UsbNmea2000Gateway(args.port)))
 
 if __name__ == "__main__":
     main()
