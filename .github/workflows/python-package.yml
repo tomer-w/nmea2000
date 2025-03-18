@@ -31,9 +31,6 @@ jobs:
     - name: Lint with ruff
       run: |
         ruff check . --line-length 127 --statistics
-    - name: list files
-      run: |
-        ls -R
     - name: Test with pytest
       run: |
         pytest

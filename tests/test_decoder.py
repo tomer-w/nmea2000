@@ -101,7 +101,7 @@ def test_include():
 
 def test_tcp_bytes():
     decoder = NMEA2000Decoder()
-    msg = decoder.decode_tcp(bytes("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF"))
+    msg = decoder.decode_tcp(bytes.fromhex("8800ff00093f9fdcffffffffff"))
     _validate_65280_message(msg)
 
 def test_usb_bytes():
