@@ -110,7 +110,7 @@ class TcpNmea2000Gateway(AsyncIOClient):
         if not self.connected:
             await self.connect()
         try:
-            data_bytes = self.encoder.encode(nmea2000Message)
+            data_bytes = self.encoder.encode_tcp(nmea2000Message)
             self.writer.write(data_bytes)
             await self.writer.drain()
             self.logger.info(f"Sent: {data_bytes.hex()}")
@@ -199,7 +199,7 @@ class UsbNmea2000Gateway(AsyncIOClient):
         if not self.connected:
             await self.connect()
 
-        data_bytes = self.encoder.encode(nmea2000Message)
+        data_bytes = self.encoder.encode_usb(nmea2000Message)
         try:
             self.writer.write(data_bytes)
             await self.writer.drain()

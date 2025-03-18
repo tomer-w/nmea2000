@@ -108,3 +108,19 @@ def test_usb_bytes():
     decoder = NMEA2000Decoder()
     msg = decoder.decode_usb(bytes.fromhex("aae80900ff003f9fdcffffffffff55"))
     _validate_65280_message(msg)
+
+def test_tcp_encode():
+    decoder = NMEA2000Decoder()
+    encoder = NMEA2000Encoder()
+    msg = decoder.decode_tcp(bytes.fromhex("8800ff00093f9fdcffffffffff"))
+    assert isinstance(msg, NMEA2000Message)
+    msg_bytes = encoder.encode_tcp(msg)
+    assert  msg_bytes == bytes.fromhex("8800ff00093f9fdcffffffffff")
+
+def test_usb_encode():
+    decoder = NMEA2000Decoder()
+    encoder = NMEA2000Encoder()
+    msg = decoder.decode_usb(bytes.fromhex("aae80900ff003f9fdcffffffffff55"))
+    assert isinstance(msg, NMEA2000Message)
+    msg_bytes = encoder.encode_usb(msg)
+    assert  msg_bytes == bytes.fromhex("aae80900ff003f9fdcffffffffff55")
