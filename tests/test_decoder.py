@@ -2,9 +2,7 @@ import json
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
 
-def test_single_parse():
-    decoder = NMEA2000Decoder()
-    msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
+def _validate_65280_message(msg: NMEA2000Message):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 65280
     assert msg.priority == 7
@@ -21,6 +19,12 @@ def test_single_parse():
     assert msg.fields[2].description == "Marine Industry"
     assert msg.fields[2].value == "Marine"
     assert msg.fields[3].value == -0.036000000000000004
+
+
+def test_single_parse():
+    decoder = NMEA2000Decoder()
+    msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
+    _validate_65280_message(msg)
 
 def test_json():
     decoder = NMEA2000Decoder()
@@ -93,5 +97,14 @@ def test_exclude():
 def test_include():
     decoder = NMEA2000Decoder(include_pgns=[65280])
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
-    assert isinstance(msg, NMEA2000Message)
-    assert msg.PGN == 65280
+    _validate_65280_message(msg)
+
+def test_tcp_bytes():
+    decoder = NMEA2000Decoder()
+    msg = decoder.decode_tcp(bytes("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF"))
+    _validate_65280_message(msg)
+
+def test_usb_bytes():
+    decoder = NMEA2000Decoder()
+    msg = decoder.decode_usb(bytes("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF"))
+    _validate_65280_message(msg)

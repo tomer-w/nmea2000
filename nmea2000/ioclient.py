@@ -36,7 +36,7 @@ class AsyncIOClient:
         self.connected = False
         if self.writer:
             self.writer.close()
-        if self.reader:
+        if self.reader and self.reader is not None:
             self.reader.close()
         self.logger.info("Connection closed.")
 
@@ -90,10 +90,16 @@ class TcpNmea2000Gateway(AsyncIOClient):
             while self.connected:
                 data = await self.reader.readexactly(13)
                 self.logger.info(f"Received: {data.hex()}")
-                message = self.decoder.decode(data)
+
+                try:
+                    message = self.decoder.decode_tcp(data)
+                except Exception as e:
+                    self.logger.warning(f"decoding failed. bytes: {data.hex()}. Error: {e}")
+
                 self.logger.info(f"Received message: {message}")
                 if message is not None:
                     await self.queue.put(message)
+
         except (asyncio.IncompleteReadError, ConnectionResetError):
             self.logger.error("Connection lost while reading. Reconnecting...")
             self.connected = False
@@ -165,14 +171,18 @@ class UsbNmea2000Gateway(AsyncIOClient):
                         break
 
                     # Extract the complete packet, including the end delimiter
-                    packet = buffer[start + 1 : end]
+                    packet = buffer[start : end + 1]
+                    self.logger.info(f"Received: {packet.hex()}")
 
                     # Process the packet
-                    if (len(packet) > 2):  # Make sure it's not just the header and end code
-                        message = self.decoder.decode(packet)
-                        self.logger.info(f"Received message: {message}")
-                        if message is not None:
-                            await self.queue.put(message)
+                    try:
+                        message = self.decoder.decode_usb(packet)
+                    except Exception as e:
+                        self.logger.warning(f"decoding failed. bytes: {packet.hex()}. Error: {e}")
+
+                    self.logger.info(f"Received message: {message}")
+                    if message is not None:
+                        await self.queue.put(message)
 
                     # Remove the processed packet from the buffer
                     buffer = buffer[end + 1 :]
@@ -188,8 +198,9 @@ class UsbNmea2000Gateway(AsyncIOClient):
         """Sends data over Serial."""
         if not self.connected:
             await self.connect()
+
+        data_bytes = self.encoder.encode(nmea2000Message)
         try:
-            data_bytes = self.encoder.encode(nmea2000Message)
             self.writer.write(data_bytes)
             await self.writer.drain()
             self.logger.info(f"Sent: {data_bytes.hex()}")
