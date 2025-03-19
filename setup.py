@@ -9,7 +9,7 @@ setup(
     long_description_content_type="text/markdown",
     author='Tomer-W',
     url="https://github.com/tomer-w/nmea2000",
-    install_requires=['orjson >= 3.10,<4.0', 'pyserial-asyncio >= 0.6'],
+    install_requires=['orjson >= 3.10,<4.0', 'pyserial-asyncio >= 0.6', 'tenacity >= 9.0.0'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest==8.3.5'],
     test_suite='tests',

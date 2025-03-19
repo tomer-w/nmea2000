@@ -2,6 +2,7 @@ import asyncio
 import logging
 import socket
 import serial_asyncio
+from tenacity import retry, stop_never, wait_exponential, retry_if_exception_type, before_sleep_log
 
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
@@ -9,14 +10,13 @@ from .message import NMEA2000Message
 
 class AsyncIOClient:
     """Base class for async clients (TCP or Serial)"""
-    def __init__(self, reconnect_delay: int = 5):
-        self.reconnect_delay = reconnect_delay
+    def __init__(self, exclude_pgns=[], include_pgns=[]):
         self.connected = False
         self.reader = None
         self.writer = None
         self.receive_callback = None
         self.queue = asyncio.Queue()
-        self.decoder = NMEA2000Decoder()
+        self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns)
         self.encoder = NMEA2000Encoder()
         
         # Setup logging
@@ -52,36 +52,47 @@ class AsyncIOClient:
                 await self.receive_callback(data)
             self.queue.task_done()
 
+    def log_before_retry(self, retry_state):
+        """Custom retry logging using the class logger."""
+        self.logger.warning(
+            "Retrying due to error: %s. Next attempt in %.2f seconds.",
+            retry_state.outcome.exception(),
+            retry_state.next_action.sleep if retry_state.next_action else 0
+        )
+
 
 class TcpNmea2000Gateway(AsyncIOClient):
     """TCP implementation of AsyncIOClient"""
-    def __init__(self, host: str, port: int, reconnect_delay: int = 5):
-        super().__init__(reconnect_delay)
+    def __init__(self, host: str, port: int, exclude_pgns=[], include_pgns=[]):
+        super().__init__(exclude_pgns, include_pgns)
         self.host = host
         self.port = port
 
     async def connect(self):
         """Connects to the TCP server with automatic reconnection."""
-        self.logger.info(f"Connecting to {self.host}:{self.port}")
-        while not self.connected:
-            try:
-                self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
-                # Get the underlying socket
-                sock = self.writer.get_extra_info("socket")
-                if sock:
-                    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
-                    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60)  # Idle time before keepalive probes (Linux/macOS)
-                    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
-                    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
-                self.connected = True
-                self.logger.info(f"Connected to {self.host}:{self.port}")
+        @retry(
+            stop=stop_never,  # Retry forever 
+            wait=wait_exponential(multiplier=0.5, max=10),  # Exponential backoff (0.5s, 1s, 2s, ...)
+            retry=retry_if_exception_type(Exception),  # Only retry on exceptions
+            before_sleep=self.log_before_retry  # Log each failure before sleeping
+        )
+        async def retrying_task():
+            self.logger.info(f"Connecting to {self.host}:{self.port}")
+            self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+            # Get the underlying socket
+            sock = self.writer.get_extra_info("socket")
+            if sock:
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
+                sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60)  # Idle time before keepalive probes (Linux/macOS)
+                sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
+                sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
+            self.connected = True
+            self.logger.info(f"Connected to {self.host}:{self.port}")
 
-                asyncio.create_task(self._receive_loop())  # Start background receiver
-                asyncio.create_task(self._process_queue())  # Start processing queue
+            asyncio.create_task(self._receive_loop())  # Start background receiver
+            asyncio.create_task(self._process_queue())  # Start processing queue
+        await retrying_task()
                 
-            except (asyncio.TimeoutError, ConnectionRefusedError) as e:
-                self.logger.warning(f"Connection failed: {e}. Retrying in {self.reconnect_delay} seconds...")
-                await asyncio.sleep(self.reconnect_delay)
 
     async def _receive_loop(self):
         """Continuously receives 13-byte buffers and adds them to the queue."""
@@ -94,7 +105,8 @@ class TcpNmea2000Gateway(AsyncIOClient):
                 try:
                     message = self.decoder.decode_tcp(data)
                 except Exception as e:
-                    self.logger.warning(f"decoding failed. bytes: {data.hex()}. Error: {e}")
+                    self.logger.warning(f"decoding failed. text: {data}, bytes: {data.hex()}. Error: {e}")
+                    continue
 
                 self.logger.info(f"Received message: {message}")
                 if message is not None:
@@ -122,35 +134,38 @@ class TcpNmea2000Gateway(AsyncIOClient):
 
 class UsbNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient using serial_asyncio"""
-    def __init__(self, port: str, reconnect_delay: int = 5):
-        super().__init__(reconnect_delay)
+    def __init__(self, port: str, exclude_pgns=[], include_pgns=[]):
+        super().__init__(exclude_pgns, include_pgns)
         self.port = port
 
     async def connect(self):
-        """Connects to the serial device with automatic reconnection."""
-        while not self.connected:
-            try:
-                self.reader, self.writer = await serial_asyncio.open_serial_connection(
-                    url=self.port,
-                    baudrate=2000000,
-                    bytesize=serial_asyncio.serial.EIGHTBITS,
-                    parity=serial_asyncio.serial.PARITY_NONE,
-                    stopbits=serial_asyncio.serial.STOPBITS_ONE,
-                    xonxoff=False,
-                    rtscts=False,
-                    dsrdtr=False,
-                )
+        @retry(
+            stop=stop_never,  # Retry forever 
+            wait=wait_exponential(multiplier=0.5, max=10),  # Exponential backoff (0.5s, 1s, 2s, ...)
+            retry=retry_if_exception_type(Exception),  # Only retry on exceptions
+            before_sleep=self.log_before_retry  # Log each failure before sleeping
+        )
+        async def retrying_task():
+            self.logger.info(f"Connecting to {self.port}")
+            """Connects to the serial device with automatic reconnection."""
+            self.reader, self.writer = await serial_asyncio.open_serial_connection(
+                url=self.port,
+                baudrate=2000000,
+                bytesize=serial_asyncio.serial.EIGHTBITS,
+                parity=serial_asyncio.serial.PARITY_NONE,
+                stopbits=serial_asyncio.serial.STOPBITS_ONE,
+                xonxoff=False,
+                rtscts=False,
+                dsrdtr=False,
+            )
 
-                self.connected = True
-                self.logger.info(f"Connected to serial port {self.port}")
+            self.connected = True
+            self.logger.info(f"Connected to serial port {self.port}")
 
-                asyncio.create_task(self._receive_loop())  # Start background receiver
-                asyncio.create_task(self._process_queue())  # Start processing queue
+            asyncio.create_task(self._receive_loop())  # Start background receiver
+            asyncio.create_task(self._process_queue())  # Start processing queue
+        await retrying_task()
                 
-            except Exception as e:
-                self.logger.warning(f"Serial connection failed: {e}. Retrying in {self.reconnect_delay} seconds...")
-                await asyncio.sleep(self.reconnect_delay)
-
     async def _receive_loop(self):
         """Continuously receives packets between 0xAA to 0x55 and adds them to the queue."""
         buffer = bytearray()

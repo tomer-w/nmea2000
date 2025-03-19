@@ -263,8 +263,7 @@ class NMEA2000Decoder():
                 is_fast = is_fast_func()
                 logger.info(f"Is fast PGN: {is_fast}")
             else:
-                logger.error(f"No function found for PGN: {pgn_id}\n")
-                return None
+                raise ValueError(f"No function found for PGN: {pgn_id}")
 
         if (is_fast):
             return self._decode_fast_message(pgn_id, priority, source_id, destination_id, timestamp, can_data)

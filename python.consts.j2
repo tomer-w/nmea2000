@@ -1,0 +1,11 @@
+from enum import Enum, auto
+
+class PhysicalQuantities(Enum):
+{%- for PhysicalQuantity in data['PhysicalQuantities'] %}
+    {{ PhysicalQuantity.Name }} = auto(), # {{PhysicalQuantity.UnitDescription}} ({{PhysicalQuantity.Unit}})
+{%- endfor %}
+
+class FieldTypes(Enum):
+{%- for fieldType in data['FieldTypes'] %}
+    {{ fieldType.Name }} = auto(), # {{fieldType.Description}} ({{fieldType.EncodingDescription}})
+{%- endfor %}

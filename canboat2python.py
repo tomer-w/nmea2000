@@ -4,7 +4,7 @@ from jinja2 import Environment, FileSystemLoader
 
 # Load the JSON data
 with open('canboat.json') as f:
-    data = json.load(f)
+    json_data = json.load(f)
 
 def bits_to_hex(len):
     num = 0
@@ -28,10 +28,20 @@ env.globals['bits_to_hex'] = bits_to_hex
 env.globals['generate_field_name'] = generate_field_name
 
 # Load the Jinja2 template
-template = env.get_template('python.template.j2')
+template = env.get_template('python.consts.j2')
 
 # Render the template with the JSON data
-output = template.render(lookups=data['LookupEnumerations'], pgns=data['PGNs'])
+output = template.render(data=json_data)
+
+# Save the generated Python code to a file
+with open('nmea2000/consts.py', 'w') as f:
+    f.write(output)
+
+# Load the Jinja2 template
+template = env.get_template('python.PGNs.j2')
+
+# Render the template with the JSON data
+output = template.render(data=json_data)
 
 # Save the generated Python code to a file
 with open('nmea2000/pgns.py', 'w') as f:

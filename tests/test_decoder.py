@@ -1,6 +1,7 @@
 import json
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.consts import PhysicalQuantities, FieldTypes
 
 def _validate_65280_message(msg: NMEA2000Message):
     assert isinstance(msg, NMEA2000Message)
@@ -14,12 +15,14 @@ def _validate_65280_message(msg: NMEA2000Message):
     assert msg.fields[0].name == "Manufacturer Code"
     assert msg.fields[0].description == "Furuno"
     assert msg.fields[0].value == "Furuno"
+    assert msg.fields[0].type == FieldTypes.LOOKUP
     assert msg.fields[2].id == "industry_code"
     assert msg.fields[2].name == "Industry Code"
     assert msg.fields[2].description == "Marine Industry"
     assert msg.fields[2].value == "Marine"
     assert msg.fields[3].value == -0.036000000000000004
-
+    assert msg.fields[3].type == FieldTypes.NUMBER
+    assert msg.fields[3].physical_quantities == PhysicalQuantities.DISTANCE
 
 def test_single_parse():
     decoder = NMEA2000Decoder()

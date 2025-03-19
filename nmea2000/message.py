@@ -2,6 +2,7 @@ from datetime import datetime
 import binascii
 from dataclasses import dataclass, field
 import orjson
+from .consts import PhysicalQuantities, FieldTypes
 
 # Helper function
 def int_to_bytes(value, length):
@@ -51,9 +52,11 @@ class NMEA2000Field:
     unit_of_measurement: str
     value: str | int | float
     raw_value: int
+    physical_quantities: PhysicalQuantities
+    type: FieldTypes
 
     def __repr__(self):
-        return f"NMEA2000Field(id={self.id}, name={self.name}, description={self.description}, unit_of_measurement={self.unit_of_measurement}, value={self.value}, raw_value={self.raw_value})"
+        return f"NMEA2000Field(id={self.id}, name={self.name}, description={self.description}, unit_of_measurement={self.unit_of_measurement}, value={self.value}, raw_value={self.raw_value}, physical_quantities={self.physical_quantities}, type={self.type})"
 
     def to_string_test_style(self):
         if isinstance(self.raw_value, int):

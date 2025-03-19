@@ -1,7 +1,8 @@
 from .utils import *
 from .message import NMEA2000Message, NMEA2000Field
+from .consts import PhysicalQuantities, FieldTypes
 
-{% for lookup in lookups %}
+{% for lookup in data['LookupEnumerations']%}
 lookup_dict_{{ lookup.Name }} = {
     {%- for item in lookup.EnumValues %}
     {{ item.Value }}: "{{ item.Name }}",
@@ -23,8 +24,7 @@ def lookup_encode_{{ lookup.Name }}(value):
 {% endfor %}
 
 {%- set groups_ns = namespace(pgn_groups={}) %}
-
-{%- for pgn in pgns %}
+{%- for pgn in data['PGNs'] %}
     {%- set name = pgn.PGN %}
     {%- if name in groups_ns.pgn_groups %}
         {%- set _ = groups_ns.pgn_groups[name].append(pgn) %}
@@ -118,7 +118,7 @@ def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
         {%- else %}
     {{ field_name }} = {{ field_name }}_raw * {{ field.Resolution }} if {{ field_name }}_raw is not None else None
         {%- endif %}
-    nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', '{{ field.Name }}', "{{ field.Description }}", '{{ field.Unit }}', {{ field_name }}, {{ field_name }}_raw))
+    nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', '{{ field.Name }}', "{{ field.Description }}", '{{ field.Unit }}', {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}))
     {%- endif %}
     {%- endif %}
 {%endfor %}
