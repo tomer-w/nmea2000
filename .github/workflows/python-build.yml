@@ -30,7 +30,7 @@ jobs:
         python -m pip install ruff pytest
     - name: Lint with ruff
       run: |
-        ruff check . --line-length 127 --statistics
+        ruff check . --line-length 127
     - name: Test with pytest
       run: |
         pytest

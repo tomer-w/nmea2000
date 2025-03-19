@@ -2,7 +2,7 @@ import asyncio
 import logging
 import socket
 import serial_asyncio
-from tenacity import retry, stop_never, wait_exponential, retry_if_exception_type, before_sleep_log
+from tenacity import retry, stop_never, wait_exponential, retry_if_exception_type
 
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
