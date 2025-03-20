@@ -150,7 +150,7 @@ class UsbNmea2000Gateway(AsyncIOClient):
     def __init__(self, port: str, exclude_pgns=[], include_pgns=[]):
         super().__init__(exclude_pgns, include_pgns)
         self.port = port
-        self.buffer = None
+        self._buffer = None
 
     async def _connect_impl(self):
         self.logger.info(f"Connecting to {self.port}")
@@ -166,29 +166,30 @@ class UsbNmea2000Gateway(AsyncIOClient):
             dsrdtr=False,
         )
         self.logger.info(f"Connected to serial port {self.port}")
-        self.buffer = bytearray()
+        self._buffer = bytearray()
                 
     async def _receive_impl(self):
         """Continuously receives packets between 0xAA to 0x55 and adds them to the queue."""
         data = await self.reader.read(100)
         self.logger.info(f"Received: {data.hex()}")
-        self.buffer.extend(data)
+        self._buffer.extend(data)
 
         # Continue processing as long as there's data in the buffer
         while True:
             # Find the packet start and end delimiters
-            start = self.buffer.find(b"\xaa")
-            end = self.buffer.find(b"\x55", start)
+            start = self._buffer.find(b"\xaa")
+            end = self._buffer.find(b"\x55", start)
 
             if start == -1 or end == -1:
                 # If start or end not found, wait for more data
                 break
 
             # Extract the complete packet, including the end delimiter
-            packet = buffer[start : end + 1]
+            packet = self._buffer[start : end + 1]
             self.logger.info(f"Received: {packet.hex()}")
 
             # Process the packet
+            message = None
             try:
                 message = self.decoder.decode_usb(packet)
             except Exception as e:
@@ -199,7 +200,7 @@ class UsbNmea2000Gateway(AsyncIOClient):
                 await self.queue.put(message)
 
             # Remove the processed packet from the buffer
-            self.buffer = self.buffer[end + 1 :]
+            self._buffer = self._buffer[end + 1 :]
 
     async def _send_impl(self, nmea2000Message: NMEA2000Message):
         """Sends data over Serial."""
