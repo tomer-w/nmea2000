@@ -9,7 +9,7 @@ lookup_dict_{{ lookup.Name }} = {
     {%- endfor %}
 }
 def lookup_{{ lookup.Name }}(value):
-    return lookup_dict_{{ lookup.Name }}.get(value, "Unknown")
+    return lookup_dict_{{ lookup.Name }}.get(value)
 
 lookup_dict_encode_{{ lookup.Name }} = {
     {%- for item in lookup.EnumValues %}

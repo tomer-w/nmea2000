@@ -11,6 +11,7 @@ from .message import NMEA2000Message
 class AsyncIOClient:
     """Base class for async clients (TCP or Serial)"""
     def __init__(self, exclude_pgns=[], include_pgns=[]):
+        self._closed = False
         self._connected = False
         self.reader = None
         self.writer = None
@@ -26,6 +27,10 @@ class AsyncIOClient:
 
     async def connect(self):
         """Connect base class"""
+        if self._closed:
+            self.logger.info("Object terminated. Cannot connect.")
+            return
+        
         if self.lock.locked():
             self.logger.info("connect is already running")
             return
@@ -38,7 +43,10 @@ class AsyncIOClient:
                 before_sleep=self.log_before_retry  # Log each failure before sleeping
             )
             async def retrying_task():
-
+                if self._closed:
+                    self.logger.info("Object terminated. stop connect retry.")
+                    return
+                
                 await self._connect_impl()            
                 self._connected = True
 
@@ -52,12 +60,14 @@ class AsyncIOClient:
     async def _receive_loop(self):
         self.logger.info("Received loop started")
         try:
-            while True:
+            while not self._closed:
                 await self._receive_impl()
         except Exception as ex:
             self.logger.error(f"Connection lost while reading. Error {ex}. Reconnecting...")
             self._connected = False
             await self.connect()
+        self.logger.info("Received loop terminated")
+        
 
     async def send(self, nmea2000Message: NMEA2000Message):
         """Sends data (must be implemented by subclasses)."""
@@ -70,6 +80,7 @@ class AsyncIOClient:
 
     def close(self):
         """Closes the connection."""
+        self._closed = True
         if self.writer:
             self.writer.close()
         if self.reader and self.reader is not None:
@@ -83,11 +94,13 @@ class AsyncIOClient:
 
     async def _process_queue(self):
         """Processes received packets in order."""
-        while True:
+        self.logger.info("process queue loop started")
+        while not self._closed:
             data = await self.queue.get()
             if self.receive_callback:
                 await self.receive_callback(data)
             self.queue.task_done()
+        self.logger.info("process queue loop terminated")
 
     def log_before_retry(self, retry_state):
         """Custom retry logging using the class logger."""

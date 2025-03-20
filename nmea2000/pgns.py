@@ -11,7 +11,7 @@ lookup_dict_LIGHTING_COMMAND = {
     4: "Powering Up",
 }
 def lookup_LIGHTING_COMMAND(value):
-    return lookup_dict_LIGHTING_COMMAND.get(value, "Unknown")
+    return lookup_dict_LIGHTING_COMMAND.get(value)
 
 lookup_dict_encode_LIGHTING_COMMAND = {
     "Idle" : 0,
@@ -35,7 +35,7 @@ lookup_dict_INDUSTRY_CODE = {
     5: "Industrial",
 }
 def lookup_INDUSTRY_CODE(value):
-    return lookup_dict_INDUSTRY_CODE.get(value, "Unknown")
+    return lookup_dict_INDUSTRY_CODE.get(value)
 
 lookup_dict_encode_INDUSTRY_CODE = {
     "Global" : 0,
@@ -233,7 +233,7 @@ lookup_dict_MANUFACTURER_CODE = {
     1863: "Faria Instruments",
 }
 def lookup_MANUFACTURER_CODE(value):
-    return lookup_dict_MANUFACTURER_CODE.get(value, "Unknown")
+    return lookup_dict_MANUFACTURER_CODE.get(value)
 
 lookup_dict_encode_MANUFACTURER_CODE = {
     "ARKS Enterprises, Inc." : 69,
@@ -452,7 +452,7 @@ lookup_dict_AIS_MESSAGE_ID = {
     27: "Position report for long range applications",
 }
 def lookup_AIS_MESSAGE_ID(value):
-    return lookup_dict_AIS_MESSAGE_ID.get(value, "Unknown")
+    return lookup_dict_AIS_MESSAGE_ID.get(value)
 
 lookup_dict_encode_AIS_MESSAGE_ID = {
     "Scheduled Class A position report" : 1,
@@ -547,7 +547,7 @@ lookup_dict_SHIP_TYPE = {
     99: "Other (no additional information)",
 }
 def lookup_SHIP_TYPE(value):
-    return lookup_dict_SHIP_TYPE.get(value, "Unknown")
+    return lookup_dict_SHIP_TYPE.get(value)
 
 lookup_dict_encode_SHIP_TYPE = {
     "Unavailable" : 0,
@@ -633,7 +633,7 @@ lookup_dict_DEVICE_CLASS = {
     125: "Entertainment",
 }
 def lookup_DEVICE_CLASS(value):
-    return lookup_dict_DEVICE_CLASS.get(value, "Unknown")
+    return lookup_dict_DEVICE_CLASS.get(value)
 
 lookup_dict_encode_DEVICE_CLASS = {
     "Reserved for 2000 Use" : 0,
@@ -668,7 +668,7 @@ lookup_dict_REPEAT_INDICATOR = {
     3: "Final retransmission",
 }
 def lookup_REPEAT_INDICATOR(value):
-    return lookup_dict_REPEAT_INDICATOR.get(value, "Unknown")
+    return lookup_dict_REPEAT_INDICATOR.get(value)
 
 lookup_dict_encode_REPEAT_INDICATOR = {
     "Initial" : 0,
@@ -688,7 +688,7 @@ lookup_dict_TX_RX_MODE = {
     2: "Tx B, Rx A/Rx B",
 }
 def lookup_TX_RX_MODE(value):
-    return lookup_dict_TX_RX_MODE.get(value, "Unknown")
+    return lookup_dict_TX_RX_MODE.get(value)
 
 lookup_dict_encode_TX_RX_MODE = {
     "Tx A/Tx B, Rx A/Rx B" : 0,
@@ -713,7 +713,7 @@ lookup_dict_STATION_TYPE = {
     9: "Regional use 9",
 }
 def lookup_STATION_TYPE(value):
-    return lookup_dict_STATION_TYPE.get(value, "Unknown")
+    return lookup_dict_STATION_TYPE.get(value)
 
 lookup_dict_encode_STATION_TYPE = {
     "All types of mobile station" : 0,
@@ -747,7 +747,7 @@ lookup_dict_REPORTING_INTERVAL = {
     11: "Next longer reporting interval",
 }
 def lookup_REPORTING_INTERVAL(value):
-    return lookup_dict_REPORTING_INTERVAL.get(value, "Unknown")
+    return lookup_dict_REPORTING_INTERVAL.get(value)
 
 lookup_dict_encode_REPORTING_INTERVAL = {
     "As given by the autonomous mode" : 0,
@@ -778,7 +778,7 @@ lookup_dict_AIS_TRANSCEIVER = {
     5: "Reserved",
 }
 def lookup_AIS_TRANSCEIVER(value):
-    return lookup_dict_AIS_TRANSCEIVER.get(value, "Unknown")
+    return lookup_dict_AIS_TRANSCEIVER.get(value)
 
 lookup_dict_encode_AIS_TRANSCEIVER = {
     "Channel A VDL reception" : 0,
@@ -799,7 +799,7 @@ lookup_dict_AIS_ASSIGNED_MODE = {
     1: "Assigned mode",
 }
 def lookup_AIS_ASSIGNED_MODE(value):
-    return lookup_dict_AIS_ASSIGNED_MODE.get(value, "Unknown")
+    return lookup_dict_AIS_ASSIGNED_MODE.get(value)
 
 lookup_dict_encode_AIS_ASSIGNED_MODE = {
     "Autonomous and continuous" : 0,
@@ -846,7 +846,7 @@ lookup_dict_ATON_TYPE = {
     31: "Floating AtoN: light vessel/LANBY/rigs",
 }
 def lookup_ATON_TYPE(value):
-    return lookup_dict_ATON_TYPE.get(value, "Unknown")
+    return lookup_dict_ATON_TYPE.get(value)
 
 lookup_dict_encode_ATON_TYPE = {
     "Default: Type of AtoN not specified" : 0,
@@ -895,7 +895,7 @@ lookup_dict_AIS_SPECIAL_MANEUVER = {
     3: "Reserved",
 }
 def lookup_AIS_SPECIAL_MANEUVER(value):
-    return lookup_dict_AIS_SPECIAL_MANEUVER.get(value, "Unknown")
+    return lookup_dict_AIS_SPECIAL_MANEUVER.get(value)
 
 lookup_dict_encode_AIS_SPECIAL_MANEUVER = {
     "Not available" : 0,
@@ -922,7 +922,7 @@ lookup_dict_POSITION_FIX_DEVICE = {
     15: "Internal GNSS",
 }
 def lookup_POSITION_FIX_DEVICE(value):
-    return lookup_dict_POSITION_FIX_DEVICE.get(value, "Unknown")
+    return lookup_dict_POSITION_FIX_DEVICE.get(value)
 
 lookup_dict_encode_POSITION_FIX_DEVICE = {
     "Default: undefined" : 0,
@@ -954,7 +954,7 @@ lookup_dict_GNS = {
     8: "Galileo",
 }
 def lookup_GNS(value):
-    return lookup_dict_GNS.get(value, "Unknown")
+    return lookup_dict_GNS.get(value)
 
 lookup_dict_encode_GNS = {
     "GPS" : 0,
@@ -978,7 +978,7 @@ lookup_dict_ENGINE_INSTANCE = {
     1: "Dual Engine Starboard",
 }
 def lookup_ENGINE_INSTANCE(value):
-    return lookup_dict_ENGINE_INSTANCE.get(value, "Unknown")
+    return lookup_dict_ENGINE_INSTANCE.get(value)
 
 lookup_dict_encode_ENGINE_INSTANCE = {
     "Single Engine or Dual Engine Port" : 0,
@@ -996,7 +996,7 @@ lookup_dict_GEAR_STATUS = {
     2: "Reverse",
 }
 def lookup_GEAR_STATUS(value):
-    return lookup_dict_GEAR_STATUS.get(value, "Unknown")
+    return lookup_dict_GEAR_STATUS.get(value)
 
 lookup_dict_encode_GEAR_STATUS = {
     "Forward" : 0,
@@ -1014,7 +1014,7 @@ lookup_dict_DIRECTION = {
     1: "Reverse",
 }
 def lookup_DIRECTION(value):
-    return lookup_dict_DIRECTION.get(value, "Unknown")
+    return lookup_dict_DIRECTION.get(value)
 
 lookup_dict_encode_DIRECTION = {
     "Forward" : 0,
@@ -1031,7 +1031,7 @@ lookup_dict_POSITION_ACCURACY = {
     1: "High",
 }
 def lookup_POSITION_ACCURACY(value):
-    return lookup_dict_POSITION_ACCURACY.get(value, "Unknown")
+    return lookup_dict_POSITION_ACCURACY.get(value)
 
 lookup_dict_encode_POSITION_ACCURACY = {
     "Low" : 0,
@@ -1048,7 +1048,7 @@ lookup_dict_RAIM_FLAG = {
     1: "in use",
 }
 def lookup_RAIM_FLAG(value):
-    return lookup_dict_RAIM_FLAG.get(value, "Unknown")
+    return lookup_dict_RAIM_FLAG.get(value)
 
 lookup_dict_encode_RAIM_FLAG = {
     "not in use" : 0,
@@ -1067,7 +1067,7 @@ lookup_dict_TIME_STAMP = {
     63: "Positioning system is inoperative",
 }
 def lookup_TIME_STAMP(value):
-    return lookup_dict_TIME_STAMP.get(value, "Unknown")
+    return lookup_dict_TIME_STAMP.get(value)
 
 lookup_dict_encode_TIME_STAMP = {
     "Not available" : 60,
@@ -1093,7 +1093,7 @@ lookup_dict_GNS_METHOD = {
     8: "Simulate mode",
 }
 def lookup_GNS_METHOD(value):
-    return lookup_dict_GNS_METHOD.get(value, "Unknown")
+    return lookup_dict_GNS_METHOD.get(value)
 
 lookup_dict_encode_GNS_METHOD = {
     "no GNSS" : 0,
@@ -1118,7 +1118,7 @@ lookup_dict_GNS_INTEGRITY = {
     2: "Caution",
 }
 def lookup_GNS_INTEGRITY(value):
-    return lookup_dict_GNS_INTEGRITY.get(value, "Unknown")
+    return lookup_dict_GNS_INTEGRITY.get(value)
 
 lookup_dict_encode_GNS_INTEGRITY = {
     "No integrity checking" : 0,
@@ -1140,7 +1140,7 @@ lookup_dict_SYSTEM_TIME = {
     5: "Local Crystal clock",
 }
 def lookup_SYSTEM_TIME(value):
-    return lookup_dict_SYSTEM_TIME.get(value, "Unknown")
+    return lookup_dict_SYSTEM_TIME.get(value)
 
 lookup_dict_encode_SYSTEM_TIME = {
     "GPS" : 0,
@@ -1168,7 +1168,7 @@ lookup_dict_MAGNETIC_VARIATION = {
     8: "WMM 2020",
 }
 def lookup_MAGNETIC_VARIATION(value):
-    return lookup_dict_MAGNETIC_VARIATION.get(value, "Unknown")
+    return lookup_dict_MAGNETIC_VARIATION.get(value)
 
 lookup_dict_encode_MAGNETIC_VARIATION = {
     "Manual" : 0,
@@ -1195,7 +1195,7 @@ lookup_dict_RESIDUAL_MODE = {
     4: "Manual",
 }
 def lookup_RESIDUAL_MODE(value):
-    return lookup_dict_RESIDUAL_MODE.get(value, "Unknown")
+    return lookup_dict_RESIDUAL_MODE.get(value)
 
 lookup_dict_encode_RESIDUAL_MODE = {
     "Autonomous" : 0,
@@ -1218,7 +1218,7 @@ lookup_dict_WIND_REFERENCE = {
     4: "True (water referenced)",
 }
 def lookup_WIND_REFERENCE(value):
-    return lookup_dict_WIND_REFERENCE.get(value, "Unknown")
+    return lookup_dict_WIND_REFERENCE.get(value)
 
 lookup_dict_encode_WIND_REFERENCE = {
     "True (ground referenced to North)" : 0,
@@ -1241,7 +1241,7 @@ lookup_dict_WATER_REFERENCE = {
     4: "Electro Magnetic",
 }
 def lookup_WATER_REFERENCE(value):
-    return lookup_dict_WATER_REFERENCE.get(value, "Unknown")
+    return lookup_dict_WATER_REFERENCE.get(value)
 
 lookup_dict_encode_WATER_REFERENCE = {
     "Paddle wheel" : 0,
@@ -1261,7 +1261,7 @@ lookup_dict_YES_NO = {
     1: "Yes",
 }
 def lookup_YES_NO(value):
-    return lookup_dict_YES_NO.get(value, "Unknown")
+    return lookup_dict_YES_NO.get(value)
 
 lookup_dict_encode_YES_NO = {
     "No" : 0,
@@ -1278,7 +1278,7 @@ lookup_dict_OK_WARNING = {
     1: "Warning",
 }
 def lookup_OK_WARNING(value):
-    return lookup_dict_OK_WARNING.get(value, "Unknown")
+    return lookup_dict_OK_WARNING.get(value)
 
 lookup_dict_encode_OK_WARNING = {
     "OK" : 0,
@@ -1295,7 +1295,7 @@ lookup_dict_OFF_ON = {
     1: "On",
 }
 def lookup_OFF_ON(value):
-    return lookup_dict_OFF_ON.get(value, "Unknown")
+    return lookup_dict_OFF_ON.get(value)
 
 lookup_dict_encode_OFF_ON = {
     "Off" : 0,
@@ -1313,7 +1313,7 @@ lookup_dict_DIRECTION_REFERENCE = {
     2: "Error",
 }
 def lookup_DIRECTION_REFERENCE(value):
-    return lookup_dict_DIRECTION_REFERENCE.get(value, "Unknown")
+    return lookup_dict_DIRECTION_REFERENCE.get(value)
 
 lookup_dict_encode_DIRECTION_REFERENCE = {
     "True" : 0,
@@ -1332,7 +1332,7 @@ lookup_dict_DIRECTION_RUDDER = {
     2: "Move to port",
 }
 def lookup_DIRECTION_RUDDER(value):
-    return lookup_dict_DIRECTION_RUDDER.get(value, "Unknown")
+    return lookup_dict_DIRECTION_RUDDER.get(value)
 
 lookup_dict_encode_DIRECTION_RUDDER = {
     "No Order" : 0,
@@ -1362,7 +1362,7 @@ lookup_dict_NAV_STATUS = {
     14: "AIS-SART",
 }
 def lookup_NAV_STATUS(value):
-    return lookup_dict_NAV_STATUS.get(value, "Unknown")
+    return lookup_dict_NAV_STATUS.get(value)
 
 lookup_dict_encode_NAV_STATUS = {
     "Under way using engine" : 0,
@@ -1392,7 +1392,7 @@ lookup_dict_POWER_FACTOR = {
     2: "Error",
 }
 def lookup_POWER_FACTOR(value):
-    return lookup_dict_POWER_FACTOR.get(value, "Unknown")
+    return lookup_dict_POWER_FACTOR.get(value)
 
 lookup_dict_encode_POWER_FACTOR = {
     "Leading" : 0,
@@ -1424,7 +1424,7 @@ lookup_dict_TEMPERATURE_SOURCE = {
     15: "Shaft Seal Temperature",
 }
 def lookup_TEMPERATURE_SOURCE(value):
-    return lookup_dict_TEMPERATURE_SOURCE.get(value, "Unknown")
+    return lookup_dict_TEMPERATURE_SOURCE.get(value)
 
 lookup_dict_encode_TEMPERATURE_SOURCE = {
     "Sea Temperature" : 0,
@@ -1455,7 +1455,7 @@ lookup_dict_HUMIDITY_SOURCE = {
     1: "Outside",
 }
 def lookup_HUMIDITY_SOURCE(value):
-    return lookup_dict_HUMIDITY_SOURCE.get(value, "Unknown")
+    return lookup_dict_HUMIDITY_SOURCE.get(value)
 
 lookup_dict_encode_HUMIDITY_SOURCE = {
     "Inside" : 0,
@@ -1479,7 +1479,7 @@ lookup_dict_PRESSURE_SOURCE = {
     8: "Fuel",
 }
 def lookup_PRESSURE_SOURCE(value):
-    return lookup_dict_PRESSURE_SOURCE.get(value, "Unknown")
+    return lookup_dict_PRESSURE_SOURCE.get(value)
 
 lookup_dict_encode_PRESSURE_SOURCE = {
     "Atmospheric" : 0,
@@ -1508,7 +1508,7 @@ lookup_dict_DSC_FORMAT = {
     123: "Individual station automatic",
 }
 def lookup_DSC_FORMAT(value):
-    return lookup_dict_DSC_FORMAT.get(value, "Unknown")
+    return lookup_dict_DSC_FORMAT.get(value)
 
 lookup_dict_encode_DSC_FORMAT = {
     "Geographical area" : 102,
@@ -1532,7 +1532,7 @@ lookup_dict_DSC_CATEGORY = {
     112: "Distress",
 }
 def lookup_DSC_CATEGORY(value):
-    return lookup_dict_DSC_CATEGORY.get(value, "Unknown")
+    return lookup_dict_DSC_CATEGORY.get(value)
 
 lookup_dict_encode_DSC_CATEGORY = {
     "Routine" : 100,
@@ -1561,7 +1561,7 @@ lookup_dict_DSC_NATURE = {
     112: "EPIRB emission",
 }
 def lookup_DSC_NATURE(value):
-    return lookup_dict_DSC_NATURE.get(value, "Unknown")
+    return lookup_dict_DSC_NATURE.get(value)
 
 lookup_dict_encode_DSC_NATURE = {
     "Fire" : 100,
@@ -1600,7 +1600,7 @@ lookup_dict_DSC_FIRST_TELECOMMAND = {
     126: "No information",
 }
 def lookup_DSC_FIRST_TELECOMMAND(value):
-    return lookup_dict_DSC_FIRST_TELECOMMAND.get(value, "Unknown")
+    return lookup_dict_DSC_FIRST_TELECOMMAND.get(value)
 
 lookup_dict_encode_DSC_FIRST_TELECOMMAND = {
     "F3E/G3E All modes TP" : 100,
@@ -1642,7 +1642,7 @@ lookup_dict_DSC_SECOND_TELECOMMAND = {
     126: "No information",
 }
 def lookup_DSC_SECOND_TELECOMMAND(value):
-    return lookup_dict_DSC_SECOND_TELECOMMAND.get(value, "Unknown")
+    return lookup_dict_DSC_SECOND_TELECOMMAND.get(value)
 
 lookup_dict_encode_DSC_SECOND_TELECOMMAND = {
     "No reason given" : 100,
@@ -1677,7 +1677,7 @@ lookup_dict_DSC_EXPANSION_DATA = {
     106: "Number of persons on board",
 }
 def lookup_DSC_EXPANSION_DATA(value):
-    return lookup_dict_DSC_EXPANSION_DATA.get(value, "Unknown")
+    return lookup_dict_DSC_EXPANSION_DATA.get(value)
 
 lookup_dict_encode_DSC_EXPANSION_DATA = {
     "Enhanced position" : 100,
@@ -1700,7 +1700,7 @@ lookup_dict_SEATALK_ALARM_STATUS = {
     2: "Alarm condition met and silenced",
 }
 def lookup_SEATALK_ALARM_STATUS(value):
-    return lookup_dict_SEATALK_ALARM_STATUS.get(value, "Unknown")
+    return lookup_dict_SEATALK_ALARM_STATUS.get(value)
 
 lookup_dict_encode_SEATALK_ALARM_STATUS = {
     "Alarm condition not met" : 0,
@@ -1822,7 +1822,7 @@ lookup_dict_SEATALK_ALARM_ID = {
     108: "No Fix",
 }
 def lookup_SEATALK_ALARM_ID(value):
-    return lookup_dict_SEATALK_ALARM_ID.get(value, "Unknown")
+    return lookup_dict_SEATALK_ALARM_ID.get(value)
 
 lookup_dict_encode_SEATALK_ALARM_ID = {
     "No Alarm" : 0,
@@ -1946,7 +1946,7 @@ lookup_dict_SEATALK_ALARM_GROUP = {
     4: "AIS",
 }
 def lookup_SEATALK_ALARM_GROUP(value):
-    return lookup_dict_SEATALK_ALARM_GROUP.get(value, "Unknown")
+    return lookup_dict_SEATALK_ALARM_GROUP.get(value)
 
 lookup_dict_encode_SEATALK_ALARM_GROUP = {
     "Instrument" : 0,
@@ -1968,7 +1968,7 @@ lookup_dict_SEATALK_PILOT_MODE = {
     74: "Track",
 }
 def lookup_SEATALK_PILOT_MODE(value):
-    return lookup_dict_SEATALK_PILOT_MODE.get(value, "Unknown")
+    return lookup_dict_SEATALK_PILOT_MODE.get(value)
 
 lookup_dict_encode_SEATALK_PILOT_MODE = {
     "Standby" : 64,
@@ -1990,7 +1990,7 @@ lookup_dict_ENTERTAINMENT_ZONE = {
     4: "Zone 4",
 }
 def lookup_ENTERTAINMENT_ZONE(value):
-    return lookup_dict_ENTERTAINMENT_ZONE.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_ZONE.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_ZONE = {
     "All zones" : 0,
@@ -2033,7 +2033,7 @@ lookup_dict_ENTERTAINMENT_SOURCE = {
     24: "Video",
 }
 def lookup_ENTERTAINMENT_SOURCE(value):
-    return lookup_dict_ENTERTAINMENT_SOURCE.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_SOURCE.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_SOURCE = {
     "Vessel alarm" : 0,
@@ -2096,7 +2096,7 @@ lookup_dict_ENTERTAINMENT_PLAY_STATUS = {
     24: "Slow motion .125x",
 }
 def lookup_ENTERTAINMENT_PLAY_STATUS(value):
-    return lookup_dict_ENTERTAINMENT_PLAY_STATUS.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_PLAY_STATUS.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_PLAY_STATUS = {
     "Play" : 0,
@@ -2137,7 +2137,7 @@ lookup_dict_ENTERTAINMENT_REPEAT_STATUS = {
     2: "All",
 }
 def lookup_ENTERTAINMENT_REPEAT_STATUS(value):
-    return lookup_dict_ENTERTAINMENT_REPEAT_STATUS.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_REPEAT_STATUS.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_REPEAT_STATUS = {
     "Off" : 0,
@@ -2156,7 +2156,7 @@ lookup_dict_ENTERTAINMENT_SHUFFLE_STATUS = {
     2: "All",
 }
 def lookup_ENTERTAINMENT_SHUFFLE_STATUS(value):
-    return lookup_dict_ENTERTAINMENT_SHUFFLE_STATUS.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_SHUFFLE_STATUS.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_SHUFFLE_STATUS = {
     "Off" : 0,
@@ -2175,7 +2175,7 @@ lookup_dict_ENTERTAINMENT_LIKE_STATUS = {
     2: "Thumbs down",
 }
 def lookup_ENTERTAINMENT_LIKE_STATUS(value):
-    return lookup_dict_ENTERTAINMENT_LIKE_STATUS.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_LIKE_STATUS.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_LIKE_STATUS = {
     "None" : 0,
@@ -2202,7 +2202,7 @@ lookup_dict_ENTERTAINMENT_TYPE = {
     10: "Content Info",
 }
 def lookup_ENTERTAINMENT_TYPE(value):
-    return lookup_dict_ENTERTAINMENT_TYPE.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_TYPE.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_TYPE = {
     "File" : 0,
@@ -2237,7 +2237,7 @@ lookup_dict_ENTERTAINMENT_GROUP = {
     10: "Content Info",
 }
 def lookup_ENTERTAINMENT_GROUP(value):
-    return lookup_dict_ENTERTAINMENT_GROUP.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_GROUP.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_GROUP = {
     "File" : 0,
@@ -2274,7 +2274,7 @@ lookup_dict_ENTERTAINMENT_CHANNEL = {
     12: "Surround right",
 }
 def lookup_ENTERTAINMENT_CHANNEL(value):
-    return lookup_dict_ENTERTAINMENT_CHANNEL.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_CHANNEL.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_CHANNEL = {
     "All channels" : 0,
@@ -2311,7 +2311,7 @@ lookup_dict_ENTERTAINMENT_EQ = {
     10: "Custom",
 }
 def lookup_ENTERTAINMENT_EQ(value):
-    return lookup_dict_ENTERTAINMENT_EQ.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_EQ.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_EQ = {
     "Flat" : 0,
@@ -2340,7 +2340,7 @@ lookup_dict_ENTERTAINMENT_FILTER = {
     4: "Notch filter",
 }
 def lookup_ENTERTAINMENT_FILTER(value):
-    return lookup_dict_ENTERTAINMENT_FILTER.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_FILTER.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_FILTER = {
     "Full range" : 0,
@@ -2362,7 +2362,7 @@ lookup_dict_ALERT_TYPE = {
     8: "Caution",
 }
 def lookup_ALERT_TYPE(value):
-    return lookup_dict_ALERT_TYPE.get(value, "Unknown")
+    return lookup_dict_ALERT_TYPE.get(value)
 
 lookup_dict_encode_ALERT_TYPE = {
     "Emergency Alarm" : 1,
@@ -2381,7 +2381,7 @@ lookup_dict_ALERT_CATEGORY = {
     1: "Technical",
 }
 def lookup_ALERT_CATEGORY(value):
-    return lookup_dict_ALERT_CATEGORY.get(value, "Unknown")
+    return lookup_dict_ALERT_CATEGORY.get(value)
 
 lookup_dict_encode_ALERT_CATEGORY = {
     "Navigational" : 0,
@@ -2400,7 +2400,7 @@ lookup_dict_ALERT_TRIGGER_CONDITION = {
     3: "Disabled",
 }
 def lookup_ALERT_TRIGGER_CONDITION(value):
-    return lookup_dict_ALERT_TRIGGER_CONDITION.get(value, "Unknown")
+    return lookup_dict_ALERT_TRIGGER_CONDITION.get(value)
 
 lookup_dict_encode_ALERT_TRIGGER_CONDITION = {
     "Manual" : 0,
@@ -2423,7 +2423,7 @@ lookup_dict_ALERT_THRESHOLD_STATUS = {
     5: "Awaiting Acknowledge",
 }
 def lookup_ALERT_THRESHOLD_STATUS(value):
-    return lookup_dict_ALERT_THRESHOLD_STATUS.get(value, "Unknown")
+    return lookup_dict_ALERT_THRESHOLD_STATUS.get(value)
 
 lookup_dict_encode_ALERT_THRESHOLD_STATUS = {
     "Normal" : 0,
@@ -2448,7 +2448,7 @@ lookup_dict_ALERT_STATE = {
     5: "Awaiting Acknowledge",
 }
 def lookup_ALERT_STATE(value):
-    return lookup_dict_ALERT_STATE.get(value, "Unknown")
+    return lookup_dict_ALERT_STATE.get(value)
 
 lookup_dict_encode_ALERT_STATE = {
     "Disabled" : 0,
@@ -2487,7 +2487,7 @@ lookup_dict_ALERT_LANGUAGE_ID = {
     19: "Swedish",
 }
 def lookup_ALERT_LANGUAGE_ID(value):
-    return lookup_dict_ALERT_LANGUAGE_ID.get(value, "Unknown")
+    return lookup_dict_ALERT_LANGUAGE_ID.get(value)
 
 lookup_dict_encode_ALERT_LANGUAGE_ID = {
     "English (US)" : 0,
@@ -2524,7 +2524,7 @@ lookup_dict_ALERT_RESPONSE_COMMAND = {
     3: "Test Command on",
 }
 def lookup_ALERT_RESPONSE_COMMAND(value):
-    return lookup_dict_ALERT_RESPONSE_COMMAND.get(value, "Unknown")
+    return lookup_dict_ALERT_RESPONSE_COMMAND.get(value)
 
 lookup_dict_encode_ALERT_RESPONSE_COMMAND = {
     "Acknowledge" : 0,
@@ -2552,7 +2552,7 @@ lookup_dict_CONVERTER_STATE = {
     10: "Assisting",
 }
 def lookup_CONVERTER_STATE(value):
-    return lookup_dict_CONVERTER_STATE.get(value, "Unknown")
+    return lookup_dict_CONVERTER_STATE.get(value)
 
 lookup_dict_encode_CONVERTER_STATE = {
     "Off" : 0,
@@ -2580,7 +2580,7 @@ lookup_dict_THRUSTER_DIRECTION_CONTROL = {
     3: "To Starboard",
 }
 def lookup_THRUSTER_DIRECTION_CONTROL(value):
-    return lookup_dict_THRUSTER_DIRECTION_CONTROL.get(value, "Unknown")
+    return lookup_dict_THRUSTER_DIRECTION_CONTROL.get(value)
 
 lookup_dict_encode_THRUSTER_DIRECTION_CONTROL = {
     "Off" : 0,
@@ -2600,7 +2600,7 @@ lookup_dict_THRUSTER_RETRACT_CONTROL = {
     2: "Retract",
 }
 def lookup_THRUSTER_RETRACT_CONTROL(value):
-    return lookup_dict_THRUSTER_RETRACT_CONTROL.get(value, "Unknown")
+    return lookup_dict_THRUSTER_RETRACT_CONTROL.get(value)
 
 lookup_dict_encode_THRUSTER_RETRACT_CONTROL = {
     "Off" : 0,
@@ -2621,7 +2621,7 @@ lookup_dict_THRUSTER_MOTOR_TYPE = {
     4: "Hydraulic",
 }
 def lookup_THRUSTER_MOTOR_TYPE(value):
-    return lookup_dict_THRUSTER_MOTOR_TYPE.get(value, "Unknown")
+    return lookup_dict_THRUSTER_MOTOR_TYPE.get(value)
 
 lookup_dict_encode_THRUSTER_MOTOR_TYPE = {
     "12VDC" : 0,
@@ -2642,7 +2642,7 @@ lookup_dict_BOOT_STATE = {
     2: "running Application",
 }
 def lookup_BOOT_STATE(value):
-    return lookup_dict_BOOT_STATE.get(value, "Unknown")
+    return lookup_dict_BOOT_STATE.get(value)
 
 lookup_dict_encode_BOOT_STATE = {
     "in Startup Monitor" : 0,
@@ -2661,7 +2661,7 @@ lookup_dict_ACCESS_LEVEL = {
     2: "unlocked level 2",
 }
 def lookup_ACCESS_LEVEL(value):
-    return lookup_dict_ACCESS_LEVEL.get(value, "Unknown")
+    return lookup_dict_ACCESS_LEVEL.get(value)
 
 lookup_dict_encode_ACCESS_LEVEL = {
     "Locked" : 0,
@@ -2682,7 +2682,7 @@ lookup_dict_TRANSMISSION_INTERVAL = {
     4: "Not supported",
 }
 def lookup_TRANSMISSION_INTERVAL(value):
-    return lookup_dict_TRANSMISSION_INTERVAL.get(value, "Unknown")
+    return lookup_dict_TRANSMISSION_INTERVAL.get(value)
 
 lookup_dict_encode_TRANSMISSION_INTERVAL = {
     "Acknowledge" : 0,
@@ -2707,7 +2707,7 @@ lookup_dict_PARAMETER_FIELD = {
     6: "Read or Write not supported",
 }
 def lookup_PARAMETER_FIELD(value):
-    return lookup_dict_PARAMETER_FIELD.get(value, "Unknown")
+    return lookup_dict_PARAMETER_FIELD.get(value)
 
 lookup_dict_encode_PARAMETER_FIELD = {
     "Acknowledge" : 0,
@@ -2729,7 +2729,7 @@ lookup_dict_PGN_LIST_FUNCTION = {
     1: "Receive PGN list",
 }
 def lookup_PGN_LIST_FUNCTION(value):
-    return lookup_dict_PGN_LIST_FUNCTION.get(value, "Unknown")
+    return lookup_dict_PGN_LIST_FUNCTION.get(value)
 
 lookup_dict_encode_PGN_LIST_FUNCTION = {
     "Transmit PGN list" : 0,
@@ -2748,7 +2748,7 @@ lookup_dict_FUSION_COMMAND = {
     6: "Prev",
 }
 def lookup_FUSION_COMMAND(value):
-    return lookup_dict_FUSION_COMMAND.get(value, "Unknown")
+    return lookup_dict_FUSION_COMMAND.get(value)
 
 lookup_dict_encode_FUSION_COMMAND = {
     "Play" : 1,
@@ -2767,7 +2767,7 @@ lookup_dict_FUSION_SIRIUS_COMMAND = {
     2: "Prev",
 }
 def lookup_FUSION_SIRIUS_COMMAND(value):
-    return lookup_dict_FUSION_SIRIUS_COMMAND.get(value, "Unknown")
+    return lookup_dict_FUSION_SIRIUS_COMMAND.get(value)
 
 lookup_dict_encode_FUSION_SIRIUS_COMMAND = {
     "Next" : 1,
@@ -2784,7 +2784,7 @@ lookup_dict_FUSION_MUTE_COMMAND = {
     2: "Mute Off",
 }
 def lookup_FUSION_MUTE_COMMAND(value):
-    return lookup_dict_FUSION_MUTE_COMMAND.get(value, "Unknown")
+    return lookup_dict_FUSION_MUTE_COMMAND.get(value)
 
 lookup_dict_encode_FUSION_MUTE_COMMAND = {
     "Mute On" : 1,
@@ -2809,7 +2809,7 @@ lookup_dict_SEATALK_KEYSTROKE = {
     35: "Track",
 }
 def lookup_SEATALK_KEYSTROKE(value):
-    return lookup_dict_SEATALK_KEYSTROKE.get(value, "Unknown")
+    return lookup_dict_SEATALK_KEYSTROKE.get(value)
 
 lookup_dict_encode_SEATALK_KEYSTROKE = {
     "Auto" : 1,
@@ -2834,7 +2834,7 @@ lookup_dict_SEATALK_DEVICE_ID = {
     5: "Course Computer",
 }
 def lookup_SEATALK_DEVICE_ID(value):
-    return lookup_dict_SEATALK_DEVICE_ID.get(value, "Unknown")
+    return lookup_dict_SEATALK_DEVICE_ID.get(value)
 
 lookup_dict_encode_SEATALK_DEVICE_ID = {
     "S100" : 3,
@@ -2860,7 +2860,7 @@ lookup_dict_SEATALK_NETWORK_GROUP = {
     10: "Group 5",
 }
 def lookup_SEATALK_NETWORK_GROUP(value):
-    return lookup_dict_SEATALK_NETWORK_GROUP.get(value, "Unknown")
+    return lookup_dict_SEATALK_NETWORK_GROUP.get(value)
 
 lookup_dict_encode_SEATALK_NETWORK_GROUP = {
     "None" : 0,
@@ -2888,7 +2888,7 @@ lookup_dict_SEATALK_DISPLAY_COLOR = {
     4: "Inverse",
 }
 def lookup_SEATALK_DISPLAY_COLOR(value):
-    return lookup_dict_SEATALK_DISPLAY_COLOR.get(value, "Unknown")
+    return lookup_dict_SEATALK_DISPLAY_COLOR.get(value)
 
 lookup_dict_encode_SEATALK_DISPLAY_COLOR = {
     "Day 1" : 0,
@@ -2911,7 +2911,7 @@ lookup_dict_AIRMAR_CALIBRATE_FUNCTION = {
     5: "Reset damping to defaults",
 }
 def lookup_AIRMAR_CALIBRATE_FUNCTION(value):
-    return lookup_dict_AIRMAR_CALIBRATE_FUNCTION.get(value, "Unknown")
+    return lookup_dict_AIRMAR_CALIBRATE_FUNCTION.get(value)
 
 lookup_dict_encode_AIRMAR_CALIBRATE_FUNCTION = {
     "Normal/cancel calibration" : 0,
@@ -2936,7 +2936,7 @@ lookup_dict_AIRMAR_CALIBRATE_STATUS = {
     5: "In progress",
 }
 def lookup_AIRMAR_CALIBRATE_STATUS(value):
-    return lookup_dict_AIRMAR_CALIBRATE_STATUS.get(value, "Unknown")
+    return lookup_dict_AIRMAR_CALIBRATE_STATUS.get(value)
 
 lookup_dict_encode_AIRMAR_CALIBRATE_STATUS = {
     "Queried" : 0,
@@ -2958,7 +2958,7 @@ lookup_dict_AIRMAR_TEMPERATURE_INSTANCE = {
     2: "Optional Water Sensor",
 }
 def lookup_AIRMAR_TEMPERATURE_INSTANCE(value):
-    return lookup_dict_AIRMAR_TEMPERATURE_INSTANCE.get(value, "Unknown")
+    return lookup_dict_AIRMAR_TEMPERATURE_INSTANCE.get(value)
 
 lookup_dict_encode_AIRMAR_TEMPERATURE_INSTANCE = {
     "Device Sensor" : 0,
@@ -2976,7 +2976,7 @@ lookup_dict_AIRMAR_FILTER = {
     1: "Basic IIR filter",
 }
 def lookup_AIRMAR_FILTER(value):
-    return lookup_dict_AIRMAR_FILTER.get(value, "Unknown")
+    return lookup_dict_AIRMAR_FILTER.get(value)
 
 lookup_dict_encode_AIRMAR_FILTER = {
     "No filter" : 0,
@@ -2994,7 +2994,7 @@ lookup_dict_CONTROLLER_STATE = {
     2: "Bus Off",
 }
 def lookup_CONTROLLER_STATE(value):
-    return lookup_dict_CONTROLLER_STATE.get(value, "Unknown")
+    return lookup_dict_CONTROLLER_STATE.get(value)
 
 lookup_dict_encode_CONTROLLER_STATE = {
     "Error Active" : 0,
@@ -3012,7 +3012,7 @@ lookup_dict_EQUIPMENT_STATUS = {
     1: "Fault",
 }
 def lookup_EQUIPMENT_STATUS(value):
-    return lookup_dict_EQUIPMENT_STATUS.get(value, "Unknown")
+    return lookup_dict_EQUIPMENT_STATUS.get(value)
 
 lookup_dict_encode_EQUIPMENT_STATUS = {
     "Operational" : 0,
@@ -3030,7 +3030,7 @@ lookup_dict_MOB_STATUS = {
     2: "Test mode",
 }
 def lookup_MOB_STATUS(value):
-    return lookup_dict_MOB_STATUS.get(value, "Unknown")
+    return lookup_dict_MOB_STATUS.get(value)
 
 lookup_dict_encode_MOB_STATUS = {
     "MOB Emitter Activated" : 0,
@@ -3048,7 +3048,7 @@ lookup_dict_LOW_BATTERY = {
     1: "Low",
 }
 def lookup_LOW_BATTERY(value):
-    return lookup_dict_LOW_BATTERY.get(value, "Unknown")
+    return lookup_dict_LOW_BATTERY.get(value)
 
 lookup_dict_encode_LOW_BATTERY = {
     "Good" : 0,
@@ -3066,7 +3066,7 @@ lookup_dict_TURN_MODE = {
     2: "Radius controlled",
 }
 def lookup_TURN_MODE(value):
-    return lookup_dict_TURN_MODE.get(value, "Unknown")
+    return lookup_dict_TURN_MODE.get(value)
 
 lookup_dict_encode_TURN_MODE = {
     "Rudder limit controlled" : 0,
@@ -3086,7 +3086,7 @@ lookup_dict_ACCEPTABILITY = {
     3: "Good",
 }
 def lookup_ACCEPTABILITY(value):
-    return lookup_dict_ACCEPTABILITY.get(value, "Unknown")
+    return lookup_dict_ACCEPTABILITY.get(value)
 
 lookup_dict_encode_ACCEPTABILITY = {
     "Bad level" : 0,
@@ -3106,7 +3106,7 @@ lookup_dict_LINE = {
     2: "Line 3",
 }
 def lookup_LINE(value):
-    return lookup_dict_LINE.get(value, "Unknown")
+    return lookup_dict_LINE.get(value)
 
 lookup_dict_encode_LINE = {
     "Line 1" : 0,
@@ -3124,7 +3124,7 @@ lookup_dict_WAVEFORM = {
     1: "Modified sine wave",
 }
 def lookup_WAVEFORM(value):
-    return lookup_dict_WAVEFORM.get(value, "Unknown")
+    return lookup_dict_WAVEFORM.get(value)
 
 lookup_dict_encode_WAVEFORM = {
     "Sine wave" : 0,
@@ -3145,7 +3145,7 @@ lookup_dict_TANK_TYPE = {
     5: "Black water",
 }
 def lookup_TANK_TYPE(value):
-    return lookup_dict_TANK_TYPE.get(value, "Unknown")
+    return lookup_dict_TANK_TYPE.get(value)
 
 lookup_dict_encode_TANK_TYPE = {
     "Fuel" : 0,
@@ -3169,7 +3169,7 @@ lookup_dict_DC_SOURCE = {
     4: "Wind generator",
 }
 def lookup_DC_SOURCE(value):
-    return lookup_dict_DC_SOURCE.get(value, "Unknown")
+    return lookup_dict_DC_SOURCE.get(value)
 
 lookup_dict_encode_DC_SOURCE = {
     "Battery" : 0,
@@ -3197,7 +3197,7 @@ lookup_dict_CHARGER_STATE = {
     9: "Fault",
 }
 def lookup_CHARGER_STATE(value):
-    return lookup_dict_CHARGER_STATE.get(value, "Unknown")
+    return lookup_dict_CHARGER_STATE.get(value)
 
 lookup_dict_encode_CHARGER_STATE = {
     "Not charging" : 0,
@@ -3224,7 +3224,7 @@ lookup_dict_CHARGING_ALGORITHM = {
     3: "3 stage",
 }
 def lookup_CHARGING_ALGORITHM(value):
-    return lookup_dict_CHARGING_ALGORITHM.get(value, "Unknown")
+    return lookup_dict_CHARGING_ALGORITHM.get(value)
 
 lookup_dict_encode_CHARGING_ALGORITHM = {
     "Trickle" : 0,
@@ -3245,7 +3245,7 @@ lookup_dict_CHARGER_MODE = {
     3: "Echo",
 }
 def lookup_CHARGER_MODE(value):
-    return lookup_dict_CHARGER_MODE.get(value, "Unknown")
+    return lookup_dict_CHARGER_MODE.get(value)
 
 lookup_dict_encode_CHARGER_MODE = {
     "Standalone" : 0,
@@ -3267,7 +3267,7 @@ lookup_dict_INVERTER_STATE = {
     4: "Disabled",
 }
 def lookup_INVERTER_STATE(value):
-    return lookup_dict_INVERTER_STATE.get(value, "Unknown")
+    return lookup_dict_INVERTER_STATE.get(value)
 
 lookup_dict_encode_INVERTER_STATE = {
     "Invert" : 0,
@@ -3288,7 +3288,7 @@ lookup_dict_BATTERY_TYPE = {
     2: "AGM",
 }
 def lookup_BATTERY_TYPE(value):
-    return lookup_dict_BATTERY_TYPE.get(value, "Unknown")
+    return lookup_dict_BATTERY_TYPE.get(value)
 
 lookup_dict_encode_BATTERY_TYPE = {
     "Flooded" : 0,
@@ -3311,7 +3311,7 @@ lookup_dict_BATTERY_VOLTAGE = {
     6: "48V",
 }
 def lookup_BATTERY_VOLTAGE(value):
-    return lookup_dict_BATTERY_VOLTAGE.get(value, "Unknown")
+    return lookup_dict_BATTERY_VOLTAGE.get(value)
 
 lookup_dict_encode_BATTERY_VOLTAGE = {
     "6V" : 0,
@@ -3336,7 +3336,7 @@ lookup_dict_BATTERY_CHEMISTRY = {
     4: "NiMH",
 }
 def lookup_BATTERY_CHEMISTRY(value):
-    return lookup_dict_BATTERY_CHEMISTRY.get(value, "Unknown")
+    return lookup_dict_BATTERY_CHEMISTRY.get(value)
 
 lookup_dict_encode_BATTERY_CHEMISTRY = {
     "Pb (Lead)" : 0,
@@ -3357,7 +3357,7 @@ lookup_dict_GOOD_WARNING_ERROR = {
     2: "Error",
 }
 def lookup_GOOD_WARNING_ERROR(value):
-    return lookup_dict_GOOD_WARNING_ERROR.get(value, "Unknown")
+    return lookup_dict_GOOD_WARNING_ERROR.get(value)
 
 lookup_dict_encode_GOOD_WARNING_ERROR = {
     "Good" : 0,
@@ -3377,7 +3377,7 @@ lookup_dict_TRACKING = {
     3: "Lost",
 }
 def lookup_TRACKING(value):
-    return lookup_dict_TRACKING.get(value, "Unknown")
+    return lookup_dict_TRACKING.get(value)
 
 lookup_dict_encode_TRACKING = {
     "Cancelled" : 0,
@@ -3396,7 +3396,7 @@ lookup_dict_TARGET_ACQUISITION = {
     1: "Automatic",
 }
 def lookup_TARGET_ACQUISITION(value):
-    return lookup_dict_TARGET_ACQUISITION.get(value, "Unknown")
+    return lookup_dict_TARGET_ACQUISITION.get(value)
 
 lookup_dict_encode_TARGET_ACQUISITION = {
     "Manual" : 0,
@@ -3414,7 +3414,7 @@ lookup_dict_WINDLASS_DIRECTION = {
     2: "Up",
 }
 def lookup_WINDLASS_DIRECTION(value):
-    return lookup_dict_WINDLASS_DIRECTION.get(value, "Unknown")
+    return lookup_dict_WINDLASS_DIRECTION.get(value)
 
 lookup_dict_encode_WINDLASS_DIRECTION = {
     "Off" : 0,
@@ -3433,7 +3433,7 @@ lookup_dict_SPEED_TYPE = {
     2: "Proportional speed",
 }
 def lookup_SPEED_TYPE(value):
-    return lookup_dict_SPEED_TYPE.get(value, "Unknown")
+    return lookup_dict_SPEED_TYPE.get(value)
 
 lookup_dict_encode_SPEED_TYPE = {
     "Single speed" : 0,
@@ -3452,7 +3452,7 @@ lookup_dict_WINDLASS_MOTION = {
     2: "Retrieval occurring",
 }
 def lookup_WINDLASS_MOTION(value):
-    return lookup_dict_WINDLASS_MOTION.get(value, "Unknown")
+    return lookup_dict_WINDLASS_MOTION.get(value)
 
 lookup_dict_encode_WINDLASS_MOTION = {
     "Windlass stopped" : 0,
@@ -3470,7 +3470,7 @@ lookup_dict_RODE_TYPE = {
     1: "Rope presently detected",
 }
 def lookup_RODE_TYPE(value):
-    return lookup_dict_RODE_TYPE.get(value, "Unknown")
+    return lookup_dict_RODE_TYPE.get(value)
 
 lookup_dict_encode_RODE_TYPE = {
     "Chain presently detected" : 0,
@@ -3487,7 +3487,7 @@ lookup_dict_DOCKING_STATUS = {
     1: "Fully docked",
 }
 def lookup_DOCKING_STATUS(value):
-    return lookup_dict_DOCKING_STATUS.get(value, "Unknown")
+    return lookup_dict_DOCKING_STATUS.get(value)
 
 lookup_dict_encode_DOCKING_STATUS = {
     "Not docked" : 0,
@@ -3504,7 +3504,7 @@ lookup_dict_AIS_TYPE = {
     1: "CS",
 }
 def lookup_AIS_TYPE(value):
-    return lookup_dict_AIS_TYPE.get(value, "Unknown")
+    return lookup_dict_AIS_TYPE.get(value)
 
 lookup_dict_encode_AIS_TYPE = {
     "SOTDMA" : 0,
@@ -3521,7 +3521,7 @@ lookup_dict_AIS_BAND = {
     1: "Entire marine band",
 }
 def lookup_AIS_BAND(value):
-    return lookup_dict_AIS_BAND.get(value, "Unknown")
+    return lookup_dict_AIS_BAND.get(value)
 
 lookup_dict_encode_AIS_BAND = {
     "Top 525 kHz of marine band" : 0,
@@ -3538,7 +3538,7 @@ lookup_dict_AIS_MODE = {
     1: "Assigned",
 }
 def lookup_AIS_MODE(value):
-    return lookup_dict_AIS_MODE.get(value, "Unknown")
+    return lookup_dict_AIS_MODE.get(value)
 
 lookup_dict_encode_AIS_MODE = {
     "Autonomous" : 0,
@@ -3555,7 +3555,7 @@ lookup_dict_AIS_COMMUNICATION_STATE = {
     1: "ITDMA",
 }
 def lookup_AIS_COMMUNICATION_STATE(value):
-    return lookup_dict_AIS_COMMUNICATION_STATE.get(value, "Unknown")
+    return lookup_dict_AIS_COMMUNICATION_STATE.get(value)
 
 lookup_dict_encode_AIS_COMMUNICATION_STATE = {
     "SOTDMA" : 0,
@@ -3572,7 +3572,7 @@ lookup_dict_AVAILABLE = {
     1: "Not available",
 }
 def lookup_AVAILABLE(value):
-    return lookup_dict_AVAILABLE.get(value, "Unknown")
+    return lookup_dict_AVAILABLE.get(value)
 
 lookup_dict_encode_AVAILABLE = {
     "Available" : 0,
@@ -3589,7 +3589,7 @@ lookup_dict_BEARING_MODE = {
     1: "Rhumbline",
 }
 def lookup_BEARING_MODE(value):
-    return lookup_dict_BEARING_MODE.get(value, "Unknown")
+    return lookup_dict_BEARING_MODE.get(value)
 
 lookup_dict_encode_BEARING_MODE = {
     "Great Circle" : 0,
@@ -3609,7 +3609,7 @@ lookup_dict_MARK_TYPE = {
     4: "Waypoint",
 }
 def lookup_MARK_TYPE(value):
-    return lookup_dict_MARK_TYPE.get(value, "Unknown")
+    return lookup_dict_MARK_TYPE.get(value)
 
 lookup_dict_encode_MARK_TYPE = {
     "Collision" : 0,
@@ -3631,7 +3631,7 @@ lookup_dict_GNSS_MODE = {
     3: "Auto",
 }
 def lookup_GNSS_MODE(value):
-    return lookup_dict_GNSS_MODE.get(value, "Unknown")
+    return lookup_dict_GNSS_MODE.get(value)
 
 lookup_dict_encode_GNSS_MODE = {
     "1D" : 0,
@@ -3650,7 +3650,7 @@ lookup_dict_RANGE_RESIDUAL_MODE = {
     1: "Range residuals were calculated after the position",
 }
 def lookup_RANGE_RESIDUAL_MODE(value):
-    return lookup_dict_RANGE_RESIDUAL_MODE.get(value, "Unknown")
+    return lookup_dict_RANGE_RESIDUAL_MODE.get(value)
 
 lookup_dict_encode_RANGE_RESIDUAL_MODE = {
     "Range residuals were used to calculate data" : 0,
@@ -3668,7 +3668,7 @@ lookup_dict_DGNSS_MODE = {
     3: "SBAS",
 }
 def lookup_DGNSS_MODE(value):
-    return lookup_dict_DGNSS_MODE.get(value, "Unknown")
+    return lookup_dict_DGNSS_MODE.get(value)
 
 lookup_dict_encode_DGNSS_MODE = {
     "None" : 0,
@@ -3690,7 +3690,7 @@ lookup_dict_SATELLITE_STATUS = {
     5: "Used+Diff",
 }
 def lookup_SATELLITE_STATUS(value):
-    return lookup_dict_SATELLITE_STATUS.get(value, "Unknown")
+    return lookup_dict_SATELLITE_STATUS.get(value)
 
 lookup_dict_encode_SATELLITE_STATUS = {
     "Not tracked" : 0,
@@ -3713,7 +3713,7 @@ lookup_dict_AIS_VERSION = {
     3: "ITU-R M.1371 future edition",
 }
 def lookup_AIS_VERSION(value):
-    return lookup_dict_AIS_VERSION.get(value, "Unknown")
+    return lookup_dict_AIS_VERSION.get(value)
 
 lookup_dict_encode_AIS_VERSION = {
     "ITU-R M.1371-1" : 0,
@@ -3732,7 +3732,7 @@ lookup_dict_TIDE = {
     1: "Rising",
 }
 def lookup_TIDE(value):
-    return lookup_dict_TIDE.get(value, "Unknown")
+    return lookup_dict_TIDE.get(value)
 
 lookup_dict_encode_TIDE = {
     "Falling" : 0,
@@ -3755,7 +3755,7 @@ lookup_dict_WATERMAKER_STATE = {
     7: "Manual",
 }
 def lookup_WATERMAKER_STATE(value):
-    return lookup_dict_WATERMAKER_STATE.get(value, "Unknown")
+    return lookup_dict_WATERMAKER_STATE.get(value)
 
 lookup_dict_encode_WATERMAKER_STATE = {
     "Stopped" : 0,
@@ -3780,7 +3780,7 @@ lookup_dict_ENTERTAINMENT_ID_TYPE = {
     3: "Encrypted file",
 }
 def lookup_ENTERTAINMENT_ID_TYPE(value):
-    return lookup_dict_ENTERTAINMENT_ID_TYPE.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_ID_TYPE.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_ID_TYPE = {
     "Group" : 0,
@@ -3800,7 +3800,7 @@ lookup_dict_ENTERTAINMENT_DEFAULT_SETTINGS = {
     2: "Load manufacturer default",
 }
 def lookup_ENTERTAINMENT_DEFAULT_SETTINGS(value):
-    return lookup_dict_ENTERTAINMENT_DEFAULT_SETTINGS.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_DEFAULT_SETTINGS.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_DEFAULT_SETTINGS = {
     "Save current settings as user default" : 0,
@@ -3824,7 +3824,7 @@ lookup_dict_ENTERTAINMENT_REGIONS = {
     7: "Japan",
 }
 def lookup_ENTERTAINMENT_REGIONS(value):
-    return lookup_dict_ENTERTAINMENT_REGIONS.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_REGIONS.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_REGIONS = {
     "USA" : 0,
@@ -3847,7 +3847,7 @@ lookup_dict_VIDEO_PROTOCOLS = {
     1: "NTSC",
 }
 def lookup_VIDEO_PROTOCOLS(value):
-    return lookup_dict_VIDEO_PROTOCOLS.get(value, "Unknown")
+    return lookup_dict_VIDEO_PROTOCOLS.get(value)
 
 lookup_dict_encode_VIDEO_PROTOCOLS = {
     "PAL" : 0,
@@ -3864,7 +3864,7 @@ lookup_dict_ENTERTAINMENT_VOLUME_CONTROL = {
     1: "Down",
 }
 def lookup_ENTERTAINMENT_VOLUME_CONTROL(value):
-    return lookup_dict_ENTERTAINMENT_VOLUME_CONTROL.get(value, "Unknown")
+    return lookup_dict_ENTERTAINMENT_VOLUME_CONTROL.get(value)
 
 lookup_dict_encode_ENTERTAINMENT_VOLUME_CONTROL = {
     "Up" : 0,
@@ -3882,7 +3882,7 @@ lookup_dict_BLUETOOTH_STATUS = {
     2: "Not paired",
 }
 def lookup_BLUETOOTH_STATUS(value):
-    return lookup_dict_BLUETOOTH_STATUS.get(value, "Unknown")
+    return lookup_dict_BLUETOOTH_STATUS.get(value)
 
 lookup_dict_encode_BLUETOOTH_STATUS = {
     "Connected" : 0,
@@ -3902,7 +3902,7 @@ lookup_dict_BLUETOOTH_SOURCE_STATUS = {
     3: "Not connected",
 }
 def lookup_BLUETOOTH_SOURCE_STATUS(value):
-    return lookup_dict_BLUETOOTH_SOURCE_STATUS.get(value, "Unknown")
+    return lookup_dict_BLUETOOTH_SOURCE_STATUS.get(value)
 
 lookup_dict_encode_BLUETOOTH_SOURCE_STATUS = {
     "Reserved" : 0,
@@ -3937,7 +3937,7 @@ lookup_dict_SONICHUB_COMMAND = {
     50: "Init #3",
 }
 def lookup_SONICHUB_COMMAND(value):
-    return lookup_dict_SONICHUB_COMMAND.get(value, "Unknown")
+    return lookup_dict_SONICHUB_COMMAND.get(value)
 
 lookup_dict_encode_SONICHUB_COMMAND = {
     "Init #2" : 1,
@@ -3972,7 +3972,7 @@ lookup_dict_SIMNET_AP_MODE = {
     11: "No Drift",
 }
 def lookup_SIMNET_AP_MODE(value):
-    return lookup_dict_SIMNET_AP_MODE.get(value, "Unknown")
+    return lookup_dict_SIMNET_AP_MODE.get(value)
 
 lookup_dict_encode_SIMNET_AP_MODE = {
     "Heading" : 2,
@@ -3992,7 +3992,7 @@ lookup_dict_SIMNET_DEVICE_MODEL = {
     100: "NAC",
 }
 def lookup_SIMNET_DEVICE_MODEL(value):
-    return lookup_dict_SIMNET_DEVICE_MODEL.get(value, "Unknown")
+    return lookup_dict_SIMNET_DEVICE_MODEL.get(value)
 
 lookup_dict_encode_SIMNET_DEVICE_MODEL = {
     "AC" : 0,
@@ -4013,7 +4013,7 @@ lookup_dict_SIMNET_DEVICE_REPORT = {
     23: "Sailing Processor Status",
 }
 def lookup_SIMNET_DEVICE_REPORT(value):
-    return lookup_dict_SIMNET_DEVICE_REPORT.get(value, "Unknown")
+    return lookup_dict_SIMNET_DEVICE_REPORT.get(value)
 
 lookup_dict_encode_SIMNET_DEVICE_REPORT = {
     "Status" : 2,
@@ -4033,7 +4033,7 @@ lookup_dict_SIMNET_AP_STATUS = {
     16: "Automatic",
 }
 def lookup_SIMNET_AP_STATUS(value):
-    return lookup_dict_SIMNET_AP_STATUS.get(value, "Unknown")
+    return lookup_dict_SIMNET_AP_STATUS.get(value)
 
 lookup_dict_encode_SIMNET_AP_STATUS = {
     "Manual" : 2,
@@ -4049,7 +4049,7 @@ lookup_dict_SIMNET_COMMAND = {
     50: "Text",
 }
 def lookup_SIMNET_COMMAND(value):
-    return lookup_dict_SIMNET_COMMAND.get(value, "Unknown")
+    return lookup_dict_SIMNET_COMMAND.get(value)
 
 lookup_dict_encode_SIMNET_COMMAND = {
     "Text" : 50,
@@ -4066,7 +4066,7 @@ lookup_dict_SIMNET_EVENT_COMMAND = {
     255: "Autopilot",
 }
 def lookup_SIMNET_EVENT_COMMAND(value):
-    return lookup_dict_SIMNET_EVENT_COMMAND.get(value, "Unknown")
+    return lookup_dict_SIMNET_EVENT_COMMAND.get(value)
 
 lookup_dict_encode_SIMNET_EVENT_COMMAND = {
     "Alarm" : 1,
@@ -4084,7 +4084,7 @@ lookup_dict_SIMNET_NIGHT_MODE = {
     4: "Night",
 }
 def lookup_SIMNET_NIGHT_MODE(value):
-    return lookup_dict_SIMNET_NIGHT_MODE.get(value, "Unknown")
+    return lookup_dict_SIMNET_NIGHT_MODE.get(value)
 
 lookup_dict_encode_SIMNET_NIGHT_MODE = {
     "Day" : 2,
@@ -4103,7 +4103,7 @@ lookup_dict_SIMNET_NIGHT_MODE_COLOR = {
     3: "White",
 }
 def lookup_SIMNET_NIGHT_MODE_COLOR(value):
-    return lookup_dict_SIMNET_NIGHT_MODE_COLOR.get(value, "Unknown")
+    return lookup_dict_SIMNET_NIGHT_MODE_COLOR.get(value)
 
 lookup_dict_encode_SIMNET_NIGHT_MODE_COLOR = {
     "Red" : 0,
@@ -4127,7 +4127,7 @@ lookup_dict_SIMNET_DISPLAY_GROUP = {
     7: "Group 6",
 }
 def lookup_SIMNET_DISPLAY_GROUP(value):
-    return lookup_dict_SIMNET_DISPLAY_GROUP.get(value, "Unknown")
+    return lookup_dict_SIMNET_DISPLAY_GROUP.get(value)
 
 lookup_dict_encode_SIMNET_DISPLAY_GROUP = {
     "Default" : 1,
@@ -4149,7 +4149,7 @@ lookup_dict_SIMNET_HOUR_DISPLAY = {
     1: "12 hour",
 }
 def lookup_SIMNET_HOUR_DISPLAY(value):
-    return lookup_dict_SIMNET_HOUR_DISPLAY.get(value, "Unknown")
+    return lookup_dict_SIMNET_HOUR_DISPLAY.get(value)
 
 lookup_dict_encode_SIMNET_HOUR_DISPLAY = {
     "24 hour" : 0,
@@ -4166,7 +4166,7 @@ lookup_dict_SIMNET_TIME_FORMAT = {
     2: "dd/MM/yyyy",
 }
 def lookup_SIMNET_TIME_FORMAT(value):
-    return lookup_dict_SIMNET_TIME_FORMAT.get(value, "Unknown")
+    return lookup_dict_SIMNET_TIME_FORMAT.get(value)
 
 lookup_dict_encode_SIMNET_TIME_FORMAT = {
     "MM/dd/yyyy" : 1,
@@ -4193,7 +4193,7 @@ lookup_dict_SIMNET_BACKLIGHT_LEVEL = {
     99: "100% (Max)",
 }
 def lookup_SIMNET_BACKLIGHT_LEVEL(value):
-    return lookup_dict_SIMNET_BACKLIGHT_LEVEL.get(value, "Unknown")
+    return lookup_dict_SIMNET_BACKLIGHT_LEVEL.get(value)
 
 lookup_dict_encode_SIMNET_BACKLIGHT_LEVEL = {
     "10% (Min)" : 0,
@@ -4235,7 +4235,7 @@ lookup_dict_SIMNET_AP_EVENTS = {
     113: "Ping starboard end",
 }
 def lookup_SIMNET_AP_EVENTS(value):
-    return lookup_dict_SIMNET_AP_EVENTS.get(value, "Unknown")
+    return lookup_dict_SIMNET_AP_EVENTS.get(value)
 
 lookup_dict_encode_SIMNET_AP_EVENTS = {
     "Standby" : 6,
@@ -4269,7 +4269,7 @@ lookup_dict_SIMNET_DIRECTION = {
     5: "Right rudder (starboard)",
 }
 def lookup_SIMNET_DIRECTION(value):
-    return lookup_dict_SIMNET_DIRECTION.get(value, "Unknown")
+    return lookup_dict_SIMNET_DIRECTION.get(value)
 
 lookup_dict_encode_SIMNET_DIRECTION = {
     "Port" : 2,
@@ -4288,7 +4288,7 @@ lookup_dict_SIMNET_ALARM = {
     58: "Wind data missing",
 }
 def lookup_SIMNET_ALARM(value):
-    return lookup_dict_SIMNET_ALARM.get(value, "Unknown")
+    return lookup_dict_SIMNET_ALARM.get(value)
 
 lookup_dict_encode_SIMNET_ALARM = {
     "Low boat speed" : 57,
@@ -4329,7 +4329,7 @@ lookup_dict_FUSION_MESSAGE_ID = {
     45: "Zone Name",
 }
 def lookup_FUSION_MESSAGE_ID(value):
-    return lookup_dict_FUSION_MESSAGE_ID.get(value, "Unknown")
+    return lookup_dict_FUSION_MESSAGE_ID.get(value)
 
 lookup_dict_encode_FUSION_MESSAGE_ID = {
     "Request Status" : 1,
@@ -4370,7 +4370,7 @@ lookup_dict_SONICHUB_CONTROL = {
     128: "Ack",
 }
 def lookup_SONICHUB_CONTROL(value):
-    return lookup_dict_SONICHUB_CONTROL.get(value, "Unknown")
+    return lookup_dict_SONICHUB_CONTROL.get(value)
 
 lookup_dict_encode_SONICHUB_CONTROL = {
     "Set" : 0,
@@ -4392,7 +4392,7 @@ lookup_dict_SONICHUB_SOURCE = {
     6: "Mic",
 }
 def lookup_SONICHUB_SOURCE(value):
-    return lookup_dict_SONICHUB_SOURCE.get(value, "Unknown")
+    return lookup_dict_SONICHUB_SOURCE.get(value)
 
 lookup_dict_encode_SONICHUB_SOURCE = {
     "AM" : 0,
@@ -4416,7 +4416,7 @@ lookup_dict_ISO_CONTROL = {
     3: "Address Busy",
 }
 def lookup_ISO_CONTROL(value):
-    return lookup_dict_ISO_CONTROL.get(value, "Unknown")
+    return lookup_dict_ISO_CONTROL.get(value)
 
 lookup_dict_encode_ISO_CONTROL = {
     "ACK" : 0,
@@ -4439,7 +4439,7 @@ lookup_dict_ISO_COMMAND = {
     255: "Abort",
 }
 def lookup_ISO_COMMAND(value):
-    return lookup_dict_ISO_COMMAND.get(value, "Unknown")
+    return lookup_dict_ISO_COMMAND.get(value)
 
 lookup_dict_encode_ISO_COMMAND = {
     "ACK" : 0,
@@ -4465,7 +4465,7 @@ lookup_dict_GROUP_FUNCTION = {
     6: "Write Fields Reply",
 }
 def lookup_GROUP_FUNCTION(value):
-    return lookup_dict_GROUP_FUNCTION.get(value, "Unknown")
+    return lookup_dict_GROUP_FUNCTION.get(value)
 
 lookup_dict_encode_GROUP_FUNCTION = {
     "Request" : 0,
@@ -4495,7 +4495,7 @@ lookup_dict_AIRMAR_COMMAND = {
     46: "NMEA 2000 options",
 }
 def lookup_AIRMAR_COMMAND(value):
-    return lookup_dict_AIRMAR_COMMAND.get(value, "Unknown")
+    return lookup_dict_AIRMAR_COMMAND.get(value)
 
 lookup_dict_encode_AIRMAR_COMMAND = {
     "Attitude Offsets" : 32,
@@ -4529,7 +4529,7 @@ lookup_dict_AIRMAR_DEPTH_QUALITY_FACTOR = {
     10: "Quality 100%",
 }
 def lookup_AIRMAR_DEPTH_QUALITY_FACTOR(value):
-    return lookup_dict_AIRMAR_DEPTH_QUALITY_FACTOR.get(value, "Unknown")
+    return lookup_dict_AIRMAR_DEPTH_QUALITY_FACTOR.get(value)
 
 lookup_dict_encode_AIRMAR_DEPTH_QUALITY_FACTOR = {
     "Depth unlocked" : 0,
@@ -4560,7 +4560,7 @@ lookup_dict_PGN_ERROR_CODE = {
     6: "Read or Write not supported",
 }
 def lookup_PGN_ERROR_CODE(value):
-    return lookup_dict_PGN_ERROR_CODE.get(value, "Unknown")
+    return lookup_dict_PGN_ERROR_CODE.get(value)
 
 lookup_dict_encode_PGN_ERROR_CODE = {
     "Acknowledge" : 0,
@@ -4582,7 +4582,7 @@ lookup_dict_AIRMAR_TRANSMISSION_INTERVAL = {
     1: "Requested by user",
 }
 def lookup_AIRMAR_TRANSMISSION_INTERVAL(value):
-    return lookup_dict_AIRMAR_TRANSMISSION_INTERVAL.get(value, "Unknown")
+    return lookup_dict_AIRMAR_TRANSMISSION_INTERVAL.get(value)
 
 lookup_dict_encode_AIRMAR_TRANSMISSION_INTERVAL = {
     "Measure interval" : 0,
@@ -4599,7 +4599,7 @@ lookup_dict_MOB_POSITION_SOURCE = {
     1: "Position reported by MOB emitter",
 }
 def lookup_MOB_POSITION_SOURCE(value):
-    return lookup_dict_MOB_POSITION_SOURCE.get(value, "Unknown")
+    return lookup_dict_MOB_POSITION_SOURCE.get(value)
 
 lookup_dict_encode_MOB_POSITION_SOURCE = {
     "Position estimated by the vessel" : 0,
@@ -4620,7 +4620,7 @@ lookup_dict_STEERING_MODE = {
     5: "Track Control",
 }
 def lookup_STEERING_MODE(value):
-    return lookup_dict_STEERING_MODE.get(value, "Unknown")
+    return lookup_dict_STEERING_MODE.get(value)
 
 lookup_dict_encode_STEERING_MODE = {
     "Main Steering" : 0,
@@ -4641,7 +4641,7 @@ lookup_dict_FUSION_RADIO_SOURCE = {
     1: "FM",
 }
 def lookup_FUSION_RADIO_SOURCE(value):
-    return lookup_dict_FUSION_RADIO_SOURCE.get(value, "Unknown")
+    return lookup_dict_FUSION_RADIO_SOURCE.get(value)
 
 lookup_dict_encode_FUSION_RADIO_SOURCE = {
     "AM" : 0,
@@ -4660,7 +4660,7 @@ lookup_dict_FUSION_REPLAY_MODE = {
     13: "iPod shuffle",
 }
 def lookup_FUSION_REPLAY_MODE(value):
-    return lookup_dict_FUSION_REPLAY_MODE.get(value, "Unknown")
+    return lookup_dict_FUSION_REPLAY_MODE.get(value)
 
 lookup_dict_encode_FUSION_REPLAY_MODE = {
     "USB repeat" : 9,
@@ -4680,7 +4680,7 @@ lookup_dict_FUSION_REPLAY_STATUS = {
     2: "All/album",
 }
 def lookup_FUSION_REPLAY_STATUS(value):
-    return lookup_dict_FUSION_REPLAY_STATUS.get(value, "Unknown")
+    return lookup_dict_FUSION_REPLAY_STATUS.get(value)
 
 lookup_dict_encode_FUSION_REPLAY_STATUS = {
     "Off" : 0,
@@ -4698,7 +4698,7 @@ lookup_dict_AIRMAR_POST_CONTROL = {
     1: "Generate new values",
 }
 def lookup_AIRMAR_POST_CONTROL(value):
-    return lookup_dict_AIRMAR_POST_CONTROL.get(value, "Unknown")
+    return lookup_dict_AIRMAR_POST_CONTROL.get(value)
 
 lookup_dict_encode_AIRMAR_POST_CONTROL = {
     "Report previous values" : 0,
@@ -4721,7 +4721,7 @@ lookup_dict_AIRMAR_POST_ID = {
     8: "Battery voltage sensor",
 }
 def lookup_AIRMAR_POST_ID(value):
-    return lookup_dict_AIRMAR_POST_ID.get(value, "Unknown")
+    return lookup_dict_AIRMAR_POST_ID.get(value)
 
 lookup_dict_encode_AIRMAR_POST_ID = {
     "Format Code" : 1,
@@ -4745,7 +4745,7 @@ lookup_dict_SONICHUB_TUNING = {
     3: "Seeking down",
 }
 def lookup_SONICHUB_TUNING(value):
-    return lookup_dict_SONICHUB_TUNING.get(value, "Unknown")
+    return lookup_dict_SONICHUB_TUNING.get(value)
 
 lookup_dict_encode_SONICHUB_TUNING = {
     "Seeking up" : 1,
@@ -4764,7 +4764,7 @@ lookup_dict_SONICHUB_PLAYLIST = {
     6: "Previous song",
 }
 def lookup_SONICHUB_PLAYLIST(value):
-    return lookup_dict_SONICHUB_PLAYLIST.get(value, "Unknown")
+    return lookup_dict_SONICHUB_PLAYLIST.get(value)
 
 lookup_dict_encode_SONICHUB_PLAYLIST = {
     "Report" : 1,
@@ -4782,7 +4782,7 @@ lookup_dict_FUSION_POWER_STATE = {
     2: "Off",
 }
 def lookup_FUSION_POWER_STATE(value):
-    return lookup_dict_FUSION_POWER_STATE.get(value, "Unknown")
+    return lookup_dict_FUSION_POWER_STATE.get(value)
 
 lookup_dict_encode_FUSION_POWER_STATE = {
     "On" : 1,
@@ -4807,7 +4807,7 @@ lookup_dict_PRIORITY = {
     9: "Reset to default",
 }
 def lookup_PRIORITY(value):
-    return lookup_dict_PRIORITY.get(value, "Unknown")
+    return lookup_dict_PRIORITY.get(value)
 
 lookup_dict_encode_PRIORITY = {
     "0" : 0,
@@ -4833,7 +4833,7 @@ lookup_dict_DEVICE_TEMP_STATE = {
     2: "Hot",
 }
 def lookup_DEVICE_TEMP_STATE(value):
-    return lookup_dict_DEVICE_TEMP_STATE.get(value, "Unknown")
+    return lookup_dict_DEVICE_TEMP_STATE.get(value)
 
 lookup_dict_encode_DEVICE_TEMP_STATE = {
     "Cold" : 0,
@@ -4855,7 +4855,7 @@ lookup_dict_BANDG_DECIMALS = {
     254: "Auto",
 }
 def lookup_BANDG_DECIMALS(value):
-    return lookup_dict_BANDG_DECIMALS.get(value, "Unknown")
+    return lookup_dict_BANDG_DECIMALS.get(value)
 
 lookup_dict_encode_BANDG_DECIMALS = {
     "0" : 0,
@@ -4877,7 +4877,7 @@ lookup_dict_GARMIN_COLOR_MODE = {
     13: "Color",
 }
 def lookup_GARMIN_COLOR_MODE(value):
-    return lookup_dict_GARMIN_COLOR_MODE.get(value, "Unknown")
+    return lookup_dict_GARMIN_COLOR_MODE.get(value)
 
 lookup_dict_encode_GARMIN_COLOR_MODE = {
     "Day" : 0,
@@ -4898,7 +4898,7 @@ lookup_dict_GARMIN_COLOR = {
     4: "Night green/black",
 }
 def lookup_GARMIN_COLOR(value):
-    return lookup_dict_GARMIN_COLOR.get(value, "Unknown")
+    return lookup_dict_GARMIN_COLOR.get(value)
 
 lookup_dict_encode_GARMIN_COLOR = {
     "Day full color" : 0,
@@ -4937,7 +4937,7 @@ lookup_dict_GARMIN_BACKLIGHT_LEVEL = {
     20: "100%",
 }
 def lookup_GARMIN_BACKLIGHT_LEVEL(value):
-    return lookup_dict_GARMIN_BACKLIGHT_LEVEL.get(value, "Unknown")
+    return lookup_dict_GARMIN_BACKLIGHT_LEVEL.get(value)
 
 lookup_dict_encode_GARMIN_BACKLIGHT_LEVEL = {
     "0%" : 0,
@@ -4976,7 +4976,7 @@ lookup_dict_SEATALK_PILOT_MODE_16 = {
     385: "No Drift, COG referenced (In track, course changes)",
 }
 def lookup_SEATALK_PILOT_MODE_16(value):
-    return lookup_dict_SEATALK_PILOT_MODE_16.get(value, "Unknown")
+    return lookup_dict_SEATALK_PILOT_MODE_16.get(value)
 
 lookup_dict_encode_SEATALK_PILOT_MODE_16 = {
     "Standby" : 0,
@@ -4999,7 +4999,7 @@ lookup_dict_STATION_HEALTH = {
     4: "Test Mode",
 }
 def lookup_STATION_HEALTH(value):
-    return lookup_dict_STATION_HEALTH.get(value, "Unknown")
+    return lookup_dict_STATION_HEALTH.get(value)
 
 lookup_dict_encode_STATION_HEALTH = {
     "Not Working" : 0,
@@ -5031,7 +5031,7 @@ lookup_dict_SERIAL_BIT_RATE = {
     13: "57600",
 }
 def lookup_SERIAL_BIT_RATE(value):
-    return lookup_dict_SERIAL_BIT_RATE.get(value, "Unknown")
+    return lookup_dict_SERIAL_BIT_RATE.get(value)
 
 lookup_dict_encode_SERIAL_BIT_RATE = {
     "25" : 0,
@@ -5060,7 +5060,7 @@ lookup_dict_SERIAL_DETECTION_MODE = {
     1: "Manual bit rate",
 }
 def lookup_SERIAL_DETECTION_MODE(value):
-    return lookup_dict_SERIAL_DETECTION_MODE.get(value, "Unknown")
+    return lookup_dict_SERIAL_DETECTION_MODE.get(value)
 
 lookup_dict_encode_SERIAL_DETECTION_MODE = {
     "Auto bit rate" : 0,
@@ -5083,7 +5083,7 @@ lookup_dict_DIFFERENTIAL_SOURCE = {
     7: "Satellite",
 }
 def lookup_DIFFERENTIAL_SOURCE(value):
-    return lookup_dict_DIFFERENTIAL_SOURCE.get(value, "Unknown")
+    return lookup_dict_DIFFERENTIAL_SOURCE.get(value)
 
 lookup_dict_encode_DIFFERENTIAL_SOURCE = {
     "Auto" : 0,
@@ -5107,7 +5107,7 @@ lookup_dict_DIFFERENTIAL_MODE = {
     2: "Auto Range",
 }
 def lookup_DIFFERENTIAL_MODE(value):
-    return lookup_dict_DIFFERENTIAL_MODE.get(value, "Unknown")
+    return lookup_dict_DIFFERENTIAL_MODE.get(value)
 
 lookup_dict_encode_DIFFERENTIAL_MODE = {
     "Manual" : 0,
