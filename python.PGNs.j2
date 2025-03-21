@@ -53,6 +53,9 @@ def is_fast_pgn_{{ pgns_in_group[0].PGN }}() -> bool:
         {%- set ns.has_match = true %}
     {%- endif %}
 {%- endfor %}
+{%- if pgn.Fallback is defined and pgn.Fallback == true %}
+    {%- set ns.fallback_pgn = pgn %}
+{%- endif %}
 {%- endfor %}
 
 {%- if pgns_in_group | length  > 1 and ns.has_match == false %}
@@ -62,8 +65,8 @@ def is_fast_pgn_{{ pgns_in_group[0].PGN }}() -> bool:
 {%- if pgns_in_group | length  > 1 and ns.has_match == true %}
 # Complex PGN. number of matches: {{ pgns_in_group | length }}
 def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message:
-    {%- for pgn in pgns_in_group %}
-    match_ok = True
+    {%- for pgn in pgns_in_group if pgn.Fallback is not defined or pgn.Fallback == false %}
+    # {{ pgn.Id }} | Description: {{ pgn.Description }}
     if (
         {%- for field in pgn.Fields if field.Match is defined%}
         {%- set field_FF = bits_to_hex(field.BitLength) %}
@@ -72,8 +75,11 @@ def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_{{ pgn.PGN }}_{{ pgn.Id }}(data_raw)
     {% endfor%}
+    {% if ns.fallback_pgn is defined -%}
+    return decode_pgn_{{ ns.fallback_pgn.PGN }}_{{ ns.fallback_pgn.Id }}(data_raw)
+    {% else %}
     raise Exception("No matching sub-PGN found")
-
+    {% endif %}
 {%- endif %}
 {%- for pgn in pgns_in_group %}
 {%- if pgns_in_group | length  > 1 and ns.has_match == true %}

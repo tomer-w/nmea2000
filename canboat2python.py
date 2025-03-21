@@ -1,4 +1,5 @@
 import json
+import os
 import re
 from jinja2 import Environment, FileSystemLoader
 
@@ -34,7 +35,7 @@ template = env.get_template('python.consts.j2')
 output = template.render(data=json_data)
 
 # Save the generated Python code to a file
-with open('nmea2000/consts.py', 'w') as f:
+with open(os.path.join('nmea2000', 'consts.py'), 'w') as f:
     f.write(output)
 
 # Load the Jinja2 template
@@ -44,7 +45,7 @@ template = env.get_template('python.PGNs.j2')
 output = template.render(data=json_data)
 
 # Save the generated Python code to a file
-with open('nmea2000/pgns.py', 'w') as f:
+with open(os.path.join('nmea2000', 'pgns.py'), 'w') as f:
     f.write(output)
 
 print("Python code generated successfully!")

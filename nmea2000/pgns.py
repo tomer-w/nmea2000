@@ -5123,6 +5123,27 @@ def lookup_encode_DIFFERENTIAL_MODE(value):
 def is_fast_pgn_59392() -> bool:
     """Return True if PGN 59392 is a fast PGN."""
     return False
+# ERROR: This PGN is corrupted. It has multiple fields but none of them have a match attribute.
+def decode_pgn_59392(data_raw: int) -> NMEA2000Message:
+    """Decode PGN 59392."""
+    nmea2000Message = NMEA2000Message(59392, '0xe8000xeeffStandardizedSingleFrameAddressed', '0xE800-0xEEFF: Standardized single-frame addressed')
+    # data | Offset: 0, Length: 64, Resolution: 1, Field Type: BINARY, Match: 
+    data_raw = (data_raw >> 0) & 0xFFFFFFFFFFFFFFFF
+    data = data_raw * 1 if data_raw is not None else None
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', "", '', data, data_raw, None, FieldTypes.BINARY))
+
+    return nmea2000Message
+
+def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> int:
+    """Encode Nmea2000Message object to binary data for PGN 59392."""
+    data_raw = 0
+    # data | Offset: 0, Length: 64, Resolution: 1, Field Type: BINARY
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == 'data'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Data'")
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 0
+    return data_raw
+
 def decode_pgn_59392(data_raw: int) -> NMEA2000Message:
     """Decode PGN 59392."""
     nmea2000Message = NMEA2000Message(59392, 'isoAcknowledgement', 'ISO Acknowledgement')
@@ -5237,37 +5258,39 @@ def is_fast_pgn_60416() -> bool:
     return False
 # Complex PGN. number of matches: 5
 def decode_pgn_60416(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # isoTransportProtocolConnectionManagementRequestToSend | Description: ISO Transport Protocol, Connection Management - Request To Send
     if (
         (((data_raw >> 0) & 0xFF) == 16)
         ):
         return decode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(data_raw)
     
-    match_ok = True
+    # isoTransportProtocolConnectionManagementClearToSend | Description: ISO Transport Protocol, Connection Management - Clear To Send
     if (
         (((data_raw >> 0) & 0xFF) == 17)
         ):
         return decode_pgn_60416_isoTransportProtocolConnectionManagementClearToSend(data_raw)
     
-    match_ok = True
+    # isoTransportProtocolConnectionManagementEndOfMessage | Description: ISO Transport Protocol, Connection Management - End Of Message
     if (
         (((data_raw >> 0) & 0xFF) == 19)
         ):
         return decode_pgn_60416_isoTransportProtocolConnectionManagementEndOfMessage(data_raw)
     
-    match_ok = True
+    # isoTransportProtocolConnectionManagementBroadcastAnnounce | Description: ISO Transport Protocol, Connection Management - Broadcast Announce
     if (
         (((data_raw >> 0) & 0xFF) == 32)
         ):
         return decode_pgn_60416_isoTransportProtocolConnectionManagementBroadcastAnnounce(data_raw)
     
-    match_ok = True
+    # isoTransportProtocolConnectionManagementAbort | Description: ISO Transport Protocol, Connection Management - Abort
     if (
         (((data_raw >> 0) & 0xFF) == 255)
         ):
         return decode_pgn_60416_isoTransportProtocolConnectionManagementAbort(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(data_raw: int) -> NMEA2000Message:
     """Decode PGN 60416."""
     nmea2000Message = NMEA2000Message(60416, 'isoTransportProtocolConnectionManagementRequestToSend', 'ISO Transport Protocol, Connection Management - Request To Send')
@@ -5676,9 +5699,9 @@ def encode_pgn_60928(nmea2000Message: NMEA2000Message) -> int:
 def is_fast_pgn_61184() -> bool:
     """Return True if PGN 61184 is a fast PGN."""
     return False
-# Complex PGN. number of matches: 3
+# Complex PGN. number of matches: 4
 def decode_pgn_61184(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # seatalkWirelessKeypadLightControl | Description: Seatalk: Wireless Keypad Light Control
     if (
         (((data_raw >> 0) & 0x7FF) == 1851) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -5686,21 +5709,72 @@ def decode_pgn_61184(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_61184_seatalkWirelessKeypadLightControl(data_raw)
     
-    match_ok = True
+    # seatalkWirelessKeypadControl | Description: Seatalk: Wireless Keypad Control
     if (
         (((data_raw >> 0) & 0x7FF) == 1851) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_61184_seatalkWirelessKeypadControl(data_raw)
     
-    match_ok = True
+    # victronBatteryRegister | Description: Victron Battery Register
     if (
         (((data_raw >> 0) & 0x7FF) == 358) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_61184_victronBatteryRegister(data_raw)
     
-    raise Exception("No matching sub-PGN found")
+    return decode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(data_raw)
+    
+def decode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(data_raw: int) -> NMEA2000Message:
+    """Decode PGN 61184."""
+    nmea2000Message = NMEA2000Message(61184, '0xef00ManufacturerProprietarySingleFrameAddressed', '0xEF00: Manufacturer Proprietary single-frame addressed')
+    # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP, Match: 
+    manufacturer_code_raw = (data_raw >> 0) & 0x7FF
+    manufacturer_code = lookup_MANUFACTURER_CODE(manufacturer_code_raw)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturer_code', 'Manufacturer Code', "", '', manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP))
+
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED, Match: 
+    reserved_11_raw = (data_raw >> 11) & 0x3
+    reserved_11 = reserved_11_raw * 1 if reserved_11_raw is not None else None
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', "", '', reserved_11, reserved_11_raw, None, FieldTypes.RESERVED))
+
+    # industry_code | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP, Match: 
+    industry_code_raw = (data_raw >> 13) & 0x7
+    industry_code = lookup_INDUSTRY_CODE(industry_code_raw)
+    nmea2000Message.fields.append(NMEA2000Field('industry_code', 'Industry Code', "", '', industry_code, industry_code_raw, None, FieldTypes.LOOKUP))
+
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY, Match: 
+    data_raw = (data_raw >> 16) & 0xFFFFFFFFFFFF
+    data = data_raw * 1 if data_raw is not None else None
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', "", '', data, data_raw, None, FieldTypes.BINARY))
+
+    return nmea2000Message
+
+def encode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(nmea2000Message: NMEA2000Message) -> int:
+    """Encode Nmea2000Message object to binary data for PGN 61184."""
+    data_raw = 0
+    # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field_value = next((f.raw_value if f.raw_value is not None else lookup_encode_MANUFACTURER_CODE(f.value) for f in nmea2000Message.fields if f.id == 'manufacturer_code'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == 'reserved_11'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    data_raw |= (field_value & 0x3) << 11
+    # industry_code | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field_value = next((f.raw_value if f.raw_value is not None else lookup_encode_INDUSTRY_CODE(f.value) for f in nmea2000Message.fields if f.id == 'industry_code'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == 'data'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Data'")
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw
+
 def decode_pgn_61184_seatalkWirelessKeypadLightControl(data_raw: int) -> NMEA2000Message:
     """Decode PGN 61184."""
     nmea2000Message = NMEA2000Message(61184, 'seatalkWirelessKeypadLightControl', 'Seatalk: Wireless Keypad Light Control')
@@ -5929,6 +6003,60 @@ def encode_pgn_61184_victronBatteryRegister(nmea2000Message: NMEA2000Message) ->
     if field_value is None:
         raise Exception("Cant encode this message, missing 'Payload'")
     data_raw |= (field_value & 0xFFFFFFFF) << 32
+    return data_raw
+
+
+def is_fast_pgn_61440() -> bool:
+    """Return True if PGN 61440 is a fast PGN."""
+    return False
+def decode_pgn_61440(data_raw: int) -> NMEA2000Message:
+    """Decode PGN 61440."""
+    nmea2000Message = NMEA2000Message(61440, '0xf0000xfeffStandardizedSingleFrameNonAddressed', '0xF000-0xFEFF: Standardized single-frame non-addressed')
+    # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP, Match: 
+    manufacturer_code_raw = (data_raw >> 0) & 0x7FF
+    manufacturer_code = lookup_MANUFACTURER_CODE(manufacturer_code_raw)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturer_code', 'Manufacturer Code', "", '', manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP))
+
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED, Match: 
+    reserved_11_raw = (data_raw >> 11) & 0x3
+    reserved_11 = reserved_11_raw * 1 if reserved_11_raw is not None else None
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', "", '', reserved_11, reserved_11_raw, None, FieldTypes.RESERVED))
+
+    # industry_code | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP, Match: 
+    industry_code_raw = (data_raw >> 13) & 0x7
+    industry_code = lookup_INDUSTRY_CODE(industry_code_raw)
+    nmea2000Message.fields.append(NMEA2000Field('industry_code', 'Industry Code', "", '', industry_code, industry_code_raw, None, FieldTypes.LOOKUP))
+
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY, Match: 
+    data_raw = (data_raw >> 16) & 0xFFFFFFFFFFFF
+    data = data_raw * 1 if data_raw is not None else None
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', "", '', data, data_raw, None, FieldTypes.BINARY))
+
+    return nmea2000Message
+
+def encode_pgn_61440(nmea2000Message: NMEA2000Message) -> int:
+    """Encode Nmea2000Message object to binary data for PGN 61440."""
+    data_raw = 0
+    # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field_value = next((f.raw_value if f.raw_value is not None else lookup_encode_MANUFACTURER_CODE(f.value) for f in nmea2000Message.fields if f.id == 'manufacturer_code'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == 'reserved_11'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    data_raw |= (field_value & 0x3) << 11
+    # industry_code | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field_value = next((f.raw_value if f.raw_value is not None else lookup_encode_INDUSTRY_CODE(f.value) for f in nmea2000Message.fields if f.id == 'industry_code'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == 'data'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Data'")
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
     return data_raw
 
 
@@ -7544,7 +7672,68 @@ def encode_pgn_65240(nmea2000Message: NMEA2000Message) -> int:
 def is_fast_pgn_65280() -> bool:
     """Return True if PGN 65280 is a fast PGN."""
     return False
+# Complex PGN. number of matches: 2
 def decode_pgn_65280(data_raw: int) -> NMEA2000Message:
+    # furunoHeave | Description: Furuno: Heave
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1855) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65280_furunoHeave(data_raw)
+    
+    return decode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(data_raw)
+    
+def decode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(data_raw: int) -> NMEA2000Message:
+    """Decode PGN 65280."""
+    nmea2000Message = NMEA2000Message(65280, '0xff000xffffManufacturerProprietarySingleFrameNonAddressed', '0xFF00-0xFFFF: Manufacturer Proprietary single-frame non-addressed')
+    # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP, Match: 
+    manufacturer_code_raw = (data_raw >> 0) & 0x7FF
+    manufacturer_code = lookup_MANUFACTURER_CODE(manufacturer_code_raw)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturer_code', 'Manufacturer Code', "", '', manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP))
+
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED, Match: 
+    reserved_11_raw = (data_raw >> 11) & 0x3
+    reserved_11 = reserved_11_raw * 1 if reserved_11_raw is not None else None
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', "", '', reserved_11, reserved_11_raw, None, FieldTypes.RESERVED))
+
+    # industry_code | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP, Match: 
+    industry_code_raw = (data_raw >> 13) & 0x7
+    industry_code = lookup_INDUSTRY_CODE(industry_code_raw)
+    nmea2000Message.fields.append(NMEA2000Field('industry_code', 'Industry Code', "", '', industry_code, industry_code_raw, None, FieldTypes.LOOKUP))
+
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY, Match: 
+    data_raw = (data_raw >> 16) & 0xFFFFFFFFFFFF
+    data = data_raw * 1 if data_raw is not None else None
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', "", '', data, data_raw, None, FieldTypes.BINARY))
+
+    return nmea2000Message
+
+def encode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(nmea2000Message: NMEA2000Message) -> int:
+    """Encode Nmea2000Message object to binary data for PGN 65280."""
+    data_raw = 0
+    # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field_value = next((f.raw_value if f.raw_value is not None else lookup_encode_MANUFACTURER_CODE(f.value) for f in nmea2000Message.fields if f.id == 'manufacturer_code'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == 'reserved_11'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    data_raw |= (field_value & 0x3) << 11
+    # industry_code | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field_value = next((f.raw_value if f.raw_value is not None else lookup_encode_INDUSTRY_CODE(f.value) for f in nmea2000Message.fields if f.id == 'industry_code'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == 'data'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Data'")
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw
+
+def decode_pgn_65280_furunoHeave(data_raw: int) -> NMEA2000Message:
     """Decode PGN 65280."""
     nmea2000Message = NMEA2000Message(65280, 'furunoHeave', 'Furuno: Heave')
     # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP, Match: 1855
@@ -7576,7 +7765,7 @@ def decode_pgn_65280(data_raw: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65280(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65280_furunoHeave(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 65280."""
     data_raw = 0
     # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -7698,21 +7887,23 @@ def is_fast_pgn_65285() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65285(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # airmarBootStateAcknowledgment | Description: Airmar: Boot State Acknowledgment
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65285_airmarBootStateAcknowledgment(data_raw)
     
-    match_ok = True
+    # lowranceTemperature | Description: Lowrance: Temperature
     if (
         (((data_raw >> 0) & 0x7FF) == 140) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65285_lowranceTemperature(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_65285_airmarBootStateAcknowledgment(data_raw: int) -> NMEA2000Message:
     """Decode PGN 65285."""
     nmea2000Message = NMEA2000Message(65285, 'airmarBootStateAcknowledgment', 'Airmar: Boot State Acknowledgment')
@@ -7850,21 +8041,23 @@ def is_fast_pgn_65286() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65286(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # chetcoDimmer | Description: Chetco: Dimmer
     if (
         (((data_raw >> 0) & 0x7FF) == 409) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65286_chetcoDimmer(data_raw)
     
-    match_ok = True
+    # airmarBootStateRequest | Description: Airmar: Boot State Request
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65286_airmarBootStateRequest(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_65286_chetcoDimmer(data_raw: int) -> NMEA2000Message:
     """Decode PGN 65286."""
     nmea2000Message = NMEA2000Message(65286, 'chetcoDimmer', 'Chetco: Dimmer')
@@ -8021,21 +8214,23 @@ def is_fast_pgn_65287() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65287(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # airmarAccessLevel | Description: Airmar: Access Level
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65287_airmarAccessLevel(data_raw)
     
-    match_ok = True
+    # simnetConfigureTemperatureSensor | Description: Simnet: Configure Temperature Sensor
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65287_simnetConfigureTemperatureSensor(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_65287_airmarAccessLevel(data_raw: int) -> NMEA2000Message:
     """Decode PGN 65287."""
     nmea2000Message = NMEA2000Message(65287, 'airmarAccessLevel', 'Airmar: Access Level')
@@ -8428,21 +8623,23 @@ def is_fast_pgn_65293() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65293(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # simnetLgc2000Configuration | Description: Simnet: LGC-2000 Configuration
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65293_simnetLgc2000Configuration(data_raw)
     
-    match_ok = True
+    # diverseYachtServicesLoadCell | Description: Diverse Yacht Services: Load Cell
     if (
         (((data_raw >> 0) & 0x7FF) == 641) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65293_diverseYachtServicesLoadCell(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_65293_simnetLgc2000Configuration(data_raw: int) -> NMEA2000Message:
     """Decode PGN 65293."""
     nmea2000Message = NMEA2000Message(65293, 'simnetLgc2000Configuration', 'Simnet: LGC-2000 Configuration')
@@ -8663,7 +8860,7 @@ def is_fast_pgn_65305() -> bool:
     return False
 # Complex PGN. number of matches: 5
 def decode_pgn_65305(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # simnetDeviceStatus | Description: Simnet: Device Status
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -8671,7 +8868,7 @@ def decode_pgn_65305(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_65305_simnetDeviceStatus(data_raw)
     
-    match_ok = True
+    # simnetDeviceStatusRequest | Description: Simnet: Device Status Request
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -8679,7 +8876,7 @@ def decode_pgn_65305(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_65305_simnetDeviceStatusRequest(data_raw)
     
-    match_ok = True
+    # simnetPilotMode | Description: Simnet: Pilot Mode
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -8687,7 +8884,7 @@ def decode_pgn_65305(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_65305_simnetPilotMode(data_raw)
     
-    match_ok = True
+    # simnetDeviceModeRequest | Description: Simnet: Device Mode Request
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -8695,7 +8892,7 @@ def decode_pgn_65305(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_65305_simnetDeviceModeRequest(data_raw)
     
-    match_ok = True
+    # simnetSailingProcessorStatus | Description: Simnet: Sailing Processor Status
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -8703,7 +8900,9 @@ def decode_pgn_65305(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_65305_simnetSailingProcessorStatus(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_65305_simnetDeviceStatus(data_raw: int) -> NMEA2000Message:
     """Decode PGN 65305."""
     nmea2000Message = NMEA2000Message(65305, 'simnetDeviceStatus', 'Simnet: Device Status')
@@ -10515,51 +10714,70 @@ def encode_pgn_65480(nmea2000Message: NMEA2000Message) -> int:
 def is_fast_pgn_126208() -> bool:
     """Return True if PGN 126208 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 7
+# Complex PGN. number of matches: 8
 def decode_pgn_126208(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # nmeaRequestGroupFunction | Description: NMEA - Request group function
     if (
         (((data_raw >> 0) & 0xFF) == 0)
         ):
         return decode_pgn_126208_nmeaRequestGroupFunction(data_raw)
     
-    match_ok = True
+    # nmeaCommandGroupFunction | Description: NMEA - Command group function
     if (
         (((data_raw >> 0) & 0xFF) == 1)
         ):
         return decode_pgn_126208_nmeaCommandGroupFunction(data_raw)
     
-    match_ok = True
+    # nmeaAcknowledgeGroupFunction | Description: NMEA - Acknowledge group function
     if (
         (((data_raw >> 0) & 0xFF) == 2)
         ):
         return decode_pgn_126208_nmeaAcknowledgeGroupFunction(data_raw)
     
-    match_ok = True
+    # nmeaReadFieldsGroupFunction | Description: NMEA - Read Fields group function
     if (
         (((data_raw >> 0) & 0xFF) == 3)
         ):
         return decode_pgn_126208_nmeaReadFieldsGroupFunction(data_raw)
     
-    match_ok = True
+    # nmeaReadFieldsReplyGroupFunction | Description: NMEA - Read Fields reply group function
     if (
         (((data_raw >> 0) & 0xFF) == 4)
         ):
         return decode_pgn_126208_nmeaReadFieldsReplyGroupFunction(data_raw)
     
-    match_ok = True
+    # nmeaWriteFieldsGroupFunction | Description: NMEA - Write Fields group function
     if (
         (((data_raw >> 0) & 0xFF) == 5)
         ):
         return decode_pgn_126208_nmeaWriteFieldsGroupFunction(data_raw)
     
-    match_ok = True
+    # nmeaWriteFieldsReplyGroupFunction | Description: NMEA - Write Fields reply group function
     if (
         (((data_raw >> 0) & 0xFF) == 6)
         ):
         return decode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(data_raw)
     
-    raise Exception("No matching sub-PGN found")
+    return decode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(data_raw)
+    
+def decode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(data_raw: int) -> NMEA2000Message:
+    """Decode PGN 126208."""
+    nmea2000Message = NMEA2000Message(126208, '0x1ed000x1ee00StandardizedFastPacketAddressed', '0x1ED00 - 0x1EE00: Standardized fast-packet addressed')
+    # data | Offset: 0, Length: 1784, Resolution: 1, Field Type: BINARY
+    # Skipping fields longer than 256
+
+    return nmea2000Message
+
+def encode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(nmea2000Message: NMEA2000Message) -> int:
+    """Encode Nmea2000Message object to binary data for PGN 126208."""
+    data_raw = 0
+    # data | Offset: 0, Length: 1784, Resolution: 1, Field Type: BINARY
+    # Skipping fields longer than 256
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Data'")
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 0
+    return data_raw
+
 def decode_pgn_126208_nmeaRequestGroupFunction(data_raw: int) -> NMEA2000Message:
     """Decode PGN 126208."""
     nmea2000Message = NMEA2000Message(126208, 'nmeaRequestGroupFunction', 'NMEA - Request group function')
@@ -11044,9 +11262,9 @@ def encode_pgn_126464(nmea2000Message: NMEA2000Message) -> int:
 def is_fast_pgn_126720() -> bool:
     """Return True if PGN 126720 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 29
+# Complex PGN. number of matches: 30
 def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # seatalk1PilotMode | Description: Seatalk1: Pilot Mode
     if (
         (((data_raw >> 0) & 0x7FF) == 1851) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11055,7 +11273,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_seatalk1PilotMode(data_raw)
     
-    match_ok = True
+    # fusionMediaControl | Description: Fusion: Media Control
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11063,7 +11281,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_fusionMediaControl(data_raw)
     
-    match_ok = True
+    # fusionSiriusControl | Description: Fusion: Sirius Control
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11071,7 +11289,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_fusionSiriusControl(data_raw)
     
-    match_ok = True
+    # fusionRequestStatus | Description: Fusion: Request Status
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11079,7 +11297,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_fusionRequestStatus(data_raw)
     
-    match_ok = True
+    # fusionSetSource | Description: Fusion: Set Source
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11087,7 +11305,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_fusionSetSource(data_raw)
     
-    match_ok = True
+    # fusionSetMute | Description: Fusion: Set Mute
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11095,7 +11313,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_fusionSetMute(data_raw)
     
-    match_ok = True
+    # fusionSetZoneVolume | Description: Fusion: Set Zone Volume
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11103,7 +11321,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_fusionSetZoneVolume(data_raw)
     
-    match_ok = True
+    # fusionSetAllVolumes | Description: Fusion: Set All Volumes
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11111,7 +11329,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_fusionSetAllVolumes(data_raw)
     
-    match_ok = True
+    # seatalk1Keystroke | Description: Seatalk1: Keystroke
     if (
         (((data_raw >> 0) & 0x7FF) == 1851) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11120,7 +11338,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_seatalk1Keystroke(data_raw)
     
-    match_ok = True
+    # seatalk1DeviceIdentification | Description: Seatalk1: Device Identification
     if (
         (((data_raw >> 0) & 0x7FF) == 1851) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11129,7 +11347,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_seatalk1DeviceIdentification(data_raw)
     
-    match_ok = True
+    # seatalk1DisplayBrightness | Description: Seatalk1: Display Brightness
     if (
         (((data_raw >> 0) & 0x7FF) == 1851) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11138,7 +11356,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_seatalk1DisplayBrightness(data_raw)
     
-    match_ok = True
+    # seatalk1DisplayColor | Description: Seatalk1: Display Color
     if (
         (((data_raw >> 0) & 0x7FF) == 1851) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11147,7 +11365,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_seatalk1DisplayColor(data_raw)
     
-    match_ok = True
+    # airmarAttitudeOffset | Description: Airmar: Attitude Offset
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11155,7 +11373,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarAttitudeOffset(data_raw)
     
-    match_ok = True
+    # airmarCalibrateCompass | Description: Airmar: Calibrate Compass
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11163,7 +11381,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarCalibrateCompass(data_raw)
     
-    match_ok = True
+    # airmarTrueWindOptions | Description: Airmar: True Wind Options
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11171,7 +11389,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarTrueWindOptions(data_raw)
     
-    match_ok = True
+    # airmarSimulateMode | Description: Airmar: Simulate Mode
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11179,7 +11397,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarSimulateMode(data_raw)
     
-    match_ok = True
+    # airmarCalibrateDepth | Description: Airmar: Calibrate Depth
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11187,7 +11405,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarCalibrateDepth(data_raw)
     
-    match_ok = True
+    # airmarCalibrateSpeed | Description: Airmar: Calibrate Speed
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11195,7 +11413,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarCalibrateSpeed(data_raw)
     
-    match_ok = True
+    # airmarCalibrateTemperature | Description: Airmar: Calibrate Temperature
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11203,7 +11421,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarCalibrateTemperature(data_raw)
     
-    match_ok = True
+    # airmarSpeedFilterNone | Description: Airmar: Speed Filter None
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11212,7 +11430,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarSpeedFilterNone(data_raw)
     
-    match_ok = True
+    # airmarSpeedFilterIir | Description: Airmar: Speed Filter IIR
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11221,7 +11439,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarSpeedFilterIir(data_raw)
     
-    match_ok = True
+    # airmarTemperatureFilterNone | Description: Airmar: Temperature Filter None
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11230,7 +11448,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarTemperatureFilterNone(data_raw)
     
-    match_ok = True
+    # airmarTemperatureFilterIir | Description: Airmar: Temperature Filter IIR
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11239,7 +11457,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarTemperatureFilterIir(data_raw)
     
-    match_ok = True
+    # airmarNmea2000Options | Description: Airmar: NMEA 2000 options
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11247,21 +11465,21 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_airmarNmea2000Options(data_raw)
     
-    match_ok = True
+    # airmarAddressableMultiFrame | Description: Airmar: Addressable Multi-Frame
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_126720_airmarAddressableMultiFrame(data_raw)
     
-    match_ok = True
+    # maretronSlaveResponse | Description: Maretron: Slave Response
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_126720_maretronSlaveResponse(data_raw)
     
-    match_ok = True
+    # garminDayMode | Description: Garmin: Day Mode
     if (
         (((data_raw >> 0) & 0x7FF) == 229) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11273,7 +11491,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_garminDayMode(data_raw)
     
-    match_ok = True
+    # garminNightMode | Description: Garmin: Night Mode
     if (
         (((data_raw >> 0) & 0x7FF) == 229) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11285,7 +11503,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_garminNightMode(data_raw)
     
-    match_ok = True
+    # garminColorMode | Description: Garmin: Color mode
     if (
         (((data_raw >> 0) & 0x7FF) == 229) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -11297,7 +11515,56 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_126720_garminColorMode(data_raw)
     
-    raise Exception("No matching sub-PGN found")
+    return decode_pgn_126720_0x1ef000x1efffManufacturerProprietaryFastPacketAddressed(data_raw)
+    
+def decode_pgn_126720_0x1ef000x1efffManufacturerProprietaryFastPacketAddressed(data_raw: int) -> NMEA2000Message:
+    """Decode PGN 126720."""
+    nmea2000Message = NMEA2000Message(126720, '0x1ef000x1efffManufacturerProprietaryFastPacketAddressed', '0x1EF00-0x1EFFF: Manufacturer Proprietary fast-packet addressed')
+    # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP, Match: 
+    manufacturer_code_raw = (data_raw >> 0) & 0x7FF
+    manufacturer_code = lookup_MANUFACTURER_CODE(manufacturer_code_raw)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturer_code', 'Manufacturer Code', "", '', manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP))
+
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED, Match: 
+    reserved_11_raw = (data_raw >> 11) & 0x3
+    reserved_11 = reserved_11_raw * 1 if reserved_11_raw is not None else None
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', "", '', reserved_11, reserved_11_raw, None, FieldTypes.RESERVED))
+
+    # industry_code | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP, Match: 
+    industry_code_raw = (data_raw >> 13) & 0x7
+    industry_code = lookup_INDUSTRY_CODE(industry_code_raw)
+    nmea2000Message.fields.append(NMEA2000Field('industry_code', 'Industry Code', "", '', industry_code, industry_code_raw, None, FieldTypes.LOOKUP))
+
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    # Skipping fields longer than 256
+
+    return nmea2000Message
+
+def encode_pgn_126720_0x1ef000x1efffManufacturerProprietaryFastPacketAddressed(nmea2000Message: NMEA2000Message) -> int:
+    """Encode Nmea2000Message object to binary data for PGN 126720."""
+    data_raw = 0
+    # manufacturer_code | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field_value = next((f.raw_value if f.raw_value is not None else lookup_encode_MANUFACTURER_CODE(f.value) for f in nmea2000Message.fields if f.id == 'manufacturer_code'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field_value = next((f.value for f in nmea2000Message.fields if f.id == 'reserved_11'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    data_raw |= (field_value & 0x3) << 11
+    # industry_code | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field_value = next((f.raw_value if f.raw_value is not None else lookup_encode_INDUSTRY_CODE(f.value) for f in nmea2000Message.fields if f.id == 'industry_code'), None)
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    # Skipping fields longer than 256
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Data'")
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw
+
 def decode_pgn_126720_seatalk1PilotMode(data_raw: int) -> NMEA2000Message:
     """Decode PGN 126720."""
     nmea2000Message = NMEA2000Message(126720, 'seatalk1PilotMode', 'Seatalk1: Pilot Mode')
@@ -13884,6 +14151,29 @@ def encode_pgn_126720_garminColorMode(nmea2000Message: NMEA2000Message) -> int:
     if field_value is None:
         raise Exception("Cant encode this message, missing 'Color'")
     data_raw |= (field_value & 0xFF) << 80
+    return data_raw
+
+
+def is_fast_pgn_126976() -> bool:
+    """Return True if PGN 126976 is a fast PGN."""
+    raise Exception('PGEN type Mixed not supported')
+
+def decode_pgn_126976(data_raw: int) -> NMEA2000Message:
+    """Decode PGN 126976."""
+    nmea2000Message = NMEA2000Message(126976, '0x1f0000x1feffStandardizedMixedSingleFastPacketNonAddressed', '0x1F000-0x1FEFF: Standardized mixed single/fast packet non-addressed')
+    # data | Offset: 0, Length: 1784, Resolution: 1, Field Type: BINARY
+    # Skipping fields longer than 256
+
+    return nmea2000Message
+
+def encode_pgn_126976(nmea2000Message: NMEA2000Message) -> int:
+    """Encode Nmea2000Message object to binary data for PGN 126976."""
+    data_raw = 0
+    # data | Offset: 0, Length: 1784, Resolution: 1, Field Type: BINARY
+    # Skipping fields longer than 256
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Data'")
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 0
     return data_raw
 
 
@@ -27049,18 +27339,20 @@ def is_fast_pgn_129808() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_129808(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # dscDistressCallInformation | Description: DSC Distress Call Information
     if (
         (((data_raw >> 8) & 0xFF) == 112)
         ):
         return decode_pgn_129808_dscDistressCallInformation(data_raw)
     
-    match_ok = True
+    # dscCallInformation | Description: DSC Call Information
     if (
         ):
         return decode_pgn_129808_dscCallInformation(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_129808_dscDistressCallInformation(data_raw: int) -> NMEA2000Message:
     """Decode PGN 129808."""
     nmea2000Message = NMEA2000Message(129808, 'dscDistressCallInformation', 'DSC Distress Call Information')
@@ -32511,9 +32803,9 @@ def encode_pgn_130586(nmea2000Message: NMEA2000Message) -> int:
 def is_fast_pgn_130816() -> bool:
     """Return True if PGN 130816 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 19
+# Complex PGN. number of matches: 20
 def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # sonichubInit2 | Description: SonicHub: Init #2
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32521,7 +32813,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubInit2(data_raw)
     
-    match_ok = True
+    # sonichubAmRadio | Description: SonicHub: AM Radio
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32529,7 +32821,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubAmRadio(data_raw)
     
-    match_ok = True
+    # sonichubZoneInfo | Description: SonicHub: Zone info
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32537,7 +32829,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubZoneInfo(data_raw)
     
-    match_ok = True
+    # sonichubSource | Description: SonicHub: Source
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32545,7 +32837,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubSource(data_raw)
     
-    match_ok = True
+    # sonichubSourceList | Description: SonicHub: Source List
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32553,7 +32845,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubSourceList(data_raw)
     
-    match_ok = True
+    # sonichubControl | Description: SonicHub: Control
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32561,7 +32853,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubControl(data_raw)
     
-    match_ok = True
+    # sonichubFmRadio | Description: SonicHub: FM Radio
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32569,7 +32861,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubFmRadio(data_raw)
     
-    match_ok = True
+    # sonichubPlaylist | Description: SonicHub: Playlist
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32577,7 +32869,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubPlaylist(data_raw)
     
-    match_ok = True
+    # sonichubTrack | Description: SonicHub: Track
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32585,7 +32877,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubTrack(data_raw)
     
-    match_ok = True
+    # sonichubArtist | Description: SonicHub: Artist
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32593,7 +32885,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubArtist(data_raw)
     
-    match_ok = True
+    # sonichubAlbum | Description: SonicHub: Album
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32601,7 +32893,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubAlbum(data_raw)
     
-    match_ok = True
+    # sonichubMenuItem | Description: SonicHub: Menu Item
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32609,7 +32901,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubMenuItem(data_raw)
     
-    match_ok = True
+    # sonichubZones | Description: SonicHub: Zones
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32617,7 +32909,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubZones(data_raw)
     
-    match_ok = True
+    # sonichubMaxVolume | Description: SonicHub: Max Volume
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32625,7 +32917,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubMaxVolume(data_raw)
     
-    match_ok = True
+    # sonichubVolume | Description: SonicHub: Volume
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32633,7 +32925,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubVolume(data_raw)
     
-    match_ok = True
+    # sonichubInit1 | Description: SonicHub: Init #1
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32641,7 +32933,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubInit1(data_raw)
     
-    match_ok = True
+    # sonichubPosition | Description: SonicHub: Position
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32649,7 +32941,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubPosition(data_raw)
     
-    match_ok = True
+    # sonichubInit3 | Description: SonicHub: Init #3
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32657,7 +32949,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_sonichubInit3(data_raw)
     
-    match_ok = True
+    # simradTextMessage | Description: Simrad: Text Message
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -32665,7 +32957,26 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130816_simradTextMessage(data_raw)
     
-    raise Exception("No matching sub-PGN found")
+    return decode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(data_raw)
+    
+def decode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(data_raw: int) -> NMEA2000Message:
+    """Decode PGN 130816."""
+    nmea2000Message = NMEA2000Message(130816, '0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed', '0x1FF00-0x1FFFF: Manufacturer Specific fast-packet non-addressed')
+    # data | Offset: 0, Length: 1784, Resolution: 1, Field Type: BINARY
+    # Skipping fields longer than 256
+
+    return nmea2000Message
+
+def encode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(nmea2000Message: NMEA2000Message) -> int:
+    """Encode Nmea2000Message object to binary data for PGN 130816."""
+    data_raw = 0
+    # data | Offset: 0, Length: 1784, Resolution: 1, Field Type: BINARY
+    # Skipping fields longer than 256
+    if field_value is None:
+        raise Exception("Cant encode this message, missing 'Data'")
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 0
+    return data_raw
+
 def decode_pgn_130816_sonichubInit2(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130816."""
     nmea2000Message = NMEA2000Message(130816, 'sonichubInit2', 'SonicHub: Init #2')
@@ -34489,21 +34800,23 @@ def is_fast_pgn_130817() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130817(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # navicoProductInformation | Description: Navico: Product Information
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130817_navicoProductInformation(data_raw)
     
-    match_ok = True
+    # lowranceProductInformation | Description: Lowrance: Product Information
     if (
         (((data_raw >> 0) & 0x7FF) == 140) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130817_lowranceProductInformation(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130817_navicoProductInformation(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130817."""
     nmea2000Message = NMEA2000Message(130817, 'navicoProductInformation', 'Navico: Product Information')
@@ -34850,21 +35163,21 @@ def is_fast_pgn_130820() -> bool:
     return True
 # Complex PGN. number of matches: 25
 def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # simnetReprogramStatus | Description: Simnet: Reprogram Status
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130820_simnetReprogramStatus(data_raw)
     
-    match_ok = True
+    # furunoUnknown130820 | Description: Furuno: Unknown 130820
     if (
         (((data_raw >> 0) & 0x7FF) == 1855) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130820_furunoUnknown130820(data_raw)
     
-    match_ok = True
+    # fusionSourceName | Description: Fusion: Source Name
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34872,7 +35185,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionSourceName(data_raw)
     
-    match_ok = True
+    # fusionTrackInfo | Description: Fusion: Track Info
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34880,7 +35193,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionTrackInfo(data_raw)
     
-    match_ok = True
+    # fusionTrack | Description: Fusion: Track
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34888,7 +35201,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionTrack(data_raw)
     
-    match_ok = True
+    # fusionArtist | Description: Fusion: Artist
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34896,7 +35209,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionArtist(data_raw)
     
-    match_ok = True
+    # fusionAlbum | Description: Fusion: Album
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34904,7 +35217,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionAlbum(data_raw)
     
-    match_ok = True
+    # fusionUnitName | Description: Fusion: Unit Name
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34912,7 +35225,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionUnitName(data_raw)
     
-    match_ok = True
+    # fusionZoneName | Description: Fusion: Zone Name
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34920,7 +35233,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionZoneName(data_raw)
     
-    match_ok = True
+    # fusionPlayProgress | Description: Fusion: Play Progress
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34928,7 +35241,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionPlayProgress(data_raw)
     
-    match_ok = True
+    # fusionAmFmStation | Description: Fusion: AM/FM Station
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34936,7 +35249,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionAmFmStation(data_raw)
     
-    match_ok = True
+    # fusionVhf | Description: Fusion: VHF
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34944,7 +35257,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionVhf(data_raw)
     
-    match_ok = True
+    # fusionSquelch | Description: Fusion: Squelch
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34952,7 +35265,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionSquelch(data_raw)
     
-    match_ok = True
+    # fusionScan | Description: Fusion: Scan
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34960,7 +35273,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionScan(data_raw)
     
-    match_ok = True
+    # fusionMenuItem | Description: Fusion: Menu Item
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34968,7 +35281,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionMenuItem(data_raw)
     
-    match_ok = True
+    # fusionReplay | Description: Fusion: Replay
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34976,7 +35289,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionReplay(data_raw)
     
-    match_ok = True
+    # fusionMute | Description: Fusion: Mute
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34984,7 +35297,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionMute(data_raw)
     
-    match_ok = True
+    # fusionSubVolume | Description: Fusion: Sub Volume
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -34992,7 +35305,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionSubVolume(data_raw)
     
-    match_ok = True
+    # fusionTone | Description: Fusion: Tone
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -35000,7 +35313,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionTone(data_raw)
     
-    match_ok = True
+    # fusionVolume | Description: Fusion: Volume
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -35008,7 +35321,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionVolume(data_raw)
     
-    match_ok = True
+    # fusionPowerState | Description: Fusion: Power State
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -35016,7 +35329,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionPowerState(data_raw)
     
-    match_ok = True
+    # fusionSiriusxmChannel | Description: Fusion: SiriusXM Channel
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -35024,7 +35337,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionSiriusxmChannel(data_raw)
     
-    match_ok = True
+    # fusionSiriusxmTitle | Description: Fusion: SiriusXM Title
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -35032,7 +35345,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionSiriusxmTitle(data_raw)
     
-    match_ok = True
+    # fusionSiriusxmArtist | Description: Fusion: SiriusXM Artist
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -35040,7 +35353,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionSiriusxmArtist(data_raw)
     
-    match_ok = True
+    # fusionSiriusxmGenre | Description: Fusion: SiriusXM Genre
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -35048,7 +35361,9 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130820_fusionSiriusxmGenre(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130820_simnetReprogramStatus(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130820."""
     nmea2000Message = NMEA2000Message(130820, 'simnetReprogramStatus', 'Simnet: Reprogram Status')
@@ -37310,21 +37625,23 @@ def is_fast_pgn_130821() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130821(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # navicoAsciiData | Description: Navico: ASCII Data
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130821_navicoAsciiData(data_raw)
     
-    match_ok = True
+    # furunoUnknown130821 | Description: Furuno: Unknown 130821
     if (
         (((data_raw >> 0) & 0x7FF) == 1855) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130821_furunoUnknown130821(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130821_navicoAsciiData(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130821."""
     nmea2000Message = NMEA2000Message(130821, 'navicoAsciiData', 'Navico: ASCII Data')
@@ -37677,21 +37994,23 @@ def is_fast_pgn_130824() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130824(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # bGKeyValueData | Description: B&G: key-value data
     if (
         (((data_raw >> 0) & 0x7FF) == 381) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130824_bGKeyValueData(data_raw)
     
-    match_ok = True
+    # maretronAnnunciator | Description: Maretron: Annunciator
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130824_maretronAnnunciator(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130824_bGKeyValueData(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130824."""
     nmea2000Message = NMEA2000Message(130824, 'bGKeyValueData', 'B&G: key-value data')
@@ -38328,21 +38647,23 @@ def is_fast_pgn_130836() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130836(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # simnetFluidLevelSensorConfiguration | Description: Simnet: Fluid Level Sensor Configuration
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130836_simnetFluidLevelSensorConfiguration(data_raw)
     
-    match_ok = True
+    # maretronSwitchStatusCounter | Description: Maretron: Switch Status Counter
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130836_maretronSwitchStatusCounter(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130836_simnetFluidLevelSensorConfiguration(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130836."""
     nmea2000Message = NMEA2000Message(130836, 'simnetFluidLevelSensorConfiguration', 'Simnet: Fluid Level Sensor Configuration')
@@ -38615,21 +38936,23 @@ def is_fast_pgn_130837() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130837(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # simnetFuelFlowTurbineConfiguration | Description: Simnet: Fuel Flow Turbine Configuration
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130837_simnetFuelFlowTurbineConfiguration(data_raw)
     
-    match_ok = True
+    # maretronSwitchStatusTimer | Description: Maretron: Switch Status Timer
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130837_maretronSwitchStatusTimer(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130837_simnetFuelFlowTurbineConfiguration(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130837."""
     nmea2000Message = NMEA2000Message(130837, 'simnetFuelFlowTurbineConfiguration', 'Simnet: Fuel Flow Turbine Configuration')
@@ -38939,7 +39262,7 @@ def is_fast_pgn_130842() -> bool:
     return True
 # Complex PGN. number of matches: 3
 def decode_pgn_130842(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # simnetAisClassBStaticDataMsg24PartA | Description: Simnet: AIS Class B static data (msg 24 Part A)
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -38947,14 +39270,14 @@ def decode_pgn_130842(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(data_raw)
     
-    match_ok = True
+    # furunoSixDegreesOfFreedomMovement | Description: Furuno: Six Degrees Of Freedom Movement
     if (
         (((data_raw >> 0) & 0x7FF) == 1855) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130842_furunoSixDegreesOfFreedomMovement(data_raw)
     
-    match_ok = True
+    # simnetAisClassBStaticDataMsg24PartB | Description: Simnet: AIS Class B static data (msg 24 Part B)
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -38962,7 +39285,9 @@ def decode_pgn_130842(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130842."""
     nmea2000Message = NMEA2000Message(130842, 'simnetAisClassBStaticDataMsg24PartA', 'Simnet: AIS Class B static data (msg 24 Part A)')
@@ -39405,21 +39730,23 @@ def is_fast_pgn_130843() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130843(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # furunoHeelAngleRollInformation | Description: Furuno: Heel Angle, Roll Information
     if (
         (((data_raw >> 0) & 0x7FF) == 1855) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130843_furunoHeelAngleRollInformation(data_raw)
     
-    match_ok = True
+    # simnetSonarStatusFrequencyAndDspVoltage | Description: Simnet: Sonar Status, Frequency and DSP Voltage
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130843_simnetSonarStatusFrequencyAndDspVoltage(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130843_furunoHeelAngleRollInformation(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130843."""
     nmea2000Message = NMEA2000Message(130843, 'furunoHeelAngleRollInformation', 'Furuno: Heel Angle, Roll Information')
@@ -39565,21 +39892,23 @@ def is_fast_pgn_130845() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130845(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # furunoMultiSatsInViewExtended | Description: Furuno: Multi Sats In View Extended
     if (
         (((data_raw >> 0) & 0x7FF) == 1855) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130845_furunoMultiSatsInViewExtended(data_raw)
     
-    match_ok = True
+    # simnetKeyValue | Description: Simnet: Key Value
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130845_simnetKeyValue(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130845_furunoMultiSatsInViewExtended(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130845."""
     nmea2000Message = NMEA2000Message(130845, 'furunoMultiSatsInViewExtended', 'Furuno: Multi Sats In View Extended')
@@ -39738,21 +40067,23 @@ def is_fast_pgn_130846() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130846(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # simnetParameterSet | Description: Simnet: Parameter Set
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130846_simnetParameterSet(data_raw)
     
-    match_ok = True
+    # furunoMotionSensorStatusExtended | Description: Furuno: Motion Sensor Status Extended
     if (
         (((data_raw >> 0) & 0x7FF) == 1855) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130846_furunoMotionSensorStatusExtended(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130846_simnetParameterSet(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130846."""
     nmea2000Message = NMEA2000Message(130846, 'simnetParameterSet', 'Simnet: Parameter Set')
@@ -40006,7 +40337,7 @@ def is_fast_pgn_130850() -> bool:
     return True
 # Complex PGN. number of matches: 3
 def decode_pgn_130850(data_raw: int) -> NMEA2000Message:
-    match_ok = True
+    # simnetApCommand | Description: Simnet: AP Command
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -40014,7 +40345,7 @@ def decode_pgn_130850(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130850_simnetApCommand(data_raw)
     
-    match_ok = True
+    # simnetEventCommandApCommand | Description: Simnet: Event Command: AP command
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -40022,7 +40353,7 @@ def decode_pgn_130850(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130850_simnetEventCommandApCommand(data_raw)
     
-    match_ok = True
+    # simnetAlarm | Description: Simnet: Alarm
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
@@ -40030,7 +40361,9 @@ def decode_pgn_130850(data_raw: int) -> NMEA2000Message:
         ):
         return decode_pgn_130850_simnetAlarm(data_raw)
     
+    
     raise Exception("No matching sub-PGN found")
+    
 def decode_pgn_130850_simnetApCommand(data_raw: int) -> NMEA2000Message:
     """Decode PGN 130850."""
     nmea2000Message = NMEA2000Message(130850, 'simnetApCommand', 'Simnet: AP Command')

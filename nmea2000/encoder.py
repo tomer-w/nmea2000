@@ -9,12 +9,15 @@ class NMEA2000Encoder:
         encode_func_name = f'encode_pgn_{nmea2000Message.PGN}'
         encode_func = globals().get(encode_func_name)
 
-        if encode_func:
-            bytes = encode_func(nmea2000Message)
-            return bytes
-        else:
-            logger.error(f"No function found for PGN: {nmea2000Message.PGN}\n")
-            return None
+        #if we have multiple functions we need to use the ID as well
+        if not encode_func:
+            encode_func_name = f'encode_pgn_{nmea2000Message.PGN}_{nmea2000Message.id}'
+            encode_func = globals().get(encode_func_name)
+            if not encode_func:
+                raise ValueError(f"No encoding function found for PGN: {nmea2000Message.PGN}")
+        
+        bytes = encode_func(nmea2000Message)
+        return bytes
             
     def encode_tcp(self, nmea2000Message: NMEA2000Message) -> bytes:
         """Construct a single NMEA 2000 TCP packet from PGN, source ID, priority, and CAN data."""

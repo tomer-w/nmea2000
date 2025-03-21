@@ -12,7 +12,7 @@ class fast_pgn_metadata():
         self.frames = {}
         self.payload_length = 0
         self.bytes_stored = 0
-        self.sequence_counter = 0
+        self.sequence_counter = -1
 
     def __repr__(self):
         return f"<fast_pgn_metadata frames={len(self.frames)} payload_length={self.payload_length} bytes_stored={self.bytes_stored} sequence_counter={self.sequence_counter}>"
@@ -54,8 +54,8 @@ class NMEA2000Decoder():
             logger.debug(f"Ignoring frame {frame_counter} for PGN {pgn} as first frame has not been received.")
             return None
         
-        # Calculate data payload
-        if frame_counter == 0:
+        # if this is the first frame of new sequence we will start over
+        if frame_counter == 0 and sequence_counter != fast_pgn.sequence_counter:
             
             # Extract the total number of frames from the second-to-last byte
             total_bytes = can_data[-2]
@@ -275,7 +275,7 @@ class NMEA2000Decoder():
         decode_func = globals().get(decode_func_name)
 
         if not decode_func:
-            raise ValueError(f"No function found for PGN: {pgn}")
+            raise ValueError(f"No decoding function found for PGN: {pgn}")
 
         nmea2000Message = decode_func(int.from_bytes(data, "big"))
         nmea2000Message.add_data(src, dest, priority, timestamp)
