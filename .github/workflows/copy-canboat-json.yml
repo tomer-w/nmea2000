@@ -20,24 +20,23 @@ jobs:
 
       - name: Fetch latest file from source repo
         run: |
-          mkdir -p source-repo
-          curl -o source-repo/canboat.json https://raw.githubusercontent.com/canboat/canboat/refs/heads/master/docs/canboat.json
+          curl -o canboat.json.new https://raw.githubusercontent.com/canboat/canboat/refs/heads/master/docs/canboat.json
 
       - name: Check for changes
         run: |
-          if cmp -s source-repo/canboat.json ./canboat.json; then
+          if cmp -s canboat.json canboat.json.new; then
             echo "No changes detected."
             exit 0
           fi
           echo "canboat.json changed, proceeding with PR creation."
-          cp source-repo/canboat.json .
+          mv canboat.json.new canboat.json
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           branch: update-synced-file
           delete-branch: true
-          title: "Sync file from source repo"
+          title: "Sync canboat.json"
           body: "This PR updates `canboat.json` from `canboat` repo."
           commit-message: "Update canboat.json from source repo"
           base: main
