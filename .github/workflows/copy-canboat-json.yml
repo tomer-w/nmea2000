@@ -1,0 +1,40 @@
+name: Sync File and Create PR
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'  # Runs at 03:00 UTC every Monday
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  sync-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false  # Don't use default GitHub credentials
+
+      - name: Fetch latest file from source repo
+        run: |
+          mkdir -p source-repo
+          curl -o source-repo/canboat.json https://raw.githubusercontent.com/canboat/canboat/refs/heads/master/docs/canboat.json
+
+      - name: Check for changes
+        run: |
+          if cmp -s source-repo/canboat.json ./canboat.json; then
+            echo "No changes detected."
+            exit 0
+          fi
+          echo "canboat.json changed, proceeding with PR creation."
+          cp source-repo/canboat.json .
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: update-synced-file
+          delete-branch: true
+          title: "Sync file from source repo"
+          body: "This PR updates `canboat.json` from `canboat` repo."
+          commit-message: "Update canboat.json from source repo"
+          base: main
+          labels: "automation"
