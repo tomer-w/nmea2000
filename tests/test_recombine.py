@@ -139,6 +139,8 @@ def test_decode_strings_from_file_5():
             assert msg.source == 27
             assert msg.destination == 255
             assert msg.description == "Maretron: Proprietary Temperature High Range"
+            assert msg.fields[0].id == "manufacturer_code"
+            assert msg.fields[0].part_of_primary_key
             assert msg.fields[6].value == 0.1
             assert msg.fields[7].value == 0.4
         else:

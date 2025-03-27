@@ -13,6 +13,7 @@ def _validate_65280_message(msg: NMEA2000Message):
     assert len(msg.fields) == 5
     assert msg.fields[0].id == "manufacturer_code"
     assert msg.fields[0].name == "Manufacturer Code"
+    assert not msg.fields[0].part_of_primary_key
     assert msg.fields[0].description == "Furuno"
     assert msg.fields[0].value == "Furuno"
     assert msg.fields[0].type == FieldTypes.LOOKUP
@@ -23,6 +24,7 @@ def _validate_65280_message(msg: NMEA2000Message):
     assert msg.fields[3].value == -0.036000000000000004
     assert msg.fields[3].type == FieldTypes.NUMBER
     assert msg.fields[3].physical_quantities == PhysicalQuantities.DISTANCE
+    assert not msg.fields[3].part_of_primary_key
 
 def test_single_parse():
     decoder = NMEA2000Decoder()
@@ -81,6 +83,8 @@ def test_fast_parse():
     assert msg.fields[4].value is None
     assert msg.fields[5].id == "c"
     assert msg.fields[5].value == -17
+    assert msg.fields[7].id == "e"
+    assert not msg.fields[7].part_of_primary_key
     assert msg.fields[11].id == "i"
     assert msg.fields[11].value == 0
 
