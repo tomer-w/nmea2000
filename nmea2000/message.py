@@ -70,3 +70,17 @@ class NMEA2000Field:
         else:
             raw_value_hex = self.raw_value
         return f'{self.name} = {self.value} (bytes = "{raw_value_hex}")'
+
+class LookupFieldTypeEnumeration:
+    name: str
+    field_type: FieldTypes
+    resolution: float
+    unit: str
+    bits: int
+
+    def __init__(self, name: str, field_type: FieldTypes, resolution: float, unit: str, bits: int):
+        self.name = name
+        self.field_type = field_type
+        self.resolution = resolution
+        self.unit = unit
+        self.bits = bits

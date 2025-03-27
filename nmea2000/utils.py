@@ -65,6 +65,21 @@ def radians_to_degrees(radians):
     degrees = round(math.degrees(radians), 0)
     return degrees
 
+def decode_int(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: int):
+    data_raw = data_raw >> bit_offset
+    # Create a mask with the desired number of bits set to 1
+    mask = (1 << bit_length) - 1
+    # Perform bitwise AND with the mask
+    result = data_raw & mask
+    #make it signed using sign extension operation
+    if signed:
+        signed_mask = 1 << (bit_length -1)
+        if result & signed_mask != 0:
+            result -= (1 << bit_length)
+    # adjust resolution
+    result *= resolution
+    return result
+
 def decode_date(days_since_epoch: int) -> date:
     """
     Decodes an integer representing the number of days since 1970-01-01 (UNIX epoch)
@@ -166,10 +181,11 @@ def encode_decimal(decimal_value):
 
     return number_int
 
-def decode_float(number_int):
+def decode_float(data_raw: int, bit_offset: int, bit_length: int):
     """
     Decodes a 32-bit integer representing an IEEE-754 floating-point number in little endian format into a Python float.
     """
+    number_int = decode_int(data_raw, bit_offset, bit_length, False, 1)
     # Ensure the input integer fits in 32 bits
     if not (0 <= number_int <= 0xFFFFFFFF):
         return 0
@@ -179,7 +195,7 @@ def decode_float(number_int):
 
     # Unpack the bytes to a float using the '<f' format which specifies little-endian 32-bit floating point.
     decoded_float, = struct.unpack('<f', bytes_data)
-
+    
     return decoded_float
 
 def encode_float(float_number):
@@ -198,14 +214,14 @@ def encode_float(float_number):
     return encoded_int
 
 
-def decode_number(number_int, bit_length) -> int:
+def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: int) -> int:
     """
     The function follows specific decoding rules based on the bit length of the number:
     - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (0 is returned).
     - For numbers using 4 bits or more, two special conditions are checked:
         - The maximum positive value indicates the field is not present (0 is returned).
     """
-
+    number_int = decode_int(data_raw, bit_offset, bit_length, signed, resolution)
     if bit_length <= 3:
         if number_int == (1 << bit_length) - 1:
             return None

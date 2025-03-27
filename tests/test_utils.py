@@ -40,16 +40,16 @@ def test_encode_decode_decimal():
          assert decode_decimal(encode_decimal(i)) == i
 
 def test_decode_float_zero():
-    assert decode_float(0x00000000) == 0.0
+    assert decode_float(0x00000000, 0, 32) == 0.0
 
 def test_decode_float_positive():
-    assert decode_float(0x3f800000) == 1.0
+    assert decode_float(0x3f800000, 0, 32) == 1.0
 
 def test_decode_float_negative():
-    assert decode_float(0xbf800000) == -1.0
+    assert decode_float(0xbf800000, 0, 32) == -1.0
 
 def test_decode_float_small():
-    assert decode_float(0x00000001) == 1.401298464324817e-45
+    assert decode_float(0x00000001, 0, 32) == 1.401298464324817e-45
 
 def test_encode_float_zero():
     assert encode_float(0.0) == 0x00000000
@@ -69,7 +69,7 @@ def test_encode_float_small():
 def test_encode_decode_float():
     test_values = [0.0, 1.0, -1.0, 3.4028235e+38, 1.401298464324817e-45]
     for value in test_values:
-        assert decode_float(encode_float(value)) == pytest.approx(value)
+        assert decode_float(encode_float(value), 0, 32) == pytest.approx(value)
 
 def test_encode_date():
     assert encode_date(date(2023, 10, 5)) == 19635

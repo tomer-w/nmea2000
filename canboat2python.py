@@ -7,7 +7,7 @@ from jinja2 import Environment, FileSystemLoader
 with open('canboat.json') as f:
     json_data = json.load(f)
 
-def bits_to_hex(len):
+def bits_to_hex(len: int) -> str:
     num = 0
     for i in range(len):
         num = (num << 1) ^ 1

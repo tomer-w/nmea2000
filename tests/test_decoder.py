@@ -80,11 +80,20 @@ def test_fast_parse():
     assert msg.fields[3].id == "a"
     assert msg.fields[3].value == 36
     assert msg.fields[4].id == "b"
-    assert msg.fields[4].value is None
+    assert msg.fields[4].value == -1
     assert msg.fields[5].id == "c"
     assert msg.fields[5].value == -17
+    assert msg.fields[6].id == "d"
+    assert msg.fields[6].value == 0
     assert msg.fields[7].id == "e"
+    assert msg.fields[7].value == -102
     assert not msg.fields[7].part_of_primary_key
+    assert msg.fields[8].id == "f"
+    assert msg.fields[8].value == -83
+    assert msg.fields[9].id == "g"
+    assert msg.fields[9].value == 5
+    assert msg.fields[10].id == "h"
+    assert msg.fields[10].value == 0
     assert msg.fields[11].id == "i"
     assert msg.fields[11].value == 0
 
