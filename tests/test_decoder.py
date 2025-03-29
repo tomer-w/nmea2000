@@ -118,6 +118,35 @@ def test_bitlookup_parse2():
     assert msg.fields[13].value == 24
     assert msg.fields[13].unit_of_measurement == "%"
 
+def test_INDIRECT_LOOKUP_parse():
+    decoder = NMEA2000Decoder()
+    msg = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 60928
+    assert msg.priority == 6
+    assert msg.source == 5
+    assert msg.destination == 255
+    assert msg.description == "ISO Address Claim"
+    assert len(msg.fields) == 10
+    assert msg.fields[0].name == "Unique Number"
+    assert msg.fields[0].value == 1088507
+    assert msg.fields[1].name == "Manufacturer Code"
+    assert msg.fields[1].value == "Navico"
+    assert msg.fields[2].name == "Device Instance Lower"
+    assert msg.fields[2].value == 0
+    assert msg.fields[3].name == "Device Instance Upper"
+    assert msg.fields[3].value == 0
+    assert msg.fields[4].name == "Device Function"
+    assert msg.fields[4].value == "Rudder"
+    assert msg.fields[6].name == "Device Class"
+    assert msg.fields[6].value == "Steering and Control surfaces"
+    assert msg.fields[7].name == "System Instance"
+    assert msg.fields[7].value == 0
+    assert msg.fields[8].name == "Industry Group"
+    assert msg.fields[8].value == "Marine"
+    assert msg.fields[9].name == "Arbitrary address capable"
+    assert msg.fields[9].value is None
+
 def test_json():
     decoder = NMEA2000Decoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")

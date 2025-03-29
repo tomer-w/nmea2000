@@ -22,6 +22,16 @@ master_flags_dict = {
 {%- endfor %}
 }
 
+master_indirect_lookup_dict = {
+{% for lookup in data['LookupIndirectEnumerations']%}
+    '{{ lookup.Name }}': {
+        {%- for item in lookup.EnumValues %}
+        "{{ item.Value1 }}_{{ item.Value2 }}": "{{ item.Name }}",
+        {%- endfor %}
+    },
+{%- endfor %}
+}
+
 
 {% for lookup in data['LookupEnumerations']%}
 lookup_dict_encode_{{ lookup.Name }} = {
@@ -115,10 +125,11 @@ def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message:
 def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
     """Decode PGN {{ pgn.PGN }}."""
     nmea2000Message = NMEA2000Message({{pgn.PGN}}, '{{pgn.Id}}', '{{pgn.Description}}')
+    {%- set ns_fields = namespace() %}
     {%- for field in pgn.Fields %}
     {%- set field_name = generate_field_name(field.Name, field.FieldType, field.BitOffset) %}
     {%- set field_signed = field.Signed | default(false)  %}
-    # {{ field_name }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Signed: {{ field_signed }} Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}, Match: {{ field.Match }}, PartOfPrimaryKey: {{ field.PartOfPrimaryKey }},
+    # {{ field.Order }}:{{ field_name }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Signed: {{ field_signed }} Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}, Match: {{ field.Match }}, PartOfPrimaryKey: {{ field.PartOfPrimaryKey }},
     {%- if field.BitOffset is defined %}
     running_bit_offset = {{ field.BitOffset }}
     {%- endif %}
@@ -159,6 +170,13 @@ def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
     {{ field_name }} = decode_date({{ field_name }}_raw)
         {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
     {{ field_name }} = {{ field_name }}_raw = decode_int(data_raw, running_bit_offset, {{ field.BitLength }})
+        {%- elif field.FieldType == 'INDIRECT_LOOKUP' %}
+            {%- set ns_fields.indirect_lookup_order_orig = field.Order %}
+            {%- set ns_fields.indirect_lookup_order = field.LookupIndirectEnumerationFieldOrder %}
+            {%- set ns_fields.indirect_lookup_lookup = field.LookupIndirectEnumeration %}
+            {%- set ns_fields.indirect_lookup_field_name = field_name %}
+    {{ field_name }}_raw = decode_int(data_raw, running_bit_offset, {{ field.BitLength }})
+    {{ field_name }} = 'TEMP_VAL'
         {%- elif field.FieldType == 'BINARY' %}
             {%- if field.BitLength is defined %}
     {{ field_name }} = {{ field_name }}_raw = decode_int(data_raw, running_bit_offset, {{ field.BitLength }})
@@ -170,9 +188,14 @@ def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
         {%- else %}
     raise Exception("FieldType ({{ field.FieldType }}) not supported")
         {%- endif %}
-    {%- if field.FieldType != 'KEY_VALUE'%}
+    {%- if field.FieldType != 'KEY_VALUE'  %}
     nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', '{{ field.Name }}', "{{ field.Description }}", '{{ field.Unit }}', {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
     running_bit_offset += {% if field.BitLength is defined -%}{{ field.BitLength }}{%- else -%}0{%- endif -%}
+    {%- if ns_fields.indirect_lookup_order == field.Order %}
+    combined_key = str({{ field_name }}_raw) + "_" + str({{ ns_fields.indirect_lookup_field_name }}_raw)
+    {{ ns_fields.indirect_lookup_field_name }} = master_indirect_lookup_dict['{{ ns_fields.indirect_lookup_lookup }}'].get(combined_key, None)
+    nmea2000Message.fields[{{ ns_fields.indirect_lookup_order_orig-1 }}].value = {{ ns_fields.indirect_lookup_field_name }}
+    {%- endif -%}
     {%- endif %}
     {%- endif %}
 {% endfor %}
