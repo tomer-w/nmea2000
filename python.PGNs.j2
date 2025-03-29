@@ -133,11 +133,7 @@ def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
     {%- if field.BitOffset is defined %}
     running_bit_offset = {{ field.BitOffset }}
     {%- endif %}
-    
-    {%- if field.FieldType == 'STRING_FIX' or field.FieldType == 'STRING_LZ'%}
-    # Skipping STRING field types
-    {%- else %}
-        {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI'%}
+    {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI'%}
     {{ field_name }} = {{ field_name }}_raw = decode_number(data_raw, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
         {%- elif field.FieldType == 'LOOKUP' %}
     {{ field_name }}_raw = decode_int(data_raw, running_bit_offset, {{ field.BitLength }})
@@ -160,6 +156,8 @@ def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
         {{ field_name }} = decode_time({{ field_name }}_raw)
     nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', kv_metadata.name, '', kv_metadata.unit, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, kv_metadata.field_type, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
     running_bit_offset += kv_metadata.bits
+        {%- elif field.FieldType == 'STRING_FIX'%}
+    {{ field_name }} = {{ field_name }}_raw = decode_string_fix(data_raw, running_bit_offset, {{ field.BitLength }})
         {%- elif field.FieldType == 'FLOAT'%}
     {{ field_name }} = {{ field_name }}_raw = decode_float(data_raw, running_bit_offset, {{ field.BitLength }})
         {%- elif field.FieldType == 'TIME' %}
@@ -196,7 +194,6 @@ def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
     {{ ns_fields.indirect_lookup_field_name }} = master_indirect_lookup_dict['{{ ns_fields.indirect_lookup_lookup }}'].get(combined_key, None)
     nmea2000Message.fields[{{ ns_fields.indirect_lookup_order_orig-1 }}].value = {{ ns_fields.indirect_lookup_field_name }}
     {%- endif -%}
-    {%- endif %}
     {%- endif %}
 {% endfor %}
     return nmea2000Message

@@ -16345,19 +16345,27 @@ def decode_pgn_126996(data_raw: int) -> NMEA2000Message:
 
     # 3:model_id | Offset: 32, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 32
-    # Skipping STRING field types
+    model_id = model_id_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('model_id', 'Model ID', "", '', model_id, model_id_raw, None, FieldTypes.STRING_FIX, True))
+    running_bit_offset += 256
 
     # 4:software_version_code | Offset: 288, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 288
-    # Skipping STRING field types
+    software_version_code = software_version_code_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('software_version_code', 'Software Version Code', "", '', software_version_code, software_version_code_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     # 5:model_version | Offset: 544, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 544
-    # Skipping STRING field types
+    model_version = model_version_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('model_version', 'Model Version', "", '', model_version, model_version_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     # 6:model_serial_code | Offset: 800, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 800
-    # Skipping STRING field types
+    model_serial_code = model_serial_code_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('model_serial_code', 'Model Serial Code', "", '', model_serial_code, model_serial_code_raw, None, FieldTypes.STRING_FIX, True))
+    running_bit_offset += 256
 
     # 7:certification_level | Offset: 1056, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 1056
@@ -18421,11 +18429,15 @@ def decode_pgn_127498(data_raw: int) -> NMEA2000Message:
 
     # 3:vin | Offset: 24, Length: 136, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    # Skipping STRING field types
+    vin = vin_raw = decode_string_fix(data_raw, running_bit_offset, 136)
+    nmea2000Message.fields.append(NMEA2000Field('vin', 'VIN', "", '', vin, vin_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 136
 
     # 4:software_id | Offset: 160, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
-    # Skipping STRING field types
+    software_id = software_id_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('software_id', 'Software ID', "", '', software_id, software_id_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -21808,7 +21820,9 @@ def decode_pgn_128520(data_raw: int) -> NMEA2000Message:
 
     # 15:name | Offset: 200, Length: 1664, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 200
-    # Skipping STRING field types
+    name = name_raw = decode_string_fix(data_raw, running_bit_offset, 1664)
+    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', "", '', name, name_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 1664
 
     return nmea2000Message
 
@@ -24146,7 +24160,9 @@ def decode_pgn_129040(data_raw: int) -> NMEA2000Message:
 
     # 22:name | Offset: 256, Length: 160, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 256
-    # Skipping STRING field types
+    name = name_raw = decode_string_fix(data_raw, running_bit_offset, 160)
+    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', "", '', name, name_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 160
 
     # 23:dte | Offset: 416, Length: 1, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 416
@@ -24620,7 +24636,9 @@ def decode_pgn_129044(data_raw: int) -> NMEA2000Message:
     nmea2000Message = NMEA2000Message(129044, 'datum', 'Datum')
     # 1:local_datum | Offset: 0, Length: 32, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    # Skipping STRING field types
+    local_datum = local_datum_raw = decode_string_fix(data_raw, running_bit_offset, 32)
+    nmea2000Message.fields.append(NMEA2000Field('local_datum', 'Local Datum', "defined in IHO Publication S-60, Appendices B and C. First three chars are datum ID as per IHO tables. Fourth char is local datum subdivision code.", '', local_datum, local_datum_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 32
 
     # 2:delta_latitude | Offset: 32, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
@@ -24642,7 +24660,9 @@ def decode_pgn_129044(data_raw: int) -> NMEA2000Message:
 
     # 5:reference_datum | Offset: 128, Length: 32, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    # Skipping STRING field types
+    reference_datum = reference_datum_raw = decode_string_fix(data_raw, running_bit_offset, 32)
+    nmea2000Message.fields.append(NMEA2000Field('reference_datum', 'Reference Datum', "defined in IHO Publication S-60, Appendices B and C. First three chars are datum ID as per IHO tables. Fourth char is local datum subdivision code.", '', reference_datum, reference_datum_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 32
 
     return nmea2000Message
 
@@ -24742,7 +24762,9 @@ def decode_pgn_129045(data_raw: int) -> NMEA2000Message:
 
     # 10:datum_name | Offset: 288, Length: 32, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 288
-    # Skipping STRING field types
+    datum_name = datum_name_raw = decode_string_fix(data_raw, running_bit_offset, 32)
+    nmea2000Message.fields.append(NMEA2000Field('datum_name', 'Datum Name', "4 character code from IHO Publication S-60,Appendices B and C. First three chars are datum ID as per IHO tables. Fourth char is local datum subdivision code.", '', datum_name, datum_name_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 32
 
     return nmea2000Message
 
@@ -27411,11 +27433,15 @@ def decode_pgn_129794(data_raw: int) -> NMEA2000Message:
 
     # 5:callsign | Offset: 72, Length: 56, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    callsign = callsign_raw = decode_string_fix(data_raw, running_bit_offset, 56)
+    nmea2000Message.fields.append(NMEA2000Field('callsign', 'Callsign', "", '', callsign, callsign_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 56
 
     # 6:name | Offset: 128, Length: 160, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    # Skipping STRING field types
+    name = name_raw = decode_string_fix(data_raw, running_bit_offset, 160)
+    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', "", '', name, name_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 160
 
     # 7:type_of_ship | Offset: 288, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 288
@@ -27470,7 +27496,9 @@ def decode_pgn_129794(data_raw: int) -> NMEA2000Message:
 
     # 15:destination | Offset: 424, Length: 160, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 424
-    # Skipping STRING field types
+    destination = destination_raw = decode_string_fix(data_raw, running_bit_offset, 160)
+    nmea2000Message.fields.append(NMEA2000Field('destination', 'Destination', "", '', destination, destination_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 160
 
     # 16:ais_version_indicator | Offset: 584, Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 584
@@ -28235,7 +28263,9 @@ def decode_pgn_129799(data_raw: int) -> NMEA2000Message:
 
     # 3:radio_channel | Offset: 64, Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    # Skipping STRING field types
+    radio_channel = radio_channel_raw = decode_string_fix(data_raw, running_bit_offset, 48)
+    nmea2000Message.fields.append(NMEA2000Field('radio_channel', 'Radio Channel', "", '', radio_channel, radio_channel_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 48
 
     # 4:tx_power | Offset: 112, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 112
@@ -28443,7 +28473,9 @@ def decode_pgn_129801(data_raw: int) -> NMEA2000Message:
 
     # 10:safety_related_text | Offset: 88, Length: 936, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    # Skipping STRING field types
+    safety_related_text = safety_related_text_raw = decode_string_fix(data_raw, running_bit_offset, 936)
+    nmea2000Message.fields.append(NMEA2000Field('safety_related_text', 'Safety Related Text', "", '', safety_related_text, safety_related_text_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 936
 
     return nmea2000Message
 
@@ -28544,7 +28576,9 @@ def decode_pgn_129802(data_raw: int) -> NMEA2000Message:
 
     # 6:safety_related_text | Offset: 48, Length: 1296, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    # Skipping STRING field types
+    safety_related_text = safety_related_text_raw = decode_string_fix(data_raw, running_bit_offset, 1296)
+    nmea2000Message.fields.append(NMEA2000Field('safety_related_text', 'Safety Related Text', "", '', safety_related_text, safety_related_text_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 1296
 
     return nmea2000Message
 
@@ -29575,11 +29609,15 @@ def decode_pgn_129808_dscDistressCallInformation(data_raw: int) -> NMEA2000Messa
 
     # 6:proposed_rx_frequency_channel | Offset: 72, Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    proposed_rx_frequency_channel = proposed_rx_frequency_channel_raw = decode_string_fix(data_raw, running_bit_offset, 48)
+    nmea2000Message.fields.append(NMEA2000Field('proposed_rx_frequency_channel', 'Proposed Rx Frequency/Channel', "", '', proposed_rx_frequency_channel, proposed_rx_frequency_channel_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 48
 
     # 7:proposed_tx_frequency_channel | Offset: 120, Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 120
-    # Skipping STRING field types
+    proposed_tx_frequency_channel = proposed_tx_frequency_channel_raw = decode_string_fix(data_raw, running_bit_offset, 48)
+    nmea2000Message.fields.append(NMEA2000Field('proposed_tx_frequency_channel', 'Proposed Tx Frequency/Channel', "", '', proposed_tx_frequency_channel, proposed_tx_frequency_channel_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 48
 
     # 8:telephone_number | Offset: , Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
     raise Exception("FieldType (STRING_LAU) not supported")
@@ -29624,10 +29662,14 @@ def decode_pgn_129808_dscDistressCallInformation(data_raw: int) -> NMEA2000Messa
     running_bit_offset += 6
 
     # 16:calling_rx_frequency_channel | Offset: , Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
-    # Skipping STRING field types
+    calling_rx_frequency_channel = calling_rx_frequency_channel_raw = decode_string_fix(data_raw, running_bit_offset, 48)
+    nmea2000Message.fields.append(NMEA2000Field('calling_rx_frequency_channel', 'Calling Rx Frequency/Channel', "", '', calling_rx_frequency_channel, calling_rx_frequency_channel_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 48
 
     # 17:calling_tx_frequency_channel | Offset: , Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
-    # Skipping STRING field types
+    calling_tx_frequency_channel = calling_tx_frequency_channel_raw = decode_string_fix(data_raw, running_bit_offset, 48)
+    nmea2000Message.fields.append(NMEA2000Field('calling_tx_frequency_channel', 'Calling Tx Frequency/Channel', "", '', calling_tx_frequency_channel, calling_tx_frequency_channel_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 48
 
     # 18:time_of_receipt | Offset: , Length: 32, Signed: False Resolution: 0.0001, Field Type: TIME, Match: , PartOfPrimaryKey: ,
     time_of_receipt_raw = decode_number(data_raw, running_bit_offset, 32, False, 0.0001)
@@ -29753,11 +29795,15 @@ def decode_pgn_129808_dscCallInformation(data_raw: int) -> NMEA2000Message:
 
     # 6:proposed_rx_frequency_channel | Offset: 72, Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    proposed_rx_frequency_channel = proposed_rx_frequency_channel_raw = decode_string_fix(data_raw, running_bit_offset, 48)
+    nmea2000Message.fields.append(NMEA2000Field('proposed_rx_frequency_channel', 'Proposed Rx Frequency/Channel', "", '', proposed_rx_frequency_channel, proposed_rx_frequency_channel_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 48
 
     # 7:proposed_tx_frequency_channel | Offset: 120, Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 120
-    # Skipping STRING field types
+    proposed_tx_frequency_channel = proposed_tx_frequency_channel_raw = decode_string_fix(data_raw, running_bit_offset, 48)
+    nmea2000Message.fields.append(NMEA2000Field('proposed_tx_frequency_channel', 'Proposed Tx Frequency/Channel', "", '', proposed_tx_frequency_channel, proposed_tx_frequency_channel_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 48
 
     # 8:telephone_number | Offset: , Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
     raise Exception("FieldType (STRING_LAU) not supported")
@@ -29802,10 +29848,14 @@ def decode_pgn_129808_dscCallInformation(data_raw: int) -> NMEA2000Message:
     running_bit_offset += 6
 
     # 16:calling_rx_frequency_channel | Offset: , Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
-    # Skipping STRING field types
+    calling_rx_frequency_channel = calling_rx_frequency_channel_raw = decode_string_fix(data_raw, running_bit_offset, 48)
+    nmea2000Message.fields.append(NMEA2000Field('calling_rx_frequency_channel', 'Calling Rx Frequency/Channel', "", '', calling_rx_frequency_channel, calling_rx_frequency_channel_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 48
 
     # 17:calling_tx_frequency_channel | Offset: , Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
-    # Skipping STRING field types
+    calling_tx_frequency_channel = calling_tx_frequency_channel_raw = decode_string_fix(data_raw, running_bit_offset, 48)
+    nmea2000Message.fields.append(NMEA2000Field('calling_tx_frequency_channel', 'Calling Tx Frequency/Channel', "", '', calling_tx_frequency_channel, calling_tx_frequency_channel_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 48
 
     # 18:time_of_receipt | Offset: , Length: 32, Signed: False Resolution: 0.0001, Field Type: TIME, Match: , PartOfPrimaryKey: ,
     time_of_receipt_raw = decode_number(data_raw, running_bit_offset, 32, False, 0.0001)
@@ -29921,7 +29971,9 @@ def decode_pgn_129809(data_raw: int) -> NMEA2000Message:
 
     # 4:name | Offset: 40, Length: 160, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    # Skipping STRING field types
+    name = name_raw = decode_string_fix(data_raw, running_bit_offset, 160)
+    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', "", '', name, name_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 160
 
     # 5:ais_transceiver_information | Offset: 200, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 200
@@ -30020,11 +30072,15 @@ def decode_pgn_129810(data_raw: int) -> NMEA2000Message:
 
     # 5:vendor_id | Offset: 48, Length: 56, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    # Skipping STRING field types
+    vendor_id = vendor_id_raw = decode_string_fix(data_raw, running_bit_offset, 56)
+    nmea2000Message.fields.append(NMEA2000Field('vendor_id', 'Vendor ID', "", '', vendor_id, vendor_id_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 56
 
     # 6:callsign | Offset: 104, Length: 56, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 104
-    # Skipping STRING field types
+    callsign = callsign_raw = decode_string_fix(data_raw, running_bit_offset, 56)
+    nmea2000Message.fields.append(NMEA2000Field('callsign', 'Callsign', "", '', callsign, callsign_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 56
 
     # 7:length | Offset: 160, Length: 16, Signed: False Resolution: 0.1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
@@ -30577,7 +30633,9 @@ def decode_pgn_130054(data_raw: int) -> NMEA2000Message:
 
     # 2:station_identifier | Offset: 32, Length: 8, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    # Skipping STRING field types
+    station_identifier = station_identifier_raw = decode_string_fix(data_raw, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('station_identifier', 'Station identifier', "", '', station_identifier, station_identifier_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 8
 
     # 3:station_snr | Offset: 40, Length: 16, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
@@ -33181,7 +33239,9 @@ def decode_pgn_130324(data_raw: int) -> NMEA2000Message:
 
     # 18:station_id | Offset: 272, Length: 64, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 272
-    # Skipping STRING field types
+    station_id = station_id_raw = decode_string_fix(data_raw, running_bit_offset, 64)
+    nmea2000Message.fields.append(NMEA2000Field('station_id', 'Station ID', "", '', station_id, station_id_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 64
 
     return nmea2000Message
 
@@ -36403,7 +36463,9 @@ def decode_pgn_130816_sonichubAmRadio(data_raw: int) -> NMEA2000Message:
 
     # 12:text | Offset: 88, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -36712,7 +36774,9 @@ def decode_pgn_130816_sonichubSourceList(data_raw: int) -> NMEA2000Message:
 
     # 9:text | Offset: 56, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -36934,7 +36998,9 @@ def decode_pgn_130816_sonichubFmRadio(data_raw: int) -> NMEA2000Message:
 
     # 12:text | Offset: 88, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -37205,7 +37271,9 @@ def decode_pgn_130816_sonichubTrack(data_raw: int) -> NMEA2000Message:
 
     # 8:text | Offset: 72, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -37305,7 +37373,9 @@ def decode_pgn_130816_sonichubArtist(data_raw: int) -> NMEA2000Message:
 
     # 8:text | Offset: 72, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -37405,7 +37475,9 @@ def decode_pgn_130816_sonichubAlbum(data_raw: int) -> NMEA2000Message:
 
     # 8:text | Offset: 72, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -37523,7 +37595,9 @@ def decode_pgn_130816_sonichubMenuItem(data_raw: int) -> NMEA2000Message:
 
     # 11:text | Offset: 96, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 96
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -38225,7 +38299,9 @@ def decode_pgn_130816_simradTextMessage(data_raw: int) -> NMEA2000Message:
 
     # 11:text | Offset: 72, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    text = text_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -38343,7 +38419,9 @@ def decode_pgn_130817_navicoProductInformation(data_raw: int) -> NMEA2000Message
 
     # 5:model | Offset: 32, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    # Skipping STRING field types
+    model = model_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('model', 'Model', "", '', model, model_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     # 6:a | Offset: 288, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 288
@@ -38365,15 +38443,21 @@ def decode_pgn_130817_navicoProductInformation(data_raw: int) -> NMEA2000Message
 
     # 9:firmware_version | Offset: 312, Length: 80, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 312
-    # Skipping STRING field types
+    firmware_version = firmware_version_raw = decode_string_fix(data_raw, running_bit_offset, 80)
+    nmea2000Message.fields.append(NMEA2000Field('firmware_version', 'Firmware version', "", '', firmware_version, firmware_version_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 80
 
     # 10:firmware_date | Offset: 392, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 392
-    # Skipping STRING field types
+    firmware_date = firmware_date_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('firmware_date', 'Firmware date', "", '', firmware_date, firmware_date_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     # 11:firmware_time | Offset: 648, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 648
-    # Skipping STRING field types
+    firmware_time = firmware_time_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('firmware_time', 'Firmware time', "", '', firmware_time, firmware_time_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -38468,7 +38552,9 @@ def decode_pgn_130817_lowranceProductInformation(data_raw: int) -> NMEA2000Messa
 
     # 5:model | Offset: 32, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    # Skipping STRING field types
+    model = model_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('model', 'Model', "", '', model, model_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     # 6:a | Offset: 288, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 288
@@ -38490,15 +38576,21 @@ def decode_pgn_130817_lowranceProductInformation(data_raw: int) -> NMEA2000Messa
 
     # 9:firmware_version | Offset: 312, Length: 80, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 312
-    # Skipping STRING field types
+    firmware_version = firmware_version_raw = decode_string_fix(data_raw, running_bit_offset, 80)
+    nmea2000Message.fields.append(NMEA2000Field('firmware_version', 'Firmware version', "", '', firmware_version, firmware_version_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 80
 
     # 10:firmware_date | Offset: 392, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 392
-    # Skipping STRING field types
+    firmware_date = firmware_date_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('firmware_date', 'Firmware date', "", '', firmware_date, firmware_date_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     # 11:firmware_time | Offset: 648, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 648
-    # Skipping STRING field types
+    firmware_time = firmware_time_raw = decode_string_fix(data_raw, running_bit_offset, 256)
+    nmea2000Message.fields.append(NMEA2000Field('firmware_time', 'Firmware time', "", '', firmware_time, firmware_time_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 256
 
     return nmea2000Message
 
@@ -39140,7 +39232,9 @@ def decode_pgn_130820_fusionSourceName(data_raw: int) -> NMEA2000Message:
 
     # 10:source | Offset: 64, Length: 40, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('source', 'Source', "", '', source, source_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 40
 
     return nmea2000Message
 
@@ -39426,7 +39520,9 @@ def decode_pgn_130820_fusionTrack(data_raw: int) -> NMEA2000Message:
 
     # 7:track | Offset: 72, Length: 80, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('track', 'Track', "", '', track, track_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 80
 
     return nmea2000Message
 
@@ -39514,7 +39610,9 @@ def decode_pgn_130820_fusionArtist(data_raw: int) -> NMEA2000Message:
 
     # 7:artist | Offset: 72, Length: 80, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('artist', 'Artist', "", '', artist, artist_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 80
 
     return nmea2000Message
 
@@ -39602,7 +39700,9 @@ def decode_pgn_130820_fusionAlbum(data_raw: int) -> NMEA2000Message:
 
     # 7:album | Offset: 72, Length: 80, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('album', 'Album', "", '', album, album_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 80
 
     return nmea2000Message
 
@@ -39684,7 +39784,9 @@ def decode_pgn_130820_fusionUnitName(data_raw: int) -> NMEA2000Message:
 
     # 6:name | Offset: 32, Length: 112, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', "", '', name, name_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 112
 
     return nmea2000Message
 
@@ -39767,7 +39869,9 @@ def decode_pgn_130820_fusionZoneName(data_raw: int) -> NMEA2000Message:
 
     # 7:name | Offset: 40, Length: 104, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', "", '', name, name_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 104
 
     return nmea2000Message
 
@@ -39966,7 +40070,9 @@ def decode_pgn_130820_fusionAmFmStation(data_raw: int) -> NMEA2000Message:
 
     # 10:track | Offset: 88, Length: 80, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('track', 'Track', "", '', track, track_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 80
 
     return nmea2000Message
 
@@ -40398,7 +40504,9 @@ def decode_pgn_130820_fusionMenuItem(data_raw: int) -> NMEA2000Message:
 
     # 13:text | Offset: 88, Length: 40, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 40
 
     return nmea2000Message
 
@@ -41164,7 +41272,9 @@ def decode_pgn_130820_fusionSiriusxmChannel(data_raw: int) -> NMEA2000Message:
 
     # 6:channel | Offset: 56, Length: 96, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('channel', 'Channel', "", '', channel, channel_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 96
 
     return nmea2000Message
 
@@ -41241,7 +41351,9 @@ def decode_pgn_130820_fusionSiriusxmTitle(data_raw: int) -> NMEA2000Message:
 
     # 6:title | Offset: 56, Length: 96, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('title', 'Title', "", '', title, title_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 96
 
     return nmea2000Message
 
@@ -41318,7 +41430,9 @@ def decode_pgn_130820_fusionSiriusxmArtist(data_raw: int) -> NMEA2000Message:
 
     # 6:artist | Offset: 56, Length: 96, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('artist', 'Artist', "", '', artist, artist_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 96
 
     return nmea2000Message
 
@@ -41395,7 +41509,9 @@ def decode_pgn_130820_fusionSiriusxmGenre(data_raw: int) -> NMEA2000Message:
 
     # 6:genre | Offset: 56, Length: 96, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    # Skipping STRING field types
+    raise Exception("FieldType (STRING_LZ) not supported")
+    nmea2000Message.fields.append(NMEA2000Field('genre', 'Genre', "", '', genre, genre_raw, None, FieldTypes.STRING_LZ, False))
+    running_bit_offset += 96
 
     return nmea2000Message
 
@@ -41488,7 +41604,9 @@ def decode_pgn_130821_navicoAsciiData(data_raw: int) -> NMEA2000Message:
 
     # 5:message | Offset: 24, Length: 1840, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    # Skipping STRING field types
+    message = message_raw = decode_string_fix(data_raw, running_bit_offset, 1840)
+    nmea2000Message.fields.append(NMEA2000Field('message', 'Message', "", '', message, message_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 1840
 
     return nmea2000Message
 
@@ -42427,11 +42545,15 @@ def decode_pgn_130833(data_raw: int) -> NMEA2000Message:
 
     # 8:short_name | Offset: 48, Length: 64, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    # Skipping STRING field types
+    short_name = short_name_raw = decode_string_fix(data_raw, running_bit_offset, 64)
+    nmea2000Message.fields.append(NMEA2000Field('short_name', 'Short name', "", '', short_name, short_name_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 64
 
     # 9:long_name | Offset: 112, Length: 128, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 112
-    # Skipping STRING field types
+    long_name = long_name_raw = decode_string_fix(data_raw, running_bit_offset, 128)
+    nmea2000Message.fields.append(NMEA2000Field('long_name', 'Long name', "", '', long_name, long_name_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 128
 
     return nmea2000Message
 
@@ -43354,7 +43476,9 @@ def decode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(data_raw: int) -> NMEA
 
     # 9:name | Offset: 72, Length: 160, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    # Skipping STRING field types
+    name = name_raw = decode_string_fix(data_raw, running_bit_offset, 160)
+    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', "", '', name, name_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 160
 
     return nmea2000Message
 
@@ -43615,11 +43739,15 @@ def decode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(data_raw: int) -> NMEA
 
     # 10:vendor_id | Offset: 80, Length: 56, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
-    # Skipping STRING field types
+    vendor_id = vendor_id_raw = decode_string_fix(data_raw, running_bit_offset, 56)
+    nmea2000Message.fields.append(NMEA2000Field('vendor_id', 'Vendor ID', "", '', vendor_id, vendor_id_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 56
 
     # 11:callsign | Offset: 136, Length: 56, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 136
-    # Skipping STRING field types
+    callsign = callsign_raw = decode_string_fix(data_raw, running_bit_offset, 56)
+    nmea2000Message.fields.append(NMEA2000Field('callsign', 'Callsign', "", '', callsign, callsign_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 56
 
     # 12:length | Offset: 192, Length: 16, Signed: False Resolution: 0.1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 192
@@ -45084,7 +45212,9 @@ def decode_pgn_130856(data_raw: int) -> NMEA2000Message:
 
     # 7:text | Offset: 48, Length: 1784, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    # Skipping STRING field types
+    text = text_raw = decode_string_fix(data_raw, running_bit_offset, 1784)
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_FIX, False))
+    running_bit_offset += 1784
 
     return nmea2000Message
 

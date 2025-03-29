@@ -147,6 +147,33 @@ def test_INDIRECT_LOOKUP_parse():
     assert msg.fields[9].name == "Arbitrary address capable"
     assert msg.fields[9].value is None
 
+def test_STRING_FIX_parse():
+    decoder = NMEA2000Decoder()
+    msg = decoder.decode_basic_string("2011-04-25-06:25:02.017,6,126996,60,255,134,ba,04,96,26,4d,61,73,74,65,72,42,75,73,20,4e,4d,45,41,20,49,6e,74,65,72,66,61,63,65,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,58,44,31,38,41,30,30,31,39,00,00,00,00,00,00,00,00,4e,4d,45,41,32,30,30,30,00,00,00,00,00,00,00,03,00", True)
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 126996
+    assert msg.priority == 6
+    assert msg.source == 60
+    assert msg.destination == 255
+    assert msg.description == "Product Information"
+    assert len(msg.fields) == 8
+    assert msg.fields[0].name == "NMEA 2000 Version"
+    assert msg.fields[0].value == 1.21
+    assert msg.fields[1].name == "Product Code"
+    assert msg.fields[1].value == 9878
+    assert msg.fields[2].name == "Model ID"
+    assert msg.fields[2].value == 'MasterBus NMEA Interface'
+    assert msg.fields[3].name == "Software Version Code"
+    assert msg.fields[3].value == '1.00'
+    assert msg.fields[4].name == "Model Version"
+    assert msg.fields[4].value == '1.00'
+    assert msg.fields[5].name == "Model Serial Code"
+    assert msg.fields[5].value == 'XD18A0019'
+    assert msg.fields[6].name == "Certification Level"
+    assert msg.fields[6].value == 3
+    assert msg.fields[7].name == "Load Equivalency"
+    assert msg.fields[7].value == 0
+
 def test_json():
     decoder = NMEA2000Decoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")

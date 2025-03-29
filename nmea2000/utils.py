@@ -270,3 +270,14 @@ def decode_bit_lookup(data_raw: int, bit_lookup_dict) -> str:
         data_raw >>= 1
     return ', '.join(flags)
 
+def decode_string_fix(data_raw: int, bit_offset: int, bit_length: int) -> str:
+    number_int = decode_int(data_raw, bit_offset, bit_length)
+    num_bytes = (bit_length + 7) // 8
+    byte_arr = number_int.to_bytes(num_bytes, 'little')
+    decoded_str = byte_arr.decode('utf-8', errors='ignore')
+    decoded_str = decoded_str.split('\x00', 1)[0]
+    decoded_str = decoded_str.split('\xff', 1)[0]
+    decoded_str = decoded_str.split('@', 1)[0]
+    decoded_str = decoded_str.strip()
+    return decoded_str
+    
