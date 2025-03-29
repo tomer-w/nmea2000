@@ -36463,7 +36463,7 @@ def decode_pgn_130816_sonichubAmRadio(data_raw: int) -> NMEA2000Message:
 
     # 12:text | Offset: 88, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    raise Exception("FieldType (STRING_LZ) not supported")
+    text = text_raw = decode_string_lz(data_raw, running_bit_offset, 256)
     nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 256
 
@@ -36774,7 +36774,7 @@ def decode_pgn_130816_sonichubSourceList(data_raw: int) -> NMEA2000Message:
 
     # 9:text | Offset: 56, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    raise Exception("FieldType (STRING_LZ) not supported")
+    text = text_raw = decode_string_lz(data_raw, running_bit_offset, 256)
     nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 256
 
@@ -36998,7 +36998,7 @@ def decode_pgn_130816_sonichubFmRadio(data_raw: int) -> NMEA2000Message:
 
     # 12:text | Offset: 88, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    raise Exception("FieldType (STRING_LZ) not supported")
+    text = text_raw = decode_string_lz(data_raw, running_bit_offset, 256)
     nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 256
 
@@ -37271,7 +37271,7 @@ def decode_pgn_130816_sonichubTrack(data_raw: int) -> NMEA2000Message:
 
     # 8:text | Offset: 72, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    raise Exception("FieldType (STRING_LZ) not supported")
+    text = text_raw = decode_string_lz(data_raw, running_bit_offset, 256)
     nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 256
 
@@ -37373,7 +37373,7 @@ def decode_pgn_130816_sonichubArtist(data_raw: int) -> NMEA2000Message:
 
     # 8:text | Offset: 72, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    raise Exception("FieldType (STRING_LZ) not supported")
+    text = text_raw = decode_string_lz(data_raw, running_bit_offset, 256)
     nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 256
 
@@ -37475,7 +37475,7 @@ def decode_pgn_130816_sonichubAlbum(data_raw: int) -> NMEA2000Message:
 
     # 8:text | Offset: 72, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    raise Exception("FieldType (STRING_LZ) not supported")
+    text = text_raw = decode_string_lz(data_raw, running_bit_offset, 256)
     nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 256
 
@@ -37595,7 +37595,7 @@ def decode_pgn_130816_sonichubMenuItem(data_raw: int) -> NMEA2000Message:
 
     # 11:text | Offset: 96, Length: 256, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 96
-    raise Exception("FieldType (STRING_LZ) not supported")
+    text = text_raw = decode_string_lz(data_raw, running_bit_offset, 256)
     nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 256
 
@@ -39232,7 +39232,7 @@ def decode_pgn_130820_fusionSourceName(data_raw: int) -> NMEA2000Message:
 
     # 10:source | Offset: 64, Length: 40, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    raise Exception("FieldType (STRING_LZ) not supported")
+    source = source_raw = decode_string_lz(data_raw, running_bit_offset, 40)
     nmea2000Message.fields.append(NMEA2000Field('source', 'Source', "", '', source, source_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 40
 
@@ -39520,7 +39520,7 @@ def decode_pgn_130820_fusionTrack(data_raw: int) -> NMEA2000Message:
 
     # 7:track | Offset: 72, Length: 80, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    raise Exception("FieldType (STRING_LZ) not supported")
+    track = track_raw = decode_string_lz(data_raw, running_bit_offset, 80)
     nmea2000Message.fields.append(NMEA2000Field('track', 'Track', "", '', track, track_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 80
 
@@ -39610,7 +39610,7 @@ def decode_pgn_130820_fusionArtist(data_raw: int) -> NMEA2000Message:
 
     # 7:artist | Offset: 72, Length: 80, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    raise Exception("FieldType (STRING_LZ) not supported")
+    artist = artist_raw = decode_string_lz(data_raw, running_bit_offset, 80)
     nmea2000Message.fields.append(NMEA2000Field('artist', 'Artist', "", '', artist, artist_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 80
 
@@ -39700,7 +39700,7 @@ def decode_pgn_130820_fusionAlbum(data_raw: int) -> NMEA2000Message:
 
     # 7:album | Offset: 72, Length: 80, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    raise Exception("FieldType (STRING_LZ) not supported")
+    album = album_raw = decode_string_lz(data_raw, running_bit_offset, 80)
     nmea2000Message.fields.append(NMEA2000Field('album', 'Album', "", '', album, album_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 80
 
@@ -39784,7 +39784,7 @@ def decode_pgn_130820_fusionUnitName(data_raw: int) -> NMEA2000Message:
 
     # 6:name | Offset: 32, Length: 112, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    raise Exception("FieldType (STRING_LZ) not supported")
+    name = name_raw = decode_string_lz(data_raw, running_bit_offset, 112)
     nmea2000Message.fields.append(NMEA2000Field('name', 'Name', "", '', name, name_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 112
 
@@ -39869,7 +39869,7 @@ def decode_pgn_130820_fusionZoneName(data_raw: int) -> NMEA2000Message:
 
     # 7:name | Offset: 40, Length: 104, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise Exception("FieldType (STRING_LZ) not supported")
+    name = name_raw = decode_string_lz(data_raw, running_bit_offset, 104)
     nmea2000Message.fields.append(NMEA2000Field('name', 'Name', "", '', name, name_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 104
 
@@ -40070,7 +40070,7 @@ def decode_pgn_130820_fusionAmFmStation(data_raw: int) -> NMEA2000Message:
 
     # 10:track | Offset: 88, Length: 80, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    raise Exception("FieldType (STRING_LZ) not supported")
+    track = track_raw = decode_string_lz(data_raw, running_bit_offset, 80)
     nmea2000Message.fields.append(NMEA2000Field('track', 'Track', "", '', track, track_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 80
 
@@ -40504,7 +40504,7 @@ def decode_pgn_130820_fusionMenuItem(data_raw: int) -> NMEA2000Message:
 
     # 13:text | Offset: 88, Length: 40, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    raise Exception("FieldType (STRING_LZ) not supported")
+    text = text_raw = decode_string_lz(data_raw, running_bit_offset, 40)
     nmea2000Message.fields.append(NMEA2000Field('text', 'Text', "", '', text, text_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 40
 
@@ -41272,7 +41272,7 @@ def decode_pgn_130820_fusionSiriusxmChannel(data_raw: int) -> NMEA2000Message:
 
     # 6:channel | Offset: 56, Length: 96, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    raise Exception("FieldType (STRING_LZ) not supported")
+    channel = channel_raw = decode_string_lz(data_raw, running_bit_offset, 96)
     nmea2000Message.fields.append(NMEA2000Field('channel', 'Channel', "", '', channel, channel_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 96
 
@@ -41351,7 +41351,7 @@ def decode_pgn_130820_fusionSiriusxmTitle(data_raw: int) -> NMEA2000Message:
 
     # 6:title | Offset: 56, Length: 96, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    raise Exception("FieldType (STRING_LZ) not supported")
+    title = title_raw = decode_string_lz(data_raw, running_bit_offset, 96)
     nmea2000Message.fields.append(NMEA2000Field('title', 'Title', "", '', title, title_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 96
 
@@ -41430,7 +41430,7 @@ def decode_pgn_130820_fusionSiriusxmArtist(data_raw: int) -> NMEA2000Message:
 
     # 6:artist | Offset: 56, Length: 96, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    raise Exception("FieldType (STRING_LZ) not supported")
+    artist = artist_raw = decode_string_lz(data_raw, running_bit_offset, 96)
     nmea2000Message.fields.append(NMEA2000Field('artist', 'Artist', "", '', artist, artist_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 96
 
@@ -41509,7 +41509,7 @@ def decode_pgn_130820_fusionSiriusxmGenre(data_raw: int) -> NMEA2000Message:
 
     # 6:genre | Offset: 56, Length: 96, Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    raise Exception("FieldType (STRING_LZ) not supported")
+    genre = genre_raw = decode_string_lz(data_raw, running_bit_offset, 96)
     nmea2000Message.fields.append(NMEA2000Field('genre', 'Genre', "", '', genre, genre_raw, None, FieldTypes.STRING_LZ, False))
     running_bit_offset += 96
 

@@ -158,6 +158,8 @@ def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
     running_bit_offset += kv_metadata.bits
         {%- elif field.FieldType == 'STRING_FIX'%}
     {{ field_name }} = {{ field_name }}_raw = decode_string_fix(data_raw, running_bit_offset, {{ field.BitLength }})
+        {%- elif field.FieldType == 'STRING_LZ'%}
+    {{ field_name }} = {{ field_name }}_raw = decode_string_lz(data_raw, running_bit_offset, {{ field.BitLength }})
         {%- elif field.FieldType == 'FLOAT'%}
     {{ field_name }} = {{ field_name }}_raw = decode_float(data_raw, running_bit_offset, {{ field.BitLength }})
         {%- elif field.FieldType == 'TIME' %}

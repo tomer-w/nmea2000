@@ -174,6 +174,33 @@ def test_STRING_FIX_parse():
     assert msg.fields[7].name == "Load Equivalency"
     assert msg.fields[7].value == 0
 
+def test_STRING_LZ_parse():
+    decoder = NMEA2000Decoder()
+    msg = decoder.decode_basic_string("2020-08-22T13:52:52.054Z,7,130820,49,255,20,a3,99,0b,80,01,02,00,c6,3e,05,c7,08,41,56,52,4f,54,52,4f,53", True)
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 130820
+    assert msg.priority == 7
+    assert msg.source == 49
+    assert msg.destination == 255
+    assert msg.description == 'Fusion: AM/FM Station'
+    assert len(msg.fields) == 10
+    assert msg.fields[0].name == 'Manufacturer Code'
+    assert msg.fields[0].value == 'Fusion Electronics'
+    assert msg.fields[3].name == 'Message ID'
+    assert msg.fields[3].value == 'AM/FM Station'
+    assert msg.fields[4].name == 'A'
+    assert msg.fields[4].value == 128
+    assert msg.fields[5].name == 'AM/FM'
+    assert msg.fields[5].value == 'FM'
+    assert msg.fields[6].name == 'B'
+    assert msg.fields[6].value == 2
+    assert msg.fields[7].name == 'Frequency'
+    assert msg.fields[7].value == 88000000
+    assert msg.fields[7].unit_of_measurement == 'Hz'
+    assert msg.fields[7].physical_quantities == PhysicalQuantities.FREQUENCY
+    assert msg.fields[9].name == 'Track'
+    assert msg.fields[9].value == 'AVROTROS'
+
 def test_json():
     decoder = NMEA2000Decoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
