@@ -286,7 +286,21 @@ def decode_string_lz(data_raw: int, bit_offset: int, bit_length: int) -> str:
     num_bytes = (bit_length + 7) // 8
     byte_arr = number_int.to_bytes(num_bytes, 'little')
     str_len = byte_arr[0]
-    byte_arr = byte_arr[1 : 1 + str_len]
-    decoded_str = byte_arr.decode('utf-8', errors='ignore')
+    byte_arr_str = byte_arr[1 : 1 + str_len]
+    decoded_str = byte_arr_str.decode('utf-8', errors='ignore')
     return decoded_str
+    
+def decode_string_lau(data_raw: int, bit_offset: int) -> str:
+    data_raw = data_raw >> bit_offset
+    byte_arr = data_raw.to_bytes(((data_raw.bit_length() + 7) // 8)+1, byteorder='little')
+    if len(byte_arr) < 2:
+        return None, len(byte_arr)
+    str_len = byte_arr[0]
+    is_asci = byte_arr[1]
+    byte_arr_str = byte_arr[2 : str_len]
+    if is_asci:
+        decoded_str = byte_arr_str.decode('utf-8', errors='ignore')
+    else:
+        decoded_str = byte_arr_str.decode('utf-16', errors='ignore')
+    return decoded_str, str_len*8
     

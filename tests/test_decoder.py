@@ -201,6 +201,23 @@ def test_STRING_LZ_parse():
     assert msg.fields[9].name == 'Track'
     assert msg.fields[9].value == 'AVROTROS'
 
+def test_STRING_LAU_parse():
+    decoder = NMEA2000Decoder()
+    msg = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,1,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 126998
+    assert msg.priority == 6
+    assert msg.source == 1
+    assert msg.destination == 255
+    assert msg.description == 'Configuration Information'
+    assert len(msg.fields) == 3
+    assert msg.fields[0].name == 'Installation Description #1'
+    assert msg.fields[0].value == 'hello'
+    assert msg.fields[1].name == 'Installation Description #2'
+    assert msg.fields[1].value == 'wórld'
+    assert msg.fields[2].name == 'Manufacturer Information'
+    assert msg.fields[2].value is None
+
 def test_json():
     decoder = NMEA2000Decoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
