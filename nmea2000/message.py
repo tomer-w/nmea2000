@@ -3,6 +3,7 @@ import binascii
 from dataclasses import dataclass, field
 import orjson
 from .consts import PhysicalQuantities, FieldTypes
+from .utils import kelvin_to_celsius, kelvin_to_fahrenheit, pascal_to_bar, pascal_to_PSI
 
 # Helper function
 def int_to_bytes(value, length):
@@ -25,6 +26,27 @@ class NMEA2000Message:
         self.destination = dest
         self.priority = priority
         self.timestamp = timestamp
+
+    def apply_preferred_units(self, preferred_units: dict[PhysicalQuantities, str]):
+        if len(preferred_units) == 0:
+            return
+        for f in self.fields:
+            if f.physical_quantities == PhysicalQuantities.TEMPERATURE:
+                requested_unit = preferred_units.get(PhysicalQuantities.TEMPERATURE, None)
+                if requested_unit == "c":
+                    f.unit_of_measurement = "C"
+                    f.value = kelvin_to_celsius(f.value)
+                elif requested_unit == "f":
+                    f.unit_of_measurement = "F"
+                    f.value = kelvin_to_fahrenheit(f.value)
+            if f.physical_quantities == PhysicalQuantities.PRESSURE:
+                requested_unit = preferred_units.get(PhysicalQuantities.PRESSURE, None)
+                if requested_unit == "bar":
+                    f.unit_of_measurement = "Bar"
+                    f.value = pascal_to_bar(f.value)
+                elif requested_unit == "psi":
+                    f.unit_of_measurement = "PSI"
+                    f.value = pascal_to_PSI(f.value)
 
     def __repr__(self):
         return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, dest={self.destination}, description={self.description}, fields={self.fields})"

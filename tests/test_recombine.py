@@ -26,7 +26,7 @@ def _validate_129029_message(msg: NMEA2000Message):
     assert msg.fields[15].value is None
     assert msg.fields[15].raw_value == 15
     assert msg.fields[16].value is None
-    assert msg.fields[17].value == time(0, 10, 55)
+    assert msg.fields[17].value is None
 
 
 def test_decode_strings_from_file_1():

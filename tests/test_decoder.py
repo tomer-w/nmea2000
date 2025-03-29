@@ -1,3 +1,4 @@
+from datetime import time
 import json
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
@@ -30,6 +31,92 @@ def test_single_parse():
     decoder = NMEA2000Decoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
+
+def test_bitlookup_parse():
+    decoder = NMEA2000Decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C"})
+    msg = decoder.decode_basic_string("2016-04-09T16:41:39.628Z,2,127489,16,255,26,00,2f,06,ff,ff,e3,73,65,05,ff,7f,72,10,00,00,ff,ff,ff,ff,ff,06,00,00,00,7f,7f", True)
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 127489
+    assert msg.priority == 2
+    assert msg.source == 16
+    assert msg.destination == 255
+    assert msg.description == "Engine Parameters, Dynamic"
+    assert len(msg.fields) == 14
+    assert msg.fields[0].name == "Instance"
+    assert msg.fields[0].value == "Single Engine or Dual Engine Port"
+    assert msg.fields[1].name == "Oil pressure"
+    assert msg.fields[1].value == 158300
+    assert msg.fields[1].unit_of_measurement == "Pa"
+    assert msg.fields[1].physical_quantities == PhysicalQuantities.PRESSURE
+    assert msg.fields[2].name == "Oil temperature"
+    assert msg.fields[2].value is None
+    assert msg.fields[2].unit_of_measurement == "C"
+    assert msg.fields[2].physical_quantities == PhysicalQuantities.TEMPERATURE
+    assert msg.fields[3].name == "Temperature"
+    assert msg.fields[3].value == 23.52
+    assert msg.fields[4].name == "Alternator Potential"
+    assert msg.fields[4].value == 13.81
+    assert msg.fields[5].name == "Fuel Rate"
+    assert msg.fields[5].value is None
+    assert msg.fields[6].name == "Total Engine hours"
+    assert msg.fields[6].value == time(1,10,10)
+    assert msg.fields[7].name == "Coolant Pressure"
+    assert msg.fields[7].value is None
+    assert msg.fields[8].name == "Fuel Pressure"
+    assert msg.fields[8].value is None
+    assert msg.fields[10].name == "Discrete Status 1"
+    assert msg.fields[10].value == "Over Temperature, Low Oil Pressure"
+    assert msg.fields[11].name == "Discrete Status 2"
+    assert msg.fields[11].value == ""
+    assert msg.fields[12].name == "Engine Load"
+    assert msg.fields[12].value is None
+    assert msg.fields[13].name == "Engine Torque"
+    assert msg.fields[13].value is None
+
+def test_bitlookup_parse2():
+    decoder = NMEA2000Decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C", PhysicalQuantities.PRESSURE:"Bar"})
+    msg = decoder.decode_basic_string("1970-01-01T16:41:39.628Z,2,127489,16,255,26,00,2f,06,10,20,e3,73,65,05,65,04,72,10,00,00,10,20,30,40,ff,06,00,ff,00,30,18", True)
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 127489
+    assert msg.priority == 2
+    assert msg.source == 16
+    assert msg.destination == 255
+    assert msg.description == "Engine Parameters, Dynamic"
+    assert len(msg.fields) == 14
+    assert msg.fields[0].name == "Instance"
+    assert msg.fields[0].value == "Single Engine or Dual Engine Port"
+    assert msg.fields[1].name == "Oil pressure"
+    assert msg.fields[1].value == 1.583
+    assert msg.fields[1].unit_of_measurement == "Bar"
+    assert msg.fields[1].physical_quantities == PhysicalQuantities.PRESSURE
+    assert msg.fields[2].name == "Oil temperature"
+    assert msg.fields[2].value == 547.65
+    assert msg.fields[2].unit_of_measurement == "C"
+    assert msg.fields[2].physical_quantities == PhysicalQuantities.TEMPERATURE
+    assert msg.fields[3].name == "Temperature"
+    assert msg.fields[3].value == 23.52
+    assert msg.fields[4].name == "Alternator Potential"
+    assert msg.fields[4].value == 13.81
+    assert msg.fields[5].name == "Fuel Rate"
+    assert msg.fields[5].value == 112.5
+    assert msg.fields[6].name == "Total Engine hours"
+    assert msg.fields[6].value == time(1,10,10)
+    assert msg.fields[7].name == "Coolant Pressure"
+    assert msg.fields[7].value == 8.208
+    assert msg.fields[7].unit_of_measurement == "Bar"
+    assert msg.fields[8].name == "Fuel Pressure"
+    assert msg.fields[8].value == 164.32
+    assert msg.fields[8].unit_of_measurement == "Bar"
+    assert msg.fields[10].name == "Discrete Status 1"
+    assert msg.fields[10].value == "Over Temperature, Low Oil Pressure"
+    assert msg.fields[11].name == "Discrete Status 2"
+    assert msg.fields[11].value == "Warning Level 1, Warning Level 2, Power Reduction, Maintenance Needed, Engine Comm Error, Sub or Secondary Throttle, Neutral Start Protect, Engine Shutting Down"
+    assert msg.fields[12].name == "Engine Load"
+    assert msg.fields[12].value == 48
+    assert msg.fields[12].unit_of_measurement == "%"
+    assert msg.fields[13].name == "Engine Torque"
+    assert msg.fields[13].value == 24
+    assert msg.fields[13].unit_of_measurement == "%"
 
 def test_json():
     decoder = NMEA2000Decoder()

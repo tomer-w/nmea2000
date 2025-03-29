@@ -30,9 +30,27 @@ def kelvin_to_celsius(kelvin):
         return None
 
     # Convert Kelvin to Celsius
-    celsius = round(kelvin - 273.15,1)
+    celsius = round(kelvin - 273.15,2)
 
     return celsius
+
+def pascal_to_bar(pascal):
+    if pascal is None:
+        return None
+
+    # Convert pascal to bar
+    bar = pascal / 100000
+
+    return bar
+
+def pascal_to_PSI(pascal):
+    if pascal is None:
+        return None
+
+    # Convert pascal to PSI
+    PSI = pascal / 6894.76
+
+    return PSI
 
 def mps_to_knots(mps):
     """
@@ -65,25 +83,21 @@ def radians_to_degrees(radians):
     degrees = round(math.degrees(radians), 0)
     return degrees
 
-def decode_int(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: int):
+def decode_int(data_raw: int, bit_offset: int, bit_length: int):
     data_raw = data_raw >> bit_offset
     # Create a mask with the desired number of bits set to 1
     mask = (1 << bit_length) - 1
     # Perform bitwise AND with the mask
     result = data_raw & mask
-    #make it signed using sign extension operation
-    if signed:
-        signed_mask = 1 << (bit_length -1)
-        if result & signed_mask != 0:
-            result -= (1 << bit_length)
-    # adjust resolution
-    result *= resolution
     return result
 
 def decode_date(days_since_epoch: int) -> date:
     """
     Decodes an integer representing the number of days since 1970-01-01 (UNIX epoch)
     """
+    if days_since_epoch is None:
+        return None
+    
     # Ensure the input is treated as an integer
     days_since_epoch = int(days_since_epoch)
     
@@ -115,6 +129,9 @@ def decode_time(seconds_since_midnight: int) -> time:
     Returns:
         time: The decoded time.
     """
+    if seconds_since_midnight is None:
+        return None
+
     # Ensure the input is treated as an integer
     seconds_since_midnight = int(seconds_since_midnight)
 
@@ -185,7 +202,7 @@ def decode_float(data_raw: int, bit_offset: int, bit_length: int):
     """
     Decodes a 32-bit integer representing an IEEE-754 floating-point number in little endian format into a Python float.
     """
-    number_int = decode_int(data_raw, bit_offset, bit_length, False, 1)
+    number_int = decode_int(data_raw, bit_offset, bit_length)
     # Ensure the input integer fits in 32 bits
     if not (0 <= number_int <= 0xFFFFFFFF):
         return 0
@@ -217,19 +234,39 @@ def encode_float(float_number):
 def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: int) -> int:
     """
     The function follows specific decoding rules based on the bit length of the number:
-    - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (0 is returned).
-    - For numbers using 4 bits or more, two special conditions are checked:
-        - The maximum positive value indicates the field is not present (0 is returned).
+    - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (None is returned).
+    - For numbers using 4 bits or more, the maximum positive value indicates the field is not present (None is returned).
     """
-    number_int = decode_int(data_raw, bit_offset, bit_length, signed, resolution)
+    number_int = decode_int(data_raw, bit_offset, bit_length)
+
+    #make it signed using sign extension operation
+    if signed:
+        signed_mask = 1 << (bit_length -1)
+        if number_int & signed_mask != 0:
+            number_int -= (1 << bit_length)
+
     if bit_length <= 3:
         if number_int == (1 << bit_length) - 1:
             return None
     elif bit_length >= 4:
-        max_positive_value = (1 << bit_length) - 1
+        max_positive_value = (1 << bit_length) - 1 if not signed else (1 << (bit_length - 1)) - 1
         if number_int == max_positive_value:
             return None
-        elif number_int == max_positive_value - 1:
-            return None
+
+    # adjust resolution
+    number_int *= resolution
 
     return number_int
+
+def decode_bit_lookup(data_raw: int, bit_lookup_dict) -> str:
+    bit = 0
+    flags = []
+    while data_raw !=0:
+        if data_raw & 1 == 1:
+            str = bit_lookup_dict.get(bit, None)
+            if str is not None:
+                flags.append(str)
+        bit +=1
+        data_raw >>= 1
+    return ', '.join(flags)
+

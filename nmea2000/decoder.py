@@ -4,6 +4,7 @@ import binascii
 from datetime import datetime, timedelta
 from .message import NMEA2000Message
 from .pgns import *  # noqa: F403
+from .consts import PhysicalQuantities
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class fast_pgn_metadata():
         return f"<fast_pgn_metadata frames={len(self.frames)} payload_length={self.payload_length} bytes_stored={self.bytes_stored} sequence_counter={self.sequence_counter}>"
 
 class NMEA2000Decoder():
-    def __init__(self, exclude_pgns=[], include_pgns=[]) -> None:
+    def __init__(self, exclude_pgns:list[str]=[], include_pgns:list[str]=[], preferred_units:dict[PhysicalQuantities, str]={}) -> None:
         self.data = {}
         if not isinstance(exclude_pgns, list):
             raise ValueError("exclude_pgns must be a list")
@@ -29,6 +30,7 @@ class NMEA2000Decoder():
         
         self.exclude_pgns = exclude_pgns
         self.include_pgns = include_pgns
+        self.preferred_units = {k: v.lower() for k, v in preferred_units.items()}
         
 
     def _decode_fast_message(self, pgn, priority, src, dest, timestamp, can_data) -> NMEA2000Message:
@@ -154,7 +156,7 @@ class NMEA2000Decoder():
         
         return self._decode(pgn, priority, src, dest, timestamp, reversed_bytes, True)
         
-    def decode_basic_string(self, basic_string: str) -> NMEA2000Message:
+    def decode_basic_string(self, basic_string: str, already_combined: bool = False) -> NMEA2000Message:
         """Process an Actisense packet string and extract the PGN, source ID, and CAN data."""
         # Split the Actisense string by spaces
         parts = basic_string.split(",")
@@ -163,7 +165,10 @@ class NMEA2000Decoder():
             raise ValueError("Invalid string format")
         
         # Extract the fields
-        timestamp = datetime.strptime(parts[0], "%Y-%m-%d-%H:%M:%S.%f")
+        if parts[0].endswith("Z"):
+            timestamp = datetime.strptime(parts[0], "%Y-%m-%dT%H:%M:%S.%fZ")
+        else:
+            timestamp = datetime.strptime(parts[0], "%Y-%m-%d-%H:%M:%S.%f")
         priority = int(parts[1])
         pgn_id = int(parts[2])
         src = int(parts[3])
@@ -176,7 +181,7 @@ class NMEA2000Decoder():
         logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {src}, PGN: {pgn_id}, CAN Data: {can_data_bytes}")
         
         # not calling _decode as in this format the fast frames are already combined
-        return self._decode(pgn_id, priority, src, dest, timestamp, can_data_bytes)
+        return self._decode(pgn_id, priority, src, dest, timestamp, can_data_bytes, already_combined)
 
     def decode_tcp(self, packet: bytes) -> NMEA2000Message:
         """Tested with ECAN devices. Process a single packet and extract the PGN, source ID, and CAN data."""
@@ -279,6 +284,7 @@ class NMEA2000Decoder():
 
         nmea2000Message = decode_func(int.from_bytes(data, "big"))
         nmea2000Message.add_data(src, dest, priority, timestamp)
+        nmea2000Message.apply_preferred_units(self.preferred_units)
         sys.stdout.write(nmea2000Message.to_string_test_style()+"\n")
         return nmea2000Message
         
