@@ -77,10 +77,12 @@ class LookupFieldTypeEnumeration:
     resolution: float
     unit: str
     bits: int
+    lookup_enumeration: str
 
-    def __init__(self, name: str, field_type: FieldTypes, resolution: float, unit: str, bits: int):
+    def __init__(self, name: str, field_type: FieldTypes, resolution: float, unit: str, bits: int, lookup_enumeration: str):
         self.name = name
         self.field_type = field_type
         self.resolution = resolution
         self.unit = unit
         self.bits = bits
+        self.lookup_enumeration = lookup_enumeration
