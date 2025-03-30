@@ -19,14 +19,16 @@ async def tcp_client(client):
         if not line:
             break
         line = line.strip()
-        if line:
+        if line == "exit":
+            break
+        else:
             try:
                 message = NMEA2000Message.from_json(line)
             except Exception:
                 print ("Not valid NMEA2000Message json")
                 continue
             await client.send(message)
-    await client.close()
+    client.close()
 
 async def handle_received_data(message: NMEA2000Message):
     """User-defined callback function for received data."""

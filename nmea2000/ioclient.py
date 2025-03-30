@@ -83,8 +83,6 @@ class AsyncIOClient:
         self._closed = True
         if self.writer:
             self.writer.close()
-        if self.reader and self.reader is not None:
-            self.reader.close()
         self._connected = False
         self.logger.info("Connection closed.")
 
