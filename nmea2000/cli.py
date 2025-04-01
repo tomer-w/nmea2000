@@ -4,7 +4,7 @@ import sys
 import logging
 
 from .message import NMEA2000Message
-from .ioclient import TcpNmea2000Gateway, UsbNmea2000Gateway
+from .ioclient import AsyncIOClient, TcpNmea2000Gateway, UsbNmea2000Gateway
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 
@@ -20,8 +20,10 @@ async def handle_status_change(status: str):
     """Callback function for status changes."""
     print(f"Connection status: {status}")
 
-async def interactive_client(client):
+async def interactive_client(client: AsyncIOClient):
     """Interactive client function to handle user input."""
+    client.set_receive_callback(handle_received_message)
+    client. set_status_callback(handle_status_change)
     await client.connect()
     
     print("Connected to NMEA2000 gateway. Enter NMEA2000 messages in JSON format.")
@@ -169,20 +171,11 @@ def main():
             
     elif args.command == "tcp_client":
         # Create TCP client passing callbacks in constructor
-        client = TcpNmea2000Gateway(
-            args.server, 
-            args.port, 
-            receive_callback=handle_received_message,
-            status_callback=handle_status_change
-        )
+        client = TcpNmea2000Gateway(args.server, args.port)
         asyncio.run(interactive_client(client))
     elif args.command == "usb_client":
         # Create USB client passing callbacks in constructor
-        client = UsbNmea2000Gateway(
-            args.port,
-            receive_callback=handle_received_message,
-            status_callback=handle_status_change
-        )
+        client = UsbNmea2000Gateway(args.port)
         asyncio.run(interactive_client(client))
 
 if __name__ == "__main__":

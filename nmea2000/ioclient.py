@@ -32,24 +32,18 @@ class AsyncIOClient:
     """
     def __init__(self, 
                  exclude_pgns=[], 
-                 include_pgns=[], 
-                 receive_callback: Optional[Callable[[NMEA2000Message], Awaitable[None]]] = None,
-                 status_callback: Optional[Callable[[str], Awaitable[None]]] = None):
+                 include_pgns=[]):
         """Initialize the AsyncIOClient.
         
         Args:
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
-            receive_callback: Async callback function called when data is received.
-                              Function signature: async def callback(message: NMEA2000Message) -> None
-            status_callback: Async callback function called when connection status changes.
-                             Function signature: async def callback(status: str) -> None
         """
         self._state = State.DISCONNECTED
         self.reader = None
         self.writer = None
-        self.receive_callback = receive_callback
-        self.status_callback = status_callback
+        self.receive_callback = None
+        self.status_callback = None
         self.queue = asyncio.Queue()
         self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns)
         self.encoder = NMEA2000Encoder()
@@ -58,6 +52,22 @@ class AsyncIOClient:
         # Setup logging
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
+
+    def set_status_callback(self, callback: Optional[Callable[[str], Awaitable[None]]]):
+        """Registers a callback to be executed when the connection status changes.
+        
+        Args:
+            callback: Async function with signature: async def callback(status: str) -> None
+        """
+        self.status_callback = callback
+
+    def set_receive_callback(self, callback: Optional[Callable[[NMEA2000Message], Awaitable[None]]]):
+        """Registers a callback to be executed when data is received.
+        
+        Args:
+            callback: Async function with signature: async def callback(message: NMEA2000Message) -> None
+        """
+        self.receive_callback = callback
 
     @property
     def state(self) -> State:
@@ -214,9 +224,7 @@ class TcpNmea2000Gateway(AsyncIOClient):
                  host: str,
                  port: int, 
                  exclude_pgns=[], 
-                 include_pgns=[], 
-                 receive_callback: Optional[Callable[[NMEA2000Message], Awaitable[None]]] = None,
-                 status_callback: Optional[Callable[[str], Awaitable[None]]] = None):
+                 include_pgns=[]):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -224,10 +232,8 @@ class TcpNmea2000Gateway(AsyncIOClient):
             port: Server port number.
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
-            receive_callback: Async callback function for received messages.
-            status_callback: Async callback function for status changes.
         """
-        super().__init__(exclude_pgns, include_pgns, receive_callback, status_callback)
+        super().__init__(exclude_pgns, include_pgns)
         self.host = host
         self.port = port
         self.lock = asyncio.Lock()
@@ -296,19 +302,15 @@ class UsbNmea2000Gateway(AsyncIOClient):
     def __init__(self,
                  port: str,
                  exclude_pgns=[], 
-                 include_pgns=[], 
-                 receive_callback: Optional[Callable[[NMEA2000Message], Awaitable[None]]] = None,
-                 status_callback: Optional[Callable[[str], Awaitable[None]]] = None):
+                 include_pgns=[]):
         """Initialize a USB/Serial NMEA2000 gateway client.
         
         Args:
             port: Serial port name (e.g., "/dev/ttyUSB0" on Linux or "COM3" on Windows).
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
-            receive_callback: Async callback function for received messages.
-            status_callback: Async callback function for status changes.
         """
-        super().__init__(exclude_pgns, include_pgns, receive_callback, status_callback)
+        super().__init__(exclude_pgns, include_pgns)
         self.port = port
         self._buffer = None
 
