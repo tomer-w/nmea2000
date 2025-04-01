@@ -50,7 +50,7 @@ def lookup_encode_{{ lookup.Name }}(value):
 {% for lookup_field_type in data['LookupFieldTypeEnumerations']%}
 lookup_field_type_dict_{{ lookup_field_type.Name }} = {
     {%- for item in lookup_field_type.EnumFieldTypeValues %}
-    {{ item.value }}: LookupFieldTypeEnumeration("{{ item.name }}", FieldTypes.{{ item.FieldType }}, {% if item.Resolution is defined -%}{{item.Resolution}}{%- else -%}None{%- endif -%}, "{{ item.Unit }}", {{ item.Bits }}, {% if item.LookupEnumeration is defined -%}"{{item.LookupEnumeration}}"{%- else -%}None{%- endif -%}),
+    {{ item.value }}: LookupFieldTypeEnumeration("{{ item.name }}", FieldTypes.{{ item.FieldType }}, {% if item.Resolution is defined -%}{{item.Resolution}}{%- else -%}None{%- endif -%}, {% if item.Unit is defined -%}"{{item.Unit}}"{%- else -%}None{%- endif -%}, {{ item.Bits }}, {% if item.LookupEnumeration is defined -%}"{{item.LookupEnumeration}}"{%- else -%}None{%- endif -%}),
     {%- endfor %}
 }
 def lookup_field_type_{{ lookup_field_type.Name }}(value):
@@ -194,7 +194,7 @@ def decode_pgn_{{ func_name_suffix }}(data_raw: int) -> NMEA2000Message:
     raise Exception("FieldType ({{ field.FieldType }}) not supported")
         {%- endif %}
     {%- if field.FieldType != 'KEY_VALUE'  %}
-    nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', '{{ field.Name }}', "{{ field.Description }}", '{{ field.Unit }}', {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
+    nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', '{{ field.Name }}', {% if field.Description is defined -%}"{{field.Description}}"{%- else -%}None{%- endif -%}, {% if field.Unit is defined -%}'{{field.Unit}}'{%- else -%}None{%- endif -%}, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
     {% if field.BitLength is defined -%}
     running_bit_offset += {{ field.BitLength }}
     {%- endif -%}
