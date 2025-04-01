@@ -50,7 +50,6 @@ class AsyncIOClient:
         self.lock = asyncio.Lock()
         
         # Setup logging
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
     def set_status_callback(self, callback: Optional[Callable[[State], Awaitable[None]]]):
@@ -151,9 +150,10 @@ class AsyncIOClient:
             while self._state != State.CLOSED:
                 await self._receive_impl()
         except Exception as ex:
-            self.logger.error(f"Connection lost while reading. Error {ex}. Reconnecting...")
-            await self._update_state(State.DISCONNECTED)
-            await self.connect()
+            if self._state != State.CLOSED:
+                self.logger.error(f"Connection lost while reading. Error: {ex}. Reconnecting...")
+                await self._update_state(State.DISCONNECTED)
+                await self.connect()
         self.logger.info("Received loop terminated")
         
     async def send(self, nmea2000Message: NMEA2000Message):
@@ -168,9 +168,10 @@ class AsyncIOClient:
         try:
             await self._send_impl(nmea2000Message)
         except Exception as ex:
-            self.logger.error(f"Connection lost while sending. Error {ex}. Reconnecting...")
-            await self._update_state(State.DISCONNECTED)
-            await self.connect()
+            if self._state != State.CLOSED:
+                self.logger.error(f"Connection lost while sending. Error {ex}. Reconnecting...")
+                await self._update_state(State.DISCONNECTED)
+                await self.connect()
 
     def close(self):
         """Close the connection and terminate the client.
