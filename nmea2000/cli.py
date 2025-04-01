@@ -10,30 +10,43 @@ from .encoder import NMEA2000Encoder
 
 logger = logging.getLogger(__name__)
 
-async def tcp_client(client):
-    client.set_receive_callback(handle_received_data)  # Register callback
+# Define receive callback as a standalone function
+async def handle_received_message(message: NMEA2000Message):
+    """Callback function for received data."""
+    print(f"Received: {message}")
+
+# Define status change callback as a standalone function
+async def handle_status_change(status: str):
+    """Callback function for status changes."""
+    print(f"Connection status: {status}")
+
+async def interactive_client(client):
+    """Interactive client function to handle user input."""
     await client.connect()
+    
+    print("Connected to NMEA2000 gateway. Enter NMEA2000 messages in JSON format.")
+    print("Type 'exit' to quit.")
 
-    while True:
-        line = await asyncio.to_thread(sys.stdin.readline)
-        if not line:
-            break
-        line = line.strip()
-        if line == "exit":
-            break
-        else:
-            try:
-                message = NMEA2000Message.from_json(line)
-            except Exception:
-                print ("Not valid NMEA2000Message json")
-                continue
-            await client.send(message)
-    client.close()
-
-async def handle_received_data(message: NMEA2000Message):
-    """User-defined callback function for received data."""
-    print(f"Callback: Received {message}")
-
+    try:
+        while True:
+            line = await asyncio.to_thread(sys.stdin.readline)
+            if not line:
+                break
+                
+            line = line.strip()
+            if line.lower() == "exit":
+                break
+            else:
+                try:
+                    message = NMEA2000Message.from_json(line)
+                    await client.send(message)
+                except Exception as e:
+                    print(f"Error: {e}")
+                    print("Not valid NMEA2000Message json")
+                    continue
+    finally:
+        client.close()
+        print("Connection closed.")
 
 def parse(filename: str, decoder: NMEA2000Decoder):
     try:
@@ -145,17 +158,32 @@ def main():
             print(encoded)
 
         # Encode from a json file
-        if args.file:
+        elif args.file:
             with open(args.file, 'r') as file:
                 json_string = file.read()
-            frame_str = args.frame
             encoded = encoder.encode_actisense(NMEA2000Message.from_json(json_string))
             print(encoded)
+        else:
+            print("Error: You must provide either a frame or a file to encode.")
+            exit(1)
             
     elif args.command == "tcp_client":
-        asyncio.run(tcp_client(TcpNmea2000Gateway(args.server, args.port)))
+        # Create TCP client passing callbacks in constructor
+        client = TcpNmea2000Gateway(
+            args.server, 
+            args.port, 
+            receive_callback=handle_received_message,
+            status_callback=handle_status_change
+        )
+        asyncio.run(interactive_client(client))
     elif args.command == "usb_client":
-        asyncio.run(tcp_client(UsbNmea2000Gateway(args.port)))
+        # Create USB client passing callbacks in constructor
+        client = UsbNmea2000Gateway(
+            args.port,
+            receive_callback=handle_received_message,
+            status_callback=handle_status_change
+        )
+        asyncio.run(interactive_client(client))
 
 if __name__ == "__main__":
     main()

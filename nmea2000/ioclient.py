@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import socket
+import enum
+from typing import Callable, Awaitable, Optional
 import serial_asyncio
 from tenacity import retry, stop_never, wait_exponential, retry_if_exception_type
 
@@ -8,14 +10,46 @@ from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 from .message import NMEA2000Message
 
+class State(enum.Enum):
+    """Connection states for NMEA2000 clients.
+    
+    Attributes:
+        DISCONNECTED: Client is initialized but not connected or has lost connection.
+        CONNECTED: Client has an active connection to the device/server.
+        CLOSED: Client has been deliberately closed and cannot be reconnected.
+    """
+    DISCONNECTED = 0
+    CONNECTED = 1
+    CLOSED = 2
+
 class AsyncIOClient:
-    """Base class for async clients (TCP or Serial)"""
-    def __init__(self, exclude_pgns=[], include_pgns=[]):
-        self._closed = False
-        self._connected = False
+    """Base class for asynchronous NMEA2000 clients.
+    
+    This abstract class implements common functionality for TCP and Serial clients,
+    including connection management, automatic reconnection, message handling,
+    and state management. Subclasses must implement _connect_impl, _receive_impl,
+    and _send_impl methods.
+    """
+    def __init__(self, 
+                 exclude_pgns=[], 
+                 include_pgns=[], 
+                 receive_callback: Optional[Callable[[NMEA2000Message], Awaitable[None]]] = None,
+                 status_callback: Optional[Callable[[str], Awaitable[None]]] = None):
+        """Initialize the AsyncIOClient.
+        
+        Args:
+            exclude_pgns: List of PGNs to exclude from processing.
+            include_pgns: List of PGNs to include for processing.
+            receive_callback: Async callback function called when data is received.
+                              Function signature: async def callback(message: NMEA2000Message) -> None
+            status_callback: Async callback function called when connection status changes.
+                             Function signature: async def callback(status: str) -> None
+        """
+        self._state = State.DISCONNECTED
         self.reader = None
         self.writer = None
-        self.receive_callback = None
+        self.receive_callback = receive_callback
+        self.status_callback = status_callback
         self.queue = asyncio.Queue()
         self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns)
         self.encoder = NMEA2000Encoder()
@@ -25,9 +59,48 @@ class AsyncIOClient:
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
+    @property
+    def state(self) -> State:
+        """Get the current connection state.
+        
+        Returns:
+            The current connection state as a State enum value.
+        """
+        return self._state
+
+    async def _update_state(self, new_state):
+        """Update connection state and trigger callback if status changes.
+        
+        This method changes the internal state and triggers the status callback
+        if registered. It's used internally whenever the connection state changes.
+        
+        Args:
+            new_state: New State enum value to set.
+        """
+        self.logger.info("State changed. old: %s, new: %s", self._state, new_state)
+        if self._state == new_state:
+            return  # State hasn't changed, no need to do anything
+            
+        self._state = new_state
+        
+        # Call status callback if registered
+        if self.status_callback:
+            try:
+                await self.status_callback(self.state)
+            except Exception as e:
+                self.logger.error(f"Error in status callback: {e}")
+
     async def connect(self):
-        """Connect base class"""
-        if self._closed:
+        """Establish connection to the NMEA2000 gateway.
+        
+        This method attempts to connect to the gateway device with automatic 
+        reconnection on failure. It uses exponential backoff for retry attempts.
+        The method is thread-safe and can be called multiple times.
+        
+        If the client has been closed (state is CLOSED), this method will return
+        without attempting to connect.
+        """
+        if self._state == State.CLOSED:
             self.logger.info("Object terminated. Cannot connect.")
             return
         
@@ -43,65 +116,87 @@ class AsyncIOClient:
                 before_sleep=self.log_before_retry  # Log each failure before sleeping
             )
             async def retrying_task():
-                if self._closed:
+                if self._state == State.CLOSED:
                     self.logger.info("Object terminated. stop connect retry.")
                     return
                 
                 await self._connect_impl()            
-                self._connected = True
+                await self._update_state(State.CONNECTED)
 
                 asyncio.create_task(self._receive_loop())  # Start background receiver
                 asyncio.create_task(self._process_queue())  # Start processing queue
 
-            if self._connected:
+            if self._state == State.CONNECTED:
                 return
             await retrying_task()
 
     async def _receive_loop(self):
+        """Background task that continuously receives messages from the gateway.
+        
+        This loop runs until the client is closed. If an exception occurs during
+        reading (e.g., connection lost), it will trigger a reconnection attempt.
+        """
         self.logger.info("Received loop started")
         try:
-            while not self._closed:
+            while self._state != State.CLOSED:
                 await self._receive_impl()
         except Exception as ex:
             self.logger.error(f"Connection lost while reading. Error {ex}. Reconnecting...")
-            self._connected = False
+            await self._update_state(State.DISCONNECTED)
             await self.connect()
         self.logger.info("Received loop terminated")
         
-
     async def send(self, nmea2000Message: NMEA2000Message):
-        """Sends data (must be implemented by subclasses)."""
+        """Send a NMEA2000 message to the gateway.
+        
+        If an exception occurs during sending (e.g., connection lost),
+        it will trigger a reconnection attempt.
+        
+        Args:
+            nmea2000Message: The NMEA2000Message object to send.
+        """
         try:
             await self._send_impl(nmea2000Message)
         except Exception as ex:
             self.logger.error(f"Connection lost while sending. Error {ex}. Reconnecting...")
-            self._connected = False
+            await self._update_state(State.DISCONNECTED)
             await self.connect()
 
     def close(self):
-        """Closes the connection."""
-        self._closed = True
+        """Close the connection and terminate the client.
+        
+        This method closes the connection and sets the state to CLOSED.
+        After calling this method, the client cannot be reconnected.
+        """
         if self.writer:
             self.writer.close()
-        self._connected = False
+        # Use create_task since this method is not async
+        asyncio.create_task(self._update_state(State.CLOSED))
         self.logger.info("Connection closed.")
 
-    def set_receive_callback(self, callback):
-        """Registers a callback to be executed when data is received."""
-        self.receive_callback = callback
-
     async def _process_queue(self):
-        """Processes received packets in order."""
+        """Process received messages in order.
+        
+        This background task processes messages from the queue and calls
+        the receive_callback for each message. It runs until the client is closed.
+        """
         self.logger.info("process queue loop started")
-        while not self._closed:
+        while self._state != State.CLOSED:
             data = await self.queue.get()
             if self.receive_callback:
-                await self.receive_callback(data)
+                try:
+                    await self.receive_callback(data)
+                except Exception as e:
+                    self.logger.error(f"Error in receive callback: {e}")
             self.queue.task_done()
         self.logger.info("process queue loop terminated")
 
     def log_before_retry(self, retry_state):
-        """Custom retry logging using the class logger."""
+        """Custom retry logging callback for the tenacity retry decorator.
+        
+        Args:
+            retry_state: The current retry state from tenacity.
+        """
         self.logger.warning(
             "Retrying due to error: %s. Next attempt in %.2f seconds.",
             retry_state.outcome.exception(),
@@ -110,27 +205,58 @@ class AsyncIOClient:
 
 
 class TcpNmea2000Gateway(AsyncIOClient):
-    """TCP implementation of AsyncIOClient"""
-    def __init__(self, host: str, port: int, exclude_pgns=[], include_pgns=[]):
-        super().__init__(exclude_pgns, include_pgns)
+    """TCP implementation of AsyncIOClient for NMEA2000 gateways.
+    
+    This class implements a TCP client for connecting to NMEA2000 networks
+    through TCP-based gateways like ECAN-E01 or ECAN-W01.
+    """
+    def __init__(self,
+                 host: str,
+                 port: int, 
+                 exclude_pgns=[], 
+                 include_pgns=[], 
+                 receive_callback: Optional[Callable[[NMEA2000Message], Awaitable[None]]] = None,
+                 status_callback: Optional[Callable[[str], Awaitable[None]]] = None):
+        """Initialize a TCP NMEA2000 gateway client.
+        
+        Args:
+            host: Server hostname or IP address.
+            port: Server port number.
+            exclude_pgns: List of PGNs to exclude from processing.
+            include_pgns: List of PGNs to include for processing.
+            receive_callback: Async callback function for received messages.
+            status_callback: Async callback function for status changes.
+        """
+        super().__init__(exclude_pgns, include_pgns, receive_callback, status_callback)
         self.host = host
         self.port = port
         self.lock = asyncio.Lock()
 
     async def _connect_impl(self):
-        """Connects to the TCP server with automatic reconnection."""
+        """Connect to the TCP server.
+        
+        This method establishes a TCP connection to the server and configures
+        TCP keepalive to detect dropped connections. It's called by the
+        connect() method.
+        """
         self.logger.info(f"Connecting to {self.host}:{self.port}")
         self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
         # Get the underlying socket
         sock = self.writer.get_extra_info("socket")
         if sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60)  # Idle time before keepalive probes (Linux/macOS)
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 30)  # Idle time before keepalive probes (Linux/macOS)
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
         self.logger.info(f"Connected to {self.host}:{self.port}")
 
     async def _receive_impl(self):
+        """Receive data from the TCP connection.
+        
+        This method reads exactly 13 bytes from the TCP connection (the size of
+        a standard NMEA2000 message) and processes it. It's called repeatedly
+        by the _receive_loop() method.
+        """
         data = await self.reader.readexactly(13)
         self.logger.info(f"Received: {data.hex()}")
         if data == b'Sorry,Limited':  # cant handle more TCP connections
@@ -150,6 +276,11 @@ class TcpNmea2000Gateway(AsyncIOClient):
             await self.queue.put(message)
 
     async def _send_impl(self, nmea2000Message: NMEA2000Message):
+        """Send a NMEA2000 message over the TCP connection.
+        
+        Args:
+            nmea2000Message: The NMEA2000Message object to send.
+        """
         data_bytes = self.encoder.encode_tcp(nmea2000Message)
         self.writer.write(data_bytes)
         await self.writer.drain()
@@ -157,15 +288,38 @@ class TcpNmea2000Gateway(AsyncIOClient):
 
 
 class UsbNmea2000Gateway(AsyncIOClient):
-    """Serial implementation of AsyncIOClient using serial_asyncio"""
-    def __init__(self, port: str, exclude_pgns=[], include_pgns=[]):
-        super().__init__(exclude_pgns, include_pgns)
+    """Serial implementation of AsyncIOClient for NMEA2000 gateways.
+    
+    This class implements a USB/Serial client for connecting to NMEA2000 networks
+    through serial-based gateways like ECAN-E01 or ECAN-W01.
+    """
+    def __init__(self,
+                 port: str,
+                 exclude_pgns=[], 
+                 include_pgns=[], 
+                 receive_callback: Optional[Callable[[NMEA2000Message], Awaitable[None]]] = None,
+                 status_callback: Optional[Callable[[str], Awaitable[None]]] = None):
+        """Initialize a USB/Serial NMEA2000 gateway client.
+        
+        Args:
+            port: Serial port name (e.g., "/dev/ttyUSB0" on Linux or "COM3" on Windows).
+            exclude_pgns: List of PGNs to exclude from processing.
+            include_pgns: List of PGNs to include for processing.
+            receive_callback: Async callback function for received messages.
+            status_callback: Async callback function for status changes.
+        """
+        super().__init__(exclude_pgns, include_pgns, receive_callback, status_callback)
         self.port = port
         self._buffer = None
 
     async def _connect_impl(self):
+        """Connect to the USB/Serial device.
+        
+        This method establishes a serial connection to the device with the
+        appropriate parameters for NMEA2000 communication. It's called by the
+        connect() method.
+        """
         self.logger.info(f"Connecting to {self.port}")
-        """Connects to the serial device with automatic reconnection."""
         self.reader, self.writer = await serial_asyncio.open_serial_connection(
             url=self.port,
             baudrate=2000000,
@@ -180,7 +334,12 @@ class UsbNmea2000Gateway(AsyncIOClient):
         self._buffer = bytearray()
                 
     async def _receive_impl(self):
-        """Continuously receives packets between 0xAA to 0x55 and adds them to the queue."""
+        """Receive data from the USB/Serial connection.
+        
+        This method reads up to 100 bytes from the serial connection and
+        processes complete packets found between 0xAA (start) and 0x55 (end)
+        delimiters. It's called repeatedly by the _receive_loop() method.
+        """
         data = await self.reader.read(100)
         self.logger.info(f"Received: {data.hex()}")
         self._buffer.extend(data)
@@ -214,7 +373,11 @@ class UsbNmea2000Gateway(AsyncIOClient):
             self._buffer = self._buffer[end + 1 :]
 
     async def _send_impl(self, nmea2000Message: NMEA2000Message):
-        """Sends data over Serial."""
+        """Send a NMEA2000 message over the USB/Serial connection.
+        
+        Args:
+            nmea2000Message: The NMEA2000Message object to send.
+        """
         data_bytes = self.encoder.encode_usb(nmea2000Message)
         self.writer.write(data_bytes)
         await self.writer.drain()
