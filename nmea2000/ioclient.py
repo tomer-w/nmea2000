@@ -53,11 +53,11 @@ class AsyncIOClient:
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
-    def set_status_callback(self, callback: Optional[Callable[[str], Awaitable[None]]]):
+    def set_status_callback(self, callback: Optional[Callable[[State], Awaitable[None]]]):
         """Registers a callback to be executed when the connection status changes.
         
         Args:
-            callback: Async function with signature: async def callback(status: str) -> None
+            callback: Async function with signature: async def callback(status: State) -> None
         """
         self.status_callback = callback
 

@@ -4,7 +4,7 @@ import sys
 import logging
 
 from .message import NMEA2000Message
-from .ioclient import AsyncIOClient, TcpNmea2000Gateway, UsbNmea2000Gateway
+from .ioclient import AsyncIOClient, TcpNmea2000Gateway, UsbNmea2000Gateway, State
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 
@@ -16,9 +16,9 @@ async def handle_received_message(message: NMEA2000Message):
     print(f"Received: {message}")
 
 # Define status change callback as a standalone function
-async def handle_status_change(status: str):
+async def handle_status_change(state: State):
     """Callback function for status changes."""
-    print(f"Connection status: {status}")
+    print(f"Connection status: {state}")
 
 async def interactive_client(client: AsyncIOClient):
     """Interactive client function to handle user input."""
