@@ -4,6 +4,12 @@ from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.consts import PhysicalQuantities, FieldTypes
 
+dump_to_folder = None
+#dump_to_folder = 'jsons'
+
+def _get_decoder(exclude_pgns = [], include_pgns = [], preferred_units = {}):
+    return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, preferred_units = preferred_units, dump_to_folder=dump_to_folder)
+
 def _validate_65280_message(msg: NMEA2000Message):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 65280
@@ -28,12 +34,12 @@ def _validate_65280_message(msg: NMEA2000Message):
     assert not msg.fields[3].part_of_primary_key
 
 def test_single_parse():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
 
 def test_bitlookup_parse():
-    decoder = NMEA2000Decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C"})
+    decoder = _get_decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C"})
     msg = decoder.decode_basic_string("2016-04-09T16:41:39.628Z,2,127489,16,255,26,00,2f,06,ff,ff,e3,73,65,05,ff,7f,72,10,00,00,ff,ff,ff,ff,ff,06,00,00,00,7f,7f", True)
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 127489
@@ -74,7 +80,7 @@ def test_bitlookup_parse():
     assert msg.fields[13].value is None
 
 def test_bitlookup_parse2():
-    decoder = NMEA2000Decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C", PhysicalQuantities.PRESSURE:"Bar"})
+    decoder = _get_decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C", PhysicalQuantities.PRESSURE:"Bar"})
     msg = decoder.decode_basic_string("1970-01-01T16:41:39.628Z,2,127489,16,255,26,00,2f,06,10,20,e3,73,65,05,65,04,72,10,00,00,10,20,30,40,ff,06,00,ff,00,30,18", True)
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 127489
@@ -119,7 +125,7 @@ def test_bitlookup_parse2():
     assert msg.fields[13].unit_of_measurement == "%"
 
 def test_INDIRECT_LOOKUP_parse():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     msg = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 60928
@@ -148,7 +154,7 @@ def test_INDIRECT_LOOKUP_parse():
     assert msg.fields[9].value is None
 
 def test_STRING_FIX_parse():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     msg = decoder.decode_basic_string("2011-04-25-06:25:02.017,6,126996,60,255,134,ba,04,96,26,4d,61,73,74,65,72,42,75,73,20,4e,4d,45,41,20,49,6e,74,65,72,66,61,63,65,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,58,44,31,38,41,30,30,31,39,00,00,00,00,00,00,00,00,4e,4d,45,41,32,30,30,30,00,00,00,00,00,00,00,03,00", True)
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 126996
@@ -175,7 +181,7 @@ def test_STRING_FIX_parse():
     assert msg.fields[7].value == 0
 
 def test_STRING_LZ_parse():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     msg = decoder.decode_basic_string("2020-08-22T13:52:52.054Z,7,130820,49,255,20,a3,99,0b,80,01,02,00,c6,3e,05,c7,08,41,56,52,4f,54,52,4f,53", True)
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 130820
@@ -202,7 +208,7 @@ def test_STRING_LZ_parse():
     assert msg.fields[9].value == 'AVROTROS'
 
 def test_STRING_LAU_parse():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     msg = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,1,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 126998
@@ -219,7 +225,7 @@ def test_STRING_LAU_parse():
     assert msg.fields[2].value is None
 
 def test_json():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert isinstance(msg, NMEA2000Message)
     json_msg=msg.to_json()
@@ -255,7 +261,7 @@ def test_json():
         assert field2.raw_value == field.raw_value
 
 def test_fast_parse():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     msg = decoder.decode_actisense_string("A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000")
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 130842
@@ -285,7 +291,7 @@ def test_fast_parse():
     assert msg.fields[11].value == 0
 
 def test_encode():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     encoder = NMEA2000Encoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert isinstance(msg, NMEA2000Message)
@@ -293,27 +299,27 @@ def test_encode():
     assert  nmea_str == "09FF7 0FF00 3F9FDCFFFFFFFFFF"
 
 def test_exclude():
-    decoder = NMEA2000Decoder(exclude_pgns=[65280])
+    decoder = _get_decoder(exclude_pgns=[65280])
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert msg is None
 
 def test_include():
-    decoder = NMEA2000Decoder(include_pgns=[65280])
+    decoder = _get_decoder(include_pgns=[65280])
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
 
 def test_tcp_bytes():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     msg = decoder.decode_tcp(bytes.fromhex("8800ff00093f9fdcffffffffff"))
     _validate_65280_message(msg)
 
 def test_usb_bytes():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     msg = decoder.decode_usb(bytes.fromhex("aae80900ff003f9fdcffffffffff55"))
     _validate_65280_message(msg)
 
 def test_tcp_encode():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     encoder = NMEA2000Encoder()
     msg = decoder.decode_tcp(bytes.fromhex("8800ff00093f9fdcffffffffff"))
     assert isinstance(msg, NMEA2000Message)
@@ -321,7 +327,7 @@ def test_tcp_encode():
     assert  msg_bytes == bytes.fromhex("8800ff00093f9fdcffffffffff")
 
 def test_usb_encode():
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     encoder = NMEA2000Encoder()
     msg = decoder.decode_usb(bytes.fromhex("aae80900ff003f9fdcffffffffff55"))
     assert isinstance(msg, NMEA2000Message)

@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from .message import NMEA2000Message
 from .pgns import *  # noqa: F403
 from .consts import PhysicalQuantities
+import os
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +21,9 @@ class fast_pgn_metadata():
         return f"<fast_pgn_metadata frames={len(self.frames)} payload_length={self.payload_length} bytes_stored={self.bytes_stored} sequence_counter={self.sequence_counter}>"
 
 class NMEA2000Decoder():
-    def __init__(self, exclude_pgns:list[str]=[], include_pgns:list[str]=[], preferred_units:dict[PhysicalQuantities, str]={}) -> None:
+    def __init__(self, exclude_pgns:list[str]=[], include_pgns:list[str]=[], preferred_units:dict[PhysicalQuantities, str]={}, dump_to_folder: str = None) -> None:
         self.data = {}
+        self.dump_to_folder = dump_to_folder
         if not isinstance(exclude_pgns, list):
             raise ValueError("exclude_pgns must be a list")
         if not isinstance(include_pgns, list):
@@ -286,5 +289,10 @@ class NMEA2000Decoder():
         nmea2000Message.add_data(src, dest, priority, timestamp)
         nmea2000Message.apply_preferred_units(self.preferred_units)
         sys.stdout.write(nmea2000Message.to_string_test_style()+"\n")
+        if self.dump_to_folder is not None:
+            str = nmea2000Message.to_json()
+            filename = f"nmea_{nmea2000Message.PGN}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}.json"
+            with open(os.path.join(self.dump_to_folder, filename), 'w') as f:
+                f.write(str)
         return nmea2000Message
         

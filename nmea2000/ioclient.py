@@ -167,6 +167,8 @@ class AsyncIOClient:
         """
         try:
             await self._send_impl(nmea2000Message)
+        except ValueError as ve:
+                self.logger.error(f"Failed to encode message. Error {ve}")
         except Exception as ex:
             if self._state != State.CLOSED:
                 self.logger.error(f"Connection lost while sending. Error {ex}. Reconnecting...")

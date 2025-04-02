@@ -16,7 +16,10 @@ class NMEA2000Encoder:
             if not encode_func:
                 raise ValueError(f"No encoding function found for PGN: {nmea2000Message.PGN}")
         
-        bytes = encode_func(nmea2000Message)
+        try:
+            bytes = encode_func(nmea2000Message)
+        except Exception as e:
+            raise ValueError(e)
         return bytes
             
     def encode_tcp(self, nmea2000Message: NMEA2000Message) -> bytes:

@@ -1,13 +1,16 @@
 from datetime import datetime
 import binascii
 from dataclasses import dataclass, field
+from typing import Any
 import orjson
 from .consts import PhysicalQuantities, FieldTypes
 from .utils import kelvin_to_celsius, kelvin_to_fahrenheit, pascal_to_bar, pascal_to_PSI
 
 # Helper function
-def int_to_bytes(value, length):
-    return value.to_bytes(length, byteorder="little", signed=True)
+def int_to_bytes(value):
+    # Determine the number of bytes needed
+    byte_length = (value.bit_length() + 8) // 8 or 1
+    return value.to_bytes(byte_length, byteorder="big", signed=True)
 
 # NMEA2000Message class represents a single NMEA 2000 PGN
 @dataclass
@@ -56,7 +59,12 @@ class NMEA2000Message:
         return f"{self.PGN} {self.description}: {fields_str}"
 
     def to_json(self):
-        return orjson.dumps(self.__dict__)
+        def default(obj: Any) -> Any:
+            type_obj = type(obj)
+            if type_obj == bytes:
+                return obj.hex()
+            raise TypeError
+        return orjson.dumps(self.__dict__,   default=default).decode()
 
     @staticmethod
     def from_json(json_str):
@@ -72,8 +80,8 @@ class NMEA2000Field:
     name: str
     description: str
     unit_of_measurement: str
-    value: str | int | float
-    raw_value: int
+    value: str | int | float | bytes
+    raw_value: int | bytes
     physical_quantities: PhysicalQuantities
     type: FieldTypes
     part_of_primary_key: bool | None = None
@@ -83,10 +91,8 @@ class NMEA2000Field:
 
     def to_string_test_style(self):
         if isinstance(self.raw_value, int):
-            # Determine the number of bytes needed
-            byte_length = (self.raw_value.bit_length() + 8) // 8 or 1
             # Convert integer to bytes (big-endian)
-            value_bytes = int_to_bytes(self.raw_value, byte_length)
+            value_bytes = int_to_bytes(self.raw_value)
             # Use binascii.hexlify to convert bytes to hex
             raw_value_hex = binascii.hexlify(value_bytes, " ").decode().upper()
         else:

@@ -1,5 +1,6 @@
 from datetime import date, time
-from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
+from nmea2000.decoder import NMEA2000Message
+from .test_decoder import _get_decoder
 
 def _validate_129029_message(msg: NMEA2000Message):
     assert isinstance(msg, NMEA2000Message)
@@ -33,7 +34,7 @@ def test_decode_strings_from_file_1():
     with open("tests/recombine-frames-1.in", "r") as f:
         lines = f.read().splitlines()
 
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     counter = 0
     for line in lines:
         input_data = line.strip()
@@ -60,7 +61,7 @@ def test_decode_strings_from_file_2():
     with open("tests/recombine-frames-2.in", "r") as f:
         lines = f.read().splitlines()
 
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     counter = 0
     for line in lines:
         input_data = line.strip()
@@ -88,7 +89,7 @@ def test_decode_strings_from_file_3():
     with open("tests/recombine-frames-3.in", "r") as f:
         lines = f.read().splitlines()
 
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     counter = 0
     for line in lines:
         input_data = line.strip()
@@ -106,7 +107,7 @@ def test_decode_strings_from_file_4():
     with open("tests/recombine-frames-4.in", "r") as f:
         lines = f.read().splitlines()
 
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     counter = 0
     for line in lines:
         input_data = line.strip()
@@ -124,7 +125,7 @@ def test_decode_strings_from_file_5():
     with open("tests/recombine-frames-5.in", "r") as f:
         lines = f.read().splitlines()
 
-    decoder = NMEA2000Decoder()
+    decoder = _get_decoder()
     counter = 0
     for line in lines:
         input_data = line.strip()
