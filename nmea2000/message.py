@@ -61,7 +61,7 @@ class NMEA2000Message:
     def to_json(self):
         def default(obj: Any) -> Any:
             type_obj = type(obj)
-            if type_obj == bytes:
+            if type_obj is bytes:
                 return obj.hex()
             raise TypeError
         return orjson.dumps(self.__dict__,   default=default).decode()
