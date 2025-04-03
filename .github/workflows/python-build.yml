@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  
 jobs:
   build:
 
@@ -36,6 +39,9 @@ jobs:
         pytest
 
   update_release_draft:
+    permissions:
+      # write permission is required to create a github release
+      contents: write
     needs:
       - build
     runs-on: ubuntu-latest
