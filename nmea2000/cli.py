@@ -47,7 +47,7 @@ async def interactive_client(client: AsyncIOClient):
                     print("Not valid NMEA2000Message json")
                     continue
     finally:
-        client.close()
+        await client.close()
         print("Connection closed.")
 
 def parse(filename: str, decoder: NMEA2000Decoder):

@@ -175,16 +175,15 @@ class AsyncIOClient:
                 await self._update_state(State.DISCONNECTED)
                 await self.connect()
 
-    def close(self):
+    async def close(self):
         """Close the connection and terminate the client.
         
         This method closes the connection and sets the state to CLOSED.
         After calling this method, the client cannot be reconnected.
         """
+        self._update_state(State.CLOSED)
         if self.writer:
             self.writer.close()
-        # Use create_task since this method is not async
-        asyncio.create_task(self._update_state(State.CLOSED))
         self.logger.info("Connection closed.")
 
     async def _process_queue(self):
