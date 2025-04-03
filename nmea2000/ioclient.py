@@ -181,7 +181,7 @@ class AsyncIOClient:
         This method closes the connection and sets the state to CLOSED.
         After calling this method, the client cannot be reconnected.
         """
-        self._update_state(State.CLOSED)
+        await self._update_state(State.CLOSED)
         if self.writer:
             self.writer.close()
         self.logger.info("Connection closed.")
