@@ -2,6 +2,7 @@ import sys
 import logging
 import binascii
 from datetime import datetime, timedelta
+from typing import Tuple
 from .message import NMEA2000Message
 from .pgns import *  # noqa: F403
 from .consts import PhysicalQuantities
@@ -186,6 +187,31 @@ class NMEA2000Decoder():
         # not calling _decode as in this format the fast frames are already combined
         return self._decode(pgn_id, priority, src, dest, timestamp, can_data_bytes, already_combined)
 
+    def _extract_header(frame_id_int: int) -> Tuple[int, int, int, int]:
+        """
+        Extracts PGN, source ID, destination, and priority from a 29-bit CAN frame ID.
+        Returns a tuple of (pgn_id, source_id, dest, priority).
+        based on the 29 bits (ID0 - ID28) in https://canboat.github.io/canboat/canboat.html
+        """
+        source_id = frame_id_int & 0xFF             # bits 0-7 = 8 bits
+        pgn_id_raw = (frame_id_int >> 8) & 0x3FFFF  # bits 8-25 = 18 bits
+        priority = (frame_id_int >> 26) & 0x07      # bits 26-28 = 3 bits
+
+        dp = (pgn_id_raw >> 16) & 0x3    # bits 16-17
+        pf = (pgn_id_raw >> 8) & 0xFF    # bits 8-15
+        ps = pgn_id_raw & 0xFF           # bits 0-7
+
+        if pf < 0xF0:
+            # PDU1 format: PS is destination address
+            dest = ps
+            pgn_id = (dp << 16) | (pf << 8)
+        else:
+            # PDU2 format: broadcast, destination is always 255
+            dest = 255
+            pgn_id = (dp << 16) | (pf << 8) | ps
+
+        return pgn_id, source_id, dest, priority
+
     def decode_tcp(self, packet: bytes) -> NMEA2000Message:
         """Tested with ECAN devices. Process a single packet and extract the PGN, source ID, and CAN data."""
         
@@ -193,17 +219,13 @@ class NMEA2000Decoder():
         type_byte = packet[0]
         data_length = type_byte & 0x0F  # last 4 bits represent the data length
         
-        # Extract and reverse the frame ID
-        frame_id = packet[1:5]
-        
+        # Extract the frame ID
+        frame_id = packet[1:5]      
         # Convert frame_id bytes to an integer
-        frame_id_int = int.from_bytes(frame_id, byteorder='big')
-        
-        # Parse the 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
-        source_id = frame_id_int & 0xFF #lowest 8 bits are source
-        pgn_id = (frame_id_int >> 8) & 0x3FFFF  # Shift right by 8 bits and mask to 18 bits
-        priority = (frame_id_int >> 26) & 0x07  # ID26-ID28 bits represent the priority
-        
+        frame_id_int = int.from_bytes(frame_id, byteorder='big')        
+        # Parse it
+        pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(frame_id_int)
+
         # Extract and reverse the CAN data
         can_data = packet[5:5 + data_length][::-1]
                
@@ -214,7 +236,7 @@ class NMEA2000Decoder():
             can_data,
             source_id)
         
-        return self._decode(pgn_id, priority, source_id, 255, datetime.now(), can_data) # TODO: destination is hardcoded to 255
+        return self._decode(pgn_id, priority, source_id, dest, datetime.now(), can_data)
 
     def decode_usb(self, packet: bytes) -> NMEA2000Message:
         """Tested with Waveshare-usb-a device. Process a single packet and extract the PGN, source ID, and CAN data."""
@@ -228,17 +250,13 @@ class NMEA2000Decoder():
         type_byte = packet[1]
         data_length = type_byte & 0x0F  # last 4 bits represent the data length
         
-        # Extract and reverse the frame ID
-        frame_id = packet[2:6]
-        
+        # Extract the frame ID
+        frame_id = packet[2:6]        
         # Convert frame_id bytes to an integer
         frame_id_int = int.from_bytes(frame_id, byteorder='little')
-        
-        # Parse the 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
-        source_id = frame_id_int & 0xFF #lowest 8 bits are source
-        pgn_id = (frame_id_int >> 8) & 0x3FFFF  # Shift right by 8 bits and mask to 18 bits
-        priority = (frame_id_int >> 26) & 0x07  # ID26-ID28 bits represent the priority
-        
+        # Parse it
+        pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(frame_id_int)
+
         # Extract and reverse the CAN data
         can_data = packet[6:6 + data_length][::-1]
                
@@ -249,7 +267,7 @@ class NMEA2000Decoder():
             can_data,
             source_id)
         
-        return self._decode(pgn_id, priority, source_id, 255, datetime.now(), can_data) # TODO: destination is hardcoded to 255
+        return self._decode(pgn_id, priority, source_id, dest, datetime.now(), can_data)
 
     def _decode(self, pgn_id: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes, already_combined: bool = False) -> NMEA2000Message:
         """Decode a single PGN message."""

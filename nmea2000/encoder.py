@@ -21,7 +21,30 @@ class NMEA2000Encoder:
         except Exception as e:
             raise ValueError(e)
         return bytes
-            
+
+    def _build_header(pgn_id: int, source: int, dest: int, priority: int) -> int:
+        """
+        Builds a 29-bit CAN frame ID (ID0 - ID28) from PGN, source ID, destination, and priority.
+        Based on https://canboat.github.io/canboat/canboat.html
+        """
+        dp = (pgn_id >> 16) & 0x03      # Extract DP (and reserved)
+        pf = (pgn_id >> 8) & 0xFF       # Extract PF
+        ps = 0
+
+        if pf < 0xF0:
+            # PDU1 format: destination-specific, use `dest` in PS
+            ps = dest
+        else:
+            # PDU2 format: broadcast, PGN includes PS
+            ps = pgn_id & 0xFF
+
+        pgn_field = (dp << 16) | (pf << 8) | ps  # 18 bits
+        frame_id = (priority & 0x7) << 26        # 3 bits: Priority
+        frame_id |= (pgn_field & 0x3FFFF) << 8   # 18 bits: PGN
+        frame_id |= source & 0xFF                # 8 bits: Source
+
+        return frame_id
+
     def encode_tcp(self, nmea2000Message: NMEA2000Message) -> bytes:
         """Construct a single NMEA 2000 TCP packet from PGN, source ID, priority, and CAN data."""
         if not (0 <= nmea2000Message.priority <= 7):
@@ -36,11 +59,7 @@ class NMEA2000Encoder:
         if not (0 <= len(can_data_bytes) <= 8):
             raise ValueError("CAN data must be between 0 and 8 bytes long")
         
-        # Construct frame ID: 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
-        frame_id_int = nmea2000Message.source & 0xFF #lowest 8 bits are source
-        frame_id_int |= (nmea2000Message.PGN & 0x3FFFF) << 8  # Shift left by 8 bits and mask to 18 bits
-        frame_id_int |= (nmea2000Message.priority & 0x07) << 26   # ID26-ID28 bits represent the priority
-
+        frame_id_int = NMEA2000Encoder._build_header(nmea2000Message.PGN, nmea2000Message.source, nmea2000Message.destination, nmea2000Message.priority)
         frame_id_bytes = frame_id_int.to_bytes(4, byteorder='big')
         
         # Construct type byte: data length in bottom 4 bits
@@ -66,11 +85,7 @@ class NMEA2000Encoder:
         if not (0 <= len(can_data_bytes) <= 8):
             raise ValueError("CAN data must be between 0 and 8 bytes long")
         
-        # Construct frame ID: 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
-        frame_id_int = nmea2000Message.source & 0xFF #lowest 8 bits are source
-        frame_id_int |= (nmea2000Message.PGN & 0x3FFFF) << 8  # Shift left by 8 bits and mask to 18 bits
-        frame_id_int |= (nmea2000Message.priority & 0x07) << 26   # ID26-ID28 bits represent the priority
-
+        frame_id_int = NMEA2000Encoder._build_header(nmea2000Message.PGN, nmea2000Message.source, nmea2000Message.destination, nmea2000Message.priority)
         frame_id_bytes = frame_id_int.to_bytes(4, byteorder='little')
         
         # Construct type byte: data length in bottom 4 bits
