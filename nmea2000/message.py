@@ -77,13 +77,13 @@ class NMEA2000Message:
 @dataclass
 class NMEA2000Field:
     id: str
-    name: str
-    description: str
-    unit_of_measurement: str
-    value: str | int | float | bytes
-    raw_value: int | bytes
-    physical_quantities: PhysicalQuantities
-    type: FieldTypes
+    name: str | None = None
+    description: str | None = None
+    unit_of_measurement: str | None = None
+    value: str | int | float | bytes = 0
+    raw_value: int | bytes = 0
+    physical_quantities: PhysicalQuantities | None = None
+    type: FieldTypes = FieldTypes.NUMBER
     part_of_primary_key: bool | None = None
 
     def __repr__(self):

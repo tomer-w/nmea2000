@@ -310,12 +310,12 @@ def test_include():
 
 def test_tcp_bytes():
     decoder = _get_decoder()
-    msg = decoder.decode_tcp(bytes.fromhex("8800ff00093f9fdcffffffffff"))
+    msg = decoder.decode_tcp(bytes.fromhex("881cff00093f9fdcffffffffff"))
     _validate_65280_message(msg)
 
 def test_usb_bytes():
     decoder = _get_decoder()
-    msg = decoder.decode_usb(bytes.fromhex("aae80900ff003f9fdcffffffffff55"))
+    msg = decoder.decode_usb(bytes.fromhex("aae80900ff1c3f9fdcffffffffff55"))
     _validate_65280_message(msg)
 
 def test_tcp_encode():

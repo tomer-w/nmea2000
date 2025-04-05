@@ -39,7 +39,7 @@ class NMEA2000Encoder:
         # Construct frame ID: 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
         frame_id_int = nmea2000Message.source & 0xFF #lowest 8 bits are source
         frame_id_int |= (nmea2000Message.PGN & 0x3FFFF) << 8  # Shift left by 8 bits and mask to 18 bits
-        frame_id_int |= (nmea2000Message.priority & 0x07) << 18   # ID26-ID28 bits represent the priority
+        frame_id_int |= (nmea2000Message.priority & 0x07) << 26   # ID26-ID28 bits represent the priority
 
         frame_id_bytes = frame_id_int.to_bytes(4, byteorder='big')
         
@@ -69,7 +69,7 @@ class NMEA2000Encoder:
         # Construct frame ID: 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
         frame_id_int = nmea2000Message.source & 0xFF #lowest 8 bits are source
         frame_id_int |= (nmea2000Message.PGN & 0x3FFFF) << 8  # Shift left by 8 bits and mask to 18 bits
-        frame_id_int |= (nmea2000Message.priority & 0x07) << 18   # ID26-ID28 bits represent the priority
+        frame_id_int |= (nmea2000Message.priority & 0x07) << 26   # ID26-ID28 bits represent the priority
 
         frame_id_bytes = frame_id_int.to_bytes(4, byteorder='little')
         

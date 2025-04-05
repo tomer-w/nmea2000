@@ -202,7 +202,7 @@ class NMEA2000Decoder():
         # Parse the 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
         source_id = frame_id_int & 0xFF #lowest 8 bits are source
         pgn_id = (frame_id_int >> 8) & 0x3FFFF  # Shift right by 8 bits and mask to 18 bits
-        priority = (frame_id_int >> 18) & 0x07  # ID26-ID28 bits represent the priority
+        priority = (frame_id_int >> 26) & 0x07  # ID26-ID28 bits represent the priority
         
         # Extract and reverse the CAN data
         can_data = packet[5:5 + data_length][::-1]
@@ -237,7 +237,7 @@ class NMEA2000Decoder():
         # Parse the 29 bits (ID0 - ID28) based on https://canboat.github.io/canboat/canboat.html
         source_id = frame_id_int & 0xFF #lowest 8 bits are source
         pgn_id = (frame_id_int >> 8) & 0x3FFFF  # Shift right by 8 bits and mask to 18 bits
-        priority = (frame_id_int >> 18) & 0x07  # ID26-ID28 bits represent the priority
+        priority = (frame_id_int >> 26) & 0x07  # ID26-ID28 bits represent the priority
         
         # Extract and reverse the CAN data
         can_data = packet[6:6 + data_length][::-1]

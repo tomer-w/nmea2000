@@ -12,6 +12,13 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Test TCP Server",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "tests/NMEA2000TestServer.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "cli decode",
             "type": "debugpy",
             "request": "launch",
