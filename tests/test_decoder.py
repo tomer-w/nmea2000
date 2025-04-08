@@ -20,7 +20,7 @@ def _validate_65280_message(msg: NMEA2000Message):
     assert len(msg.fields) == 5
     assert msg.fields[0].id == "manufacturer_code"
     assert msg.fields[0].name == "Manufacturer Code"
-    assert not msg.fields[0].part_of_primary_key
+    assert msg.fields[0].part_of_primary_key
     assert msg.fields[0].description == "Furuno"
     assert msg.fields[0].value == "Furuno"
     assert msg.fields[0].type == FieldTypes.LOOKUP
