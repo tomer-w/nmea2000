@@ -23,18 +23,24 @@ jobs:
           curl -o canboat.json.new https://raw.githubusercontent.com/canboat/canboat/refs/heads/master/docs/canboat.json
 
       - name: Check for changes
+        id: check_changes  # Add an ID to reference this step
         run: |
           if cmp -s canboat.json canboat.json.new; then
             echo "No changes detected."
+            echo "changed=false" >> $GITHUB_ENV
             exit 0
+          else
+            echo "canboat.json changed, proceeding with further steps."
+            mv canboat.json.new canboat.json
+            echo "changed=true" >> $GITHUB_ENV
           fi
-          echo "canboat.json changed, proceeding with PR creation."
-          mv canboat.json.new canboat.json
 
       - name: Compile CANBoat to Python
+        if: env.changed == 'true'  # Run only if the file has changed
         run: python3 canboat2python.py
 
       - name: Create Pull Request
+        if: env.changed == 'true'  # Run only if the file has changed
         uses: peter-evans/create-pull-request@v7
         with:
           branch: update-synced-file
