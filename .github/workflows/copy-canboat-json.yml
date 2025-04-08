@@ -31,6 +31,9 @@ jobs:
           echo "canboat.json changed, proceeding with PR creation."
           mv canboat.json.new canboat.json
 
+      - name: Compile CANBoat to Python
+        run: python3 canboat2python.py
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
