@@ -166,7 +166,12 @@ class AsyncIOClient:
             nmea2000Message: The NMEA2000Message object to send.
         """
         try:
-            await self._send_impl(nmea2000Message)
+            msgs =  self._encode_impl(nmea2000Message)
+            for msg in msgs:
+                self.writer.write(msg)
+                await self.writer.drain()
+                self.logger.info(f"Sent: {msg.hex()}")
+
         except ValueError as ve:
                 self.logger.error(f"Failed to encode message. Error {ve}")
         except Exception as ex:
@@ -283,17 +288,14 @@ class TcpNmea2000Gateway(AsyncIOClient):
         if message is not None:
             await self.queue.put(message)
 
-    async def _send_impl(self, nmea2000Message: NMEA2000Message):
-        """Send a NMEA2000 message over the TCP connection.
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+        """Encode a NMEA2000 message over the TCP connection.
         
         Args:
-            nmea2000Message: The NMEA2000Message object to send.
+            nmea2000Message: The NMEA2000Message object to encode.
         """
-        data_bytes = self.encoder.encode_tcp(nmea2000Message)
-        self.writer.write(data_bytes)
-        await self.writer.drain()
-        self.logger.info(f"Sent: {data_bytes.hex()}")
-
+        return self.encoder.encode_tcp(nmea2000Message)
+    
 
 class UsbNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.
@@ -376,13 +378,10 @@ class UsbNmea2000Gateway(AsyncIOClient):
             # Remove the processed packet from the buffer
             self._buffer = self._buffer[end + 1 :]
 
-    async def _send_impl(self, nmea2000Message: NMEA2000Message):
-        """Send a NMEA2000 message over the USB/Serial connection.
+    async def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+        """Encode a NMEA2000 message for USB/Serial device.
         
         Args:
-            nmea2000Message: The NMEA2000Message object to send.
+            nmea2000Message: The NMEA2000Message object to encode.
         """
-        data_bytes = self.encoder.encode_usb(nmea2000Message)
-        self.writer.write(data_bytes)
-        await self.writer.drain()
-        self.logger.info(f"Sent: {data_bytes.hex()}")
+        return self.encoder.encode_usb(nmea2000Message)

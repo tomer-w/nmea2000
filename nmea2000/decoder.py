@@ -269,6 +269,17 @@ class NMEA2000Decoder():
         
         return self._decode(pgn_id, priority, source_id, dest, datetime.now(), can_data)
 
+    def _isFastPGN(pgn_id: int) -> bool:
+        is_fast_func_name = f'is_fast_pgn_{pgn_id}'
+        is_fast_func = globals().get(is_fast_func_name)
+
+        if is_fast_func:
+            is_fast = is_fast_func()
+            logger.info(f"Is fast PGN: {is_fast}")
+            return is_fast
+        else:
+            raise ValueError(f"No function found for PGN: {pgn_id}")
+
     def _decode(self, pgn_id: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes, already_combined: bool = False) -> NMEA2000Message:
         """Decode a single PGN message."""
 
@@ -282,14 +293,7 @@ class NMEA2000Decoder():
 
         is_fast = False
         if not already_combined:
-            is_fast_func_name = f'is_fast_pgn_{pgn_id}'
-            is_fast_func = globals().get(is_fast_func_name)
-
-            if is_fast_func:
-                is_fast = is_fast_func()
-                logger.info(f"Is fast PGN: {is_fast}")
-            else:
-                raise ValueError(f"No function found for PGN: {pgn_id}")
+            is_fast = NMEA2000Decoder._isFastPGN(pgn_id)
 
         if (is_fast):
             return self._decode_fast_message(pgn_id, priority, source_id, destination_id, timestamp, can_data)
@@ -313,4 +317,3 @@ class NMEA2000Decoder():
             with open(os.path.join(self.dump_to_folder, filename), 'w') as f:
                 f.write(str)
         return nmea2000Message
-        

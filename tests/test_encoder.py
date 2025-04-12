@@ -75,7 +75,7 @@ def _generate_test_message() -> NMEA2000Message:
 
 def test_tcp_encode():
     encoder = NMEA2000Encoder()
-    msg_bytes = encoder.encode_tcp(_generate_test_message())
+    msg_bytes = encoder.encode_tcp(_generate_test_message())[0]
     decoder = _get_decoder()
     msg = decoder.decode_tcp(msg_bytes)
     assert isinstance(msg, NMEA2000Message)

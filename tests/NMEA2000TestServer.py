@@ -82,7 +82,7 @@ class NMEA2000TestServer:
                 message = self._generate_test_message()
 
                 # Encode the message using the NMEA2000Encoder
-                tcp_data = self.encoder.encode_tcp(message)
+                tcp_data = self.encoder.encode_tcp(message)[0]
                 logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
 
                 # Send the encoded message to all connected clients
