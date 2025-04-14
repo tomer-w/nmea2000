@@ -20,6 +20,7 @@ class PhysicalQuantities(Enum):
     FREQUENCY = auto(), # Hertz (Hz)
     DATE = auto(), # days (d)
     TIME = auto(), # Second (s)
+    DURATION = auto(), # Second (s)
     GEOGRAPHICAL_COORDINATE = auto(), # degree (deg)
     TEMPERATURE = auto(), # Kelvin (K)
     PRESSURE = auto(), # Pascal (Pa)
@@ -29,7 +30,7 @@ class PhysicalQuantities(Enum):
     SIGNAL_TO_NOISE_RATIO = auto(), # decibel (dB)
 
 class FieldTypes(Enum):
-    NUMBER = auto(), # Number (Binary numbers are little endian. Number fields that use two or three bits use one special encoding, for the maximum value.  When present, this means that the field is not present. Number fields that use four bits or more use two special encodings. The maximum positive value means that the field is not present. The maximum positive value minus 1 means that the field has an error. For instance, a broken sensor. For signed numbers the maximum values are the maximum positive value and that minus 1, not the all-ones bit encoding which is the maximum negative value.)
+    NUMBER = auto(), # Number (Binary numbers are little endian. Number fields that are at least two bits in length use the highest positive value to represent unknown. Number fields with at least 7 as maximum (3 bits unsigned, 4 bits signed) use the highest value minus one as an error indicator. This is likely also true for numbers where 3 is the maximum value, but there are few fields that have this length -- certainly as a number, there are a lot of lookup fields of two bits length.  For signed numbers the maximum values are the maximum positive value and that minus 1, not the all-ones bit encoding which is the maximum negative value.)
     FLOAT = auto(), # 32 bit IEEE-754 floating point number ()
     DECIMAL = auto(), # A unsigned numeric value represented with 2 decimal digits per byte (Each byte represent 2 digits, so 1234 is represented by 2 bytes containing 0x12 and 0x34. A number with an odd number of digits will have 0 as the first digit in the first byte.)
     LOOKUP = auto(), # Number value where each value encodes for a distinct meaning (Each lookup has a LookupEnumeration defining what the possible values mean)
@@ -37,7 +38,10 @@ class FieldTypes(Enum):
     BITLOOKUP = auto(), # Number value where each bit value encodes for a distinct meaning (Each LookupBit has a LookupBitEnumeration defining what the possible values mean. A bitfield can have any combination of bits set.)
     FIELDTYPE_LOOKUP = auto(), # Number value where each value encodes for a distinct meaning including a fieldtype of the next variable field (Each lookup has a LookupFieldTypeEnumeration defining what the possible values mean)
     TIME = auto(), # Time ()
+    DURATION = auto(), # Duration ()
     DATE = auto(), # Date (The date, in days since 1 January 1970.)
+    PGN = auto(), # Parameter Group Number (A 24 bit number referring to a PGN)
+    ISO_NAME = auto(), # ISO NAME field (A 64 bit field containing the ISO name, e.g. all fields produced by PGN 60928. Use the definition of PGN 60928 to explain the subfields.)
     STRING_FIX = auto(), # A fixed length string containing single byte codepoints. (The length of the string is determined by the PGN field definition. Trailing bytes have been observed as '@', ' ', 0x0 or 0xff.)
     STRING_LZ = auto(), # A varying length string containing single byte codepoints encoded with a length byte and terminating zero. (The length of the string is determined by a starting length byte. It also contains a terminating zero byte. The length byte includes the zero byte but not itself.)
     STRING_LAU = auto(), # A varying length string containing double or single byte codepoints encoded with a length byte and terminating zero. (The length of the string is determined by a starting length byte. The 2nd byte contains 0 for UNICODE or 1 for ASCII.)
