@@ -4,6 +4,7 @@ from datetime import date, timedelta
 import struct
 import math
 from datetime import time
+from typing import Optional
 
 def kelvin_to_fahrenheit(kelvin):
     """
@@ -145,14 +146,15 @@ def decode_time(seconds_since_midnight: int) -> time:
 
     return time(hour=hours, minute=minutes, second=seconds)
 
-def encode_time(time: time) -> int:
+def encode_time(time: time, bit_length: int) -> int:
     """
     Encodes a time object into an integer representing the number of seconds since midnight.
     Returns:
         int: The number of seconds since midnight.
     """
     if time is None:
-        return None
+        # Set to "not available" value
+        return (1 << bit_length) - 1
 
     # Calculate the number of seconds since midnight
     seconds_since_midnight = time.hour * 3600 + time.minute * 60 + time.second
@@ -231,7 +233,7 @@ def encode_float(float_number):
     return encoded_int
 
 
-def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: int) -> int:
+def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: int) -> Optional[int]:
     """
     The function follows specific decoding rules based on the bit length of the number:
     - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (None is returned).
@@ -255,6 +257,48 @@ def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool,
 
     # adjust resolution
     number_int *= resolution
+
+    return number_int
+
+def encode_number(
+    value: Optional[float],
+    bit_length: int,
+    signed: bool,
+    resolution: float
+) -> int:
+    """
+    Encodes a number into a bitfield within an integer.
+
+    - If value is None, the field is set to the "not available" value per bit length.
+    - Applies resolution scaling and sign encoding.
+    - Modifies the bits in `data_raw` at the specified offset and returns the new value.
+    """
+    if value is None:
+        # Set to "not available" value
+        if bit_length <= 3:
+            return (1 << bit_length) - 1
+        elif signed:
+            return (1 << (bit_length - 1)) - 1
+        else:
+            return (1 << bit_length) - 1
+
+    # Scale using resolution
+    number_int = int(round(value / resolution))
+
+    # Check bounds
+    if signed:
+        min_val = -(1 << (bit_length - 1))
+        max_val = (1 << (bit_length - 1)) - 2  # reserve max for "not available"
+    else:
+        min_val = 0
+        max_val = (1 << bit_length) - 2  # reserve max for "not available"
+
+    if not (min_val <= number_int <= max_val):
+        raise ValueError(f"Value {value} out of range after scaling")
+
+    # Handle sign bit if negative
+    if signed and number_int < 0:
+        number_int = (1 << bit_length) + number_int
 
     return number_int
 

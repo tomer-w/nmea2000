@@ -211,6 +211,7 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN {{ pgn.PGN }}."""
     data_raw = 0
     {%- for field in pgn.Fields %}
+    {%- set field_signed = field.Signed | default(false)  %}
     {%- if field.BitLength is not defined or field.BitOffset is not defined %}
     raise Exception ("PGN {{pgn.PGN}} not supporting encoding for now as {{field.Name}} is missing BitLength or BitOffset")
     {%- else %}
@@ -219,24 +220,22 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == '{{ field_name }}')
     if field is None:
         raise Exception("Cant encode this message, missing '{{field.Name}}'")
-    {%- if field.FieldType == 'NUMBER'%}
+    {%- if field.FieldType == 'NUMBER' %}
+    field_value = encode_number(field.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
+    {%- elif field.FieldType == 'RESERVED' %}
     field_value = field.value
-    {%- elif field.FieldType == 'FLOAT'%}
+    {%- elif field.FieldType == 'FLOAT' %}
     field_value = encode_float(field.value)
     {%- elif field.FieldType == 'LOOKUP' %}
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_{{field.LookupEnumeration}}(field.value)
-    {%- elif field.FieldType == 'STRING_FIX' or field.FieldType == 'STRING_LZ' %}
-    # Skipping STRING field types
-    {%- elif field.BitLength > 256 %}
-    # Skipping fields longer than 256
+    {%- elif field.FieldType == 'DATE' %}
+    field_value = field.raw_value if field.raw_value is not None else encode_date(field.value)
+    {%- elif field.FieldType == 'TIME' %}
+    field_value = int(field.raw_value / {{ field.Resolution }}) if field.raw_value is not None else encode_time(field.value, {{ field.BitLength }})
     {%- else %}
-    field_value = field.value
+    raise Exception("Encoding '{{field.FieldType}}' not supported")
     {%- endif %}
-    {%- if field.Resolution is defined and field.Resolution != 1 %}        
-    data_raw |= (int((field_value if field_value is not None else 0) / {{ field.Resolution }}) & {{ bits_to_hex(field.BitLength) }}) << {{ field.BitOffset }}
-    {% else %}
     data_raw |= (field_value & {{ bits_to_hex(field.BitLength) }}) << {{ field.BitOffset }}
-    {%- endif %}
     {%- endif %}
     {%- endfor %}
     return data_raw

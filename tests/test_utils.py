@@ -83,7 +83,10 @@ def test_encode_decode_date():
         assert decode_date(encode_date(test_date)) == test_date
 
 def test_encode_time():
-    assert encode_time(time(14, 30, 15)) == 52215
+    assert encode_time(time(14, 30, 15), 16) == 52215
+
+def test_encode_time_empty():
+    assert encode_time(None, 16) == 65535
 
 def test_decode_time():
     assert decode_time(52215) == time(14, 30, 15)
@@ -91,4 +94,4 @@ def test_decode_time():
 def test_encode_decode_time():
     test_times = [(14, 30, 15), (0, 0, 0), (23, 59, 59)]
     for hour, minute, second in test_times:
-        assert decode_time(encode_time(time(hour, minute, second))) == time(hour, minute, second)
+        assert decode_time(encode_time(time(hour, minute, second), 16)) == time(hour, minute, second)

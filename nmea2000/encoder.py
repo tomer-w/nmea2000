@@ -23,13 +23,14 @@ class NMEA2000Encoder:
                 raise ValueError(f"No encoding function found for PGN: {nmea2000Message.PGN}")
         
         try:
-            bytes = encode_func(nmea2000Message)
+            can_data_int = encode_func(nmea2000Message)
         except Exception as e:
             raise ValueError(e)
-        return bytes
+        return can_data_int
 
     def _encode_fast_message(self, pgn: int, priority: int, src: int, dest: int, payload: int) -> list[bytes]:
         payload_bytes = payload.to_bytes((payload.bit_length() + 7) // 8, byteorder="big")
+        payload_bytes = payload_bytes[::-1]
         payload_length = len(payload_bytes)
 
         first_frame_capacity = 6
@@ -51,12 +52,13 @@ class NMEA2000Encoder:
             frame_data = payload_bytes[start_index:end_index]
             frame_offset = end_index
 
+            frame_bytes = bytes([(self.sequence_counter << 5) | frame_counter])
             if frame_counter == 0:
-                frame_data += bytes([payload_length])
-            frame_data += bytes([(self.sequence_counter << 5) | frame_counter])
-            frame_data = frame_data[::-1]
+                frame_bytes += bytes([payload_length])
+            frame_bytes += frame_data
 
-            packets.append(frame_data)
+            packets.append(frame_bytes)
+            frame_counter += 1
 
         self.sequence_counter = (self.sequence_counter + 1) % 8
         return packets
@@ -95,18 +97,16 @@ class NMEA2000Encoder:
             raise ValueError("PGN ID must be between 0 and 0x3FFFF")
 
         can_data_int = self._call_encode_function(nmea2000Message)
-        can_data_bytes = can_data_int.to_bytes(8, "big")
-
-        # Reverse CAN data to match decode behavior
-        can_data_reversed = can_data_bytes[::-1]
 
         is_fast = NMEA2000Decoder._isFastPGN(nmea2000Message.PGN)
         if is_fast:
             bytes_list = self._encode_fast_message(nmea2000Message.PGN, nmea2000Message.priority, nmea2000Message.source, nmea2000Message.destination, can_data_int)
             return bytes_list
         else:
+            can_data_bytes = can_data_int.to_bytes(8, "big")
+            # Reverse CAN data to match decode behavior
+            can_data_reversed = can_data_bytes[::-1]
             return [can_data_reversed]
-
 
     def encode_tcp(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         encoded_messages = self._encode(nmea2000Message)                

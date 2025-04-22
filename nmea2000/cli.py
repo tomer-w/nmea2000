@@ -50,7 +50,7 @@ async def interactive_client(client: AsyncIOClient):
         await client.close()
         print("Connection closed.")
 
-def parse(filename: str, decoder: NMEA2000Decoder):
+def parse(filename: str, decoder: NMEA2000Decoder, single_line: bool):
     try:
         with open(filename, 'r') as file:
             while True:
@@ -61,7 +61,10 @@ def parse(filename: str, decoder: NMEA2000Decoder):
                     continue
                 line = line.strip()
                 logger.info(f'Processing: {line}')
-                decoder.decode_basic_string(line)
+                try:
+                    decoder.decode_basic_string(line, single_line)
+                except Exception as e:
+                    print(f"Error: {e}")
     except KeyboardInterrupt:
         sys.stdout.flush()
         pass
@@ -85,6 +88,11 @@ def main():
         "--file", 
         type=str, 
         help="Path to a file containing a Hex-encoded NMEA 2000 frame"
+    )
+    decode_parser.add_argument(
+        "--single_line", 
+        action="store_true", 
+        help="Fast frame is already merged to single line"
     )
 
     # Encode command
@@ -144,7 +152,7 @@ def main():
 
         # Decode from a file if provided
         elif args.file:
-            parse(args.file, decoder)
+            parse(args.file, decoder, args.single_line)
         else:
             print("Error: You must provide either a frame or a file to decode.")
             exit(1)
