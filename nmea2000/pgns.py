@@ -5358,7 +5358,7 @@ def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
 
@@ -5385,7 +5385,7 @@ def encode_pgn_59904(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 0
     return data_raw
 
@@ -5535,7 +5535,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(nmea2
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
 
@@ -5607,7 +5607,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementClearToSend(nmea200
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
 
@@ -5679,7 +5679,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementEndOfMessage(nmea20
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
 
@@ -5751,7 +5751,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementBroadcastAnnounce(n
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
 
@@ -5811,7 +5811,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementAbort(nmea2000Messa
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
 
@@ -5954,11 +5954,7 @@ def encode_pgn_60928(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'arbitrary_address_capable')
     if field is None:
         raise Exception("Cant encode this message, missing 'Arbitrary address capable'")
-<<<<<<< HEAD
-    field_value = encode_number(field.value, 1, False, 1)
-=======
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_YES_NO(field.value)
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     data_raw |= (field_value & 0x1) << 63
     return data_raw
 
@@ -11534,7 +11530,7 @@ def encode_pgn_65409(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'duration_of_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Duration of interval'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 24
     # number_of_pulses_received | Offset: 40, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'number_of_pulses_received')
@@ -11976,26 +11972,19 @@ def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message)
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 8
     # transmission_interval | Offset: 32, Length: 32, Resolution: 0.001, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'transmission_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Transmission interval'")
-<<<<<<< HEAD
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    # transmission_interval_offset | Offset: 64, Length: 16, Resolution: 0.01, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.001) & 0xFFFFFFFF) << 32
-    
     # transmission_interval_offset | Offset: 64, Length: 16, Resolution: 0.01, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'transmission_interval_offset')
     if field is None:
         raise Exception("Cant encode this message, missing 'Transmission interval offset'")
-    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 64
     # number_of_parameters | Offset: 80, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'number_of_parameters')
@@ -12075,7 +12064,7 @@ def encode_pgn_126208_nmeaCommandGroupFunction(nmea2000Message: NMEA2000Message)
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 8
     # priority | Offset: 32, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'priority')
@@ -12163,7 +12152,7 @@ def encode_pgn_126208_nmeaAcknowledgeGroupFunction(nmea2000Message: NMEA2000Mess
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 8
     # pgn_error_code | Offset: 32, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn_error_code')
@@ -12271,7 +12260,7 @@ def encode_pgn_126208_nmeaReadFieldsGroupFunction(nmea2000Message: NMEA2000Messa
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 8
     # manufacturer_code | Offset: 32, Length: 11, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'manufacturer_code')
@@ -12374,7 +12363,7 @@ def encode_pgn_126208_nmeaReadFieldsReplyGroupFunction(nmea2000Message: NMEA2000
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 8
     # manufacturer_code | Offset: 32, Length: 11, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'manufacturer_code')
@@ -12478,7 +12467,7 @@ def encode_pgn_126208_nmeaWriteFieldsGroupFunction(nmea2000Message: NMEA2000Mess
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 8
     # manufacturer_code | Offset: 32, Length: 11, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'manufacturer_code')
@@ -12582,7 +12571,7 @@ def encode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(nmea2000Message: NMEA200
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 8
     # manufacturer_code | Offset: 32, Length: 11, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'manufacturer_code')
@@ -12637,7 +12626,7 @@ def encode_pgn_126464(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 8
     return data_raw
 
@@ -14501,33 +14490,19 @@ def encode_pgn_126720_airmarCalibrateCompass(nmea2000Message: NMEA2000Message) -
     field = next(f for f in nmea2000Message.fields if f.id == 'x_axis_angular_offset')
     if field is None:
         raise Exception("Cant encode this message, missing 'X-axis angular offset'")
-<<<<<<< HEAD
     field_value = encode_number(field.value, 16, True, 0.1)
     data_raw |= (field_value & 0xFFFF) << 144
-    # pitch_and_roll_damping | Offset: 160, Length: 16, Resolution: 0.05, Field Type: TIME
-    field = next(f for f in nmea2000Message.fields if f.id == 'pitch_and_roll_damping')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Pitch and Roll damping'")
-    field_value = int(field.raw_value / 0.05) if field.raw_value is not None else encode_time(field.value, 16)
-    data_raw |= (field_value & 0xFFFF) << 160
-    # compass_rate_gyro_damping | Offset: 176, Length: 16, Resolution: 0.05, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 144
-    
     # pitch_and_roll_damping | Offset: 160, Length: 16, Resolution: 0.05, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'pitch_and_roll_damping')
     if field is None:
         raise Exception("Cant encode this message, missing 'Pitch and Roll damping'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.05) & 0xFFFF) << 160
-    
+    raise Exception("Encoding 'DURATION' not supported")
+    data_raw |= (field_value & 0xFFFF) << 160
     # compass_rate_gyro_damping | Offset: 176, Length: 16, Resolution: 0.05, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'compass_rate_gyro_damping')
     if field is None:
         raise Exception("Cant encode this message, missing 'Compass/Rate gyro damping'")
-    field_value = int(field.raw_value / 0.05) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 176
     return data_raw
 
@@ -15082,7 +15057,7 @@ def encode_pgn_126720_airmarSpeedFilterNone(nmea2000Message: NMEA2000Message) ->
     field = next(f for f in nmea2000Message.fields if f.id == 'sample_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Sample interval'")
-    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 32
     return data_raw
 
@@ -15186,20 +15161,13 @@ def encode_pgn_126720_airmarSpeedFilterIir(nmea2000Message: NMEA2000Message) -> 
     field = next(f for f in nmea2000Message.fields if f.id == 'sample_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Sample interval'")
-<<<<<<< HEAD
-    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 32
-    # filter_duration | Offset: 48, Length: 16, Resolution: 0.01, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.01) & 0xFFFF) << 32
-    
     # filter_duration | Offset: 48, Length: 16, Resolution: 0.01, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'filter_duration')
     if field is None:
         raise Exception("Cant encode this message, missing 'Filter duration'")
-    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -15297,7 +15265,7 @@ def encode_pgn_126720_airmarTemperatureFilterNone(nmea2000Message: NMEA2000Messa
     field = next(f for f in nmea2000Message.fields if f.id == 'sample_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Sample interval'")
-    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 32
     return data_raw
 
@@ -15401,20 +15369,13 @@ def encode_pgn_126720_airmarTemperatureFilterIir(nmea2000Message: NMEA2000Messag
     field = next(f for f in nmea2000Message.fields if f.id == 'sample_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Sample interval'")
-<<<<<<< HEAD
-    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 32
-    # filter_duration | Offset: 48, Length: 16, Resolution: 0.01, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.01) & 0xFFFF) << 32
-    
     # filter_duration | Offset: 48, Length: 16, Resolution: 0.01, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'filter_duration')
     if field is None:
         raise Exception("Cant encode this message, missing 'Filter duration'")
-    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -16316,7 +16277,7 @@ def encode_pgn_126983(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_network_id_name')
     if field is None:
         raise Exception("Cant encode this message, missing 'Data Source Network ID NAME'")
-    field_value = encode_number(field.value, 64, False, 1)
+    raise Exception("Encoding 'ISO_NAME' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 40
     # data_source_instance | Offset: 104, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_instance')
@@ -16382,7 +16343,7 @@ def encode_pgn_126983(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'acknowledge_source_network_id_name')
     if field is None:
         raise Exception("Cant encode this message, missing 'Acknowledge Source Network ID NAME'")
-    field_value = encode_number(field.value, 64, False, 1)
+    raise Exception("Encoding 'ISO_NAME' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 136
     # trigger_condition | Offset: 200, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'trigger_condition')
@@ -16532,7 +16493,7 @@ def encode_pgn_126984(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_network_id_name')
     if field is None:
         raise Exception("Cant encode this message, missing 'Data Source Network ID NAME'")
-    field_value = encode_number(field.value, 64, False, 1)
+    raise Exception("Encoding 'ISO_NAME' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 40
     # data_source_instance | Offset: 104, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_instance')
@@ -16556,7 +16517,7 @@ def encode_pgn_126984(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'acknowledge_source_network_id_name')
     if field is None:
         raise Exception("Cant encode this message, missing 'Acknowledge Source Network ID NAME'")
-    field_value = encode_number(field.value, 64, False, 1)
+    raise Exception("Encoding 'ISO_NAME' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 128
     # response_command | Offset: 192, Length: 2, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'response_command')
@@ -16697,7 +16658,7 @@ def encode_pgn_126985(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_network_id_name')
     if field is None:
         raise Exception("Cant encode this message, missing 'Data Source Network ID NAME'")
-    field_value = encode_number(field.value, 64, False, 1)
+    raise Exception("Encoding 'ISO_NAME' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 40
     # data_source_instance | Offset: 104, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_instance')
@@ -16866,7 +16827,7 @@ def encode_pgn_126986(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_network_id_name')
     if field is None:
         raise Exception("Cant encode this message, missing 'Data Source Network ID NAME'")
-    field_value = encode_number(field.value, 64, False, 1)
+    raise Exception("Encoding 'ISO_NAME' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 40
     # data_source_instance | Offset: 104, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_instance')
@@ -17057,7 +17018,7 @@ def encode_pgn_126987(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_network_id_name')
     if field is None:
         raise Exception("Cant encode this message, missing 'Data Source Network ID NAME'")
-    field_value = encode_number(field.value, 64, False, 1)
+    raise Exception("Encoding 'ISO_NAME' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 40
     # data_source_instance | Offset: 104, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_instance')
@@ -17236,7 +17197,7 @@ def encode_pgn_126988(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_network_id_name')
     if field is None:
         raise Exception("Cant encode this message, missing 'Data Source Network ID NAME'")
-    field_value = encode_number(field.value, 64, False, 1)
+    raise Exception("Encoding 'ISO_NAME' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 40
     # data_source_instance | Offset: 104, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_instance')
@@ -17416,14 +17377,8 @@ def encode_pgn_126993(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'data_transmit_offset')
     if field is None:
         raise Exception("Cant encode this message, missing 'Data transmit offset'")
-<<<<<<< HEAD
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 0
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.01) & 0xFFFF) << 0
-    
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     # sequence_counter | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'sequence_counter')
     if field is None:
@@ -18736,20 +18691,13 @@ def encode_pgn_127489(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'fuel_rate')
     if field is None:
         raise Exception("Cant encode this message, missing 'Fuel Rate'")
-<<<<<<< HEAD
     field_value = encode_number(field.value, 16, True, 0.1)
     data_raw |= (field_value & 0xFFFF) << 72
-    # total_engine_hours | Offset: 88, Length: 32, Resolution: 1, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 72
-    
     # total_engine_hours | Offset: 88, Length: 32, Resolution: 1, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'total_engine_hours')
     if field is None:
         raise Exception("Cant encode this message, missing 'Total Engine hours'")
-    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 88
     # coolant_pressure | Offset: 120, Length: 16, Resolution: 100, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'coolant_pressure')
@@ -18995,7 +18943,7 @@ def encode_pgn_127491(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_remaining')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time Remaining'")
-    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 16
     # highest_cell_temperature | Offset: 32, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'highest_cell_temperature')
@@ -19303,20 +19251,13 @@ def encode_pgn_127494(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'motor_dc_voltage_cut_off_threshold')
     if field is None:
         raise Exception("Cant encode this message, missing 'Motor DC-Voltage Cut Off Threshold'")
-<<<<<<< HEAD
     field_value = encode_number(field.value, 16, False, 0.1)
     data_raw |= (field_value & 0xFFFF) << 176
-    # drive_motor_hours | Offset: 192, Length: 32, Resolution: 1, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 176
-    
     # drive_motor_hours | Offset: 192, Length: 32, Resolution: 1, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'drive_motor_hours')
     if field is None:
         raise Exception("Cant encode this message, missing 'Drive/Motor Hours'")
-    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 192
     return data_raw
 
@@ -19568,7 +19509,7 @@ def encode_pgn_127496(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_to_empty')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time to Empty'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 0
     # distance_to_empty | Offset: 32, Length: 32, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'distance_to_empty')
@@ -19586,7 +19527,7 @@ def encode_pgn_127496(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'trip_run_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Trip Run Time'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 80
     return data_raw
 
@@ -21116,7 +21057,7 @@ def encode_pgn_127506(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_remaining')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time Remaining'")
-    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 40
     # ripple_voltage | Offset: 56, Length: 16, Resolution: 0.001, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'ripple_voltage')
@@ -21243,7 +21184,7 @@ def encode_pgn_127507(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'equalization_time_remaining')
     if field is None:
         raise Exception("Cant encode this message, missing 'Equalization Time Remaining'")
-    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 32
     return data_raw
 
@@ -21560,7 +21501,7 @@ def encode_pgn_127510(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'equalize_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Equalize Time'")
-    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -22224,35 +22165,32 @@ def encode_pgn_127747(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'sid')
     if field is None:
         raise Exception("Cant encode this message, missing 'SID'")
-    field_value = field.value
+    field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 0
     # connection_number | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'connection_number')
     if field is None:
         raise Exception("Cant encode this message, missing 'Connection Number'")
-    field_value = field.value
+    field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 8
     # ac_voltage_line_to_neutral | Offset: 16, Length: 16, Resolution: 0.1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'ac_voltage_line_to_neutral')
     if field is None:
         raise Exception("Cant encode this message, missing 'AC Voltage Line to Neutral'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 16
-    
+    field_value = encode_number(field.value, 16, False, 0.1)
+    data_raw |= (field_value & 0xFFFF) << 16
     # ac_voltage_line_to_line | Offset: 32, Length: 16, Resolution: 0.1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'ac_voltage_line_to_line')
     if field is None:
         raise Exception("Cant encode this message, missing 'AC Voltage Line to Line'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 32
-    
+    field_value = encode_number(field.value, 16, False, 0.1)
+    data_raw |= (field_value & 0xFFFF) << 32
     # frequency | Offset: 48, Length: 16, Resolution: 0.1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'frequency')
     if field is None:
         raise Exception("Cant encode this message, missing 'Frequency'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 48
-    
+    field_value = encode_number(field.value, 16, False, 0.1)
+    data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
 
@@ -22302,35 +22240,32 @@ def encode_pgn_127748(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'sid')
     if field is None:
         raise Exception("Cant encode this message, missing 'SID'")
-    field_value = field.value
+    field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 0
     # connection_number | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'connection_number')
     if field is None:
         raise Exception("Cant encode this message, missing 'Connection Number'")
-    field_value = field.value
+    field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 8
     # ac_voltage_line_to_neutral | Offset: 16, Length: 16, Resolution: 0.1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'ac_voltage_line_to_neutral')
     if field is None:
         raise Exception("Cant encode this message, missing 'AC Voltage Line to Neutral'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 16
-    
+    field_value = encode_number(field.value, 16, False, 0.1)
+    data_raw |= (field_value & 0xFFFF) << 16
     # ac_voltage_line_to_line | Offset: 32, Length: 16, Resolution: 0.1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'ac_voltage_line_to_line')
     if field is None:
         raise Exception("Cant encode this message, missing 'AC Voltage Line to Line'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 32
-    
+    field_value = encode_number(field.value, 16, False, 0.1)
+    data_raw |= (field_value & 0xFFFF) << 32
     # frequency | Offset: 48, Length: 16, Resolution: 0.1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'frequency')
     if field is None:
         raise Exception("Cant encode this message, missing 'Frequency'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 48
-    
+    field_value = encode_number(field.value, 16, False, 0.1)
+    data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
 
@@ -22380,35 +22315,32 @@ def encode_pgn_127749(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'sid')
     if field is None:
         raise Exception("Cant encode this message, missing 'SID'")
-    field_value = field.value
+    field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 0
     # connection_number | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'connection_number')
     if field is None:
         raise Exception("Cant encode this message, missing 'Connection Number'")
-    field_value = field.value
+    field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 8
     # ac_voltage_line_to_neutral | Offset: 16, Length: 16, Resolution: 0.1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'ac_voltage_line_to_neutral')
     if field is None:
         raise Exception("Cant encode this message, missing 'AC Voltage Line to Neutral'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 16
-    
+    field_value = encode_number(field.value, 16, False, 0.1)
+    data_raw |= (field_value & 0xFFFF) << 16
     # ac_voltage_line_to_line | Offset: 32, Length: 16, Resolution: 0.1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'ac_voltage_line_to_line')
     if field is None:
         raise Exception("Cant encode this message, missing 'AC Voltage Line to Line'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 32
-    
+    field_value = encode_number(field.value, 16, False, 0.1)
+    data_raw |= (field_value & 0xFFFF) << 32
     # frequency | Offset: 48, Length: 16, Resolution: 0.1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'frequency')
     if field is None:
         raise Exception("Cant encode this message, missing 'Frequency'")
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 48
-    
+    field_value = encode_number(field.value, 16, False, 0.1)
+    data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
 
@@ -23043,7 +22975,7 @@ def encode_pgn_128006(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'command_timeout')
     if field is None:
         raise Exception("Cant encode this message, missing 'Command Timeout'")
-    field_value = int(field.raw_value / 0.005) if field.raw_value is not None else encode_time(field.value, 8)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFF) << 40
     # azimuth_control | Offset: 48, Length: 16, Resolution: 0.0001, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'azimuth_control')
@@ -23219,20 +23151,13 @@ def encode_pgn_128008(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'temperature')
     if field is None:
         raise Exception("Cant encode this message, missing 'Temperature'")
-<<<<<<< HEAD
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 32
-    # operating_time | Offset: 48, Length: 16, Resolution: 60, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.01) & 0xFFFF) << 32
-    
     # operating_time | Offset: 48, Length: 16, Resolution: 60, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'operating_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Operating Time'")
-    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -23630,20 +23555,13 @@ def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'cpa')
     if field is None:
         raise Exception("Cant encode this message, missing 'CPA'")
-<<<<<<< HEAD
     field_value = encode_number(field.value, 32, False, 0.01)
     data_raw |= (field_value & 0xFFFFFFFF) << 104
-    # tcpa | Offset: 136, Length: 32, Resolution: 0.001, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.01) & 0xFFFFFFFF) << 104
-    
     # tcpa | Offset: 136, Length: 32, Resolution: 0.001, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'tcpa')
     if field is None:
         raise Exception("Cant encode this message, missing 'TCPA'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 136
     # utc_of_fix | Offset: 168, Length: 32, Resolution: 0.0001, Field Type: TIME
     field = next(f for f in nmea2000Message.fields if f.id == 'utc_of_fix')
@@ -24407,7 +24325,7 @@ def encode_pgn_128776(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'command_timeout')
     if field is None:
         raise Exception("Cant encode this message, missing 'Command Timeout'")
-    field_value = int(field.raw_value / 0.005) if field.raw_value is not None else encode_time(field.value, 8)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFF) << 40
     # windlass_control_events | Offset: 48, Length: 4, Resolution: 1, Field Type: BITLOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'windlass_control_events')
@@ -24653,7 +24571,7 @@ def encode_pgn_128778(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'total_motor_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Total Motor Time'")
-    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 40
     # reserved_56 | Offset: 56, Length: 8, Resolution: 1, Field Type: RESERVED
     field = next(f for f in nmea2000Message.fields if f.id == 'reserved_56')
@@ -25284,7 +25202,7 @@ def encode_pgn_129029(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'age_of_dgnss_corrections')
     if field is None:
         raise Exception("Cant encode this message, missing 'Age of DGNSS Corrections'")
-    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 360
     return data_raw
 
@@ -25331,20 +25249,13 @@ def encode_pgn_129033(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time'")
-<<<<<<< HEAD
     field_value = int(field.raw_value / 0.0001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 16
-    # local_offset | Offset: 48, Length: 16, Resolution: 60, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.0001) & 0xFFFFFFFF) << 16
-    
     # local_offset | Offset: 48, Length: 16, Resolution: 60, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'local_offset')
     if field is None:
         raise Exception("Cant encode this message, missing 'Local Offset'")
-    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -27347,7 +27258,7 @@ def encode_pgn_129301(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_to_mark')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time to mark'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 8
     # mark_type | Offset: 40, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'mark_type')
@@ -28402,7 +28313,7 @@ def encode_pgn_129546(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'pseudorange_residual_filtering_time_constant')
     if field is None:
         raise Exception("Cant encode this message, missing 'Pseudorange Residual Filtering Time Constant'")
-    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 32
     # reserved_48 | Offset: 48, Length: 16, Resolution: 1, Field Type: RESERVED
     field = next(f for f in nmea2000Message.fields if f.id == 'reserved_48')
@@ -28626,7 +28537,7 @@ def encode_pgn_129549(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_of_corrections')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time of corrections'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 24
     # station_health | Offset: 40, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'station_health')
@@ -28953,7 +28864,7 @@ def encode_pgn_129551(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_since_last_sat_differential_sync')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time since Last Sat Differential Sync'")
-    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 128
     # satellite_service_id_no_ | Offset: 144, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'satellite_service_id_no_')
@@ -31993,11 +31904,7 @@ def encode_pgn_129808_dscDistressCallInformation(nmea2000Message: NMEA2000Messag
     field = next(f for f in nmea2000Message.fields if f.id == 'dsc_category')
     if field is None:
         raise Exception("Cant encode this message, missing 'DSC Category'")
-<<<<<<< HEAD
-    field_value = encode_number(field.value, 8, False, 1)
-=======
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_DSC_CATEGORY(field.value)
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     data_raw |= (field_value & 0xFF) << 8
     # dsc_message_address | Offset: 16, Length: 40, Resolution: 1, Field Type: DECIMAL
     field = next(f for f in nmea2000Message.fields if f.id == 'dsc_message_address')
@@ -33123,7 +33030,7 @@ def encode_pgn_130060(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 8
     # data_source_instance_field_number | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_instance_field_number')
@@ -33265,13 +33172,13 @@ def encode_pgn_130061(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'source_name')
     if field is None:
         raise Exception("Cant encode this message, missing 'Source NAME'")
-    field_value = encode_number(field.value, 64, False, 1)
+    raise Exception("Encoding 'ISO_NAME' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 24
     # pgn | Offset: 88, Length: 24, Resolution: 1, Field Type: PGN
     field = next(f for f in nmea2000Message.fields if f.id == 'pgn')
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    field_value = encode_number(field.value, 24, False, 1)
+    raise Exception("Encoding 'PGN' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 88
     # data_source_instance_field_number | Offset: 112, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'data_source_instance_field_number')
@@ -37005,20 +36912,13 @@ def encode_pgn_130567(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'brine_water_flow')
     if field is None:
         raise Exception("Cant encode this message, missing 'Brine Water Flow'")
-<<<<<<< HEAD
     field_value = encode_number(field.value, 16, True, 0.1)
     data_raw |= (field_value & 0xFFFF) << 144
-    # run_time | Offset: 160, Length: 32, Resolution: 1, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.1) & 0xFFFF) << 144
-    
     # run_time | Offset: 160, Length: 32, Resolution: 1, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'run_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Run Time'")
-    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 160
     return data_raw
 
@@ -37177,13 +37077,13 @@ def encode_pgn_130569(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'elapsed_track_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Elapsed Track Time'")
-    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 64
     # track_time | Offset: 80, Length: 16, Resolution: 1, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'track_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Track Time'")
-    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 16)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFF) << 80
     # repeat_status | Offset: 96, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'repeat_status')
@@ -40085,20 +39985,13 @@ def encode_pgn_130816_sonichubPlaylist(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'length')
     if field is None:
         raise Exception("Cant encode this message, missing 'Length'")
-<<<<<<< HEAD
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 120
-    # position_in_track | Offset: 152, Length: 32, Resolution: 0.001, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.001) & 0xFFFFFFFF) << 120
-    
     # position_in_track | Offset: 152, Length: 32, Resolution: 0.001, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'position_in_track')
     if field is None:
         raise Exception("Cant encode this message, missing 'Position in track'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 152
     return data_raw
 
@@ -41085,7 +40978,7 @@ def encode_pgn_130816_sonichubPosition(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'position')
     if field is None:
         raise Exception("Cant encode this message, missing 'Position'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 40
     return data_raw
 
@@ -42515,20 +42408,13 @@ def encode_pgn_130820_fusionTrackInfo(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'length')
     if field is None:
         raise Exception("Cant encode this message, missing 'Length'")
-<<<<<<< HEAD
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 24)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 120
-    # position_in_track | Offset: 144, Length: 24, Resolution: 0.001, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.001) & 0xFFFFFF) << 120
-    
     # position_in_track | Offset: 144, Length: 24, Resolution: 0.001, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'position_in_track')
     if field is None:
         raise Exception("Cant encode this message, missing 'Position in track'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 24)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 144
     # h | Offset: 168, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'h')
@@ -43110,7 +42996,7 @@ def encode_pgn_130820_fusionPlayProgress(nmea2000Message: NMEA2000Message) -> in
     field = next(f for f in nmea2000Message.fields if f.id == 'progress')
     if field is None:
         raise Exception("Cant encode this message, missing 'Progress'")
-    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 24)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
 
@@ -46581,32 +46467,25 @@ def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message
     field = next(f for f in nmea2000Message.fields if f.id == 'start_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start Time'")
-<<<<<<< HEAD
     field_value = int(field.raw_value / 0.0001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 48
-    # accumulated_off_period | Offset: 80, Length: 32, Resolution: 1, Field Type: TIME
-=======
-    field_value = field.value        
-    data_raw |= (int((field_value if field_value is not None else 0) / 0.0001) & 0xFFFFFFFF) << 48
-    
     # accumulated_off_period | Offset: 80, Length: 32, Resolution: 1, Field Type: DURATION
->>>>>>> 1237d4014c55620be2ae52a988eb4846e081f812
     field = next(f for f in nmea2000Message.fields if f.id == 'accumulated_off_period')
     if field is None:
         raise Exception("Cant encode this message, missing 'Accumulated OFF Period'")
-    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 80
     # accumulated_on_period | Offset: 112, Length: 32, Resolution: 1, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'accumulated_on_period')
     if field is None:
         raise Exception("Cant encode this message, missing 'Accumulated ON Period'")
-    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 112
     # accumulated_error_period | Offset: 144, Length: 32, Resolution: 1, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'accumulated_error_period')
     if field is None:
         raise Exception("Cant encode this message, missing 'Accumulated ERROR Period'")
-    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
+    raise Exception("Encoding 'DURATION' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 144
     # switch_status | Offset: 176, Length: 2, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'switch_status')
