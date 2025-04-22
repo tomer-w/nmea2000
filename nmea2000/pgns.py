@@ -11481,7 +11481,8 @@ def decode_pgn_65409(_data_raw_: int) -> NMEA2000Message:
 
     # 5:duration_of_interval | Offset: 24, Length: 16, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    raise Exception("FieldType (DURATION) not supported")
+    duration_of_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.001)
+    duration_of_interval = decode_time(duration_of_interval_raw)
     nmea2000Message.fields.append(NMEA2000Field('duration_of_interval', 'Duration of interval', None, 's', duration_of_interval, duration_of_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -11530,7 +11531,7 @@ def encode_pgn_65409(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'duration_of_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Duration of interval'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 24
     # number_of_pulses_received | Offset: 40, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'number_of_pulses_received')
@@ -11929,13 +11930,15 @@ def decode_pgn_126208_nmeaRequestGroupFunction(_data_raw_: int) -> NMEA2000Messa
 
     # 3:transmission_interval | Offset: 32, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    raise Exception("FieldType (DURATION) not supported")
+    transmission_interval_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
+    transmission_interval = decode_time(transmission_interval_raw)
     nmea2000Message.fields.append(NMEA2000Field('transmission_interval', 'Transmission interval', None, 's', transmission_interval, transmission_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 4:transmission_interval_offset | Offset: 64, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    raise Exception("FieldType (DURATION) not supported")
+    transmission_interval_offset_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    transmission_interval_offset = decode_time(transmission_interval_offset_raw)
     nmea2000Message.fields.append(NMEA2000Field('transmission_interval_offset', 'Transmission interval offset', None, 's', transmission_interval_offset, transmission_interval_offset_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -11978,13 +11981,13 @@ def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message)
     field = next(f for f in nmea2000Message.fields if f.id == 'transmission_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Transmission interval'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
     # transmission_interval_offset | Offset: 64, Length: 16, Resolution: 0.01, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'transmission_interval_offset')
     if field is None:
         raise Exception("Cant encode this message, missing 'Transmission interval offset'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 64
     # number_of_parameters | Offset: 80, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'number_of_parameters')
@@ -14393,13 +14396,15 @@ def decode_pgn_126720_airmarCalibrateCompass(_data_raw_: int) -> NMEA2000Message
 
     # 15:pitch_and_roll_damping | Offset: 160, Length: 16, Signed: True Resolution: 0.05, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
-    raise Exception("FieldType (DURATION) not supported")
+    pitch_and_roll_damping_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.05)
+    pitch_and_roll_damping = decode_time(pitch_and_roll_damping_raw)
     nmea2000Message.fields.append(NMEA2000Field('pitch_and_roll_damping', 'Pitch and Roll damping', "default 30, range 0 to 200", 's', pitch_and_roll_damping, pitch_and_roll_damping_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
     # 16:compass_rate_gyro_damping | Offset: 176, Length: 16, Signed: True Resolution: 0.05, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 176
-    raise Exception("FieldType (DURATION) not supported")
+    compass_rate_gyro_damping_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.05)
+    compass_rate_gyro_damping = decode_time(compass_rate_gyro_damping_raw)
     nmea2000Message.fields.append(NMEA2000Field('compass_rate_gyro_damping', 'Compass/Rate gyro damping', "default -30, range -2400 to 2400, negative indicates rate gyro is to be used in compass calculations", 's', compass_rate_gyro_damping, compass_rate_gyro_damping_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -14496,13 +14501,13 @@ def encode_pgn_126720_airmarCalibrateCompass(nmea2000Message: NMEA2000Message) -
     field = next(f for f in nmea2000Message.fields if f.id == 'pitch_and_roll_damping')
     if field is None:
         raise Exception("Cant encode this message, missing 'Pitch and Roll damping'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.05) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 160
     # compass_rate_gyro_damping | Offset: 176, Length: 16, Resolution: 0.05, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'compass_rate_gyro_damping')
     if field is None:
         raise Exception("Cant encode this message, missing 'Compass/Rate gyro damping'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.05) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 176
     return data_raw
 
@@ -15008,7 +15013,8 @@ def decode_pgn_126720_airmarSpeedFilterNone(_data_raw_: int) -> NMEA2000Message:
 
     # 7:sample_interval | Offset: 32, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    raise Exception("FieldType (DURATION) not supported")
+    sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    sample_interval = decode_time(sample_interval_raw)
     nmea2000Message.fields.append(NMEA2000Field('sample_interval', 'Sample interval', "Interval of time between successive samples of the paddlewheel pulse accumulator", 's', sample_interval, sample_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -15057,7 +15063,7 @@ def encode_pgn_126720_airmarSpeedFilterNone(nmea2000Message: NMEA2000Message) ->
     field = next(f for f in nmea2000Message.fields if f.id == 'sample_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Sample interval'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 32
     return data_raw
 
@@ -15106,13 +15112,15 @@ def decode_pgn_126720_airmarSpeedFilterIir(_data_raw_: int) -> NMEA2000Message:
 
     # 7:sample_interval | Offset: 32, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    raise Exception("FieldType (DURATION) not supported")
+    sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    sample_interval = decode_time(sample_interval_raw)
     nmea2000Message.fields.append(NMEA2000Field('sample_interval', 'Sample interval', "Interval of time between successive samples of the paddlewheel pulse accumulator", 's', sample_interval, sample_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
     # 8:filter_duration | Offset: 48, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    raise Exception("FieldType (DURATION) not supported")
+    filter_duration_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    filter_duration = decode_time(filter_duration_raw)
     nmea2000Message.fields.append(NMEA2000Field('filter_duration', 'Filter duration', "Duration of filter, must be bigger than the sample interval", 's', filter_duration, filter_duration_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -15161,13 +15169,13 @@ def encode_pgn_126720_airmarSpeedFilterIir(nmea2000Message: NMEA2000Message) -> 
     field = next(f for f in nmea2000Message.fields if f.id == 'sample_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Sample interval'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 32
     # filter_duration | Offset: 48, Length: 16, Resolution: 0.01, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'filter_duration')
     if field is None:
         raise Exception("Cant encode this message, missing 'Filter duration'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -15216,7 +15224,8 @@ def decode_pgn_126720_airmarTemperatureFilterNone(_data_raw_: int) -> NMEA2000Me
 
     # 7:sample_interval | Offset: 32, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    raise Exception("FieldType (DURATION) not supported")
+    sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    sample_interval = decode_time(sample_interval_raw)
     nmea2000Message.fields.append(NMEA2000Field('sample_interval', 'Sample interval', "Interval of time between successive samples of the water temperature thermistor", 's', sample_interval, sample_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -15265,7 +15274,7 @@ def encode_pgn_126720_airmarTemperatureFilterNone(nmea2000Message: NMEA2000Messa
     field = next(f for f in nmea2000Message.fields if f.id == 'sample_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Sample interval'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 32
     return data_raw
 
@@ -15314,13 +15323,15 @@ def decode_pgn_126720_airmarTemperatureFilterIir(_data_raw_: int) -> NMEA2000Mes
 
     # 7:sample_interval | Offset: 32, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    raise Exception("FieldType (DURATION) not supported")
+    sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    sample_interval = decode_time(sample_interval_raw)
     nmea2000Message.fields.append(NMEA2000Field('sample_interval', 'Sample interval', "Interval of time between successive samples of the water temperature thermistor", 's', sample_interval, sample_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
     # 8:filter_duration | Offset: 48, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    raise Exception("FieldType (DURATION) not supported")
+    filter_duration_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    filter_duration = decode_time(filter_duration_raw)
     nmea2000Message.fields.append(NMEA2000Field('filter_duration', 'Filter duration', "Duration of filter, must be bigger than the sample interval", 's', filter_duration, filter_duration_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -15369,13 +15380,13 @@ def encode_pgn_126720_airmarTemperatureFilterIir(nmea2000Message: NMEA2000Messag
     field = next(f for f in nmea2000Message.fields if f.id == 'sample_interval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Sample interval'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 32
     # filter_duration | Offset: 48, Length: 16, Resolution: 0.01, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'filter_duration')
     if field is None:
         raise Exception("Cant encode this message, missing 'Filter duration'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -17331,7 +17342,8 @@ def decode_pgn_126993(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 0
     # 1:data_transmit_offset | Offset: 0, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    raise Exception("FieldType (DURATION) not supported")
+    data_transmit_offset_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    data_transmit_offset = decode_time(data_transmit_offset_raw)
     nmea2000Message.fields.append(NMEA2000Field('data_transmit_offset', 'Data transmit offset', "Offset in transmit time from time of request command: 0x0 = transmit immediately, 0xFFFF = Do not change offset.", 's', data_transmit_offset, data_transmit_offset_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -17377,7 +17389,7 @@ def encode_pgn_126993(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'data_transmit_offset')
     if field is None:
         raise Exception("Cant encode this message, missing 'Data transmit offset'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 0
     # sequence_counter | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'sequence_counter')
@@ -18604,7 +18616,8 @@ def decode_pgn_127489(_data_raw_: int) -> NMEA2000Message:
 
     # 7:total_engine_hours | Offset: 88, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    raise Exception("FieldType (DURATION) not supported")
+    total_engine_hours_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
+    total_engine_hours = decode_time(total_engine_hours_raw)
     nmea2000Message.fields.append(NMEA2000Field('total_engine_hours', 'Total Engine hours', None, 's', total_engine_hours, total_engine_hours_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -18697,7 +18710,7 @@ def encode_pgn_127489(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'total_engine_hours')
     if field is None:
         raise Exception("Cant encode this message, missing 'Total Engine hours'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 88
     # coolant_pressure | Offset: 120, Length: 16, Resolution: 100, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'coolant_pressure')
@@ -18876,7 +18889,8 @@ def decode_pgn_127491(_data_raw_: int) -> NMEA2000Message:
 
     # 3:time_remaining | Offset: 16, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise Exception("FieldType (DURATION) not supported")
+    time_remaining_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
+    time_remaining = decode_time(time_remaining_raw)
     nmea2000Message.fields.append(NMEA2000Field('time_remaining', 'Time Remaining', "Time remaining at current rate of discharge", 's', time_remaining, time_remaining_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -18943,7 +18957,7 @@ def encode_pgn_127491(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_remaining')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time Remaining'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 16
     # highest_cell_temperature | Offset: 32, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'highest_cell_temperature')
@@ -19172,7 +19186,8 @@ def decode_pgn_127494(_data_raw_: int) -> NMEA2000Message:
 
     # 13:drive_motor_hours | Offset: 192, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 192
-    raise Exception("FieldType (DURATION) not supported")
+    drive_motor_hours_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
+    drive_motor_hours = decode_time(drive_motor_hours_raw)
     nmea2000Message.fields.append(NMEA2000Field('drive_motor_hours', 'Drive/Motor Hours', None, 's', drive_motor_hours, drive_motor_hours_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -19257,7 +19272,7 @@ def encode_pgn_127494(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'drive_motor_hours')
     if field is None:
         raise Exception("Cant encode this message, missing 'Drive/Motor Hours'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 192
     return data_raw
 
@@ -19478,7 +19493,8 @@ def decode_pgn_127496(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 0
     # 1:time_to_empty | Offset: 0, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    raise Exception("FieldType (DURATION) not supported")
+    time_to_empty_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
+    time_to_empty = decode_time(time_to_empty_raw)
     nmea2000Message.fields.append(NMEA2000Field('time_to_empty', 'Time to Empty', None, 's', time_to_empty, time_to_empty_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -19496,7 +19512,8 @@ def decode_pgn_127496(_data_raw_: int) -> NMEA2000Message:
 
     # 4:trip_run_time | Offset: 80, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
-    raise Exception("FieldType (DURATION) not supported")
+    trip_run_time_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
+    trip_run_time = decode_time(trip_run_time_raw)
     nmea2000Message.fields.append(NMEA2000Field('trip_run_time', 'Trip Run Time', None, 's', trip_run_time, trip_run_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -19509,7 +19526,7 @@ def encode_pgn_127496(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_to_empty')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time to Empty'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 0
     # distance_to_empty | Offset: 32, Length: 32, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'distance_to_empty')
@@ -19527,7 +19544,7 @@ def encode_pgn_127496(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'trip_run_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Trip Run Time'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 80
     return data_raw
 
@@ -21002,7 +21019,8 @@ def decode_pgn_127506(_data_raw_: int) -> NMEA2000Message:
 
     # 6:time_remaining | Offset: 40, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise Exception("FieldType (DURATION) not supported")
+    time_remaining_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
+    time_remaining = decode_time(time_remaining_raw)
     nmea2000Message.fields.append(NMEA2000Field('time_remaining', 'Time Remaining', "Time remaining at current rate of discharge", 's', time_remaining, time_remaining_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -21057,7 +21075,7 @@ def encode_pgn_127506(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_remaining')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time Remaining'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 40
     # ripple_voltage | Offset: 56, Length: 16, Resolution: 0.001, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'ripple_voltage')
@@ -21129,7 +21147,8 @@ def decode_pgn_127507(_data_raw_: int) -> NMEA2000Message:
 
     # 8:equalization_time_remaining | Offset: 32, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    raise Exception("FieldType (DURATION) not supported")
+    equalization_time_remaining_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
+    equalization_time_remaining = decode_time(equalization_time_remaining_raw)
     nmea2000Message.fields.append(NMEA2000Field('equalization_time_remaining', 'Equalization Time Remaining', None, 's', equalization_time_remaining, equalization_time_remaining_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -21184,7 +21203,7 @@ def encode_pgn_127507(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'equalization_time_remaining')
     if field is None:
         raise Exception("Cant encode this message, missing 'Equalization Time Remaining'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 32
     return data_raw
 
@@ -21428,7 +21447,8 @@ def decode_pgn_127510(_data_raw_: int) -> NMEA2000Message:
 
     # 11:equalize_time | Offset: 48, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    raise Exception("FieldType (DURATION) not supported")
+    equalize_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
+    equalize_time = decode_time(equalize_time_raw)
     nmea2000Message.fields.append(NMEA2000Field('equalize_time', 'Equalize Time', None, 's', equalize_time, equalize_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -21501,7 +21521,7 @@ def encode_pgn_127510(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'equalize_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Equalize Time'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -22914,7 +22934,8 @@ def decode_pgn_128006(_data_raw_: int) -> NMEA2000Message:
 
     # 8:command_timeout | Offset: 40, Length: 8, Signed: False Resolution: 0.005, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise Exception("FieldType (DURATION) not supported")
+    command_timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
+    command_timeout = decode_time(command_timeout_raw)
     nmea2000Message.fields.append(NMEA2000Field('command_timeout', 'Command Timeout', None, 's', command_timeout, command_timeout_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 8
 
@@ -22975,7 +22996,7 @@ def encode_pgn_128006(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'command_timeout')
     if field is None:
         raise Exception("Cant encode this message, missing 'Command Timeout'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.005) if field.raw_value is not None else encode_time(field.value, 8)
     data_raw |= (field_value & 0xFF) << 40
     # azimuth_control | Offset: 48, Length: 16, Resolution: 0.0001, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'azimuth_control')
@@ -23114,7 +23135,8 @@ def decode_pgn_128008(_data_raw_: int) -> NMEA2000Message:
 
     # 6:operating_time | Offset: 48, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    raise Exception("FieldType (DURATION) not supported")
+    operating_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
+    operating_time = decode_time(operating_time_raw)
     nmea2000Message.fields.append(NMEA2000Field('operating_time', 'Operating Time', None, 's', operating_time, operating_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -23157,7 +23179,7 @@ def encode_pgn_128008(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'operating_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Operating Time'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -23463,7 +23485,8 @@ def decode_pgn_128520(_data_raw_: int) -> NMEA2000Message:
 
     # 13:tcpa | Offset: 136, Length: 32, Signed: True Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 136
-    raise Exception("FieldType (DURATION) not supported")
+    tcpa_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 0.001)
+    tcpa = decode_time(tcpa_raw)
     nmea2000Message.fields.append(NMEA2000Field('tcpa', 'TCPA', "negative = time elapsed since event, positive = time to go", 's', tcpa, tcpa_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -23561,7 +23584,7 @@ def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'tcpa')
     if field is None:
         raise Exception("Cant encode this message, missing 'TCPA'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 136
     # utc_of_fix | Offset: 168, Length: 32, Resolution: 0.0001, Field Type: TIME
     field = next(f for f in nmea2000Message.fields if f.id == 'utc_of_fix')
@@ -24233,7 +24256,8 @@ def decode_pgn_128776(_data_raw_: int) -> NMEA2000Message:
 
     # 12:command_timeout | Offset: 40, Length: 8, Signed: False Resolution: 0.005, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise Exception("FieldType (DURATION) not supported")
+    command_timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
+    command_timeout = decode_time(command_timeout_raw)
     nmea2000Message.fields.append(NMEA2000Field('command_timeout', 'Command Timeout', "If timeout elapses the thruster stops operating and reverts to static mode", 's', command_timeout, command_timeout_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 8
 
@@ -24325,7 +24349,7 @@ def encode_pgn_128776(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'command_timeout')
     if field is None:
         raise Exception("Cant encode this message, missing 'Command Timeout'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.005) if field.raw_value is not None else encode_time(field.value, 8)
     data_raw |= (field_value & 0xFF) << 40
     # windlass_control_events | Offset: 48, Length: 4, Resolution: 1, Field Type: BITLOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'windlass_control_events')
@@ -24522,7 +24546,8 @@ def decode_pgn_128778(_data_raw_: int) -> NMEA2000Message:
 
     # 6:total_motor_time | Offset: 40, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise Exception("FieldType (DURATION) not supported")
+    total_motor_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
+    total_motor_time = decode_time(total_motor_time_raw)
     nmea2000Message.fields.append(NMEA2000Field('total_motor_time', 'Total Motor Time', None, 's', total_motor_time, total_motor_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -24571,7 +24596,7 @@ def encode_pgn_128778(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'total_motor_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Total Motor Time'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 40
     # reserved_56 | Offset: 56, Length: 8, Resolution: 1, Field Type: RESERVED
     field = next(f for f in nmea2000Message.fields if f.id == 'reserved_56')
@@ -25087,7 +25112,8 @@ def decode_pgn_129029(_data_raw_: int) -> NMEA2000Message:
 
     # 18:age_of_dgnss_corrections | Offset: 360, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 360
-    raise Exception("FieldType (DURATION) not supported")
+    age_of_dgnss_corrections_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    age_of_dgnss_corrections = decode_time(age_of_dgnss_corrections_raw)
     nmea2000Message.fields.append(NMEA2000Field('age_of_dgnss_corrections', 'Age of DGNSS Corrections', None, 's', age_of_dgnss_corrections, age_of_dgnss_corrections_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -25202,7 +25228,7 @@ def encode_pgn_129029(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'age_of_dgnss_corrections')
     if field is None:
         raise Exception("Cant encode this message, missing 'Age of DGNSS Corrections'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 360
     return data_raw
 
@@ -25230,7 +25256,8 @@ def decode_pgn_129033(_data_raw_: int) -> NMEA2000Message:
 
     # 3:local_offset | Offset: 48, Length: 16, Signed: True Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    raise Exception("FieldType (DURATION) not supported")
+    local_offset_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 60)
+    local_offset = decode_time(local_offset_raw)
     nmea2000Message.fields.append(NMEA2000Field('local_offset', 'Local Offset', None, 's', local_offset, local_offset_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -25255,7 +25282,7 @@ def encode_pgn_129033(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'local_offset')
     if field is None:
         raise Exception("Cant encode this message, missing 'Local Offset'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
@@ -27220,7 +27247,8 @@ def decode_pgn_129301(_data_raw_: int) -> NMEA2000Message:
 
     # 2:time_to_mark | Offset: 8, Length: 32, Signed: True Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
-    raise Exception("FieldType (DURATION) not supported")
+    time_to_mark_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 0.001)
+    time_to_mark = decode_time(time_to_mark_raw)
     nmea2000Message.fields.append(NMEA2000Field('time_to_mark', 'Time to mark', "negative = elapsed since event, positive = time to go", 's', time_to_mark, time_to_mark_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -27258,7 +27286,7 @@ def encode_pgn_129301(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_to_mark')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time to mark'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 8
     # mark_type | Offset: 40, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'mark_type')
@@ -28276,7 +28304,8 @@ def decode_pgn_129546(_data_raw_: int) -> NMEA2000Message:
 
     # 4:pseudorange_residual_filtering_time_constant | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    raise Exception("FieldType (DURATION) not supported")
+    pseudorange_residual_filtering_time_constant_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    pseudorange_residual_filtering_time_constant = decode_time(pseudorange_residual_filtering_time_constant_raw)
     nmea2000Message.fields.append(NMEA2000Field('pseudorange_residual_filtering_time_constant', 'Pseudorange Residual Filtering Time Constant', None, 's', pseudorange_residual_filtering_time_constant, pseudorange_residual_filtering_time_constant_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -28313,7 +28342,7 @@ def encode_pgn_129546(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'pseudorange_residual_filtering_time_constant')
     if field is None:
         raise Exception("Cant encode this message, missing 'Pseudorange Residual Filtering Time Constant'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 32
     # reserved_48 | Offset: 48, Length: 16, Resolution: 1, Field Type: RESERVED
     field = next(f for f in nmea2000Message.fields if f.id == 'reserved_48')
@@ -28463,7 +28492,8 @@ def decode_pgn_129549(_data_raw_: int) -> NMEA2000Message:
 
     # 4:time_of_corrections | Offset: 24, Length: 16, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    raise Exception("FieldType (DURATION) not supported")
+    time_of_corrections_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.001)
+    time_of_corrections = decode_time(time_of_corrections_raw)
     nmea2000Message.fields.append(NMEA2000Field('time_of_corrections', 'Time of corrections', None, 's', time_of_corrections, time_of_corrections_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -28537,7 +28567,7 @@ def encode_pgn_129549(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_of_corrections')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time of corrections'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 24
     # station_health | Offset: 40, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'station_health')
@@ -28773,7 +28803,8 @@ def decode_pgn_129551(_data_raw_: int) -> NMEA2000Message:
 
     # 13:time_since_last_sat_differential_sync | Offset: 128, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    raise Exception("FieldType (DURATION) not supported")
+    time_since_last_sat_differential_sync_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    time_since_last_sat_differential_sync = decode_time(time_since_last_sat_differential_sync_raw)
     nmea2000Message.fields.append(NMEA2000Field('time_since_last_sat_differential_sync', 'Time since Last Sat Differential Sync', "Age of differential corrections", 's', time_since_last_sat_differential_sync, time_since_last_sat_differential_sync_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -28864,7 +28895,7 @@ def encode_pgn_129551(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'time_since_last_sat_differential_sync')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time since Last Sat Differential Sync'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 128
     # satellite_service_id_no_ | Offset: 144, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'satellite_service_id_no_')
@@ -36773,7 +36804,8 @@ def decode_pgn_130567(_data_raw_: int) -> NMEA2000Message:
 
     # 23:run_time | Offset: 160, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
-    raise Exception("FieldType (DURATION) not supported")
+    run_time_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
+    run_time = decode_time(run_time_raw)
     nmea2000Message.fields.append(NMEA2000Field('run_time', 'Run Time', None, 's', run_time, run_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -36918,7 +36950,7 @@ def encode_pgn_130567(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'run_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Run Time'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 160
     return data_raw
 
@@ -36965,13 +36997,15 @@ def decode_pgn_130569(_data_raw_: int) -> NMEA2000Message:
 
     # 6:elapsed_track_time | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    raise Exception("FieldType (DURATION) not supported")
+    elapsed_track_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    elapsed_track_time = decode_time(elapsed_track_time_raw)
     nmea2000Message.fields.append(NMEA2000Field('elapsed_track_time', 'Elapsed Track Time', None, 's', elapsed_track_time, elapsed_track_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
     # 7:track_time | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
-    raise Exception("FieldType (DURATION) not supported")
+    track_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    track_time = decode_time(track_time_raw)
     nmea2000Message.fields.append(NMEA2000Field('track_time', 'Track Time', None, 's', track_time, track_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -37077,13 +37111,13 @@ def encode_pgn_130569(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'elapsed_track_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Elapsed Track Time'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 64
     # track_time | Offset: 80, Length: 16, Resolution: 1, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'track_time')
     if field is None:
         raise Exception("Cant encode this message, missing 'Track Time'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 80
     # repeat_status | Offset: 96, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'repeat_status')
@@ -39906,13 +39940,15 @@ def decode_pgn_130816_sonichubPlaylist(_data_raw_: int) -> NMEA2000Message:
 
     # 11:length | Offset: 120, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 120
-    raise Exception("FieldType (DURATION) not supported")
+    length_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
+    length = decode_time(length_raw)
     nmea2000Message.fields.append(NMEA2000Field('length', 'Length', None, 's', length, length_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 12:position_in_track | Offset: 152, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 152
-    raise Exception("FieldType (DURATION) not supported")
+    position_in_track_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
+    position_in_track = decode_time(position_in_track_raw)
     nmea2000Message.fields.append(NMEA2000Field('position_in_track', 'Position in track', None, 's', position_in_track, position_in_track_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -39985,13 +40021,13 @@ def encode_pgn_130816_sonichubPlaylist(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'length')
     if field is None:
         raise Exception("Cant encode this message, missing 'Length'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 120
     # position_in_track | Offset: 152, Length: 32, Resolution: 0.001, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'position_in_track')
     if field is None:
         raise Exception("Cant encode this message, missing 'Position in track'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 152
     return data_raw
 
@@ -40929,7 +40965,8 @@ def decode_pgn_130816_sonichubPosition(_data_raw_: int) -> NMEA2000Message:
 
     # 7:position | Offset: 40, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise Exception("FieldType (DURATION) not supported")
+    position_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
+    position = decode_time(position_raw)
     nmea2000Message.fields.append(NMEA2000Field('position', 'Position', None, 's', position, position_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -40978,7 +41015,7 @@ def encode_pgn_130816_sonichubPosition(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'position')
     if field is None:
         raise Exception("Cant encode this message, missing 'Position'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 40
     return data_raw
 
@@ -42311,13 +42348,15 @@ def decode_pgn_130820_fusionTrackInfo(_data_raw_: int) -> NMEA2000Message:
 
     # 13:length | Offset: 120, Length: 24, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 120
-    raise Exception("FieldType (DURATION) not supported")
+    length_raw = decode_number(_data_raw_, running_bit_offset, 24, False, 0.001)
+    length = decode_time(length_raw)
     nmea2000Message.fields.append(NMEA2000Field('length', 'Length', None, 's', length, length_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 24
 
     # 14:position_in_track | Offset: 144, Length: 24, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 144
-    raise Exception("FieldType (DURATION) not supported")
+    position_in_track_raw = decode_number(_data_raw_, running_bit_offset, 24, False, 0.001)
+    position_in_track = decode_time(position_in_track_raw)
     nmea2000Message.fields.append(NMEA2000Field('position_in_track', 'Position in track', None, 's', position_in_track, position_in_track_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 24
 
@@ -42408,13 +42447,13 @@ def encode_pgn_130820_fusionTrackInfo(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'length')
     if field is None:
         raise Exception("Cant encode this message, missing 'Length'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 24)
     data_raw |= (field_value & 0xFFFFFF) << 120
     # position_in_track | Offset: 144, Length: 24, Resolution: 0.001, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'position_in_track')
     if field is None:
         raise Exception("Cant encode this message, missing 'Position in track'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 24)
     data_raw |= (field_value & 0xFFFFFF) << 144
     # h | Offset: 168, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'h')
@@ -42947,7 +42986,8 @@ def decode_pgn_130820_fusionPlayProgress(_data_raw_: int) -> NMEA2000Message:
 
     # 7:progress | Offset: 40, Length: 24, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise Exception("FieldType (DURATION) not supported")
+    progress_raw = decode_number(_data_raw_, running_bit_offset, 24, False, 0.001)
+    progress = decode_time(progress_raw)
     nmea2000Message.fields.append(NMEA2000Field('progress', 'Progress', None, 's', progress, progress_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 24
 
@@ -42996,7 +43036,7 @@ def encode_pgn_130820_fusionPlayProgress(nmea2000Message: NMEA2000Message) -> in
     field = next(f for f in nmea2000Message.fields if f.id == 'progress')
     if field is None:
         raise Exception("Cant encode this message, missing 'Progress'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 24)
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
 
@@ -46393,19 +46433,22 @@ def decode_pgn_130837_maretronSwitchStatusTimer(_data_raw_: int) -> NMEA2000Mess
 
     # 8:accumulated_off_period | Offset: 80, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
-    raise Exception("FieldType (DURATION) not supported")
+    accumulated_off_period_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
+    accumulated_off_period = decode_time(accumulated_off_period_raw)
     nmea2000Message.fields.append(NMEA2000Field('accumulated_off_period', 'Accumulated OFF Period', None, 's', accumulated_off_period, accumulated_off_period_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 9:accumulated_on_period | Offset: 112, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 112
-    raise Exception("FieldType (DURATION) not supported")
+    accumulated_on_period_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
+    accumulated_on_period = decode_time(accumulated_on_period_raw)
     nmea2000Message.fields.append(NMEA2000Field('accumulated_on_period', 'Accumulated ON Period', None, 's', accumulated_on_period, accumulated_on_period_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 10:accumulated_error_period | Offset: 144, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 144
-    raise Exception("FieldType (DURATION) not supported")
+    accumulated_error_period_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
+    accumulated_error_period = decode_time(accumulated_error_period_raw)
     nmea2000Message.fields.append(NMEA2000Field('accumulated_error_period', 'Accumulated ERROR Period', None, 's', accumulated_error_period, accumulated_error_period_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -46473,19 +46516,19 @@ def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message
     field = next(f for f in nmea2000Message.fields if f.id == 'accumulated_off_period')
     if field is None:
         raise Exception("Cant encode this message, missing 'Accumulated OFF Period'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 80
     # accumulated_on_period | Offset: 112, Length: 32, Resolution: 1, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'accumulated_on_period')
     if field is None:
         raise Exception("Cant encode this message, missing 'Accumulated ON Period'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 112
     # accumulated_error_period | Offset: 144, Length: 32, Resolution: 1, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'accumulated_error_period')
     if field is None:
         raise Exception("Cant encode this message, missing 'Accumulated ERROR Period'")
-    raise Exception("Encoding 'DURATION' not supported")
+    field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 144
     # switch_status | Offset: 176, Length: 2, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'switch_status')

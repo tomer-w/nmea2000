@@ -167,7 +167,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset += bits_to_skip
         {%- elif field.FieldType == 'FLOAT'%}
     {{ field_name }} = {{ field_name }}_raw = decode_float(_data_raw_, running_bit_offset, {{ field.BitLength }})
-        {%- elif field.FieldType == 'TIME' %}
+        {%- elif field.FieldType == 'TIME' or field.FieldType == 'DURATION' %}
     {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
     {{ field_name }} = decode_time({{ field_name }}_raw)
         {%- elif field.FieldType == 'DATE' %}
@@ -230,7 +230,7 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_{{field.LookupEnumeration}}(field.value)
     {%- elif field.FieldType == 'DATE' %}
     field_value = field.raw_value if field.raw_value is not None else encode_date(field.value)
-    {%- elif field.FieldType == 'TIME' %}
+    {%- elif field.FieldType == 'TIME' or field.FieldType == 'DURATION' %}
     field_value = int(field.raw_value / {{ field.Resolution }}) if field.raw_value is not None else encode_time(field.value, {{ field.BitLength }})
     {%- else %}
     raise Exception("Encoding '{{field.FieldType}}' not supported")

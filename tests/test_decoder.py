@@ -151,7 +151,7 @@ def test_INDIRECT_LOOKUP_parse():
     assert msg.fields[8].name == "Industry Group"
     assert msg.fields[8].value == "Marine"
     assert msg.fields[9].name == "Arbitrary address capable"
-    assert msg.fields[9].value is None
+    assert msg.fields[9].value == 'Yes'
 
 def test_STRING_FIX_parse():
     decoder = _get_decoder()
