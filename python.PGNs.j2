@@ -128,7 +128,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     {%- set ns_fields = namespace() %}
     running_bit_offset = 0
     {%- for field in pgn.Fields %}
-    {%- set field_name = generate_field_name(field.Name, field.FieldType, field.BitOffset) %}
+    {%- set field_name = generate_field_python_name(field.Name, field.FieldType, field.BitOffset) %}
     {%- set field_signed = field.Signed | default(false)  %}
     # {{ field.Order }}:{{ field_name }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Signed: {{ field_signed }} Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}, Match: {{ field.Match }}, PartOfPrimaryKey: {{ field.PartOfPrimaryKey }},
     {%- if field.BitOffset is defined %}
@@ -160,7 +160,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
         {%- elif field.FieldType == 'STRING_FIX'%}
     {{ field_name }} = {{ field_name }}_raw = decode_string_fix(_data_raw_, running_bit_offset, {{ field.BitLength }})
         {%- elif field.FieldType == 'STRING_LZ'%}
-    {{ field_name }} = {{ field_name }}_raw = decode_string_lz(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    {{ field_name }} = {{ field_name }}_raw = decode_string_lz(_data_raw_, running_bit_offset)
         {%- elif field.FieldType == 'STRING_LAU'%}
     {{ field_name }}_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     {{ field_name }} = {{ field_name }}_raw
@@ -187,14 +187,14 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }}))
             {%- else -%}
             {%- set length_field = pgn.Fields[field.BitLengthField-1] %}
-            {%- set length_field_name = generate_field_name(length_field.Name, length_field.FieldType, length_field.BitOffset) %}
+            {%- set length_field_name = generate_field_python_name(length_field.Name, length_field.FieldType, length_field.BitOffset) %}
     {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, {{ length_field_name }}))
             {%- endif -%}
         {%- else %}
     raise Exception("FieldType ({{ field.FieldType }}) not supported")
         {%- endif %}
     {%- if field.FieldType != 'KEY_VALUE'  %}
-    nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', '{{ field.Name }}', {% if field.Description is defined -%}"{{field.Description}}"{%- else -%}None{%- endif -%}, {% if field.Unit is defined -%}'{{field.Unit}}'{%- else -%}None{%- endif -%}, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
+    nmea2000Message.fields.append(NMEA2000Field('{{ generate_field_id(field.Id, field.FieldType, field.BitOffset) }}', '{{ field.Name }}', {% if field.Description is defined -%}"{{field.Description}}"{%- else -%}None{%- endif -%}, {% if field.Unit is defined -%}'{{field.Unit}}'{%- else -%}None{%- endif -%}, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
     {% if field.BitLength is defined -%}
     running_bit_offset += {{ field.BitLength }}
     {%- endif -%}
@@ -215,9 +215,9 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
     {%- if field.BitLength is not defined or field.BitOffset is not defined %}
     raise Exception ("PGN {{pgn.PGN}} not supporting encoding for now as {{field.Name}} is missing BitLength or BitOffset")
     {%- else %}
-    {%- set field_name = generate_field_name(field.Name, field.FieldType, field.BitOffset) %}
-    # {{ field_name }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}
-    field = next(f for f in nmea2000Message.fields if f.id == '{{ field_name }}')
+    {%- set field_id = generate_field_id(field.Id, field.FieldType, field.BitOffset) %}
+    # {{ field_id }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}
+    field = next(f for f in nmea2000Message.fields if f.id == '{{ field_id }}')
     if field is None:
         raise Exception("Cant encode this message, missing '{{field.Name}}'")
     {%- if field.FieldType == 'NUMBER' %}

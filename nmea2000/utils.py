@@ -325,10 +325,9 @@ def decode_string_fix(data_raw: int, bit_offset: int, bit_length: int) -> str:
     decoded_str = decoded_str.strip()
     return decoded_str
     
-def decode_string_lz(data_raw: int, bit_offset: int, bit_length: int) -> str:
-    number_int = decode_int(data_raw, bit_offset, bit_length)
-    num_bytes = (bit_length + 7) // 8
-    byte_arr = number_int.to_bytes(num_bytes, 'little')
+def decode_string_lz(data_raw: int, bit_offset: int) -> str:
+    data_raw = data_raw >> bit_offset
+    byte_arr = data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
     str_len = byte_arr[0]
     byte_arr_str = byte_arr[1 : 1 + str_len]
     decoded_str = byte_arr_str.decode('utf-8', errors='ignore')

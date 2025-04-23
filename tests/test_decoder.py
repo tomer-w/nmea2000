@@ -18,13 +18,13 @@ def _validate_65280_message(msg: NMEA2000Message):
     assert msg.destination == 255
     assert msg.description == "Furuno: Heave"
     assert len(msg.fields) == 5
-    assert msg.fields[0].id == "manufacturer_code"
+    assert msg.fields[0].id == "manufacturerCode"
     assert msg.fields[0].name == "Manufacturer Code"
     assert msg.fields[0].part_of_primary_key
     assert msg.fields[0].description == "Furuno"
     assert msg.fields[0].value == "Furuno"
     assert msg.fields[0].type == FieldTypes.LOOKUP
-    assert msg.fields[2].id == "industry_code"
+    assert msg.fields[2].id == "industryCode"
     assert msg.fields[2].name == "Industry Code"
     assert msg.fields[2].description == "Marine Industry"
     assert msg.fields[2].value == "Marine"
@@ -188,24 +188,20 @@ def test_STRING_LZ_parse():
     assert msg.priority == 7
     assert msg.source == 49
     assert msg.destination == 255
-    assert msg.description == 'Fusion: AM/FM Station'
-    assert len(msg.fields) == 10
+    assert msg.description == 'Fusion: Tuner'
+    assert len(msg.fields) == 9
     assert msg.fields[0].name == 'Manufacturer Code'
     assert msg.fields[0].value == 'Fusion Electronics'
     assert msg.fields[3].name == 'Message ID'
-    assert msg.fields[3].value == 'AM/FM Station'
-    assert msg.fields[4].name == 'A'
-    assert msg.fields[4].value == 128
-    assert msg.fields[5].name == 'AM/FM'
-    assert msg.fields[5].value == 'FM'
-    assert msg.fields[6].name == 'B'
-    assert msg.fields[6].value == 2
-    assert msg.fields[7].name == 'Frequency'
-    assert msg.fields[7].value == 88000000
-    assert msg.fields[7].unit_of_measurement == 'Hz'
-    assert msg.fields[7].physical_quantities == PhysicalQuantities.FREQUENCY
-    assert msg.fields[9].name == 'Track'
-    assert msg.fields[9].value == 'AVROTROS'
+    assert msg.fields[3].value == 'Tuner'
+    assert msg.fields[4].name == 'Source ID'
+    assert msg.fields[4].value == 'FM'
+    assert msg.fields[6].name == 'Frequency'
+    assert msg.fields[6].value == 88000000
+    assert msg.fields[6].unit_of_measurement == 'Hz'
+    assert msg.fields[6].physical_quantities == PhysicalQuantities.FREQUENCY
+    assert msg.fields[8].name == 'RDS'
+    assert msg.fields[8].value == 'AVROTROS'
 
 def test_STRING_LAU_parse():
     decoder = _get_decoder()

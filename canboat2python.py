@@ -13,12 +13,17 @@ def bits_to_hex(len: int) -> str:
         num = (num << 1) ^ 1
     return f'0x{num:X}'
 
+def generate_field_id(field_id, field_type, field_offset):
+    if field_type == "RESERVED":
+        return 'reserved_' + str(field_offset)
+    return field_id
+
 pattern = r'[^a-zA-Z0-9]'
-def generate_field_name(field_name, field_type, field_offset):
+def generate_field_python_name(field_name, field_type, field_offset):
     if field_type == "RESERVED":
         return 'reserved_' + str(field_offset)
     temp =  re.sub(pattern, '_', field_name).lower()
-    if temp[0].isdigit():
+    if temp[0].isdigit() or temp == 'global':
         temp = '__' + temp
     return temp
 
@@ -26,7 +31,8 @@ def generate_field_name(field_name, field_type, field_offset):
 file_loader = FileSystemLoader(searchpath="./")
 env = Environment(loader=file_loader)
 env.globals['bits_to_hex'] = bits_to_hex
-env.globals['generate_field_name'] = generate_field_name
+env.globals['generate_field_id'] = generate_field_id
+env.globals['generate_field_python_name'] = generate_field_python_name
 
 # Load the Jinja2 template
 template = env.get_template('python.consts.j2')
