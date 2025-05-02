@@ -569,6 +569,7 @@ master_dict = {
         0: "No integrity checking",
         1: "Safe",
         2: "Caution",
+        3: "Unsafe",
     },
     'SYSTEM_TIME': {
         0: "GPS",
@@ -1676,12 +1677,12 @@ master_dict = {
         32769: "API Version",
         32770: "Source",
         32771: "Source Count",
-        32772: "Media",
-        32773: "Track Name",
-        32774: "Artist Name",
-        32775: "Album Name",
+        32772: "Track Info",
+        32773: "Track Title",
+        32774: "Track Artist",
+        32775: "Track Album",
         32776: "Cover Art",
-        32777: "Track Position",
+        32777: "Track Progress",
         32778: "Tuner Align",
         32779: "Tuner",
         32780: "Marine Tuner",
@@ -1699,24 +1700,24 @@ master_dict = {
         32792: "Balance",
         32793: "Low Pass Filter",
         32794: "Sublevels",
-        32795: "EQ",
+        32795: "Tone",
         32796: "Volume Limits",
-        32797: "Volumes",
+        32797: "Volume",
         32798: "Capabilities",
         32799: "Line Level Control",
-        32800: "Power State",
-        32801: "Device Name",
+        32800: "Power",
+        32801: "Unit Name",
         32802: "Sirius",
-        32803: "Sirius Preset Event",
-        32804: "Sirius Channel",
-        32805: "Sirius Title",
-        32806: "Sirius Artist",
-        32807: "Sirius Content Info",
-        32808: "Sirius Category",
-        32809: "Sirius Signal",
-        32810: "Sirius Parental Request",
-        32811: "Sirius Diagnostics",
-        32812: "Sirius Presets",
+        32803: "SiriusXM Preset Event",
+        32804: "SiriusXM Channel",
+        32805: "SiriusXM Title",
+        32806: "SiriusXM Artist",
+        32807: "SiriusXM Genre",
+        32808: "SiriusXM Category",
+        32809: "SiriusXm Signal",
+        32810: "SiriusXM Parental Request",
+        32811: "SiriusXM Diagnostics",
+        32812: "SiriusXM Presets",
         32813: "Zone Name",
     },
     'SONICHUB_CONTROL': {
@@ -2031,6 +2032,132 @@ master_dict = {
         1: "Auto Power",
         2: "Auto Range",
     },
+    'WP_POSITION_RESOLUTION': {
+        0: "more than 0.1 min",
+        1: "<0.01 .. 0.1] min",
+        2: "<0.001 .. 0.01] min",
+        3: "<0.0001 .. 0.001] min",
+        4: "<0 .. 0.0001] min",
+    },
+    'WP_IDENTIFICATION_METHOD': {
+        0: "Waypoints in WP list",
+        1: "Waypoints embedded in route",
+    },
+    'WP_ROUTE_STATUS': {
+        0: "Active",
+        1: "Inactive",
+        2: "Deleted",
+    },
+    'WP_NAVIGATION_METHOD': {
+        0: "Great Circle",
+        1: "Rhumb Line",
+    },
+    'INVERTER_MODE': {
+        0: "Standalone",
+        1: "Series Master",
+        2: "Series Slave",
+        3: "Parallel Master",
+        4: "Parallel Slave",
+    },
+    'CERTIFICATION_LEVEL': {
+        0: "Level A",
+        1: "Level B",
+    },
+    'AGS_MODE': {
+        0: "Off",
+        1: "On",
+        2: "Automatic",
+    },
+    'AGS_OPERATING_STATE': {
+        0: "Quiet time",
+        1: "Auto on",
+        2: "Auto off",
+        3: "Manual On",
+        4: "Manual Off",
+        5: "Generator shutdown",
+        6: "External shutdown",
+        7: "Fault",
+        8: "Suspend",
+        9: "Not operating",
+    },
+    'AGS_GENERATING_STATE': {
+        0: "Preheating",
+        1: "Start delay",
+        2: "Cranking",
+        3: "Starter cooling",
+        4: "Warming up",
+        5: "Cooling down",
+        6: "Spinning up",
+        7: "Shutdown bypass",
+        8: "Stopping",
+        9: "Running",
+        10: "Stopped",
+        11: "Crank delaty",
+    },
+    'AGS_ON_REASON': {
+        0: "Not on",
+        1: "DC voltage low",
+        2: "Battery state of charge low",
+        3: "AC current high",
+        4: "Contact closed",
+        5: "Manual on",
+        6: "Exercise",
+        7: "Non Quiet time",
+        8: "External on via AGS",
+        9: "External on via generator",
+        10: "Unable to stop",
+    },
+    'AGS_OFF_REASON': {
+        0: "Not off",
+        1: "DC voltage high",
+        2: "Battery state of charge high",
+        3: "AC current low",
+        4: "Contact opened",
+        5: "Reached absorption",
+        6: "Reached float",
+        7: "Manual off",
+        8: "Max run time",
+        9: "Max auto cycle",
+        10: "Exercise done",
+        11: "Quiet time",
+        12: "External off via AGS",
+        13: "Safe mode",
+        14: "External off via generator",
+        15: "External shutdown",
+        16: "Auto off",
+        17: "Fault",
+        18: "Unable to start",
+    },
+    'TELEPHONE_MODE': {
+        0: "F3E/G3E simplex, telephone",
+        1: "F3E/G3E duplex, telephone",
+        2: "J3E, telephone",
+        3: "H3E, telephone",
+        4: "F1B/J2B FEC NBDP, telex/teleprinter",
+        5: "F1B/J2B ARQ NBDP, telex/teleprinter",
+        6: "F1B/J2B receive only, teleprinter/DSC",
+        7: "F1B/J2B, teleprinter/DSC",
+        8: "A1A Morse, tape recorder",
+        9: "A1A Morse, Morse key/head set",
+        10: "F1C/F2C/F3C, FAX machine",
+    },
+    'POWER_MODE': {
+        0: "High",
+        1: "Low",
+    },
+    'BROADCAST_INDICATOR': {
+        0: "Broadcast geo area message",
+        1: "Addressed message",
+    },
+    'BANDWIDTH': {
+        0: "Default",
+        1: "12.5 kHz",
+    },
+    'FLOOD_STATE': {
+        0: "Flood",
+        1: "Slack",
+        2: "Ebb",
+    },
 }
 
 master_flags_dict = {
@@ -2183,6 +2310,17 @@ master_flags_dict = {
     'ENTERTAINMENT_SHUFFLE_BITFIELD': {
         0: "Play queue",
         1: "All",
+    },
+    'WP_CHANGE': {
+        0: "Change in main data (Position, Name)",
+        1: "Change in supplementary parameters (or new added)",
+        2: "Changed number of WPs in Route/WP-List, and/or name changed/added",
+        3: "Route: Change supplementary parameters (or new added)",
+        6: "Other not specified changed",
+    },
+    'WP_CRITICAL_PARAMETERS': {
+        0: "Navigation Method",
+        1: "XTE Limit",
     },
 }
 
@@ -3003,6 +3141,7 @@ lookup_dict_encode_GNS_INTEGRITY = {
     "No integrity checking" : 0,
     "Safe" : 1,
     "Caution" : 2,
+    "Unsafe" : 3,
 }
 def lookup_encode_GNS_INTEGRITY(value):
     result = lookup_dict_encode_GNS_INTEGRITY.get(value, None)
@@ -4908,12 +5047,12 @@ lookup_dict_encode_FUSION_STATUS_MESSAGE_ID = {
     "API Version" : 32769,
     "Source" : 32770,
     "Source Count" : 32771,
-    "Media" : 32772,
-    "Track Name" : 32773,
-    "Artist Name" : 32774,
-    "Album Name" : 32775,
+    "Track Info" : 32772,
+    "Track Title" : 32773,
+    "Track Artist" : 32774,
+    "Track Album" : 32775,
     "Cover Art" : 32776,
-    "Track Position" : 32777,
+    "Track Progress" : 32777,
     "Tuner Align" : 32778,
     "Tuner" : 32779,
     "Marine Tuner" : 32780,
@@ -4931,24 +5070,24 @@ lookup_dict_encode_FUSION_STATUS_MESSAGE_ID = {
     "Balance" : 32792,
     "Low Pass Filter" : 32793,
     "Sublevels" : 32794,
-    "EQ" : 32795,
+    "Tone" : 32795,
     "Volume Limits" : 32796,
-    "Volumes" : 32797,
+    "Volume" : 32797,
     "Capabilities" : 32798,
     "Line Level Control" : 32799,
-    "Power State" : 32800,
-    "Device Name" : 32801,
+    "Power" : 32800,
+    "Unit Name" : 32801,
     "Sirius" : 32802,
-    "Sirius Preset Event" : 32803,
-    "Sirius Channel" : 32804,
-    "Sirius Title" : 32805,
-    "Sirius Artist" : 32806,
-    "Sirius Content Info" : 32807,
-    "Sirius Category" : 32808,
-    "Sirius Signal" : 32809,
-    "Sirius Parental Request" : 32810,
-    "Sirius Diagnostics" : 32811,
-    "Sirius Presets" : 32812,
+    "SiriusXM Preset Event" : 32803,
+    "SiriusXM Channel" : 32804,
+    "SiriusXM Title" : 32805,
+    "SiriusXM Artist" : 32806,
+    "SiriusXM Genre" : 32807,
+    "SiriusXM Category" : 32808,
+    "SiriusXm Signal" : 32809,
+    "SiriusXM Parental Request" : 32810,
+    "SiriusXM Diagnostics" : 32811,
+    "SiriusXM Presets" : 32812,
     "Zone Name" : 32813,
 }
 def lookup_encode_FUSION_STATUS_MESSAGE_ID(value):
@@ -5455,6 +5594,228 @@ def lookup_encode_DIFFERENTIAL_MODE(value):
         raise Exception(f"Cant encode this message, {value} is missing from DIFFERENTIAL_MODE")
     return result
 
+lookup_dict_encode_WP_POSITION_RESOLUTION = {
+    "more than 0.1 min" : 0,
+    "<0.01 .. 0.1] min" : 1,
+    "<0.001 .. 0.01] min" : 2,
+    "<0.0001 .. 0.001] min" : 3,
+    "<0 .. 0.0001] min" : 4,
+}
+def lookup_encode_WP_POSITION_RESOLUTION(value):
+    result = lookup_dict_encode_WP_POSITION_RESOLUTION.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from WP_POSITION_RESOLUTION")
+    return result
+
+lookup_dict_encode_WP_IDENTIFICATION_METHOD = {
+    "Waypoints in WP list" : 0,
+    "Waypoints embedded in route" : 1,
+}
+def lookup_encode_WP_IDENTIFICATION_METHOD(value):
+    result = lookup_dict_encode_WP_IDENTIFICATION_METHOD.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from WP_IDENTIFICATION_METHOD")
+    return result
+
+lookup_dict_encode_WP_ROUTE_STATUS = {
+    "Active" : 0,
+    "Inactive" : 1,
+    "Deleted" : 2,
+}
+def lookup_encode_WP_ROUTE_STATUS(value):
+    result = lookup_dict_encode_WP_ROUTE_STATUS.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from WP_ROUTE_STATUS")
+    return result
+
+lookup_dict_encode_WP_NAVIGATION_METHOD = {
+    "Great Circle" : 0,
+    "Rhumb Line" : 1,
+}
+def lookup_encode_WP_NAVIGATION_METHOD(value):
+    result = lookup_dict_encode_WP_NAVIGATION_METHOD.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from WP_NAVIGATION_METHOD")
+    return result
+
+lookup_dict_encode_INVERTER_MODE = {
+    "Standalone" : 0,
+    "Series Master" : 1,
+    "Series Slave" : 2,
+    "Parallel Master" : 3,
+    "Parallel Slave" : 4,
+}
+def lookup_encode_INVERTER_MODE(value):
+    result = lookup_dict_encode_INVERTER_MODE.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from INVERTER_MODE")
+    return result
+
+lookup_dict_encode_CERTIFICATION_LEVEL = {
+    "Level A" : 0,
+    "Level B" : 1,
+}
+def lookup_encode_CERTIFICATION_LEVEL(value):
+    result = lookup_dict_encode_CERTIFICATION_LEVEL.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from CERTIFICATION_LEVEL")
+    return result
+
+lookup_dict_encode_AGS_MODE = {
+    "Off" : 0,
+    "On" : 1,
+    "Automatic" : 2,
+}
+def lookup_encode_AGS_MODE(value):
+    result = lookup_dict_encode_AGS_MODE.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from AGS_MODE")
+    return result
+
+lookup_dict_encode_AGS_OPERATING_STATE = {
+    "Quiet time" : 0,
+    "Auto on" : 1,
+    "Auto off" : 2,
+    "Manual On" : 3,
+    "Manual Off" : 4,
+    "Generator shutdown" : 5,
+    "External shutdown" : 6,
+    "Fault" : 7,
+    "Suspend" : 8,
+    "Not operating" : 9,
+}
+def lookup_encode_AGS_OPERATING_STATE(value):
+    result = lookup_dict_encode_AGS_OPERATING_STATE.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from AGS_OPERATING_STATE")
+    return result
+
+lookup_dict_encode_AGS_GENERATING_STATE = {
+    "Preheating" : 0,
+    "Start delay" : 1,
+    "Cranking" : 2,
+    "Starter cooling" : 3,
+    "Warming up" : 4,
+    "Cooling down" : 5,
+    "Spinning up" : 6,
+    "Shutdown bypass" : 7,
+    "Stopping" : 8,
+    "Running" : 9,
+    "Stopped" : 10,
+    "Crank delaty" : 11,
+}
+def lookup_encode_AGS_GENERATING_STATE(value):
+    result = lookup_dict_encode_AGS_GENERATING_STATE.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from AGS_GENERATING_STATE")
+    return result
+
+lookup_dict_encode_AGS_ON_REASON = {
+    "Not on" : 0,
+    "DC voltage low" : 1,
+    "Battery state of charge low" : 2,
+    "AC current high" : 3,
+    "Contact closed" : 4,
+    "Manual on" : 5,
+    "Exercise" : 6,
+    "Non Quiet time" : 7,
+    "External on via AGS" : 8,
+    "External on via generator" : 9,
+    "Unable to stop" : 10,
+}
+def lookup_encode_AGS_ON_REASON(value):
+    result = lookup_dict_encode_AGS_ON_REASON.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from AGS_ON_REASON")
+    return result
+
+lookup_dict_encode_AGS_OFF_REASON = {
+    "Not off" : 0,
+    "DC voltage high" : 1,
+    "Battery state of charge high" : 2,
+    "AC current low" : 3,
+    "Contact opened" : 4,
+    "Reached absorption" : 5,
+    "Reached float" : 6,
+    "Manual off" : 7,
+    "Max run time" : 8,
+    "Max auto cycle" : 9,
+    "Exercise done" : 10,
+    "Quiet time" : 11,
+    "External off via AGS" : 12,
+    "Safe mode" : 13,
+    "External off via generator" : 14,
+    "External shutdown" : 15,
+    "Auto off" : 16,
+    "Fault" : 17,
+    "Unable to start" : 18,
+}
+def lookup_encode_AGS_OFF_REASON(value):
+    result = lookup_dict_encode_AGS_OFF_REASON.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from AGS_OFF_REASON")
+    return result
+
+lookup_dict_encode_TELEPHONE_MODE = {
+    "F3E/G3E simplex, telephone" : 0,
+    "F3E/G3E duplex, telephone" : 1,
+    "J3E, telephone" : 2,
+    "H3E, telephone" : 3,
+    "F1B/J2B FEC NBDP, telex/teleprinter" : 4,
+    "F1B/J2B ARQ NBDP, telex/teleprinter" : 5,
+    "F1B/J2B receive only, teleprinter/DSC" : 6,
+    "F1B/J2B, teleprinter/DSC" : 7,
+    "A1A Morse, tape recorder" : 8,
+    "A1A Morse, Morse key/head set" : 9,
+    "F1C/F2C/F3C, FAX machine" : 10,
+}
+def lookup_encode_TELEPHONE_MODE(value):
+    result = lookup_dict_encode_TELEPHONE_MODE.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from TELEPHONE_MODE")
+    return result
+
+lookup_dict_encode_POWER_MODE = {
+    "High" : 0,
+    "Low" : 1,
+}
+def lookup_encode_POWER_MODE(value):
+    result = lookup_dict_encode_POWER_MODE.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from POWER_MODE")
+    return result
+
+lookup_dict_encode_BROADCAST_INDICATOR = {
+    "Broadcast geo area message" : 0,
+    "Addressed message" : 1,
+}
+def lookup_encode_BROADCAST_INDICATOR(value):
+    result = lookup_dict_encode_BROADCAST_INDICATOR.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from BROADCAST_INDICATOR")
+    return result
+
+lookup_dict_encode_BANDWIDTH = {
+    "Default" : 0,
+    "12.5 kHz" : 1,
+}
+def lookup_encode_BANDWIDTH(value):
+    result = lookup_dict_encode_BANDWIDTH.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from BANDWIDTH")
+    return result
+
+lookup_dict_encode_FLOOD_STATE = {
+    "Flood" : 0,
+    "Slack" : 1,
+    "Ebb" : 2,
+}
+def lookup_encode_FLOOD_STATE(value):
+    result = lookup_dict_encode_FLOOD_STATE.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from FLOOD_STATE")
+    return result
+
 
 
 
@@ -5766,13 +6127,13 @@ def decode_pgn_60160(_data_raw_: int) -> NMEA2000Message:
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
     sid = sid_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('sid', 'SID', None, None, sid, sid_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('sid', 'SID', "Sequence number of multi-packet frame", None, sid, sid_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
     # 2:data | Offset: 8, Length: 56, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
     data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 56))
-    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', "Multi-packet packetized data - 56 bits organized as seven 8-bit bytes, each of the bytes is transmitted in the same order as it would in a standard (i.e., single frame) message. Unused bytes shall be filled with 0xFF.", None, data, data_raw, None, FieldTypes.BINARY, False))
     running_bit_offset += 56
 
     return nmea2000Message
@@ -12298,7 +12659,7 @@ def decode_pgn_126208_nmeaRequestGroupFunction(_data_raw_: int) -> NMEA2000Messa
     running_bit_offset = 32
     transmission_interval_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
     transmission_interval = decode_time(transmission_interval_raw)
-    nmea2000Message.fields.append(NMEA2000Field('transmissionInterval', 'Transmission interval', None, 's', transmission_interval, transmission_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
+    nmea2000Message.fields.append(NMEA2000Field('transmissionInterval', 'Transmission interval', "0x0: Turn off transmission; 0xFFFF FFFE = Restore default interval, 0xFFFF FFFF in this field and 0xFFFF in field 4 = Transmit now without changing timing variables", 's', transmission_interval, transmission_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 4:transmission_interval_offset | Offset: 64, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
@@ -17631,7 +17992,7 @@ def decode_pgn_126992(_data_raw_: int) -> NMEA2000Message:
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
     sid = sid_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('sid', 'SID', None, None, sid, sid_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('sid', 'SID', "An upward counting number used to tie releated information together between different PGNs. For example the SID would be used to tie together the COG, SOG and RAIM values to a given position.", None, sid, sid_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
     # 2:source | Offset: 8, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
@@ -17800,7 +18161,7 @@ def decode_pgn_126996(_data_raw_: int) -> NMEA2000Message:
     # 1:nmea_2000_version | Offset: 0, Length: 16, Signed: False Resolution: 0.001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
     nmea_2000_version = nmea_2000_version_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.001)
-    nmea2000Message.fields.append(NMEA2000Field('nmea2000Version', 'NMEA 2000 Version', None, None, nmea_2000_version, nmea_2000_version_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('nmea2000Version', 'NMEA 2000 Version', "Binary number containing a decimal number of format AABBB, where AA is the major and BBB is the minor release. The decimal point position is assumed.", None, nmea_2000_version, nmea_2000_version_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
     # 2:product_code | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -17833,16 +18194,17 @@ def decode_pgn_126996(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('modelSerialCode', 'Model Serial Code', None, None, model_serial_code, model_serial_code_raw, None, FieldTypes.STRING_FIX, True))
     running_bit_offset += 256
 
-    # 7:certification_level | Offset: 1056, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:certification_level | Offset: 1056, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 1056
-    certification_level = certification_level_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('certificationLevel', 'Certification Level', None, None, certification_level, certification_level_raw, None, FieldTypes.NUMBER, False))
+    certification_level_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    certification_level = master_dict['CERTIFICATION_LEVEL'].get(certification_level_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('certificationLevel', 'Certification Level', None, None, certification_level, certification_level_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 8
 
     # 8:load_equivalency | Offset: 1064, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 1064
     load_equivalency = load_equivalency_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('loadEquivalency', 'Load Equivalency', None, None, load_equivalency, load_equivalency_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('loadEquivalency', 'Load Equivalency', "Garantueed maximum power consumption, 50 mA per LEN", None, load_equivalency, load_equivalency_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
     return nmea2000Message
@@ -17886,11 +18248,11 @@ def encode_pgn_126996(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Model Serial Code'")
     raise Exception("Encoding 'STRING_FIX' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 800
-    # certificationLevel | Offset: 1056, Length: 8, Resolution: 1, Field Type: NUMBER
+    # certificationLevel | Offset: 1056, Length: 8, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'certificationLevel')
     if field is None:
         raise Exception("Cant encode this message, missing 'Certification Level'")
-    field_value = encode_number(field.value, 8, False, 1)
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_CERTIFICATION_LEVEL(field.value)
     data_raw |= (field_value & 0xFF) << 1056
     # loadEquivalency | Offset: 1064, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'loadEquivalency')
@@ -21894,7 +22256,7 @@ def encode_pgn_127510(nmea2000Message: NMEA2000Message) -> int:
 
 def is_fast_pgn_127511() -> bool:
     """Return True if PGN 127511 is a fast PGN."""
-    return False
+    return True
 def decode_pgn_127511(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127511."""
     nmea2000Message = NMEA2000Message(127511, 'inverterConfigurationStatus', 'Inverter Configuration Status')
@@ -21917,41 +22279,39 @@ def decode_pgn_127511(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('dcInstance', 'DC Instance', None, None, dc_instance, dc_instance_raw, None, FieldTypes.NUMBER, True))
     running_bit_offset += 8
 
-    # 4:inverter_enable_disable | Offset: 24, Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:inverter_enable_disable | Offset: 24, Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    inverter_enable_disable = inverter_enable_disable_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('inverterEnableDisable', 'Inverter Enable/Disable', None, None, inverter_enable_disable, inverter_enable_disable_raw, None, FieldTypes.NUMBER, False))
+    inverter_enable_disable_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    inverter_enable_disable = master_dict['OFF_ON'].get(inverter_enable_disable_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('inverterEnableDisable', 'Inverter Enable/Disable', None, None, inverter_enable_disable, inverter_enable_disable_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 2
 
-    # 5:reserved_26 | Offset: 26, Length: 6, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    # 5:inverter_mode | Offset: 26, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 26
-    reserved_26 = reserved_26_raw = decode_int(_data_raw_, running_bit_offset, 6)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_26', 'Reserved', None, None, reserved_26, reserved_26_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 6
+    inverter_mode_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    inverter_mode = master_dict['INVERTER_MODE'].get(inverter_mode_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('inverterMode', 'Inverter Mode', None, None, inverter_mode, inverter_mode_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 4
 
-    # 6:inverter_mode | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:load_sense_enable_disable | Offset: 30, Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 30
+    load_sense_enable_disable_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    load_sense_enable_disable = master_dict['OFF_ON'].get(load_sense_enable_disable_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('loadSenseEnableDisable', 'Load Sense Enable/Disable', None, None, load_sense_enable_disable, load_sense_enable_disable_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 2
+
+    # 7:load_sense_power_threshold | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    inverter_mode = inverter_mode_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('inverterMode', 'Inverter Mode', None, None, inverter_mode, inverter_mode_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    load_sense_power_threshold = load_sense_power_threshold_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('loadSensePowerThreshold', 'Load Sense Power Threshold', None, 'W', load_sense_power_threshold, load_sense_power_threshold_raw, PhysicalQuantities.ELECTRICAL_POWER, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 7:load_sense_enable_disable | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    load_sense_enable_disable = load_sense_enable_disable_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('loadSenseEnableDisable', 'Load Sense Enable/Disable', None, None, load_sense_enable_disable, load_sense_enable_disable_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 8:load_sense_power_threshold | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 8:load_sense_interval | Offset: 48, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    load_sense_power_threshold = load_sense_power_threshold_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('loadSensePowerThreshold', 'Load Sense Power Threshold', None, None, load_sense_power_threshold, load_sense_power_threshold_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 9:load_sense_interval | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 56
-    load_sense_interval = load_sense_interval_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('loadSenseInterval', 'Load Sense Interval', None, None, load_sense_interval, load_sense_interval_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    load_sense_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    load_sense_interval = decode_time(load_sense_interval_raw)
+    nmea2000Message.fields.append(NMEA2000Field('loadSenseInterval', 'Load Sense Interval', None, 's', load_sense_interval, load_sense_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
+    running_bit_offset += 16
 
     return nmea2000Message
 
@@ -21976,48 +22336,42 @@ def encode_pgn_127511(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'DC Instance'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 16
-    # inverterEnableDisable | Offset: 24, Length: 2, Resolution: 1, Field Type: NUMBER
+    # inverterEnableDisable | Offset: 24, Length: 2, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'inverterEnableDisable')
     if field is None:
         raise Exception("Cant encode this message, missing 'Inverter Enable/Disable'")
-    field_value = encode_number(field.value, 2, False, 1)
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_OFF_ON(field.value)
     data_raw |= (field_value & 0x3) << 24
-    # reserved_26 | Offset: 26, Length: 6, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_26')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0x3F) << 26
-    # inverterMode | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    # inverterMode | Offset: 26, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'inverterMode')
     if field is None:
         raise Exception("Cant encode this message, missing 'Inverter Mode'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # loadSenseEnableDisable | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INVERTER_MODE(field.value)
+    data_raw |= (field_value & 0xF) << 26
+    # loadSenseEnableDisable | Offset: 30, Length: 2, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'loadSenseEnableDisable')
     if field is None:
         raise Exception("Cant encode this message, missing 'Load Sense Enable/Disable'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # loadSensePowerThreshold | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_OFF_ON(field.value)
+    data_raw |= (field_value & 0x3) << 30
+    # loadSensePowerThreshold | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'loadSensePowerThreshold')
     if field is None:
         raise Exception("Cant encode this message, missing 'Load Sense Power Threshold'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
-    # loadSenseInterval | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 32
+    # loadSenseInterval | Offset: 48, Length: 16, Resolution: 0.01, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'loadSenseInterval')
     if field is None:
         raise Exception("Cant encode this message, missing 'Load Sense Interval'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 56
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
+    data_raw |= (field_value & 0xFFFF) << 48
     return data_raw
 
 
 def is_fast_pgn_127512() -> bool:
     """Return True if PGN 127512 is a fast PGN."""
-    return False
+    return True
 def decode_pgn_127512(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127512."""
     nmea2000Message = NMEA2000Message(127512, 'agsConfigurationStatus', 'AGS Configuration Status')
@@ -22034,17 +22388,18 @@ def decode_pgn_127512(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('generatorInstance', 'Generator Instance', None, None, generator_instance, generator_instance_raw, None, FieldTypes.NUMBER, True))
     running_bit_offset += 8
 
-    # 3:ags_mode | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 3:ags_mode | Offset: 16, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    ags_mode = ags_mode_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('agsMode', 'AGS Mode', None, None, ags_mode, ags_mode_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    ags_mode_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    ags_mode = master_dict['AGS_MODE'].get(ags_mode_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('agsMode', 'AGS Mode', None, None, ags_mode, ags_mode_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 4
 
-    # 4:reserved_24 | Offset: 24, Length: 40, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 40)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 40
+    # 4:reserved_20 | Offset: 20, Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 20
+    reserved_20 = reserved_20_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_20', 'Reserved', None, None, reserved_20, reserved_20_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 4
 
     return nmea2000Message
 
@@ -22063,18 +22418,18 @@ def encode_pgn_127512(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Generator Instance'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 8
-    # agsMode | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    # agsMode | Offset: 16, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'agsMode')
     if field is None:
         raise Exception("Cant encode this message, missing 'AGS Mode'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 16
-    # reserved_24 | Offset: 24, Length: 40, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_24')
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_AGS_MODE(field.value)
+    data_raw |= (field_value & 0xF) << 16
+    # reserved_20 | Offset: 20, Length: 4, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_20')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0xFFFFFFFFFF) << 24
+    data_raw |= (field_value & 0xF) << 20
     return data_raw
 
 
@@ -22219,7 +22574,7 @@ def encode_pgn_127513(nmea2000Message: NMEA2000Message) -> int:
 
 def is_fast_pgn_127514() -> bool:
     """Return True if PGN 127514 is a fast PGN."""
-    return False
+    return True
 def decode_pgn_127514(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127514."""
     nmea2000Message = NMEA2000Message(127514, 'agsStatus', 'AGS Status')
@@ -22236,35 +22591,33 @@ def decode_pgn_127514(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('generatorInstance', 'Generator Instance', None, None, generator_instance, generator_instance_raw, None, FieldTypes.NUMBER, True))
     running_bit_offset += 8
 
-    # 3:ags_operating_state | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 3:ags_operating_state | Offset: 16, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    ags_operating_state = ags_operating_state_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('agsOperatingState', 'AGS Operating State', None, None, ags_operating_state, ags_operating_state_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    ags_operating_state_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    ags_operating_state = master_dict['AGS_OPERATING_STATE'].get(ags_operating_state_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('agsOperatingState', 'AGS Operating State', None, None, ags_operating_state, ags_operating_state_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 4
 
-    # 4:generator_state | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:generator_state | Offset: 20, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 20
+    generator_state_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    generator_state = master_dict['AGS_GENERATING_STATE'].get(generator_state_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('generatorState', 'Generator State', None, None, generator_state, generator_state_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 4
+
+    # 5:generator_on_reason | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    generator_state = generator_state_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('generatorState', 'Generator State', None, None, generator_state, generator_state_raw, None, FieldTypes.NUMBER, False))
+    generator_on_reason_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    generator_on_reason = master_dict['AGS_ON_REASON'].get(generator_on_reason_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('generatorOnReason', 'Generator On Reason', None, None, generator_on_reason, generator_on_reason_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 8
 
-    # 5:generator_on_reason | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:generator_off_reason | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    generator_on_reason = generator_on_reason_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('generatorOnReason', 'Generator On Reason', None, None, generator_on_reason, generator_on_reason_raw, None, FieldTypes.NUMBER, False))
+    generator_off_reason_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    generator_off_reason = master_dict['AGS_OFF_REASON'].get(generator_off_reason_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('generatorOffReason', 'Generator Off Reason', None, None, generator_off_reason, generator_off_reason_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 8
-
-    # 6:generator_off_reason | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    generator_off_reason = generator_off_reason_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('generatorOffReason', 'Generator Off Reason', None, None, generator_off_reason, generator_off_reason_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 7:reserved_48 | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 48
-    reserved_48 = reserved_48_raw = decode_int(_data_raw_, running_bit_offset, 16)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_48', 'Reserved', None, None, reserved_48, reserved_48_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 16
 
     return nmea2000Message
 
@@ -22283,36 +22636,30 @@ def encode_pgn_127514(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Generator Instance'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 8
-    # agsOperatingState | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    # agsOperatingState | Offset: 16, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'agsOperatingState')
     if field is None:
         raise Exception("Cant encode this message, missing 'AGS Operating State'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 16
-    # generatorState | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_AGS_OPERATING_STATE(field.value)
+    data_raw |= (field_value & 0xF) << 16
+    # generatorState | Offset: 20, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'generatorState')
     if field is None:
         raise Exception("Cant encode this message, missing 'Generator State'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
-    # generatorOnReason | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_AGS_GENERATING_STATE(field.value)
+    data_raw |= (field_value & 0xF) << 20
+    # generatorOnReason | Offset: 24, Length: 8, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'generatorOnReason')
     if field is None:
         raise Exception("Cant encode this message, missing 'Generator On Reason'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # generatorOffReason | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_AGS_ON_REASON(field.value)
+    data_raw |= (field_value & 0xFF) << 24
+    # generatorOffReason | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'generatorOffReason')
     if field is None:
         raise Exception("Cant encode this message, missing 'Generator Off Reason'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # reserved_48 | Offset: 48, Length: 16, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_48')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0xFFFF) << 48
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_AGS_OFF_REASON(field.value)
+    data_raw |= (field_value & 0xFF) << 32
     return data_raw
 
 
@@ -23825,10 +24172,10 @@ def decode_pgn_128520(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('bearing', 'Bearing', None, 'rad', bearing, bearing_raw, PhysicalQuantities.ANGLE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 9:distance | Offset: 40, Length: 32, Signed: False Resolution: 0.001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 9:distance | Offset: 40, Length: 32, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    distance = distance_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    nmea2000Message.fields.append(NMEA2000Field('distance', 'Distance', None, 'm', distance, distance_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
+    distance = distance_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('distance', 'Distance', None, 'm', distance, distance_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
     # 10:course | Offset: 72, Length: 16, Signed: False Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
@@ -23843,10 +24190,10 @@ def decode_pgn_128520(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('speed', 'Speed', None, 'm/s', speed, speed_raw, PhysicalQuantities.SPEED, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 12:cpa | Offset: 104, Length: 32, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 12:cpa | Offset: 104, Length: 32, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 104
-    cpa = cpa_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.01)
-    nmea2000Message.fields.append(NMEA2000Field('cpa', 'CPA', None, 'm', cpa, cpa_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
+    cpa = cpa_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('cpa', 'CPA', None, 'm', cpa, cpa_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
     # 13:tcpa | Offset: 136, Length: 32, Signed: True Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
@@ -23863,11 +24210,24 @@ def decode_pgn_128520(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('utcOfFix', 'UTC of Fix', "Seconds since midnight", 's', utc_of_fix, utc_of_fix_raw, PhysicalQuantities.TIME, FieldTypes.TIME, False))
     running_bit_offset += 32
 
-    # 15:name | Offset: 200, Length: 1664, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
+    # 15:name | Offset: 200, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 200
-    name = name_raw = decode_string_fix(_data_raw_, running_bit_offset, 1664)
-    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_FIX, False))
-    running_bit_offset += 1664
+    name_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
+    name = name_raw
+    running_bit_offset += bits_to_skip
+    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_LAU, False))
+    
+
+    # 16:reference_target | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    reference_target_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    reference_target = master_dict['YES_NO'].get(reference_target_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('referenceTarget', 'Reference Target', None, None, reference_target, reference_target_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 2
+
+    # 17:reserved_ | Offset: , Length: 6, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    reserved_ = reserved__raw = decode_int(_data_raw_, running_bit_offset, 6)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_', 'Reserved', None, None, reserved_, reserved__raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 6
 
     return nmea2000Message
 
@@ -23922,11 +24282,11 @@ def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Bearing'")
     field_value = encode_number(field.value, 16, False, 0.0001)
     data_raw |= (field_value & 0xFFFF) << 24
-    # distance | Offset: 40, Length: 32, Resolution: 0.001, Field Type: NUMBER
+    # distance | Offset: 40, Length: 32, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'distance')
     if field is None:
         raise Exception("Cant encode this message, missing 'Distance'")
-    field_value = encode_number(field.value, 32, False, 0.001)
+    field_value = encode_number(field.value, 32, True, 0.01)
     data_raw |= (field_value & 0xFFFFFFFF) << 40
     # course | Offset: 72, Length: 16, Resolution: 0.0001, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'course')
@@ -23944,7 +24304,7 @@ def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> int:
     field = next(f for f in nmea2000Message.fields if f.id == 'cpa')
     if field is None:
         raise Exception("Cant encode this message, missing 'CPA'")
-    field_value = encode_number(field.value, 32, False, 0.01)
+    field_value = encode_number(field.value, 32, True, 0.01)
     data_raw |= (field_value & 0xFFFFFFFF) << 104
     # tcpa | Offset: 136, Length: 32, Resolution: 0.001, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'tcpa')
@@ -23958,12 +24318,9 @@ def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'UTC of Fix'")
     field_value = int(field.raw_value / 0.0001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 168
-    # name | Offset: 200, Length: 1664, Resolution: , Field Type: STRING_FIX
-    field = next(f for f in nmea2000Message.fields if f.id == 'name')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Name'")
-    raise Exception("Encoding 'STRING_FIX' not supported")
-    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 200
+    raise Exception ("PGN 128520 not supporting encoding for now as Name is missing BitLength or BitOffset")
+    raise Exception ("PGN 128520 not supporting encoding for now as Reference Target is missing BitLength or BitOffset")
+    raise Exception ("PGN 128520 not supporting encoding for now as Reserved is missing BitLength or BitOffset")
     return data_raw
 
 
@@ -25200,29 +25557,24 @@ def decode_pgn_129027(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sid', 'SID', None, None, sid, sid_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 2:time_delta | Offset: 8, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:time_delta | Offset: 8, Length: 8, Signed: False Resolution: 0.005, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
-    time_delta = time_delta_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('timeDelta', 'Time Delta', None, None, time_delta, time_delta_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
-
-    # 3:latitude_delta | Offset: 24, Length: 16, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    latitude_delta = latitude_delta_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('latitudeDelta', 'Latitude Delta', None, None, latitude_delta, latitude_delta_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
-
-    # 4:longitude_delta | Offset: 40, Length: 16, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    longitude_delta = longitude_delta_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('longitudeDelta', 'Longitude Delta', None, None, longitude_delta, longitude_delta_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
-
-    # 5:reserved_56 | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 56
-    reserved_56 = reserved_56_raw = decode_int(_data_raw_, running_bit_offset, 8)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_56', 'Reserved', None, None, reserved_56, reserved_56_raw, None, FieldTypes.RESERVED, False))
+    time_delta_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
+    time_delta = decode_time(time_delta_raw)
+    nmea2000Message.fields.append(NMEA2000Field('timeDelta', 'Time Delta', None, 's', time_delta, time_delta_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 8
+
+    # 3:latitude_delta | Offset: 16, Length: 24, Signed: True Resolution: 2.77778e-09, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    latitude_delta = latitude_delta_raw = decode_number(_data_raw_, running_bit_offset, 24, True, 2.77778e-09)
+    nmea2000Message.fields.append(NMEA2000Field('latitudeDelta', 'Latitude Delta', None, 'deg', latitude_delta, latitude_delta_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
+    running_bit_offset += 24
+
+    # 4:longitude_delta | Offset: 40, Length: 24, Signed: True Resolution: 2.77778e-09, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    longitude_delta = longitude_delta_raw = decode_number(_data_raw_, running_bit_offset, 24, True, 2.77778e-09)
+    nmea2000Message.fields.append(NMEA2000Field('longitudeDelta', 'Longitude Delta', None, 'deg', longitude_delta, longitude_delta_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
+    running_bit_offset += 24
 
     return nmea2000Message
 
@@ -25235,30 +25587,24 @@ def encode_pgn_129027(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'SID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 0
-    # timeDelta | Offset: 8, Length: 16, Resolution: 1, Field Type: NUMBER
+    # timeDelta | Offset: 8, Length: 8, Resolution: 0.005, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'timeDelta')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time Delta'")
-    field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 8
-    # latitudeDelta | Offset: 24, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = int(field.raw_value / 0.005) if field.raw_value is not None else encode_time(field.value, 8)
+    data_raw |= (field_value & 0xFF) << 8
+    # latitudeDelta | Offset: 16, Length: 24, Resolution: 2.77778e-09, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'latitudeDelta')
     if field is None:
         raise Exception("Cant encode this message, missing 'Latitude Delta'")
-    field_value = encode_number(field.value, 16, True, 1)
-    data_raw |= (field_value & 0xFFFF) << 24
-    # longitudeDelta | Offset: 40, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 24, True, 2.77778e-09)
+    data_raw |= (field_value & 0xFFFFFF) << 16
+    # longitudeDelta | Offset: 40, Length: 24, Resolution: 2.77778e-09, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'longitudeDelta')
     if field is None:
         raise Exception("Cant encode this message, missing 'Longitude Delta'")
-    field_value = encode_number(field.value, 16, True, 1)
-    data_raw |= (field_value & 0xFFFF) << 40
-    # reserved_56 | Offset: 56, Length: 8, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_56')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0xFF) << 56
+    field_value = encode_number(field.value, 24, True, 2.77778e-09)
+    data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
 
 
@@ -25275,41 +25621,50 @@ def decode_pgn_129028(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sid', 'SID', None, None, sid, sid_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 2:time_delta | Offset: 8, Length: 16, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:time_delta | Offset: 8, Length: 8, Signed: False Resolution: 0.005, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
-    time_delta = time_delta_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('timeDelta', 'Time Delta', None, None, time_delta, time_delta_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
+    time_delta_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
+    time_delta = decode_time(time_delta_raw)
+    nmea2000Message.fields.append(NMEA2000Field('timeDelta', 'Time Delta', None, 's', time_delta, time_delta_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
+    running_bit_offset += 8
 
-    # 3:gnss_quality | Offset: 24, Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    gnss_quality = gnss_quality_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('gnssQuality', 'GNSS Quality', None, None, gnss_quality, gnss_quality_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 2
-
-    # 4:direction | Offset: 26, Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 26
-    direction = direction_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('direction', 'Direction', None, None, direction, direction_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 2
-
-    # 5:reserved_28 | Offset: 28, Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 28
-    reserved_28 = reserved_28_raw = decode_int(_data_raw_, running_bit_offset, 4)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_28', 'Reserved', None, None, reserved_28, reserved_28_raw, None, FieldTypes.RESERVED, False))
+    # 3:gnss_quality | Offset: 16, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    gnss_quality_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    gnss_quality = master_dict['GNS_METHOD'].get(gnss_quality_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('gnssQuality', 'GNSS Quality', None, None, gnss_quality, gnss_quality_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 4
 
-    # 6:cog | Offset: 32, Length: 16, Signed: False Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
+    # 4:direction | Offset: 20, Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 20
+    direction_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    direction = master_dict['DIRECTION_REFERENCE'].get(direction_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('direction', 'Direction', None, None, direction, direction_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 2
+
+    # 5:reserved_22 | Offset: 22, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 22
+    reserved_22 = reserved_22_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_22', 'Reserved', None, None, reserved_22, reserved_22_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 6:cog | Offset: 24, Length: 16, Signed: False Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
     cog = cog_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.0001)
     nmea2000Message.fields.append(NMEA2000Field('cog', 'COG', None, 'rad', cog, cog_raw, PhysicalQuantities.ANGLE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 7:altitude_delta | Offset: 48, Length: 16, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 48
-    altitude_delta = altitude_delta_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('altitudeDelta', 'Altitude Delta', None, None, altitude_delta, altitude_delta_raw, None, FieldTypes.NUMBER, False))
+    # 7:altitude_delta | Offset: 40, Length: 16, Signed: True Resolution: 0.001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    altitude_delta = altitude_delta_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.001)
+    nmea2000Message.fields.append(NMEA2000Field('altitudeDelta', 'Altitude Delta', None, 'm', altitude_delta, altitude_delta_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
+
+    # 8:reserved_56 | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    reserved_56 = reserved_56_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_56', 'Reserved', None, None, reserved_56, reserved_56_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
 
     return nmea2000Message
 
@@ -25322,42 +25677,48 @@ def encode_pgn_129028(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'SID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 0
-    # timeDelta | Offset: 8, Length: 16, Resolution: 1, Field Type: NUMBER
+    # timeDelta | Offset: 8, Length: 8, Resolution: 0.005, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'timeDelta')
     if field is None:
         raise Exception("Cant encode this message, missing 'Time Delta'")
-    field_value = encode_number(field.value, 16, True, 1)
-    data_raw |= (field_value & 0xFFFF) << 8
-    # gnssQuality | Offset: 24, Length: 2, Resolution: 1, Field Type: NUMBER
+    field_value = int(field.raw_value / 0.005) if field.raw_value is not None else encode_time(field.value, 8)
+    data_raw |= (field_value & 0xFF) << 8
+    # gnssQuality | Offset: 16, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'gnssQuality')
     if field is None:
         raise Exception("Cant encode this message, missing 'GNSS Quality'")
-    field_value = encode_number(field.value, 2, False, 1)
-    data_raw |= (field_value & 0x3) << 24
-    # direction | Offset: 26, Length: 2, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_GNS_METHOD(field.value)
+    data_raw |= (field_value & 0xF) << 16
+    # direction | Offset: 20, Length: 2, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'direction')
     if field is None:
         raise Exception("Cant encode this message, missing 'Direction'")
-    field_value = encode_number(field.value, 2, False, 1)
-    data_raw |= (field_value & 0x3) << 26
-    # reserved_28 | Offset: 28, Length: 4, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_28')
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_DIRECTION_REFERENCE(field.value)
+    data_raw |= (field_value & 0x3) << 20
+    # reserved_22 | Offset: 22, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_22')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0xF) << 28
-    # cog | Offset: 32, Length: 16, Resolution: 0.0001, Field Type: NUMBER
+    data_raw |= (field_value & 0x3) << 22
+    # cog | Offset: 24, Length: 16, Resolution: 0.0001, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'cog')
     if field is None:
         raise Exception("Cant encode this message, missing 'COG'")
     field_value = encode_number(field.value, 16, False, 0.0001)
-    data_raw |= (field_value & 0xFFFF) << 32
-    # altitudeDelta | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 24
+    # altitudeDelta | Offset: 40, Length: 16, Resolution: 0.001, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'altitudeDelta')
     if field is None:
         raise Exception("Cant encode this message, missing 'Altitude Delta'")
-    field_value = encode_number(field.value, 16, True, 1)
-    data_raw |= (field_value & 0xFFFF) << 48
+    field_value = encode_number(field.value, 16, True, 0.001)
+    data_raw |= (field_value & 0xFFFF) << 40
+    # reserved_56 | Offset: 56, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_56')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0xFF) << 56
     return data_raw
 
 
@@ -28410,47 +28771,47 @@ def decode_pgn_129542(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sid', 'SID', None, None, sid, sid_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 2:rms_of_position_uncertainty | Offset: 8, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:rms_of_position_uncertainty | Offset: 8, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
-    rms_of_position_uncertainty = rms_of_position_uncertainty_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('rmsOfPositionUncertainty', 'RMS of Position Uncertainty', None, None, rms_of_position_uncertainty, rms_of_position_uncertainty_raw, None, FieldTypes.NUMBER, False))
+    rms_of_position_uncertainty = rms_of_position_uncertainty_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('rmsOfPositionUncertainty', 'RMS of Position Uncertainty', None, 'm', rms_of_position_uncertainty, rms_of_position_uncertainty_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 3:std_of_major_axis | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 3:std_of_major_axis | Offset: 24, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    std_of_major_axis = std_of_major_axis_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('stdOfMajorAxis', 'STD of Major axis', None, None, std_of_major_axis, std_of_major_axis_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    std_of_major_axis = std_of_major_axis_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('stdOfMajorAxis', 'STD of Major axis', None, 'm', std_of_major_axis, std_of_major_axis_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 4:std_of_minor_axis | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    std_of_minor_axis = std_of_minor_axis_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('stdOfMinorAxis', 'STD of Minor axis', None, None, std_of_minor_axis, std_of_minor_axis_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:orientation_of_major_axis | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:std_of_minor_axis | Offset: 40, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    orientation_of_major_axis = orientation_of_major_axis_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('orientationOfMajorAxis', 'Orientation of Major axis', None, None, orientation_of_major_axis, orientation_of_major_axis_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    std_of_minor_axis = std_of_minor_axis_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('stdOfMinorAxis', 'STD of Minor axis', None, 'm', std_of_minor_axis, std_of_minor_axis_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 6:std_of_lat_error | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 48
-    std_of_lat_error = std_of_lat_error_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('stdOfLatError', 'STD of Lat Error', None, None, std_of_lat_error, std_of_lat_error_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 7:std_of_lon_error | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:orientation_of_major_axis | Offset: 56, Length: 16, Signed: False Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    std_of_lon_error = std_of_lon_error_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('stdOfLonError', 'STD of Lon Error', None, None, std_of_lon_error, std_of_lon_error_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    orientation_of_major_axis = orientation_of_major_axis_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.0001)
+    nmea2000Message.fields.append(NMEA2000Field('orientationOfMajorAxis', 'Orientation of Major axis', None, 'rad', orientation_of_major_axis, orientation_of_major_axis_raw, PhysicalQuantities.ANGLE, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 8:std_of_alt_error | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 64
-    std_of_alt_error = std_of_alt_error_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('stdOfAltError', 'STD of Alt Error', None, None, std_of_alt_error, std_of_alt_error_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    # 6:std_of_lat_error | Offset: 72, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    std_of_lat_error = std_of_lat_error_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('stdOfLatError', 'STD of Lat Error', None, 'm', std_of_lat_error, std_of_lat_error_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 7:std_of_lon_error | Offset: 88, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 88
+    std_of_lon_error = std_of_lon_error_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('stdOfLonError', 'STD of Lon Error', None, 'm', std_of_lon_error, std_of_lon_error_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 8:std_of_alt_error | Offset: 104, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 104
+    std_of_alt_error = std_of_alt_error_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('stdOfAltError', 'STD of Alt Error', None, 'm', std_of_alt_error, std_of_alt_error_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
     return nmea2000Message
 
@@ -28463,48 +28824,48 @@ def encode_pgn_129542(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'SID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 0
-    # rmsOfPositionUncertainty | Offset: 8, Length: 16, Resolution: 1, Field Type: NUMBER
+    # rmsOfPositionUncertainty | Offset: 8, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'rmsOfPositionUncertainty')
     if field is None:
         raise Exception("Cant encode this message, missing 'RMS of Position Uncertainty'")
-    field_value = encode_number(field.value, 16, False, 1)
+    field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 8
-    # stdOfMajorAxis | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
+    # stdOfMajorAxis | Offset: 24, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'stdOfMajorAxis')
     if field is None:
         raise Exception("Cant encode this message, missing 'STD of Major axis'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
-    # stdOfMinorAxis | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 24
+    # stdOfMinorAxis | Offset: 40, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'stdOfMinorAxis')
     if field is None:
         raise Exception("Cant encode this message, missing 'STD of Minor axis'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # orientationOfMajorAxis | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 40
+    # orientationOfMajorAxis | Offset: 56, Length: 16, Resolution: 0.0001, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'orientationOfMajorAxis')
     if field is None:
         raise Exception("Cant encode this message, missing 'Orientation of Major axis'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # stdOfLatError | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 0.0001)
+    data_raw |= (field_value & 0xFFFF) << 56
+    # stdOfLatError | Offset: 72, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'stdOfLatError')
     if field is None:
         raise Exception("Cant encode this message, missing 'STD of Lat Error'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
-    # stdOfLonError | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 72
+    # stdOfLonError | Offset: 88, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'stdOfLonError')
     if field is None:
         raise Exception("Cant encode this message, missing 'STD of Lon Error'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 56
-    # stdOfAltError | Offset: 64, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 88
+    # stdOfAltError | Offset: 104, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'stdOfAltError')
     if field is None:
         raise Exception("Cant encode this message, missing 'STD of Alt Error'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 64
+    field_value = encode_number(field.value, 16, False, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 104
     return data_raw
 
 
@@ -28521,59 +28882,60 @@ def decode_pgn_129545(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sid', 'SID', None, None, sid, sid_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 2:integrity_flag | Offset: 8, Length: 4, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:integrity_flag | Offset: 8, Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
-    integrity_flag = integrity_flag_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('integrityFlag', 'Integrity flag', None, None, integrity_flag, integrity_flag_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 4
+    integrity_flag_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    integrity_flag = master_dict['GNS_INTEGRITY'].get(integrity_flag_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('integrityFlag', 'Integrity flag', None, None, integrity_flag, integrity_flag_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 2
 
-    # 3:reserved_12 | Offset: 12, Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 12
-    reserved_12 = reserved_12_raw = decode_int(_data_raw_, running_bit_offset, 4)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_12', 'Reserved', None, None, reserved_12, reserved_12_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 4
+    # 3:reserved_10 | Offset: 10, Length: 6, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 10
+    reserved_10 = reserved_10_raw = decode_int(_data_raw_, running_bit_offset, 6)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_10', 'Reserved', None, None, reserved_10, reserved_10_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 6
 
-    # 4:latitude_expected_error | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:latitude_expected_error | Offset: 16, Length: 16, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    latitude_expected_error = latitude_expected_error_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('latitudeExpectedError', 'Latitude expected error', None, None, latitude_expected_error, latitude_expected_error_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    latitude_expected_error = latitude_expected_error_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('latitudeExpectedError', 'Latitude expected error', None, 'm', latitude_expected_error, latitude_expected_error_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 5:longitude_expected_error | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    longitude_expected_error = longitude_expected_error_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('longitudeExpectedError', 'Longitude expected error', None, None, longitude_expected_error, longitude_expected_error_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:altitude_expected_error | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:longitude_expected_error | Offset: 32, Length: 16, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    altitude_expected_error = altitude_expected_error_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('altitudeExpectedError', 'Altitude expected error', None, None, altitude_expected_error, altitude_expected_error_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    longitude_expected_error = longitude_expected_error_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('longitudeExpectedError', 'Longitude expected error', None, 'm', longitude_expected_error, longitude_expected_error_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 7:sv_id_of_most_likely_failed_sat | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
+    # 6:altitude_expected_error | Offset: 48, Length: 16, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    altitude_expected_error = altitude_expected_error_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('altitudeExpectedError', 'Altitude expected error', None, 'm', altitude_expected_error, altitude_expected_error_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 7:sv_id_of_most_likely_failed_sat | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
     sv_id_of_most_likely_failed_sat = sv_id_of_most_likely_failed_sat_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('svIdOfMostLikelyFailedSat', 'SV ID of most likely failed sat', None, None, sv_id_of_most_likely_failed_sat, sv_id_of_most_likely_failed_sat_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 8:probability_of_missed_detection | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 48
-    probability_of_missed_detection = probability_of_missed_detection_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('probabilityOfMissedDetection', 'Probability of missed detection', None, None, probability_of_missed_detection, probability_of_missed_detection_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    # 8:probability_of_missed_detection | Offset: 72, Length: 16, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    probability_of_missed_detection = probability_of_missed_detection_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('probabilityOfMissedDetection', 'Probability of missed detection', None, 'm', probability_of_missed_detection, probability_of_missed_detection_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 9:estimate_of_pseudorange_bias | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 56
-    estimate_of_pseudorange_bias = estimate_of_pseudorange_bias_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('estimateOfPseudorangeBias', 'Estimate of pseudorange bias', None, None, estimate_of_pseudorange_bias, estimate_of_pseudorange_bias_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    # 9:estimate_of_pseudorange_bias | Offset: 88, Length: 16, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 88
+    estimate_of_pseudorange_bias = estimate_of_pseudorange_bias_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('estimateOfPseudorangeBias', 'Estimate of pseudorange bias', None, 'm', estimate_of_pseudorange_bias, estimate_of_pseudorange_bias_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 10:std_deviation_of_bias | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 64
-    std_deviation_of_bias = std_deviation_of_bias_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('stdDeviationOfBias', 'Std Deviation of bias', None, None, std_deviation_of_bias, std_deviation_of_bias_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    # 10:std_deviation_of_bias | Offset: 104, Length: 16, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 104
+    std_deviation_of_bias = std_deviation_of_bias_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('stdDeviationOfBias', 'Std Deviation of bias', None, 'm', std_deviation_of_bias, std_deviation_of_bias_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
     return nmea2000Message
 
@@ -28586,60 +28948,60 @@ def encode_pgn_129545(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'SID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 0
-    # integrityFlag | Offset: 8, Length: 4, Resolution: 1, Field Type: NUMBER
+    # integrityFlag | Offset: 8, Length: 2, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'integrityFlag')
     if field is None:
         raise Exception("Cant encode this message, missing 'Integrity flag'")
-    field_value = encode_number(field.value, 4, False, 1)
-    data_raw |= (field_value & 0xF) << 8
-    # reserved_12 | Offset: 12, Length: 4, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_12')
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_GNS_INTEGRITY(field.value)
+    data_raw |= (field_value & 0x3) << 8
+    # reserved_10 | Offset: 10, Length: 6, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_10')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0xF) << 12
-    # latitudeExpectedError | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0x3F) << 10
+    # latitudeExpectedError | Offset: 16, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'latitudeExpectedError')
     if field is None:
         raise Exception("Cant encode this message, missing 'Latitude expected error'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 16
-    # longitudeExpectedError | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, True, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # longitudeExpectedError | Offset: 32, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'longitudeExpectedError')
     if field is None:
         raise Exception("Cant encode this message, missing 'Longitude expected error'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
-    # altitudeExpectedError | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, True, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 32
+    # altitudeExpectedError | Offset: 48, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'altitudeExpectedError')
     if field is None:
         raise Exception("Cant encode this message, missing 'Altitude expected error'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # svIdOfMostLikelyFailedSat | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, True, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # svIdOfMostLikelyFailedSat | Offset: 64, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'svIdOfMostLikelyFailedSat')
     if field is None:
         raise Exception("Cant encode this message, missing 'SV ID of most likely failed sat'")
     field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # probabilityOfMissedDetection | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFF) << 64
+    # probabilityOfMissedDetection | Offset: 72, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'probabilityOfMissedDetection')
     if field is None:
         raise Exception("Cant encode this message, missing 'Probability of missed detection'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
-    # estimateOfPseudorangeBias | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, True, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 72
+    # estimateOfPseudorangeBias | Offset: 88, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'estimateOfPseudorangeBias')
     if field is None:
         raise Exception("Cant encode this message, missing 'Estimate of pseudorange bias'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 56
-    # stdDeviationOfBias | Offset: 64, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, True, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 88
+    # stdDeviationOfBias | Offset: 104, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'stdDeviationOfBias')
     if field is None:
         raise Exception("Cant encode this message, missing 'Std Deviation of bias'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 64
+    field_value = encode_number(field.value, 16, True, 0.01)
+    data_raw |= (field_value & 0xFFFF) << 104
     return data_raw
 
 
@@ -29710,12 +30072,6 @@ def decode_pgn_129793(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('gnssType', 'GNSS type', None, None, gnss_type, gnss_type_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 4
 
-    # 15:spare | Offset: 192, Length: 8, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 192
-    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 8)
-    nmea2000Message.fields.append(NMEA2000Field('spare15', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
-    running_bit_offset += 8
-
     return nmea2000Message
 
 def encode_pgn_129793(nmea2000Message: NMEA2000Message) -> int:
@@ -29805,12 +30161,6 @@ def encode_pgn_129793(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'GNSS type'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_POSITION_FIX_DEVICE(field.value)
     data_raw |= (field_value & 0xF) << 188
-    # spare15 | Offset: 192, Length: 8, Resolution: 1, Field Type: SPARE
-    field = next(f for f in nmea2000Message.fields if f.id == 'spare15')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Spare'")
-    raise Exception("Encoding 'SPARE' not supported")
-    data_raw |= (field_value & 0xFF) << 192
     return data_raw
 
 
@@ -30287,10 +30637,10 @@ def decode_pgn_129796(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('aisTransceiverInformation', 'AIS Transceiver information', None, None, ais_transceiver_information, ais_transceiver_information_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 5
 
-    # 6:reserved_46 | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    # 6:spare | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 46
-    reserved_46 = reserved_46_raw = decode_int(_data_raw_, running_bit_offset, 2)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_46', 'Reserved', None, None, reserved_46, reserved_46_raw, None, FieldTypes.RESERVED, False))
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('spare6', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
     running_bit_offset += 2
 
     # 7:destination_id__1 | Offset: 48, Length: 32, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
@@ -30358,11 +30708,11 @@ def encode_pgn_129796(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AIS Transceiver information'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_TRANSCEIVER(field.value)
     data_raw |= (field_value & 0x1F) << 41
-    # reserved_46 | Offset: 46, Length: 2, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_46')
+    # spare6 | Offset: 46, Length: 2, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare6')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
     data_raw |= (field_value & 0x3) << 46
     # destinationId1 | Offset: 48, Length: 32, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'destinationId1')
@@ -30437,10 +30787,10 @@ def decode_pgn_129797(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('aisTransceiverInformation', 'AIS Transceiver information', None, None, ais_transceiver_information, ais_transceiver_information_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 5
 
-    # 6:reserved_46 | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    # 6:spare | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 46
-    reserved_46 = reserved_46_raw = decode_int(_data_raw_, running_bit_offset, 2)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_46', 'Reserved', None, None, reserved_46, reserved_46_raw, None, FieldTypes.RESERVED, False))
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('spare6', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
     running_bit_offset += 2
 
     # 7:number_of_bits_in_binary_data_field | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
@@ -30490,11 +30840,11 @@ def encode_pgn_129797(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AIS Transceiver information'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_TRANSCEIVER(field.value)
     data_raw |= (field_value & 0x1F) << 41
-    # reserved_46 | Offset: 46, Length: 2, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_46')
+    # spare6 | Offset: 46, Length: 2, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare6')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
     data_raw |= (field_value & 0x3) << 46
     # numberOfBitsInBinaryDataField | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfBitsInBinaryDataField')
@@ -30575,7 +30925,7 @@ def decode_pgn_129798(_data_raw_: int) -> NMEA2000Message:
     # 10:sog | Offset: 128, Length: 16, Signed: False Resolution: 0.1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
     sog = sog_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.1)
-    nmea2000Message.fields.append(NMEA2000Field('sog', 'SOG', None, 'm/s', sog, sog_raw, PhysicalQuantities.SPEED, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('sog', 'SOG', "Originally this used the same resolution as SOG for boats (0.01 m/s), but this did not allow for speeds over 180 km/h so in some addendum this has been amended to have a resolution of 0.1 m/s", 'm/s', sog, sog_raw, PhysicalQuantities.SPEED, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
     # 11:communication_state | Offset: 144, Length: 19, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
@@ -30742,7 +31092,7 @@ def decode_pgn_129799(_data_raw_: int) -> NMEA2000Message:
     # 3:radio_channel | Offset: 64, Length: 48, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
     radio_channel = radio_channel_raw = decode_string_fix(_data_raw_, running_bit_offset, 48)
-    nmea2000Message.fields.append(NMEA2000Field('radioChannel', 'Radio Channel', None, None, radio_channel, radio_channel_raw, None, FieldTypes.STRING_FIX, False))
+    nmea2000Message.fields.append(NMEA2000Field('radioChannel', 'Radio Channel', "MF/HF telephone channels to have first digit 3 followed by ITU channel numbers with leading zeros as required. MF/HF teletype channels to have first digit 4; the send and third digit give the frequency bads; and the fourth to sixth digits ITU channel numbers; each with leading zeros as required. VHF channels to have the first digit 9 followed by zero. The next digit is 1 indicating the ship stations transmit frequency is being used as a simplex channel frequency, or 2 indicating the cost stations transmit frequency is being used as a simplex channel frequency, 0 otherwise. THe remaining three numbers are the VHF channel numbers with leading zeros as required.", None, radio_channel, radio_channel_raw, None, FieldTypes.STRING_FIX, False))
     running_bit_offset += 48
 
     # 4:tx_power | Offset: 112, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
@@ -30751,14 +31101,15 @@ def decode_pgn_129799(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('txPower', 'Tx Power', None, 'W', tx_power, tx_power_raw, PhysicalQuantities.ELECTRICAL_POWER, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 5:mode | Offset: 120, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:mode | Offset: 120, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 120
-    mode = mode_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('mode', 'Mode', None, None, mode, mode_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
+    mode_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    mode = master_dict['TELEPHONE_MODE'].get(mode_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('mode', 'Mode', None, None, mode, mode_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
 
-    # 6:channel_bandwidth | Offset: 136, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 136
+    # 6:channel_bandwidth | Offset: 128, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 128
     channel_bandwidth = channel_bandwidth_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('channelBandwidth', 'Channel Bandwidth', None, 'Hz', channel_bandwidth, channel_bandwidth_raw, PhysicalQuantities.FREQUENCY, FieldTypes.NUMBER, False))
     running_bit_offset += 16
@@ -30792,18 +31143,18 @@ def encode_pgn_129799(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Tx Power'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 112
-    # mode | Offset: 120, Length: 16, Resolution: 1, Field Type: NUMBER
+    # mode | Offset: 120, Length: 8, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'mode')
     if field is None:
         raise Exception("Cant encode this message, missing 'Mode'")
-    field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 120
-    # channelBandwidth | Offset: 136, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_TELEPHONE_MODE(field.value)
+    data_raw |= (field_value & 0xFF) << 120
+    # channelBandwidth | Offset: 128, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'channelBandwidth')
     if field is None:
         raise Exception("Cant encode this message, missing 'Channel Bandwidth'")
     field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 136
+    data_raw |= (field_value & 0xFFFF) << 128
     return data_raw
 
 
@@ -30834,20 +31185,26 @@ def decode_pgn_129800(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 4:ais_transceiver_information | Offset: 40, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 4:reserved_40 | Offset: 40, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
+    reserved_40 = reserved_40_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_40', 'Reserved', None, None, reserved_40, reserved_40_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
+
+    # 5:ais_transceiver_information | Offset: 41, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 41
     ais_transceiver_information_raw = decode_int(_data_raw_, running_bit_offset, 5)
     ais_transceiver_information = master_dict['AIS_TRANSCEIVER'].get(ais_transceiver_information_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('aisTransceiverInformation', 'AIS Transceiver information', None, None, ais_transceiver_information, ais_transceiver_information_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 5
 
-    # 5:reserved_45 | Offset: 45, Length: 3, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 45
-    reserved_45 = reserved_45_raw = decode_int(_data_raw_, running_bit_offset, 3)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_45', 'Reserved', None, None, reserved_45, reserved_45_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 3
+    # 6:spare | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 46
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('spare6', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    running_bit_offset += 2
 
-    # 6:destination_id | Offset: 48, Length: 32, Signed: False Resolution: 1, Field Type: MMSI, Match: , PartOfPrimaryKey: True,
+    # 7:destination_id | Offset: 48, Length: 32, Signed: False Resolution: 1, Field Type: MMSI, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 48
     destination_id = destination_id_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('destinationId', 'Destination ID', None, None, destination_id, destination_id_raw, None, FieldTypes.MMSI, True))
@@ -30876,18 +31233,24 @@ def encode_pgn_129800(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Source ID'")
     raise Exception("Encoding 'MMSI' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 8
-    # aisTransceiverInformation | Offset: 40, Length: 5, Resolution: 1, Field Type: LOOKUP
+    # reserved_40 | Offset: 40, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_40')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x1) << 40
+    # aisTransceiverInformation | Offset: 41, Length: 5, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'aisTransceiverInformation')
     if field is None:
         raise Exception("Cant encode this message, missing 'AIS Transceiver information'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_TRANSCEIVER(field.value)
-    data_raw |= (field_value & 0x1F) << 40
-    # reserved_45 | Offset: 45, Length: 3, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_45')
+    data_raw |= (field_value & 0x1F) << 41
+    # spare6 | Offset: 46, Length: 2, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare6')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0x7) << 45
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
+    data_raw |= (field_value & 0x3) << 46
     # destinationId | Offset: 48, Length: 32, Resolution: 1, Field Type: MMSI
     field = next(f for f in nmea2000Message.fields if f.id == 'destinationId')
     if field is None:
@@ -30924,24 +31287,24 @@ def decode_pgn_129801(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 4:ais_transceiver_information | Offset: 40, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 4:reserved_40 | Offset: 40, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
+    reserved_40 = reserved_40_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_40', 'Reserved', None, None, reserved_40, reserved_40_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
+
+    # 5:ais_transceiver_information | Offset: 41, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 41
     ais_transceiver_information_raw = decode_int(_data_raw_, running_bit_offset, 5)
     ais_transceiver_information = master_dict['AIS_TRANSCEIVER'].get(ais_transceiver_information_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('aisTransceiverInformation', 'AIS Transceiver information', None, None, ais_transceiver_information, ais_transceiver_information_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 5
 
-    # 5:sequence_number | Offset: 45, Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 45
+    # 6:sequence_number | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 46
     sequence_number = sequence_number_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('sequenceNumber', 'Sequence Number', None, None, sequence_number, sequence_number_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 2
-
-    # 6:reserved_47 | Offset: 47, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 47
-    reserved_47 = reserved_47_raw = decode_int(_data_raw_, running_bit_offset, 1)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_47', 'Reserved', None, None, reserved_47, reserved_47_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 1
 
     # 7:destination_id | Offset: 48, Length: 32, Signed: False Resolution: 1, Field Type: MMSI, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 48
@@ -30949,23 +31312,31 @@ def decode_pgn_129801(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('destinationId', 'Destination ID', None, None, destination_id, destination_id_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 8:retransmit_flag | Offset: 80, Length: 1, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 8:reserved_80 | Offset: 80, Length: 6, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 6)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 6
+
+    # 9:retransmit_flag | Offset: 86, Length: 1, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 86
     retransmit_flag = retransmit_flag_raw = decode_number(_data_raw_, running_bit_offset, 1, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('retransmitFlag', 'Retransmit flag', None, None, retransmit_flag, retransmit_flag_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 1
 
-    # 9:reserved_81 | Offset: 81, Length: 7, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 81
-    reserved_81 = reserved_81_raw = decode_int(_data_raw_, running_bit_offset, 7)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_81', 'Reserved', None, None, reserved_81, reserved_81_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 7
+    # 10:spare | Offset: 87, Length: 1, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 87
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('spare10', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    running_bit_offset += 1
 
-    # 10:safety_related_text | Offset: 88, Length: 936, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
+    # 11:safety_related_text | Offset: 88, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    safety_related_text = safety_related_text_raw = decode_string_fix(_data_raw_, running_bit_offset, 936)
-    nmea2000Message.fields.append(NMEA2000Field('safetyRelatedText', 'Safety Related Text', None, None, safety_related_text, safety_related_text_raw, None, FieldTypes.STRING_FIX, False))
-    running_bit_offset += 936
+    safety_related_text_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
+    safety_related_text = safety_related_text_raw
+    running_bit_offset += bits_to_skip
+    nmea2000Message.fields.append(NMEA2000Field('safetyRelatedText', 'Safety Related Text', None, None, safety_related_text, safety_related_text_raw, None, FieldTypes.STRING_LAU, False))
+    
 
     return nmea2000Message
 
@@ -30990,48 +31361,49 @@ def encode_pgn_129801(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Source ID'")
     raise Exception("Encoding 'MMSI' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 8
-    # aisTransceiverInformation | Offset: 40, Length: 5, Resolution: 1, Field Type: LOOKUP
+    # reserved_40 | Offset: 40, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_40')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x1) << 40
+    # aisTransceiverInformation | Offset: 41, Length: 5, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'aisTransceiverInformation')
     if field is None:
         raise Exception("Cant encode this message, missing 'AIS Transceiver information'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_TRANSCEIVER(field.value)
-    data_raw |= (field_value & 0x1F) << 40
-    # sequenceNumber | Offset: 45, Length: 2, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0x1F) << 41
+    # sequenceNumber | Offset: 46, Length: 2, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'sequenceNumber')
     if field is None:
         raise Exception("Cant encode this message, missing 'Sequence Number'")
     field_value = encode_number(field.value, 2, False, 1)
-    data_raw |= (field_value & 0x3) << 45
-    # reserved_47 | Offset: 47, Length: 1, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_47')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0x1) << 47
+    data_raw |= (field_value & 0x3) << 46
     # destinationId | Offset: 48, Length: 32, Resolution: 1, Field Type: MMSI
     field = next(f for f in nmea2000Message.fields if f.id == 'destinationId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Destination ID'")
     raise Exception("Encoding 'MMSI' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 48
-    # retransmitFlag | Offset: 80, Length: 1, Resolution: 1, Field Type: NUMBER
+    # reserved_80 | Offset: 80, Length: 6, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_80')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x3F) << 80
+    # retransmitFlag | Offset: 86, Length: 1, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'retransmitFlag')
     if field is None:
         raise Exception("Cant encode this message, missing 'Retransmit flag'")
     field_value = encode_number(field.value, 1, False, 1)
-    data_raw |= (field_value & 0x1) << 80
-    # reserved_81 | Offset: 81, Length: 7, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_81')
+    data_raw |= (field_value & 0x1) << 86
+    # spare10 | Offset: 87, Length: 1, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare10')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0x7F) << 81
-    # safetyRelatedText | Offset: 88, Length: 936, Resolution: , Field Type: STRING_FIX
-    field = next(f for f in nmea2000Message.fields if f.id == 'safetyRelatedText')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Safety Related Text'")
-    raise Exception("Encoding 'STRING_FIX' not supported")
-    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 88
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
+    data_raw |= (field_value & 0x1) << 87
+    raise Exception ("PGN 129801 not supporting encoding for now as Safety Related Text is missing BitLength or BitOffset")
     return data_raw
 
 
@@ -31062,24 +31434,32 @@ def decode_pgn_129802(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 4:ais_transceiver_information | Offset: 40, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 4:reserved_40 | Offset: 40, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
+    reserved_40 = reserved_40_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_40', 'Reserved', None, None, reserved_40, reserved_40_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
+
+    # 5:ais_transceiver_information | Offset: 41, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 41
     ais_transceiver_information_raw = decode_int(_data_raw_, running_bit_offset, 5)
     ais_transceiver_information = master_dict['AIS_TRANSCEIVER'].get(ais_transceiver_information_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('aisTransceiverInformation', 'AIS Transceiver information', None, None, ais_transceiver_information, ais_transceiver_information_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 5
 
-    # 5:reserved_45 | Offset: 45, Length: 3, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 45
-    reserved_45 = reserved_45_raw = decode_int(_data_raw_, running_bit_offset, 3)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_45', 'Reserved', None, None, reserved_45, reserved_45_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 3
+    # 6:spare | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 46
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('spare6', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    running_bit_offset += 2
 
-    # 6:safety_related_text | Offset: 48, Length: 1296, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
+    # 7:safety_related_text | Offset: 48, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    safety_related_text = safety_related_text_raw = decode_string_fix(_data_raw_, running_bit_offset, 1296)
-    nmea2000Message.fields.append(NMEA2000Field('safetyRelatedText', 'Safety Related Text', None, None, safety_related_text, safety_related_text_raw, None, FieldTypes.STRING_FIX, False))
-    running_bit_offset += 1296
+    safety_related_text_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
+    safety_related_text = safety_related_text_raw
+    running_bit_offset += bits_to_skip
+    nmea2000Message.fields.append(NMEA2000Field('safetyRelatedText', 'Safety Related Text', None, None, safety_related_text, safety_related_text_raw, None, FieldTypes.STRING_LAU, False))
+    
 
     return nmea2000Message
 
@@ -31104,24 +31484,25 @@ def encode_pgn_129802(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Source ID'")
     raise Exception("Encoding 'MMSI' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 8
-    # aisTransceiverInformation | Offset: 40, Length: 5, Resolution: 1, Field Type: LOOKUP
+    # reserved_40 | Offset: 40, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_40')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x1) << 40
+    # aisTransceiverInformation | Offset: 41, Length: 5, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'aisTransceiverInformation')
     if field is None:
         raise Exception("Cant encode this message, missing 'AIS Transceiver information'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_TRANSCEIVER(field.value)
-    data_raw |= (field_value & 0x1F) << 40
-    # reserved_45 | Offset: 45, Length: 3, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_45')
+    data_raw |= (field_value & 0x1F) << 41
+    # spare6 | Offset: 46, Length: 2, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare6')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0x7) << 45
-    # safetyRelatedText | Offset: 48, Length: 1296, Resolution: , Field Type: STRING_FIX
-    field = next(f for f in nmea2000Message.fields if f.id == 'safetyRelatedText')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Safety Related Text'")
-    raise Exception("Encoding 'STRING_FIX' not supported")
-    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 48
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
+    data_raw |= (field_value & 0x3) << 46
+    raise Exception ("PGN 129802 not supporting encoding for now as Safety Related Text is missing BitLength or BitOffset")
     return data_raw
 
 
@@ -31177,77 +31558,95 @@ def decode_pgn_129803(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('destinationId1', 'Destination ID 1', None, None, destination_id_1, destination_id_1_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 8:message_id_1_1 | Offset: 80, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 8:reserved_80 | Offset: 80, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 9:message_id_1_1 | Offset: 82, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 82
     message_id_1_1_raw = decode_int(_data_raw_, running_bit_offset, 6)
     message_id_1_1 = master_dict['AIS_MESSAGE_ID'].get(message_id_1_1_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('messageId11', 'Message ID 1.1', None, None, message_id_1_1, message_id_1_1_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 6
 
-    # 9:slot_offset_1_1 | Offset: 86, Length: 12, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 86
-    slot_offset_1_1 = slot_offset_1_1_raw = decode_number(_data_raw_, running_bit_offset, 12, False, 1)
+    # 10:slot_offset_1_1 | Offset: 88, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 88
+    slot_offset_1_1 = slot_offset_1_1_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('slotOffset11', 'Slot Offset 1.1', None, None, slot_offset_1_1, slot_offset_1_1_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 12
+    running_bit_offset += 16
 
-    # 10:spare | Offset: 98, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 98
+    # 11:spare | Offset: 104, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 104
     spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
-    nmea2000Message.fields.append(NMEA2000Field('spare10', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    nmea2000Message.fields.append(NMEA2000Field('spare11', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
     running_bit_offset += 2
 
-    # 11:message_id_1_2 | Offset: 100, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 100
+    # 12:message_id_1_2 | Offset: 106, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 106
     message_id_1_2_raw = decode_int(_data_raw_, running_bit_offset, 6)
     message_id_1_2 = master_dict['AIS_MESSAGE_ID'].get(message_id_1_2_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('messageId12', 'Message ID 1.2', None, None, message_id_1_2, message_id_1_2_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 6
 
-    # 12:slot_offset_1_2 | Offset: 106, Length: 12, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 106
-    slot_offset_1_2 = slot_offset_1_2_raw = decode_number(_data_raw_, running_bit_offset, 12, False, 1)
+    # 13:slot_offset_1_2 | Offset: 112, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 112
+    slot_offset_1_2 = slot_offset_1_2_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('slotOffset12', 'Slot Offset 1.2', None, None, slot_offset_1_2, slot_offset_1_2_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 12
+    running_bit_offset += 16
 
-    # 13:spare | Offset: 118, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 118
-    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
-    nmea2000Message.fields.append(NMEA2000Field('spare13', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    # 14:reserved_128 | Offset: 128, Length: 6, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 128
+    reserved_128 = reserved_128_raw = decode_int(_data_raw_, running_bit_offset, 6)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_128', 'Reserved', None, None, reserved_128, reserved_128_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 6
+
+    # 15:reserved_134 | Offset: 134, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 134
+    reserved_134 = reserved_134_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_134', 'Reserved', None, None, reserved_134, reserved_134_raw, None, FieldTypes.RESERVED, False))
     running_bit_offset += 2
 
-    # 14:destination_id_2 | Offset: 120, Length: 32, Signed: False Resolution: 1, Field Type: MMSI, Match: , PartOfPrimaryKey: True,
-    running_bit_offset = 120
+    # 16:destination_id_2 | Offset: 136, Length: 32, Signed: False Resolution: 1, Field Type: MMSI, Match: , PartOfPrimaryKey: True,
+    running_bit_offset = 136
     destination_id_2 = destination_id_2_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('destinationId2', 'Destination ID 2', None, None, destination_id_2, destination_id_2_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 15:message_id_2_1 | Offset: 152, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 152
+    # 17:reserved_168 | Offset: 168, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 168
+    reserved_168 = reserved_168_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_168', 'Reserved', None, None, reserved_168, reserved_168_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 18:message_id_2_1 | Offset: 170, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 170
     message_id_2_1_raw = decode_int(_data_raw_, running_bit_offset, 6)
     message_id_2_1 = master_dict['AIS_MESSAGE_ID'].get(message_id_2_1_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('messageId21', 'Message ID 2.1', None, None, message_id_2_1, message_id_2_1_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 6
 
-    # 16:slot_offset_2_1 | Offset: 158, Length: 12, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 158
-    slot_offset_2_1 = slot_offset_2_1_raw = decode_number(_data_raw_, running_bit_offset, 12, False, 1)
+    # 19:slot_offset_2_1 | Offset: 176, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 176
+    slot_offset_2_1 = slot_offset_2_1_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('slotOffset21', 'Slot Offset 2.1', None, None, slot_offset_2_1, slot_offset_2_1_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 12
+    running_bit_offset += 16
 
-    # 17:spare | Offset: 170, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 170
+    # 20:spare | Offset: 192, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 192
     spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
-    nmea2000Message.fields.append(NMEA2000Field('spare17', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    nmea2000Message.fields.append(NMEA2000Field('spare20', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
     running_bit_offset += 2
 
-    # 18:reserved_172 | Offset: 172, Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 172
-    reserved_172 = reserved_172_raw = decode_int(_data_raw_, running_bit_offset, 4)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_172', 'Reserved', None, None, reserved_172, reserved_172_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 4
+    # 21:reserved_194 | Offset: 194, Length: 6, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 194
+    reserved_194 = reserved_194_raw = decode_int(_data_raw_, running_bit_offset, 6)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_194', 'Reserved', None, None, reserved_194, reserved_194_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 6
 
-    # 19:sid | Offset: 176, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 176
+    # 22:sid | Offset: 200, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 200
     sid = sid_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('sid', 'SID', None, None, sid, sid_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
@@ -31299,78 +31698,96 @@ def encode_pgn_129803(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Destination ID 1'")
     raise Exception("Encoding 'MMSI' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 48
-    # messageId11 | Offset: 80, Length: 6, Resolution: 1, Field Type: LOOKUP
+    # reserved_80 | Offset: 80, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_80')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x3) << 80
+    # messageId11 | Offset: 82, Length: 6, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'messageId11')
     if field is None:
         raise Exception("Cant encode this message, missing 'Message ID 1.1'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_MESSAGE_ID(field.value)
-    data_raw |= (field_value & 0x3F) << 80
-    # slotOffset11 | Offset: 86, Length: 12, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0x3F) << 82
+    # slotOffset11 | Offset: 88, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'slotOffset11')
     if field is None:
         raise Exception("Cant encode this message, missing 'Slot Offset 1.1'")
-    field_value = encode_number(field.value, 12, False, 1)
-    data_raw |= (field_value & 0xFFF) << 86
-    # spare10 | Offset: 98, Length: 2, Resolution: 1, Field Type: SPARE
-    field = next(f for f in nmea2000Message.fields if f.id == 'spare10')
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 88
+    # spare11 | Offset: 104, Length: 2, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare11')
     if field is None:
         raise Exception("Cant encode this message, missing 'Spare'")
     raise Exception("Encoding 'SPARE' not supported")
-    data_raw |= (field_value & 0x3) << 98
-    # messageId12 | Offset: 100, Length: 6, Resolution: 1, Field Type: LOOKUP
+    data_raw |= (field_value & 0x3) << 104
+    # messageId12 | Offset: 106, Length: 6, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'messageId12')
     if field is None:
         raise Exception("Cant encode this message, missing 'Message ID 1.2'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_MESSAGE_ID(field.value)
-    data_raw |= (field_value & 0x3F) << 100
-    # slotOffset12 | Offset: 106, Length: 12, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0x3F) << 106
+    # slotOffset12 | Offset: 112, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'slotOffset12')
     if field is None:
         raise Exception("Cant encode this message, missing 'Slot Offset 1.2'")
-    field_value = encode_number(field.value, 12, False, 1)
-    data_raw |= (field_value & 0xFFF) << 106
-    # spare13 | Offset: 118, Length: 2, Resolution: 1, Field Type: SPARE
-    field = next(f for f in nmea2000Message.fields if f.id == 'spare13')
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 112
+    # reserved_128 | Offset: 128, Length: 6, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_128')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Spare'")
-    raise Exception("Encoding 'SPARE' not supported")
-    data_raw |= (field_value & 0x3) << 118
-    # destinationId2 | Offset: 120, Length: 32, Resolution: 1, Field Type: MMSI
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x3F) << 128
+    # reserved_134 | Offset: 134, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_134')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x3) << 134
+    # destinationId2 | Offset: 136, Length: 32, Resolution: 1, Field Type: MMSI
     field = next(f for f in nmea2000Message.fields if f.id == 'destinationId2')
     if field is None:
         raise Exception("Cant encode this message, missing 'Destination ID 2'")
     raise Exception("Encoding 'MMSI' not supported")
-    data_raw |= (field_value & 0xFFFFFFFF) << 120
-    # messageId21 | Offset: 152, Length: 6, Resolution: 1, Field Type: LOOKUP
+    data_raw |= (field_value & 0xFFFFFFFF) << 136
+    # reserved_168 | Offset: 168, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_168')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x3) << 168
+    # messageId21 | Offset: 170, Length: 6, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'messageId21')
     if field is None:
         raise Exception("Cant encode this message, missing 'Message ID 2.1'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_MESSAGE_ID(field.value)
-    data_raw |= (field_value & 0x3F) << 152
-    # slotOffset21 | Offset: 158, Length: 12, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0x3F) << 170
+    # slotOffset21 | Offset: 176, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'slotOffset21')
     if field is None:
         raise Exception("Cant encode this message, missing 'Slot Offset 2.1'")
-    field_value = encode_number(field.value, 12, False, 1)
-    data_raw |= (field_value & 0xFFF) << 158
-    # spare17 | Offset: 170, Length: 2, Resolution: 1, Field Type: SPARE
-    field = next(f for f in nmea2000Message.fields if f.id == 'spare17')
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 176
+    # spare20 | Offset: 192, Length: 2, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare20')
     if field is None:
         raise Exception("Cant encode this message, missing 'Spare'")
     raise Exception("Encoding 'SPARE' not supported")
-    data_raw |= (field_value & 0x3) << 170
-    # reserved_172 | Offset: 172, Length: 4, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_172')
+    data_raw |= (field_value & 0x3) << 192
+    # reserved_194 | Offset: 194, Length: 6, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_194')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0xF) << 172
-    # sid | Offset: 176, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0x3F) << 194
+    # sid | Offset: 200, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'sid')
     if field is None:
         raise Exception("Cant encode this message, missing 'SID'")
     field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 176
+    data_raw |= (field_value & 0xFF) << 200
     return data_raw
 
 
@@ -31401,54 +31818,72 @@ def decode_pgn_129804(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 4:ais_transceiver_information | Offset: 40, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 4:reserved_40 | Offset: 40, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
+    reserved_40 = reserved_40_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_40', 'Reserved', None, None, reserved_40, reserved_40_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
+
+    # 5:ais_transceiver_information | Offset: 41, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 41
     ais_transceiver_information_raw = decode_int(_data_raw_, running_bit_offset, 5)
     ais_transceiver_information = master_dict['AIS_TRANSCEIVER'].get(ais_transceiver_information_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('aisTransceiverInformation', 'AIS Transceiver information', None, None, ais_transceiver_information, ais_transceiver_information_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 5
 
-    # 5:reserved_45 | Offset: 45, Length: 3, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 45
-    reserved_45 = reserved_45_raw = decode_int(_data_raw_, running_bit_offset, 3)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_45', 'Reserved', None, None, reserved_45, reserved_45_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 3
+    # 6:spare | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 46
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('spare6', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    running_bit_offset += 2
 
-    # 6:destination_id_a | Offset: 48, Length: 32, Signed: False Resolution: 1, Field Type: MMSI, Match: , PartOfPrimaryKey: True,
+    # 7:destination_id_a | Offset: 48, Length: 32, Signed: False Resolution: 1, Field Type: MMSI, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 48
     destination_id_a = destination_id_a_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('destinationIdA', 'Destination ID A', None, None, destination_id_a, destination_id_a_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 7:offset_a | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 8:offset_a | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
     offset_a = offset_a_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('offsetA', 'Offset A', None, None, offset_a, offset_a_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('offsetA', 'Offset A', "Offset from current slot to first assigned slot", None, offset_a, offset_a_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 8:increment_a | Offset: 96, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 9:increment_a | Offset: 96, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 96
     increment_a = increment_a_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('incrementA', 'Increment A', None, None, increment_a, increment_a_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('incrementA', 'Increment A', "Increment to next assigned slot", None, increment_a, increment_a_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 9:destination_id_b | Offset: 112, Length: 32, Signed: False Resolution: 1, Field Type: MMSI, Match: , PartOfPrimaryKey: True,
+    # 10:destination_id_b | Offset: 112, Length: 32, Signed: False Resolution: 1, Field Type: MMSI, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 112
     destination_id_b = destination_id_b_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('destinationIdB', 'Destination ID B', None, None, destination_id_b, destination_id_b_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 10:offset_b | Offset: 144, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 11:offset_b | Offset: 144, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 144
     offset_b = offset_b_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('offsetB', 'Offset B', None, None, offset_b, offset_b_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('offsetB', 'Offset B', "Offset from current slot to first assigned slot", None, offset_b, offset_b_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 11:increment_b | Offset: 160, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 12:increment_b | Offset: 160, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
     increment_b = increment_b_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('incrementB', 'Increment B', None, None, increment_b, increment_b_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('incrementB', 'Increment B', "Increment to next assigned slot", None, increment_b, increment_b_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
+
+    # 13:spare | Offset: 176, Length: 4, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 176
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    nmea2000Message.fields.append(NMEA2000Field('spare13', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    running_bit_offset += 4
+
+    # 14:reserved_180 | Offset: 180, Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 180
+    reserved_180 = reserved_180_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_180', 'Reserved', None, None, reserved_180, reserved_180_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 4
 
     return nmea2000Message
 
@@ -31473,18 +31908,24 @@ def encode_pgn_129804(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Source ID'")
     raise Exception("Encoding 'MMSI' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 8
-    # aisTransceiverInformation | Offset: 40, Length: 5, Resolution: 1, Field Type: LOOKUP
+    # reserved_40 | Offset: 40, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_40')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x1) << 40
+    # aisTransceiverInformation | Offset: 41, Length: 5, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'aisTransceiverInformation')
     if field is None:
         raise Exception("Cant encode this message, missing 'AIS Transceiver information'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_TRANSCEIVER(field.value)
-    data_raw |= (field_value & 0x1F) << 40
-    # reserved_45 | Offset: 45, Length: 3, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_45')
+    data_raw |= (field_value & 0x1F) << 41
+    # spare6 | Offset: 46, Length: 2, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare6')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0x7) << 45
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
+    data_raw |= (field_value & 0x3) << 46
     # destinationIdA | Offset: 48, Length: 32, Resolution: 1, Field Type: MMSI
     field = next(f for f in nmea2000Message.fields if f.id == 'destinationIdA')
     if field is None:
@@ -31521,6 +31962,18 @@ def encode_pgn_129804(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Increment B'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 160
+    # spare13 | Offset: 176, Length: 4, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare13')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
+    data_raw |= (field_value & 0xF) << 176
+    # reserved_180 | Offset: 180, Length: 4, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_180')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0xF) << 180
     return data_raw
 
 
@@ -31551,38 +32004,45 @@ def decode_pgn_129805(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 4:ais_transceiver_information | Offset: 40, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 4:reserved_40 | Offset: 40, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
+    reserved_40 = reserved_40_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_40', 'Reserved', None, None, reserved_40, reserved_40_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
+
+    # 5:ais_transceiver_information | Offset: 41, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 41
     ais_transceiver_information_raw = decode_int(_data_raw_, running_bit_offset, 5)
     ais_transceiver_information = master_dict['AIS_TRANSCEIVER'].get(ais_transceiver_information_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('aisTransceiverInformation', 'AIS Transceiver information', None, None, ais_transceiver_information, ais_transceiver_information_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 5
 
-    # 5:reserved_45 | Offset: 45, Length: 3, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 45
-    reserved_45 = reserved_45_raw = decode_int(_data_raw_, running_bit_offset, 3)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_45', 'Reserved', None, None, reserved_45, reserved_45_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 3
+    # 6:spare | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 46
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('spare6', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    running_bit_offset += 2
 
-    # 6:offset | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:offset | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
     offset = offset_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('offset', 'Offset', None, None, offset, offset_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('offset', 'Offset', "Reserved offset number", None, offset, offset_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 7:number_of_slots | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 8:number_of_slots | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
     number_of_slots = number_of_slots_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('numberOfSlots', 'Number of Slots', None, None, number_of_slots, number_of_slots_raw, None, FieldTypes.NUMBER, False))
+    nmea2000Message.fields.append(NMEA2000Field('numberOfSlots', 'Number of Slots', "Reserved consecutive slots", None, number_of_slots, number_of_slots_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 8:timeout | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 9:timeout | Offset: 72, Length: 8, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    timeout = timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('timeout', 'Timeout', None, None, timeout, timeout_raw, None, FieldTypes.NUMBER, False))
+    timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 60)
+    timeout = decode_time(timeout_raw)
+    nmea2000Message.fields.append(NMEA2000Field('timeout', 'Timeout', None, 's', timeout, timeout_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 8
 
-    # 9:increment | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 10:increment | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
     increment = increment_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('increment', 'Increment', None, None, increment, increment_raw, None, FieldTypes.NUMBER, False))
@@ -31611,18 +32071,24 @@ def encode_pgn_129805(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Source ID'")
     raise Exception("Encoding 'MMSI' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 8
-    # aisTransceiverInformation | Offset: 40, Length: 5, Resolution: 1, Field Type: LOOKUP
+    # reserved_40 | Offset: 40, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_40')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x1) << 40
+    # aisTransceiverInformation | Offset: 41, Length: 5, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'aisTransceiverInformation')
     if field is None:
         raise Exception("Cant encode this message, missing 'AIS Transceiver information'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_TRANSCEIVER(field.value)
-    data_raw |= (field_value & 0x1F) << 40
-    # reserved_45 | Offset: 45, Length: 3, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_45')
+    data_raw |= (field_value & 0x1F) << 41
+    # spare6 | Offset: 46, Length: 2, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare6')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0x7) << 45
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
+    data_raw |= (field_value & 0x3) << 46
     # offset | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'offset')
     if field is None:
@@ -31635,11 +32101,11 @@ def encode_pgn_129805(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Number of Slots'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 64
-    # timeout | Offset: 72, Length: 8, Resolution: 1, Field Type: NUMBER
+    # timeout | Offset: 72, Length: 8, Resolution: 60, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'timeout')
     if field is None:
         raise Exception("Cant encode this message, missing 'Timeout'")
-    field_value = encode_number(field.value, 8, False, 1)
+    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 8)
     data_raw |= (field_value & 0xFF) << 72
     # increment | Offset: 80, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'increment')
@@ -31677,108 +32143,131 @@ def decode_pgn_129806(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.MMSI, True))
     running_bit_offset += 32
 
-    # 4:ais_transceiver_information | Offset: 40, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 4:reserved_40 | Offset: 40, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
+    reserved_40 = reserved_40_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_40', 'Reserved', None, None, reserved_40, reserved_40_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
+
+    # 5:ais_transceiver_information | Offset: 41, Length: 5, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 41
     ais_transceiver_information_raw = decode_int(_data_raw_, running_bit_offset, 5)
     ais_transceiver_information = master_dict['AIS_TRANSCEIVER'].get(ais_transceiver_information_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('aisTransceiverInformation', 'AIS Transceiver information', None, None, ais_transceiver_information, ais_transceiver_information_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 5
 
-    # 5:reserved_45 | Offset: 45, Length: 3, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 45
-    reserved_45 = reserved_45_raw = decode_int(_data_raw_, running_bit_offset, 3)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_45', 'Reserved', None, None, reserved_45, reserved_45_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 3
-
-    # 6:channel_a | Offset: 48, Length: 7, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 48
-    channel_a = channel_a_raw = decode_number(_data_raw_, running_bit_offset, 7, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('channelA', 'Channel A', None, None, channel_a, channel_a_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 7
-
-    # 7:channel_b | Offset: 55, Length: 7, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 55
-    channel_b = channel_b_raw = decode_number(_data_raw_, running_bit_offset, 7, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('channelB', 'Channel B', None, None, channel_b, channel_b_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 7
-
-    # 8:reserved_62 | Offset: 62, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 62
-    reserved_62 = reserved_62_raw = decode_int(_data_raw_, running_bit_offset, 2)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_62', 'Reserved', None, None, reserved_62, reserved_62_raw, None, FieldTypes.RESERVED, False))
+    # 6:spare | Offset: 46, Length: 2, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 46
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('spare6', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
     running_bit_offset += 2
 
-    # 9:power | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:channel_a | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    channel_a = channel_a_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('channelA', 'Channel A', None, None, channel_a, channel_a_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 8:channel_b | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    power = power_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('power', 'Power', "reserved", None, power, power_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    channel_b = channel_b_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('channelB', 'Channel B', None, None, channel_b, channel_b_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 10:tx_rx_mode | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 72
-    tx_rx_mode = tx_rx_mode_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('txRxMode', 'Tx/Rx Mode', None, None, tx_rx_mode, tx_rx_mode_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 11:north_east_longitude_corner_1 | Offset: 80, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 9:reserved_80 | Offset: 80, Length: 3, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 3
+
+    # 10:power | Offset: 83, Length: 1, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 83
+    power_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    power = master_dict['POWER_MODE'].get(power_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('power', 'Power', None, None, power, power_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 1
+
+    # 11:tx_rx_mode | Offset: 84, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 84
+    tx_rx_mode_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    tx_rx_mode = master_dict['TX_RX_MODE'].get(tx_rx_mode_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('txRxMode', 'Tx/Rx Mode', None, None, tx_rx_mode, tx_rx_mode_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 4
+
+    # 12:north_east_longitude_corner_1 | Offset: 88, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 88
     north_east_longitude_corner_1 = north_east_longitude_corner_1_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-07)
     nmea2000Message.fields.append(NMEA2000Field('northEastLongitudeCorner1', 'North East Longitude Corner 1', None, 'deg', north_east_longitude_corner_1, north_east_longitude_corner_1_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 12:north_east_latitude_corner_1 | Offset: 112, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 112
+    # 13:north_east_latitude_corner_1 | Offset: 120, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 120
     north_east_latitude_corner_1 = north_east_latitude_corner_1_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-07)
     nmea2000Message.fields.append(NMEA2000Field('northEastLatitudeCorner1', 'North East Latitude Corner 1', None, 'deg', north_east_latitude_corner_1, north_east_latitude_corner_1_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 13:south_west_longitude_corner_1 | Offset: 144, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 144
-    south_west_longitude_corner_1 = south_west_longitude_corner_1_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-07)
-    nmea2000Message.fields.append(NMEA2000Field('southWestLongitudeCorner1', 'South West Longitude Corner 1', None, 'deg', south_west_longitude_corner_1, south_west_longitude_corner_1_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
+    # 14:south_west_longitude_corner_2 | Offset: 152, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 152
+    south_west_longitude_corner_2 = south_west_longitude_corner_2_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-07)
+    nmea2000Message.fields.append(NMEA2000Field('southWestLongitudeCorner2', 'South West Longitude Corner 2', None, 'deg', south_west_longitude_corner_2, south_west_longitude_corner_2_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 14:south_west_latitude_corner_2 | Offset: 176, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 176
+    # 15:south_west_latitude_corner_2 | Offset: 184, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 184
     south_west_latitude_corner_2 = south_west_latitude_corner_2_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-07)
     nmea2000Message.fields.append(NMEA2000Field('southWestLatitudeCorner2', 'South West Latitude Corner 2', None, 'deg', south_west_latitude_corner_2, south_west_latitude_corner_2_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 15:reserved_208 | Offset: 208, Length: 6, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 208
-    reserved_208 = reserved_208_raw = decode_int(_data_raw_, running_bit_offset, 6)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_208', 'Reserved', None, None, reserved_208, reserved_208_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 6
-
-    # 16:addressed_or_broadcast_message_indicator | Offset: 214, Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 214
-    addressed_or_broadcast_message_indicator = addressed_or_broadcast_message_indicator_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('addressedOrBroadcastMessageIndicator', 'Addressed or Broadcast Message Indicator', None, None, addressed_or_broadcast_message_indicator, addressed_or_broadcast_message_indicator_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 2
-
-    # 17:channel_a_bandwidth | Offset: 216, Length: 7, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 16:reserved_216 | Offset: 216, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 216
-    channel_a_bandwidth = channel_a_bandwidth_raw = decode_number(_data_raw_, running_bit_offset, 7, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('channelABandwidth', 'Channel A Bandwidth', None, None, channel_a_bandwidth, channel_a_bandwidth_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 7
+    reserved_216 = reserved_216_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_216', 'Reserved', None, None, reserved_216, reserved_216_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
 
-    # 18:channel_b_bandwidth | Offset: 223, Length: 7, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 223
-    channel_b_bandwidth = channel_b_bandwidth_raw = decode_number(_data_raw_, running_bit_offset, 7, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('channelBBandwidth', 'Channel B Bandwidth', None, None, channel_b_bandwidth, channel_b_bandwidth_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 7
+    # 17:addressed_or_broadcast_message_indicator | Offset: 217, Length: 1, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 217
+    addressed_or_broadcast_message_indicator_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    addressed_or_broadcast_message_indicator = master_dict['BROADCAST_INDICATOR'].get(addressed_or_broadcast_message_indicator_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('addressedOrBroadcastMessageIndicator', 'Addressed or Broadcast Message Indicator', None, None, addressed_or_broadcast_message_indicator, addressed_or_broadcast_message_indicator_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 1
 
-    # 19:reserved_230 | Offset: 230, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 230
-    reserved_230 = reserved_230_raw = decode_int(_data_raw_, running_bit_offset, 2)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_230', 'Reserved', None, None, reserved_230, reserved_230_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 2
+    # 18:channel_a_bandwidth | Offset: 218, Length: 1, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 218
+    channel_a_bandwidth_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    channel_a_bandwidth = master_dict['BANDWIDTH'].get(channel_a_bandwidth_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('channelABandwidth', 'Channel A Bandwidth', None, None, channel_a_bandwidth, channel_a_bandwidth_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 1
 
-    # 20:transitional_zone_size | Offset: 232, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 232
-    transitional_zone_size = transitional_zone_size_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    # 19:channel_b_bandwidth | Offset: 219, Length: 1, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 219
+    channel_b_bandwidth_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    channel_b_bandwidth = master_dict['BANDWIDTH'].get(channel_b_bandwidth_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('channelBBandwidth', 'Channel B Bandwidth', None, None, channel_b_bandwidth, channel_b_bandwidth_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 1
+
+    # 20:reserved_220 | Offset: 220, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 220
+    reserved_220 = reserved_220_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_220', 'Reserved', None, None, reserved_220, reserved_220_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
+
+    # 21:transitional_zone_size | Offset: 221, Length: 3, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 221
+    transitional_zone_size = transitional_zone_size_raw = decode_number(_data_raw_, running_bit_offset, 3, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('transitionalZoneSize', 'Transitional Zone Size', None, None, transitional_zone_size, transitional_zone_size_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 3
+
+    # 22:spare | Offset: 224, Length: 23, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 224
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 23)
+    nmea2000Message.fields.append(NMEA2000Field('spare22', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    running_bit_offset += 23
+
+    # 23:reserved_247 | Offset: 247, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 247
+    reserved_247 = reserved_247_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_247', 'Reserved', None, None, reserved_247, reserved_247_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
 
     return nmea2000Message
 
@@ -31803,108 +32292,126 @@ def encode_pgn_129806(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Source ID'")
     raise Exception("Encoding 'MMSI' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 8
-    # aisTransceiverInformation | Offset: 40, Length: 5, Resolution: 1, Field Type: LOOKUP
+    # reserved_40 | Offset: 40, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_40')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x1) << 40
+    # aisTransceiverInformation | Offset: 41, Length: 5, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'aisTransceiverInformation')
     if field is None:
         raise Exception("Cant encode this message, missing 'AIS Transceiver information'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AIS_TRANSCEIVER(field.value)
-    data_raw |= (field_value & 0x1F) << 40
-    # reserved_45 | Offset: 45, Length: 3, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_45')
+    data_raw |= (field_value & 0x1F) << 41
+    # spare6 | Offset: 46, Length: 2, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare6')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Reserved'")
-    field_value = field.value
-    data_raw |= (field_value & 0x7) << 45
-    # channelA | Offset: 48, Length: 7, Resolution: 1, Field Type: NUMBER
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
+    data_raw |= (field_value & 0x3) << 46
+    # channelA | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'channelA')
     if field is None:
         raise Exception("Cant encode this message, missing 'Channel A'")
-    field_value = encode_number(field.value, 7, False, 1)
-    data_raw |= (field_value & 0x7F) << 48
-    # channelB | Offset: 55, Length: 7, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # channelB | Offset: 64, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'channelB')
     if field is None:
         raise Exception("Cant encode this message, missing 'Channel B'")
-    field_value = encode_number(field.value, 7, False, 1)
-    data_raw |= (field_value & 0x7F) << 55
-    # reserved_62 | Offset: 62, Length: 2, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_62')
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 64
+    # reserved_80 | Offset: 80, Length: 3, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_80')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0x3) << 62
-    # power | Offset: 64, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0x7) << 80
+    # power | Offset: 83, Length: 1, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'power')
     if field is None:
         raise Exception("Cant encode this message, missing 'Power'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 64
-    # txRxMode | Offset: 72, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_POWER_MODE(field.value)
+    data_raw |= (field_value & 0x1) << 83
+    # txRxMode | Offset: 84, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'txRxMode')
     if field is None:
         raise Exception("Cant encode this message, missing 'Tx/Rx Mode'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 72
-    # northEastLongitudeCorner1 | Offset: 80, Length: 32, Resolution: 1e-07, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_TX_RX_MODE(field.value)
+    data_raw |= (field_value & 0xF) << 84
+    # northEastLongitudeCorner1 | Offset: 88, Length: 32, Resolution: 1e-07, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'northEastLongitudeCorner1')
     if field is None:
         raise Exception("Cant encode this message, missing 'North East Longitude Corner 1'")
     field_value = encode_number(field.value, 32, True, 1e-07)
-    data_raw |= (field_value & 0xFFFFFFFF) << 80
-    # northEastLatitudeCorner1 | Offset: 112, Length: 32, Resolution: 1e-07, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFFFFFF) << 88
+    # northEastLatitudeCorner1 | Offset: 120, Length: 32, Resolution: 1e-07, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'northEastLatitudeCorner1')
     if field is None:
         raise Exception("Cant encode this message, missing 'North East Latitude Corner 1'")
     field_value = encode_number(field.value, 32, True, 1e-07)
-    data_raw |= (field_value & 0xFFFFFFFF) << 112
-    # southWestLongitudeCorner1 | Offset: 144, Length: 32, Resolution: 1e-07, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'southWestLongitudeCorner1')
+    data_raw |= (field_value & 0xFFFFFFFF) << 120
+    # southWestLongitudeCorner2 | Offset: 152, Length: 32, Resolution: 1e-07, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'southWestLongitudeCorner2')
     if field is None:
-        raise Exception("Cant encode this message, missing 'South West Longitude Corner 1'")
+        raise Exception("Cant encode this message, missing 'South West Longitude Corner 2'")
     field_value = encode_number(field.value, 32, True, 1e-07)
-    data_raw |= (field_value & 0xFFFFFFFF) << 144
-    # southWestLatitudeCorner2 | Offset: 176, Length: 32, Resolution: 1e-07, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFFFFFF) << 152
+    # southWestLatitudeCorner2 | Offset: 184, Length: 32, Resolution: 1e-07, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'southWestLatitudeCorner2')
     if field is None:
         raise Exception("Cant encode this message, missing 'South West Latitude Corner 2'")
     field_value = encode_number(field.value, 32, True, 1e-07)
-    data_raw |= (field_value & 0xFFFFFFFF) << 176
-    # reserved_208 | Offset: 208, Length: 6, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_208')
+    data_raw |= (field_value & 0xFFFFFFFF) << 184
+    # reserved_216 | Offset: 216, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_216')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0x3F) << 208
-    # addressedOrBroadcastMessageIndicator | Offset: 214, Length: 2, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0x1) << 216
+    # addressedOrBroadcastMessageIndicator | Offset: 217, Length: 1, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'addressedOrBroadcastMessageIndicator')
     if field is None:
         raise Exception("Cant encode this message, missing 'Addressed or Broadcast Message Indicator'")
-    field_value = encode_number(field.value, 2, False, 1)
-    data_raw |= (field_value & 0x3) << 214
-    # channelABandwidth | Offset: 216, Length: 7, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_BROADCAST_INDICATOR(field.value)
+    data_raw |= (field_value & 0x1) << 217
+    # channelABandwidth | Offset: 218, Length: 1, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'channelABandwidth')
     if field is None:
         raise Exception("Cant encode this message, missing 'Channel A Bandwidth'")
-    field_value = encode_number(field.value, 7, False, 1)
-    data_raw |= (field_value & 0x7F) << 216
-    # channelBBandwidth | Offset: 223, Length: 7, Resolution: 1, Field Type: NUMBER
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_BANDWIDTH(field.value)
+    data_raw |= (field_value & 0x1) << 218
+    # channelBBandwidth | Offset: 219, Length: 1, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'channelBBandwidth')
     if field is None:
         raise Exception("Cant encode this message, missing 'Channel B Bandwidth'")
-    field_value = encode_number(field.value, 7, False, 1)
-    data_raw |= (field_value & 0x7F) << 223
-    # reserved_230 | Offset: 230, Length: 2, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_230')
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_BANDWIDTH(field.value)
+    data_raw |= (field_value & 0x1) << 219
+    # reserved_220 | Offset: 220, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_220')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0x3) << 230
-    # transitionalZoneSize | Offset: 232, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0x1) << 220
+    # transitionalZoneSize | Offset: 221, Length: 3, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'transitionalZoneSize')
     if field is None:
         raise Exception("Cant encode this message, missing 'Transitional Zone Size'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 232
+    field_value = encode_number(field.value, 3, False, 1)
+    data_raw |= (field_value & 0x7) << 221
+    # spare22 | Offset: 224, Length: 23, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare22')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
+    data_raw |= (field_value & 0x7FFFFF) << 224
+    # reserved_247 | Offset: 247, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_247')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x1) << 247
     return data_raw
 
 
@@ -31966,10 +32473,10 @@ def decode_pgn_129807(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('northEastLatitudeCorner1', 'North East Latitude Corner 1', None, 'deg', north_east_latitude_corner_1, north_east_latitude_corner_1_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 9:south_west_longitude_corner_1 | Offset: 112, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 9:south_west_longitude_corner_2 | Offset: 112, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 112
-    south_west_longitude_corner_1 = south_west_longitude_corner_1_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-07)
-    nmea2000Message.fields.append(NMEA2000Field('southWestLongitudeCorner1', 'South West Longitude Corner 1', None, 'deg', south_west_longitude_corner_1, south_west_longitude_corner_1_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
+    south_west_longitude_corner_2 = south_west_longitude_corner_2_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-07)
+    nmea2000Message.fields.append(NMEA2000Field('southWestLongitudeCorner2', 'South West Longitude Corner 2', None, 'deg', south_west_longitude_corner_2, south_west_longitude_corner_2_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
     # 10:south_west_latitude_corner_2 | Offset: 144, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
@@ -31991,10 +32498,11 @@ def decode_pgn_129807(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('reserved_180', 'Reserved', None, None, reserved_180, reserved_180_raw, None, FieldTypes.RESERVED, False))
     running_bit_offset += 4
 
-    # 13:ship_and_cargo_filter | Offset: 184, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 13:ship_and_cargo_filter | Offset: 184, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 184
-    ship_and_cargo_filter = ship_and_cargo_filter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('shipAndCargoFilter', 'Ship and Cargo Filter', None, None, ship_and_cargo_filter, ship_and_cargo_filter_raw, None, FieldTypes.NUMBER, False))
+    ship_and_cargo_filter_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    ship_and_cargo_filter = master_dict['SHIP_TYPE'].get(ship_and_cargo_filter_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('shipAndCargoFilter', 'Ship and Cargo Filter', None, None, ship_and_cargo_filter, ship_and_cargo_filter_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 8
 
     # 14:spare | Offset: 192, Length: 22, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
@@ -32016,11 +32524,24 @@ def decode_pgn_129807(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('reportingInterval', 'Reporting Interval', None, None, reporting_interval, reporting_interval_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 4
 
-    # 17:quiet_time | Offset: 220, Length: 4, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 17:quiet_time | Offset: 220, Length: 4, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 220
-    quiet_time = quiet_time_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('quietTime', 'Quiet Time', None, None, quiet_time, quiet_time_raw, None, FieldTypes.NUMBER, False))
+    quiet_time_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 60)
+    quiet_time = decode_time(quiet_time_raw)
+    nmea2000Message.fields.append(NMEA2000Field('quietTime', 'Quiet Time', "Commanded quiet time", 's', quiet_time, quiet_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 4
+
+    # 18:spare | Offset: 224, Length: 6, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 224
+    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 6)
+    nmea2000Message.fields.append(NMEA2000Field('spare18', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    running_bit_offset += 6
+
+    # 19:reserved_230 | Offset: 230, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 230
+    reserved_230 = reserved_230_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_230', 'Reserved', None, None, reserved_230, reserved_230_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
 
     return nmea2000Message
 
@@ -32075,10 +32596,10 @@ def encode_pgn_129807(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'North East Latitude Corner 1'")
     field_value = encode_number(field.value, 32, True, 1e-07)
     data_raw |= (field_value & 0xFFFFFFFF) << 80
-    # southWestLongitudeCorner1 | Offset: 112, Length: 32, Resolution: 1e-07, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'southWestLongitudeCorner1')
+    # southWestLongitudeCorner2 | Offset: 112, Length: 32, Resolution: 1e-07, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'southWestLongitudeCorner2')
     if field is None:
-        raise Exception("Cant encode this message, missing 'South West Longitude Corner 1'")
+        raise Exception("Cant encode this message, missing 'South West Longitude Corner 2'")
     field_value = encode_number(field.value, 32, True, 1e-07)
     data_raw |= (field_value & 0xFFFFFFFF) << 112
     # southWestLatitudeCorner2 | Offset: 144, Length: 32, Resolution: 1e-07, Field Type: NUMBER
@@ -32099,11 +32620,11 @@ def encode_pgn_129807(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xF) << 180
-    # shipAndCargoFilter | Offset: 184, Length: 8, Resolution: 1, Field Type: NUMBER
+    # shipAndCargoFilter | Offset: 184, Length: 8, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'shipAndCargoFilter')
     if field is None:
         raise Exception("Cant encode this message, missing 'Ship and Cargo Filter'")
-    field_value = encode_number(field.value, 8, False, 1)
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SHIP_TYPE(field.value)
     data_raw |= (field_value & 0xFF) << 184
     # spare14 | Offset: 192, Length: 22, Resolution: 1, Field Type: SPARE
     field = next(f for f in nmea2000Message.fields if f.id == 'spare14')
@@ -32123,12 +32644,24 @@ def encode_pgn_129807(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reporting Interval'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_REPORTING_INTERVAL(field.value)
     data_raw |= (field_value & 0xF) << 216
-    # quietTime | Offset: 220, Length: 4, Resolution: 1, Field Type: NUMBER
+    # quietTime | Offset: 220, Length: 4, Resolution: 60, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'quietTime')
     if field is None:
         raise Exception("Cant encode this message, missing 'Quiet Time'")
-    field_value = encode_number(field.value, 4, False, 1)
+    field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 4)
     data_raw |= (field_value & 0xF) << 220
+    # spare18 | Offset: 224, Length: 6, Resolution: 1, Field Type: SPARE
+    field = next(f for f in nmea2000Message.fields if f.id == 'spare18')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Spare'")
+    raise Exception("Encoding 'SPARE' not supported")
+    data_raw |= (field_value & 0x3F) << 224
+    # reserved_230 | Offset: 230, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_230')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x3) << 230
     return data_raw
 
 
@@ -32883,46 +33416,53 @@ def decode_pgn_130052(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130052."""
     nmea2000Message = NMEA2000Message(130052, 'loranCTdData', 'Loran-C TD Data')
     running_bit_offset = 0
-    # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    group_repetition_interval__gri_ = group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('groupRepetitionIntervalGri', 'Group Repetition Interval (GRI)', None, None, group_repetition_interval__gri_, group_repetition_interval__gri__raw, None, FieldTypes.NUMBER, False))
+    group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    group_repetition_interval__gri_ = decode_time(group_repetition_interval__gri__raw)
+    nmea2000Message.fields.append(NMEA2000Field('groupRepetitionIntervalGri', 'Group Repetition Interval (GRI)', None, 's', group_repetition_interval__gri_, group_repetition_interval__gri__raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 2:master_range | Offset: 32, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:master_range | Offset: 32, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    master_range = master_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('masterRange', 'Master Range', None, None, master_range, master_range_raw, None, FieldTypes.NUMBER, False))
+    master_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    master_range = decode_time(master_range_raw)
+    nmea2000Message.fields.append(NMEA2000Field('masterRange', 'Master Range', None, 's', master_range, master_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 3:v_secondary_td | Offset: 64, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 3:v_secondary_td | Offset: 64, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    v_secondary_td = v_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('vSecondaryTd', 'V Secondary TD', None, None, v_secondary_td, v_secondary_td_raw, None, FieldTypes.NUMBER, False))
+    v_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    v_secondary_td = decode_time(v_secondary_td_raw)
+    nmea2000Message.fields.append(NMEA2000Field('vSecondaryTd', 'V Secondary TD', None, 's', v_secondary_td, v_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 4:w_secondary_td | Offset: 96, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:w_secondary_td | Offset: 96, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 96
-    w_secondary_td = w_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('wSecondaryTd', 'W Secondary TD', None, None, w_secondary_td, w_secondary_td_raw, None, FieldTypes.NUMBER, False))
+    w_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    w_secondary_td = decode_time(w_secondary_td_raw)
+    nmea2000Message.fields.append(NMEA2000Field('wSecondaryTd', 'W Secondary TD', None, 's', w_secondary_td, w_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 5:x_secondary_td | Offset: 128, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:x_secondary_td | Offset: 128, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    x_secondary_td = x_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('xSecondaryTd', 'X Secondary TD', None, None, x_secondary_td, x_secondary_td_raw, None, FieldTypes.NUMBER, False))
+    x_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    x_secondary_td = decode_time(x_secondary_td_raw)
+    nmea2000Message.fields.append(NMEA2000Field('xSecondaryTd', 'X Secondary TD', None, 's', x_secondary_td, x_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 6:y_secondary_td | Offset: 160, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:y_secondary_td | Offset: 160, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
-    y_secondary_td = y_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('ySecondaryTd', 'Y Secondary TD', None, None, y_secondary_td, y_secondary_td_raw, None, FieldTypes.NUMBER, False))
+    y_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    y_secondary_td = decode_time(y_secondary_td_raw)
+    nmea2000Message.fields.append(NMEA2000Field('ySecondaryTd', 'Y Secondary TD', None, 's', y_secondary_td, y_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 7:z_secondary_td | Offset: 192, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:z_secondary_td | Offset: 192, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 192
-    z_secondary_td = z_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zSecondaryTd', 'Z Secondary TD', None, None, z_secondary_td, z_secondary_td_raw, None, FieldTypes.NUMBER, False))
+    z_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    z_secondary_td = decode_time(z_secondary_td_raw)
+    nmea2000Message.fields.append(NMEA2000Field('zSecondaryTd', 'Z Secondary TD', None, 's', z_secondary_td, z_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 8:station_status__master | Offset: 224, Length: 4, Signed: False Resolution: 1, Field Type: BITLOOKUP, Match: , PartOfPrimaryKey: ,
@@ -32985,47 +33525,47 @@ def decode_pgn_130052(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130052."""
     data_raw = 0
-    # groupRepetitionIntervalGri | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
+    # groupRepetitionIntervalGri | Offset: 0, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'groupRepetitionIntervalGri')
     if field is None:
         raise Exception("Cant encode this message, missing 'Group Repetition Interval (GRI)'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 0
-    # masterRange | Offset: 32, Length: 32, Resolution: 1, Field Type: NUMBER
+    # masterRange | Offset: 32, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'masterRange')
     if field is None:
         raise Exception("Cant encode this message, missing 'Master Range'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    # vSecondaryTd | Offset: 64, Length: 32, Resolution: 1, Field Type: NUMBER
+    # vSecondaryTd | Offset: 64, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'vSecondaryTd')
     if field is None:
         raise Exception("Cant encode this message, missing 'V Secondary TD'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 64
-    # wSecondaryTd | Offset: 96, Length: 32, Resolution: 1, Field Type: NUMBER
+    # wSecondaryTd | Offset: 96, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'wSecondaryTd')
     if field is None:
         raise Exception("Cant encode this message, missing 'W Secondary TD'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 96
-    # xSecondaryTd | Offset: 128, Length: 32, Resolution: 1, Field Type: NUMBER
+    # xSecondaryTd | Offset: 128, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'xSecondaryTd')
     if field is None:
         raise Exception("Cant encode this message, missing 'X Secondary TD'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 128
-    # ySecondaryTd | Offset: 160, Length: 32, Resolution: 1, Field Type: NUMBER
+    # ySecondaryTd | Offset: 160, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'ySecondaryTd')
     if field is None:
         raise Exception("Cant encode this message, missing 'Y Secondary TD'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 160
-    # zSecondaryTd | Offset: 192, Length: 32, Resolution: 1, Field Type: NUMBER
+    # zSecondaryTd | Offset: 192, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'zSecondaryTd')
     if field is None:
         raise Exception("Cant encode this message, missing 'Z Secondary TD'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 192
     # stationStatusMaster | Offset: 224, Length: 4, Resolution: 1, Field Type: BITLOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'stationStatusMaster')
@@ -33085,46 +33625,53 @@ def decode_pgn_130053(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130053."""
     nmea2000Message = NMEA2000Message(130053, 'loranCRangeData', 'Loran-C Range Data')
     running_bit_offset = 0
-    # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    group_repetition_interval__gri_ = group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('groupRepetitionIntervalGri', 'Group Repetition Interval (GRI)', None, None, group_repetition_interval__gri_, group_repetition_interval__gri__raw, None, FieldTypes.NUMBER, False))
+    group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    group_repetition_interval__gri_ = decode_time(group_repetition_interval__gri__raw)
+    nmea2000Message.fields.append(NMEA2000Field('groupRepetitionIntervalGri', 'Group Repetition Interval (GRI)', None, 's', group_repetition_interval__gri_, group_repetition_interval__gri__raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 2:master_range | Offset: 32, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:master_range | Offset: 32, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    master_range = master_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('masterRange', 'Master Range', None, None, master_range, master_range_raw, None, FieldTypes.NUMBER, False))
+    master_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    master_range = decode_time(master_range_raw)
+    nmea2000Message.fields.append(NMEA2000Field('masterRange', 'Master Range', None, 's', master_range, master_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 3:v_secondary_range | Offset: 64, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 3:v_secondary_range | Offset: 64, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    v_secondary_range = v_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('vSecondaryRange', 'V Secondary Range', None, None, v_secondary_range, v_secondary_range_raw, None, FieldTypes.NUMBER, False))
+    v_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    v_secondary_range = decode_time(v_secondary_range_raw)
+    nmea2000Message.fields.append(NMEA2000Field('vSecondaryRange', 'V Secondary Range', None, 's', v_secondary_range, v_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 4:w_secondary_range | Offset: 96, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:w_secondary_range | Offset: 96, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 96
-    w_secondary_range = w_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('wSecondaryRange', 'W Secondary Range', None, None, w_secondary_range, w_secondary_range_raw, None, FieldTypes.NUMBER, False))
+    w_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    w_secondary_range = decode_time(w_secondary_range_raw)
+    nmea2000Message.fields.append(NMEA2000Field('wSecondaryRange', 'W Secondary Range', None, 's', w_secondary_range, w_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 5:x_secondary_range | Offset: 128, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:x_secondary_range | Offset: 128, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    x_secondary_range = x_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('xSecondaryRange', 'X Secondary Range', None, None, x_secondary_range, x_secondary_range_raw, None, FieldTypes.NUMBER, False))
+    x_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    x_secondary_range = decode_time(x_secondary_range_raw)
+    nmea2000Message.fields.append(NMEA2000Field('xSecondaryRange', 'X Secondary Range', None, 's', x_secondary_range, x_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 6:y_secondary_range | Offset: 160, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:y_secondary_range | Offset: 160, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
-    y_secondary_range = y_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('ySecondaryRange', 'Y Secondary Range', None, None, y_secondary_range, y_secondary_range_raw, None, FieldTypes.NUMBER, False))
+    y_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    y_secondary_range = decode_time(y_secondary_range_raw)
+    nmea2000Message.fields.append(NMEA2000Field('ySecondaryRange', 'Y Secondary Range', None, 's', y_secondary_range, y_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 7:z_secondary_range | Offset: 192, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:z_secondary_range | Offset: 192, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 192
-    z_secondary_range = z_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zSecondaryRange', 'Z Secondary Range', None, None, z_secondary_range, z_secondary_range_raw, None, FieldTypes.NUMBER, False))
+    z_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    z_secondary_range = decode_time(z_secondary_range_raw)
+    nmea2000Message.fields.append(NMEA2000Field('zSecondaryRange', 'Z Secondary Range', None, 's', z_secondary_range, z_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 8:station_status__master | Offset: 224, Length: 4, Signed: False Resolution: 1, Field Type: BITLOOKUP, Match: , PartOfPrimaryKey: ,
@@ -33187,47 +33734,47 @@ def decode_pgn_130053(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130053."""
     data_raw = 0
-    # groupRepetitionIntervalGri | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
+    # groupRepetitionIntervalGri | Offset: 0, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'groupRepetitionIntervalGri')
     if field is None:
         raise Exception("Cant encode this message, missing 'Group Repetition Interval (GRI)'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 0
-    # masterRange | Offset: 32, Length: 32, Resolution: 1, Field Type: NUMBER
+    # masterRange | Offset: 32, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'masterRange')
     if field is None:
         raise Exception("Cant encode this message, missing 'Master Range'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    # vSecondaryRange | Offset: 64, Length: 32, Resolution: 1, Field Type: NUMBER
+    # vSecondaryRange | Offset: 64, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'vSecondaryRange')
     if field is None:
         raise Exception("Cant encode this message, missing 'V Secondary Range'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 64
-    # wSecondaryRange | Offset: 96, Length: 32, Resolution: 1, Field Type: NUMBER
+    # wSecondaryRange | Offset: 96, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'wSecondaryRange')
     if field is None:
         raise Exception("Cant encode this message, missing 'W Secondary Range'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 96
-    # xSecondaryRange | Offset: 128, Length: 32, Resolution: 1, Field Type: NUMBER
+    # xSecondaryRange | Offset: 128, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'xSecondaryRange')
     if field is None:
         raise Exception("Cant encode this message, missing 'X Secondary Range'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 128
-    # ySecondaryRange | Offset: 160, Length: 32, Resolution: 1, Field Type: NUMBER
+    # ySecondaryRange | Offset: 160, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'ySecondaryRange')
     if field is None:
         raise Exception("Cant encode this message, missing 'Y Secondary Range'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 160
-    # zSecondaryRange | Offset: 192, Length: 32, Resolution: 1, Field Type: NUMBER
+    # zSecondaryRange | Offset: 192, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'zSecondaryRange')
     if field is None:
         raise Exception("Cant encode this message, missing 'Z Secondary Range'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 192
     # stationStatusMaster | Offset: 224, Length: 4, Resolution: 1, Field Type: BITLOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'stationStatusMaster')
@@ -33287,10 +33834,11 @@ def decode_pgn_130054(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130054."""
     nmea2000Message = NMEA2000Message(130054, 'loranCSignalData', 'Loran-C Signal Data')
     running_bit_offset = 0
-    # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    group_repetition_interval__gri_ = group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('groupRepetitionIntervalGri', 'Group Repetition Interval (GRI)', None, None, group_repetition_interval__gri_, group_repetition_interval__gri__raw, None, FieldTypes.NUMBER, False))
+    group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    group_repetition_interval__gri_ = decode_time(group_repetition_interval__gri__raw)
+    nmea2000Message.fields.append(NMEA2000Field('groupRepetitionIntervalGri', 'Group Repetition Interval (GRI)', None, 's', group_repetition_interval__gri_, group_repetition_interval__gri__raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 2:station_identifier | Offset: 32, Length: 8, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
@@ -33305,16 +33853,18 @@ def decode_pgn_130054(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('stationSnr', 'Station SNR', None, 'dB', station_snr, station_snr_raw, PhysicalQuantities.SIGNAL_TO_NOISE_RATIO, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:station_ecd | Offset: 56, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:station_ecd | Offset: 56, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    station_ecd = station_ecd_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('stationEcd', 'Station ECD', None, None, station_ecd, station_ecd_raw, None, FieldTypes.NUMBER, False))
+    station_ecd_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    station_ecd = decode_time(station_ecd_raw)
+    nmea2000Message.fields.append(NMEA2000Field('stationEcd', 'Station ECD', None, 's', station_ecd, station_ecd_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 5:station_asf | Offset: 88, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:station_asf | Offset: 88, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    station_asf = station_asf_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('stationAsf', 'Station ASF', None, None, station_asf, station_asf_raw, None, FieldTypes.NUMBER, False))
+    station_asf_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
+    station_asf = decode_time(station_asf_raw)
+    nmea2000Message.fields.append(NMEA2000Field('stationAsf', 'Station ASF', None, 's', station_asf, station_asf_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     return nmea2000Message
@@ -33322,11 +33872,11 @@ def decode_pgn_130054(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130054(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130054."""
     data_raw = 0
-    # groupRepetitionIntervalGri | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
+    # groupRepetitionIntervalGri | Offset: 0, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'groupRepetitionIntervalGri')
     if field is None:
         raise Exception("Cant encode this message, missing 'Group Repetition Interval (GRI)'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 0
     # stationIdentifier | Offset: 32, Length: 8, Resolution: , Field Type: STRING_FIX
     field = next(f for f in nmea2000Message.fields if f.id == 'stationIdentifier')
@@ -33340,17 +33890,17 @@ def encode_pgn_130054(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Station SNR'")
     field_value = encode_number(field.value, 16, True, 0.01)
     data_raw |= (field_value & 0xFFFF) << 40
-    # stationEcd | Offset: 56, Length: 32, Resolution: 1, Field Type: NUMBER
+    # stationEcd | Offset: 56, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'stationEcd')
     if field is None:
         raise Exception("Cant encode this message, missing 'Station ECD'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 56
-    # stationAsf | Offset: 88, Length: 32, Resolution: 1, Field Type: NUMBER
+    # stationAsf | Offset: 88, Length: 32, Resolution: 1e-09, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'stationAsf')
     if field is None:
         raise Exception("Cant encode this message, missing 'Station ASF'")
-    field_value = encode_number(field.value, 32, True, 1)
+    field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 88
     return data_raw
 
@@ -33617,32 +34167,32 @@ def decode_pgn_130064(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130064."""
     nmea2000Message = NMEA2000Message(130064, 'routeAndWpServiceDatabaseList', 'Route and WP Service - Database List')
     running_bit_offset = 0
-    # 1:start_database_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_database_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_database_id = start_database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_database_id = start_database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startDatabaseId', 'Start Database ID', None, None, start_database_id, start_database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_databases_available | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    number_of_databases_available = number_of_databases_available_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('numberOfDatabasesAvailable', 'Number of Databases Available', None, None, number_of_databases_available, number_of_databases_available_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 4:database_id | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:database_name | Offset: 32, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    # 3:number_of_databases_available | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
+    number_of_databases_available = number_of_databases_available_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('numberOfDatabasesAvailable', 'Number of Databases Available', None, None, number_of_databases_available, number_of_databases_available_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 5:database_name | Offset: 64, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
     database_name_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     database_name = database_name_raw
     running_bit_offset += bits_to_skip
@@ -33661,60 +34211,61 @@ def decode_pgn_130064(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('databaseDatestamp', 'Database Datestamp', None, 'd', database_datestamp, database_datestamp_raw, PhysicalQuantities.DATE, FieldTypes.DATE, False))
     running_bit_offset += 16
 
-    # 8:wp_position_resolution | Offset: , Length: 6, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    wp_position_resolution = wp_position_resolution_raw = decode_number(_data_raw_, running_bit_offset, 6, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('wpPositionResolution', 'WP Position Resolution', None, None, wp_position_resolution, wp_position_resolution_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 6
+    # 8:wp_position_resolution | Offset: , Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    wp_position_resolution_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    wp_position_resolution = master_dict['WP_POSITION_RESOLUTION'].get(wp_position_resolution_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('wpPositionResolution', 'WP Position Resolution', None, None, wp_position_resolution, wp_position_resolution_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 4
 
-    # 9:reserved_ | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    reserved_ = reserved__raw = decode_int(_data_raw_, running_bit_offset, 2)
+    # 9:reserved_ | Offset: , Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    reserved_ = reserved__raw = decode_int(_data_raw_, running_bit_offset, 4)
     nmea2000Message.fields.append(NMEA2000Field('reserved_', 'Reserved', None, None, reserved_, reserved__raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 2
+    running_bit_offset += 4
 
     # 10:number_of_routes_in_database | Offset: , Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     number_of_routes_in_database = number_of_routes_in_database_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfRoutesInDatabase', 'Number of Routes in Database', None, None, number_of_routes_in_database, number_of_routes_in_database_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 11:number_of_wps_in_database | Offset: , Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    number_of_wps_in_database = number_of_wps_in_database_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    # 11:number_of_wps_in_database | Offset: , Length: 32, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    number_of_wps_in_database = number_of_wps_in_database_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfWpsInDatabase', 'Number of WPs in Database', None, None, number_of_wps_in_database, number_of_wps_in_database_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
+    running_bit_offset += 32
 
-    # 12:number_of_bytes_in_database | Offset: , Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    number_of_bytes_in_database = number_of_bytes_in_database_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    # 12:number_of_bytes_in_database | Offset: , Length: 32, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    number_of_bytes_in_database = number_of_bytes_in_database_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfBytesInDatabase', 'Number of Bytes in Database', None, None, number_of_bytes_in_database, number_of_bytes_in_database_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
+    running_bit_offset += 32
 
     return nmea2000Message
 
 def encode_pgn_130064(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130064."""
     data_raw = 0
-    # startDatabaseId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startDatabaseId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startDatabaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfDatabasesAvailable | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfDatabasesAvailable | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfDatabasesAvailable')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of Databases Available'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 16
-    # databaseId | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
     raise Exception ("PGN 130064 not supporting encoding for now as Database Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130064 not supporting encoding for now as Database Timestamp is missing BitLength or BitOffset")
     raise Exception ("PGN 130064 not supporting encoding for now as Database Datestamp is missing BitLength or BitOffset")
@@ -33733,94 +34284,96 @@ def decode_pgn_130065(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130065."""
     nmea2000Message = NMEA2000Message(130065, 'routeAndWpServiceRouteList', 'Route and WP Service - Route List')
     running_bit_offset = 0
-    # 1:start_route_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_route_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_route_id = start_route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_route_id = start_route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startRouteId', 'Start Route ID', None, None, start_route_id, start_route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_routes_in_database | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    number_of_routes_in_database = number_of_routes_in_database_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('numberOfRoutesInDatabase', 'Number of Routes in Database', None, None, number_of_routes_in_database, number_of_routes_in_database_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 4:database_id | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:route_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 3:number_of_routes_in_database | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    number_of_routes_in_database = number_of_routes_in_database_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('numberOfRoutesInDatabase', 'Number of Routes in Database', None, None, number_of_routes_in_database, number_of_routes_in_database_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 6:route_name | Offset: 40, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 5:route_id | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 6:route_name | Offset: 80, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
     route_name_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     route_name = route_name_raw
     running_bit_offset += bits_to_skip
     nmea2000Message.fields.append(NMEA2000Field('routeName', 'Route Name', None, None, route_name, route_name_raw, None, FieldTypes.STRING_LAU, False))
     
 
-    # 7:reserved_ | Offset: , Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    reserved_ = reserved__raw = decode_int(_data_raw_, running_bit_offset, 4)
+    # 7:reserved_ | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    reserved_ = reserved__raw = decode_int(_data_raw_, running_bit_offset, 2)
     nmea2000Message.fields.append(NMEA2000Field('reserved_', 'Reserved', None, None, reserved_, reserved__raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 8:wp_identification_method | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    wp_identification_method_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    wp_identification_method = master_dict['WP_IDENTIFICATION_METHOD'].get(wp_identification_method_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('wpIdentificationMethod', 'WP Identification Method', None, None, wp_identification_method, wp_identification_method_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 2
+
+    # 9:route_status | Offset: , Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    route_status_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    route_status = master_dict['WP_ROUTE_STATUS'].get(route_status_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('routeStatus', 'Route Status', None, None, route_status, route_status_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 4
-
-    # 8:wp_identification_method | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    wp_identification_method = wp_identification_method_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('wpIdentificationMethod', 'WP Identification Method', None, None, wp_identification_method, wp_identification_method_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 2
-
-    # 9:route_status | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    route_status = route_status_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeStatus', 'Route Status', None, None, route_status, route_status_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 2
 
     return nmea2000Message
 
 def encode_pgn_130065(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130065."""
     data_raw = 0
-    # startRouteId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startRouteId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startRouteId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfRoutesInDatabase | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfRoutesInDatabase | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfRoutesInDatabase')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of Routes in Database'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 16
-    # databaseId | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
-    # routeId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # routeId | Offset: 64, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'routeId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 64
     raise Exception ("PGN 130065 not supporting encoding for now as Route Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130065 not supporting encoding for now as Reserved is missing BitLength or BitOffset")
     raise Exception ("PGN 130065 not supporting encoding for now as WP Identification Method is missing BitLength or BitOffset")
@@ -33835,20 +34388,20 @@ def decode_pgn_130066(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130066."""
     nmea2000Message = NMEA2000Message(130066, 'routeAndWpServiceRouteWpListAttributes', 'Route and WP Service - Route/WP-List Attributes')
     running_bit_offset = 0
-    # 1:database_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:database_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:route_id | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:route_wp_list_name | Offset: 16, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    # 2:route_id | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 3:route_wp_list_name | Offset: 32, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     route_wp_list_name_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     route_wp_list_name = route_wp_list_name_raw
     running_bit_offset += bits_to_skip
@@ -33867,9 +34420,10 @@ def decode_pgn_130066(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('routeWpListDatestamp', 'Route/WP-List Datestamp', None, 'd', route_wp_list_datestamp, route_wp_list_datestamp_raw, PhysicalQuantities.DATE, FieldTypes.DATE, False))
     running_bit_offset += 16
 
-    # 6:change_at_last_timestamp | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    change_at_last_timestamp = change_at_last_timestamp_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('changeAtLastTimestamp', 'Change at Last Timestamp', None, None, change_at_last_timestamp, change_at_last_timestamp_raw, None, FieldTypes.NUMBER, False))
+    # 6:change_at_last_timestamp | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: BITLOOKUP, Match: , PartOfPrimaryKey: ,
+    change_at_last_timestamp_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    change_at_last_timestamp = decode_bit_lookup(change_at_last_timestamp_raw, master_flags_dict['WP_CHANGE'])
+    nmea2000Message.fields.append(NMEA2000Field('changeAtLastTimestamp', 'Change at Last Timestamp', None, None, change_at_last_timestamp, change_at_last_timestamp_raw, None, FieldTypes.BITLOOKUP, False))
     running_bit_offset += 8
 
     # 7:number_of_wps_in_the_route_wp_list | Offset: , Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
@@ -33877,53 +34431,52 @@ def decode_pgn_130066(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('numberOfWpsInTheRouteWpList', 'Number of WPs in the Route/WP-List', None, None, number_of_wps_in_the_route_wp_list, number_of_wps_in_the_route_wp_list_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 8:critical_supplementary_parameters | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    critical_supplementary_parameters = critical_supplementary_parameters_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('criticalSupplementaryParameters', 'Critical supplementary parameters', None, None, critical_supplementary_parameters, critical_supplementary_parameters_raw, None, FieldTypes.NUMBER, False))
+    # 8:critical_supplementary_parameters | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: BITLOOKUP, Match: , PartOfPrimaryKey: ,
+    critical_supplementary_parameters_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    critical_supplementary_parameters = decode_bit_lookup(critical_supplementary_parameters_raw, master_flags_dict['WP_CRITICAL_PARAMETERS'])
+    nmea2000Message.fields.append(NMEA2000Field('criticalSupplementaryParameters', 'Critical supplementary parameters', None, None, critical_supplementary_parameters, critical_supplementary_parameters_raw, None, FieldTypes.BITLOOKUP, False))
     running_bit_offset += 8
 
-    # 9:navigation_method | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    navigation_method = navigation_method_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('navigationMethod', 'Navigation Method', None, None, navigation_method, navigation_method_raw, None, FieldTypes.NUMBER, False))
+    # 9:navigation_method | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    navigation_method_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    navigation_method = master_dict['WP_NAVIGATION_METHOD'].get(navigation_method_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('navigationMethod', 'Navigation Method', None, None, navigation_method, navigation_method_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 2
 
-    # 10:wp_identification_method | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    wp_identification_method = wp_identification_method_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('wpIdentificationMethod', 'WP Identification Method', None, None, wp_identification_method, wp_identification_method_raw, None, FieldTypes.NUMBER, False))
+    # 10:wp_identification_method | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    wp_identification_method_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    wp_identification_method = master_dict['WP_IDENTIFICATION_METHOD'].get(wp_identification_method_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('wpIdentificationMethod', 'WP Identification Method', None, None, wp_identification_method, wp_identification_method_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 2
 
-    # 11:route_status | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    route_status = route_status_raw = decode_number(_data_raw_, running_bit_offset, 2, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeStatus', 'Route Status', None, None, route_status, route_status_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 2
+    # 11:route_status | Offset: , Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    route_status_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    route_status = master_dict['WP_ROUTE_STATUS'].get(route_status_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('routeStatus', 'Route Status', None, None, route_status, route_status_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 4
 
-    # 12:xte_limit_for_the_route | Offset: , Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    xte_limit_for_the_route = xte_limit_for_the_route_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('xteLimitForTheRoute', 'XTE Limit for the Route', None, None, xte_limit_for_the_route, xte_limit_for_the_route_raw, None, FieldTypes.NUMBER, False))
+    # 12:xte_limit_for_the_route | Offset: , Length: 16, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    xte_limit_for_the_route = xte_limit_for_the_route_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 1)
+    nmea2000Message.fields.append(NMEA2000Field('xteLimitForTheRoute', 'XTE Limit for the Route', None, 'm', xte_limit_for_the_route, xte_limit_for_the_route_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
-
-    # 13:reserved_ | Offset: , Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    reserved_ = reserved__raw = decode_int(_data_raw_, running_bit_offset, 2)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_', 'Reserved', None, None, reserved_, reserved__raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 2
 
     return nmea2000Message
 
 def encode_pgn_130066(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130066."""
     data_raw = 0
-    # databaseId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # databaseId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # routeId | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # routeId | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'routeId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
     raise Exception ("PGN 130066 not supporting encoding for now as Route/WP-List Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130066 not supporting encoding for now as Route/WP-List Timestamp is missing BitLength or BitOffset")
     raise Exception ("PGN 130066 not supporting encoding for now as Route/WP-List Datestamp is missing BitLength or BitOffset")
@@ -33934,7 +34487,6 @@ def encode_pgn_130066(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130066 not supporting encoding for now as WP Identification Method is missing BitLength or BitOffset")
     raise Exception ("PGN 130066 not supporting encoding for now as Route Status is missing BitLength or BitOffset")
     raise Exception ("PGN 130066 not supporting encoding for now as XTE Limit for the Route is missing BitLength or BitOffset")
-    raise Exception ("PGN 130066 not supporting encoding for now as Reserved is missing BitLength or BitOffset")
     return data_raw
 
 
@@ -33945,44 +34497,44 @@ def decode_pgn_130067(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130067."""
     nmea2000Message = NMEA2000Message(130067, 'routeAndWpServiceRouteWpNamePosition', 'Route and WP Service - Route - WP Name & Position')
     running_bit_offset = 0
-    # 1:start_rps_ | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_rps_ | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_rps_ = start_rps__raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_rps_ = start_rps__raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startRps', 'Start RPS#', None, None, start_rps_, start_rps__raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_wps_in_the_route_wp_list | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 3:number_of_wps_in_the_route_wp_list | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     number_of_wps_in_the_route_wp_list = number_of_wps_in_the_route_wp_list_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfWpsInTheRouteWpList', 'Number of WPs in the Route/WP-List', None, None, number_of_wps_in_the_route_wp_list, number_of_wps_in_the_route_wp_list_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:database_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:route_id | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:wp_id | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    wp_id = wp_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('wpId', 'WP ID', None, None, wp_id, wp_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 7:wp_name | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 56
+    # 5:route_id | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 6:wp_id | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    wp_id = wp_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('wpId', 'WP ID', None, None, wp_id, wp_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 7:wp_name | Offset: 96, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 96
     wp_name_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     wp_name = wp_name_raw
     running_bit_offset += bits_to_skip
@@ -34004,42 +34556,42 @@ def decode_pgn_130067(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130067(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130067."""
     data_raw = 0
-    # startRps | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startRps | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startRps')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start RPS#'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfWpsInTheRouteWpList | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfWpsInTheRouteWpList | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfWpsInTheRouteWpList')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of WPs in the Route/WP-List'")
     field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 16
-    # databaseId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # routeId | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # routeId | Offset: 64, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'routeId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # wpId | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 64
+    # wpId | Offset: 80, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'wpId')
     if field is None:
         raise Exception("Cant encode this message, missing 'WP ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 80
     raise Exception ("PGN 130067 not supporting encoding for now as WP Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130067 not supporting encoding for now as WP Latitude is missing BitLength or BitOffset")
     raise Exception ("PGN 130067 not supporting encoding for now as WP Longitude is missing BitLength or BitOffset")
@@ -34053,44 +34605,44 @@ def decode_pgn_130068(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130068."""
     nmea2000Message = NMEA2000Message(130068, 'routeAndWpServiceRouteWpName', 'Route and WP Service - Route - WP Name')
     running_bit_offset = 0
-    # 1:start_rps_ | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_rps_ | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_rps_ = start_rps__raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_rps_ = start_rps__raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startRps', 'Start RPS#', None, None, start_rps_, start_rps__raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_wps_in_the_route_wp_list | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 3:number_of_wps_in_the_route_wp_list | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     number_of_wps_in_the_route_wp_list = number_of_wps_in_the_route_wp_list_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfWpsInTheRouteWpList', 'Number of WPs in the Route/WP-List', None, None, number_of_wps_in_the_route_wp_list, number_of_wps_in_the_route_wp_list_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:database_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:route_id | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:wp_id | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    wp_id = wp_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('wpId', 'WP ID', None, None, wp_id, wp_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 7:wp_name | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 56
+    # 5:route_id | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 6:wp_id | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    wp_id = wp_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('wpId', 'WP ID', None, None, wp_id, wp_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 7:wp_name | Offset: 96, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 96
     wp_name_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     wp_name = wp_name_raw
     running_bit_offset += bits_to_skip
@@ -34102,42 +34654,42 @@ def decode_pgn_130068(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130068(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130068."""
     data_raw = 0
-    # startRps | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startRps | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startRps')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start RPS#'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfWpsInTheRouteWpList | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfWpsInTheRouteWpList | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfWpsInTheRouteWpList')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of WPs in the Route/WP-List'")
     field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 16
-    # databaseId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # routeId | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # routeId | Offset: 64, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'routeId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # wpId | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 64
+    # wpId | Offset: 80, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'wpId')
     if field is None:
         raise Exception("Cant encode this message, missing 'WP ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 80
     raise Exception ("PGN 130068 not supporting encoding for now as WP Name is missing BitLength or BitOffset")
     return data_raw
 
@@ -34149,119 +34701,120 @@ def decode_pgn_130069(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130069."""
     nmea2000Message = NMEA2000Message(130069, 'routeAndWpServiceXteLimitNavigationMethod', 'Route and WP Service - XTE Limit & Navigation Method')
     running_bit_offset = 0
-    # 1:start_rps_ | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_rps_ | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_rps_ = start_rps__raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_rps_ = start_rps__raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startRps', 'Start RPS#', None, None, start_rps_, start_rps__raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_wps_with_a_specific_xte_limit_or_nav__method | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 3:number_of_wps_with_a_specific_xte_limit_or_nav__method | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     number_of_wps_with_a_specific_xte_limit_or_nav__method = number_of_wps_with_a_specific_xte_limit_or_nav__method_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfWpsWithASpecificXteLimitOrNavMethod', 'Number of WPs with a specific XTE Limit or Nav. Method', None, None, number_of_wps_with_a_specific_xte_limit_or_nav__method, number_of_wps_with_a_specific_xte_limit_or_nav__method_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:database_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:route_id | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:rps_ | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    rps_ = rps__raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('rps', 'RPS#', None, None, rps_, rps__raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 7:xte_limit_in_the_leg_after_wp | Offset: 56, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 56
-    xte_limit_in_the_leg_after_wp = xte_limit_in_the_leg_after_wp_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('xteLimitInTheLegAfterWp', 'XTE limit in the leg after WP', None, None, xte_limit_in_the_leg_after_wp, xte_limit_in_the_leg_after_wp_raw, None, FieldTypes.NUMBER, False))
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 8:nav__method_in_the_leg_after_wp | Offset: 72, Length: 4, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 72
-    nav__method_in_the_leg_after_wp = nav__method_in_the_leg_after_wp_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('navMethodInTheLegAfterWp', 'Nav. Method in the leg after WP', None, None, nav__method_in_the_leg_after_wp, nav__method_in_the_leg_after_wp_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 4
+    # 5:route_id | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 9:reserved_76 | Offset: 76, Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 76
-    reserved_76 = reserved_76_raw = decode_int(_data_raw_, running_bit_offset, 4)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_76', 'Reserved', None, None, reserved_76, reserved_76_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 4
+    # 6:rps_ | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    rps_ = rps__raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('rps', 'RPS#', None, None, rps_, rps__raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 7:xte_limit_in_the_leg_after_wp | Offset: 96, Length: 16, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 96
+    xte_limit_in_the_leg_after_wp = xte_limit_in_the_leg_after_wp_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 1)
+    nmea2000Message.fields.append(NMEA2000Field('xteLimitInTheLegAfterWp', 'XTE Limit in the leg after WP', None, 'm', xte_limit_in_the_leg_after_wp, xte_limit_in_the_leg_after_wp_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 8:nav__method_in_the_leg_after_wp | Offset: 112, Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 112
+    nav__method_in_the_leg_after_wp_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nav__method_in_the_leg_after_wp = master_dict['WP_NAVIGATION_METHOD'].get(nav__method_in_the_leg_after_wp_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('navMethodInTheLegAfterWp', 'Nav. Method in the leg after WP', None, None, nav__method_in_the_leg_after_wp, nav__method_in_the_leg_after_wp_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 2
+
+    # 9:reserved_114 | Offset: 114, Length: 6, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 114
+    reserved_114 = reserved_114_raw = decode_int(_data_raw_, running_bit_offset, 6)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_114', 'Reserved', None, None, reserved_114, reserved_114_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 6
 
     return nmea2000Message
 
 def encode_pgn_130069(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130069."""
     data_raw = 0
-    # startRps | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startRps | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startRps')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start RPS#'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfWpsWithASpecificXteLimitOrNavMethod | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfWpsWithASpecificXteLimitOrNavMethod | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfWpsWithASpecificXteLimitOrNavMethod')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of WPs with a specific XTE Limit or Nav. Method'")
     field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 16
-    # databaseId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # routeId | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # routeId | Offset: 64, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'routeId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # rps | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 64
+    # rps | Offset: 80, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'rps')
     if field is None:
         raise Exception("Cant encode this message, missing 'RPS#'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
-    # xteLimitInTheLegAfterWp | Offset: 56, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 80
+    # xteLimitInTheLegAfterWp | Offset: 96, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'xteLimitInTheLegAfterWp')
     if field is None:
-        raise Exception("Cant encode this message, missing 'XTE limit in the leg after WP'")
-    field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 56
-    # navMethodInTheLegAfterWp | Offset: 72, Length: 4, Resolution: 1, Field Type: NUMBER
+        raise Exception("Cant encode this message, missing 'XTE Limit in the leg after WP'")
+    field_value = encode_number(field.value, 16, True, 1)
+    data_raw |= (field_value & 0xFFFF) << 96
+    # navMethodInTheLegAfterWp | Offset: 112, Length: 2, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'navMethodInTheLegAfterWp')
     if field is None:
         raise Exception("Cant encode this message, missing 'Nav. Method in the leg after WP'")
-    field_value = encode_number(field.value, 4, False, 1)
-    data_raw |= (field_value & 0xF) << 72
-    # reserved_76 | Offset: 76, Length: 4, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_76')
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_WP_NAVIGATION_METHOD(field.value)
+    data_raw |= (field_value & 0x3) << 112
+    # reserved_114 | Offset: 114, Length: 6, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_114')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0xF) << 76
+    data_raw |= (field_value & 0x3F) << 114
     return data_raw
 
 
@@ -34272,44 +34825,44 @@ def decode_pgn_130070(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130070."""
     nmea2000Message = NMEA2000Message(130070, 'routeAndWpServiceWpComment', 'Route and WP Service - WP Comment')
     running_bit_offset = 0
-    # 1:start_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_id = start_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_id = start_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startId', 'Start ID', None, None, start_id, start_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_wps_with_comments | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 3:number_of_wps_with_comments | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     number_of_wps_with_comments = number_of_wps_with_comments_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfWpsWithComments', 'Number of WPs with Comments', None, None, number_of_wps_with_comments, number_of_wps_with_comments_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:database_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:route_id | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:wp_id___rps_ | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    wp_id___rps_ = wp_id___rps__raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('wpIdRps', 'WP ID / RPS#', None, None, wp_id___rps_, wp_id___rps__raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 7:comment | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 56
+    # 5:route_id | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 6:wp_id___rps_ | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    wp_id___rps_ = wp_id___rps__raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('wpIdRps', 'WP ID / RPS#', None, None, wp_id___rps_, wp_id___rps__raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 7:comment | Offset: 96, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 96
     comment_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     comment = comment_raw
     running_bit_offset += bits_to_skip
@@ -34321,42 +34874,42 @@ def decode_pgn_130070(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130070(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130070."""
     data_raw = 0
-    # startId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfWpsWithComments | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfWpsWithComments | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfWpsWithComments')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of WPs with Comments'")
     field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 16
-    # databaseId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # routeId | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # routeId | Offset: 64, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'routeId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # wpIdRps | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 64
+    # wpIdRps | Offset: 80, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'wpIdRps')
     if field is None:
         raise Exception("Cant encode this message, missing 'WP ID / RPS#'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 80
     raise Exception ("PGN 130070 not supporting encoding for now as Comment is missing BitLength or BitOffset")
     return data_raw
 
@@ -34368,38 +34921,38 @@ def decode_pgn_130071(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130071."""
     nmea2000Message = NMEA2000Message(130071, 'routeAndWpServiceRouteComment', 'Route and WP Service - Route Comment')
     running_bit_offset = 0
-    # 1:start_route_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_route_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_route_id = start_route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_route_id = start_route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startRouteId', 'Start Route ID', None, None, start_route_id, start_route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_routes_with_comments | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 3:number_of_routes_with_comments | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     number_of_routes_with_comments = number_of_routes_with_comments_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfRoutesWithComments', 'Number of Routes with Comments', None, None, number_of_routes_with_comments, number_of_routes_with_comments_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:database_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:route_id | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:comment | Offset: 48, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 5:route_id | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 6:comment | Offset: 80, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
     comment_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     comment = comment_raw
     running_bit_offset += bits_to_skip
@@ -34411,36 +34964,36 @@ def decode_pgn_130071(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130071(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130071."""
     data_raw = 0
-    # startRouteId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startRouteId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startRouteId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfRoutesWithComments | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfRoutesWithComments | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfRoutesWithComments')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of Routes with Comments'")
     field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 16
-    # databaseId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # routeId | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # routeId | Offset: 64, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'routeId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 64
     raise Exception ("PGN 130071 not supporting encoding for now as Comment is missing BitLength or BitOffset")
     return data_raw
 
@@ -34452,32 +35005,32 @@ def decode_pgn_130072(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130072."""
     nmea2000Message = NMEA2000Message(130072, 'routeAndWpServiceDatabaseComment', 'Route and WP Service - Database Comment')
     running_bit_offset = 0
-    # 1:start_database_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_database_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_database_id = start_database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_database_id = start_database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startDatabaseId', 'Start Database ID', None, None, start_database_id, start_database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_databases_with_comments | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 3:number_of_databases_with_comments | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     number_of_databases_with_comments = number_of_databases_with_comments_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfDatabasesWithComments', 'Number of Databases with Comments', None, None, number_of_databases_with_comments, number_of_databases_with_comments_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:database_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 5:comment | Offset: 40, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
+    # 5:comment | Offset: 64, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
     comment_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     comment = comment_raw
     running_bit_offset += bits_to_skip
@@ -34489,30 +35042,30 @@ def decode_pgn_130072(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130072(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130072."""
     data_raw = 0
-    # startDatabaseId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startDatabaseId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startDatabaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfDatabasesWithComments | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfDatabasesWithComments | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfDatabasesWithComments')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of Databases with Comments'")
     field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 16
-    # databaseId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
     raise Exception ("PGN 130072 not supporting encoding for now as Comment is missing BitLength or BitOffset")
     return data_raw
 
@@ -34524,46 +35077,46 @@ def decode_pgn_130073(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130073."""
     nmea2000Message = NMEA2000Message(130073, 'routeAndWpServiceRadiusOfTurn', 'Route and WP Service - Radius of Turn')
     running_bit_offset = 0
-    # 1:start_rps_ | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_rps_ | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_rps_ = start_rps__raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_rps_ = start_rps__raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startRps', 'Start RPS#', None, None, start_rps_, start_rps__raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_wps_with_a_specific_radius_of_turn | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 3:number_of_wps_with_a_specific_radius_of_turn | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     number_of_wps_with_a_specific_radius_of_turn = number_of_wps_with_a_specific_radius_of_turn_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfWpsWithASpecificRadiusOfTurn', 'Number of WPs with a specific Radius of Turn', None, None, number_of_wps_with_a_specific_radius_of_turn, number_of_wps_with_a_specific_radius_of_turn_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:database_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:route_id | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:rps_ | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    rps_ = rps__raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('rps', 'RPS#', None, None, rps_, rps__raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 7:radius_of_turn | Offset: 56, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 56
-    radius_of_turn = radius_of_turn_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('radiusOfTurn', 'Radius of Turn', None, None, radius_of_turn, radius_of_turn_raw, None, FieldTypes.NUMBER, False))
+    # 5:route_id | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    route_id = route_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('routeId', 'Route ID', None, None, route_id, route_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 6:rps_ | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    rps_ = rps__raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('rps', 'RPS#', None, None, rps_, rps__raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 7:radius_of_turn | Offset: 96, Length: 16, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 96
+    radius_of_turn = radius_of_turn_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 1)
+    nmea2000Message.fields.append(NMEA2000Field('radiusOfTurn', 'Radius of Turn', None, 'm', radius_of_turn, radius_of_turn_raw, PhysicalQuantities.DISTANCE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
     return nmea2000Message
@@ -34571,48 +35124,48 @@ def decode_pgn_130073(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130073(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130073."""
     data_raw = 0
-    # startRps | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startRps | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startRps')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start RPS#'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfWpsWithASpecificRadiusOfTurn | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfWpsWithASpecificRadiusOfTurn | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfWpsWithASpecificRadiusOfTurn')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of WPs with a specific Radius of Turn'")
     field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 16
-    # databaseId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # routeId | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # routeId | Offset: 64, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'routeId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Route ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # rps | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 64
+    # rps | Offset: 80, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'rps')
     if field is None:
         raise Exception("Cant encode this message, missing 'RPS#'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
-    # radiusOfTurn | Offset: 56, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 80
+    # radiusOfTurn | Offset: 96, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'radiusOfTurn')
     if field is None:
         raise Exception("Cant encode this message, missing 'Radius of Turn'")
-    field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 56
+    field_value = encode_number(field.value, 16, True, 1)
+    data_raw |= (field_value & 0xFFFF) << 96
     return data_raw
 
 
@@ -34623,44 +35176,44 @@ def decode_pgn_130074(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130074."""
     nmea2000Message = NMEA2000Message(130074, 'routeAndWpServiceWpListWpNamePosition', 'Route and WP Service - WP List - WP Name & Position')
     running_bit_offset = 0
-    # 1:start_wp_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:start_wp_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    start_wp_id = start_wp_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    start_wp_id = start_wp_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('startWpId', 'Start WP ID', None, None, start_wp_id, start_wp_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 2:nitems | Offset: 8, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 8
-    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 3:number_of_valid_wps_in_the_wp_list | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 2:nitems | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    nitems = nitems_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('nitems', 'nItems', None, None, nitems, nitems_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 3:number_of_valid_wps_in_the_wp_list | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     number_of_valid_wps_in_the_wp_list = number_of_valid_wps_in_the_wp_list_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('numberOfValidWpsInTheWpList', 'Number of valid WPs in the WP-List', None, None, number_of_valid_wps_in_the_wp_list, number_of_valid_wps_in_the_wp_list_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:database_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 5:reserved_40 | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 40
-    reserved_40 = reserved_40_raw = decode_int(_data_raw_, running_bit_offset, 8)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_40', 'Reserved', None, None, reserved_40, reserved_40_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 8
-
-    # 6:wp_id | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 4:database_id | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    wp_id = wp_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('wpId', 'WP ID', None, None, wp_id, wp_id_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    database_id = database_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('databaseId', 'Database ID', None, None, database_id, database_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
-    # 7:wp_name | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 56
+    # 5:reserved_64 | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    reserved_64 = reserved_64_raw = decode_int(_data_raw_, running_bit_offset, 16)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_64', 'Reserved', None, None, reserved_64, reserved_64_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 16
+
+    # 6:wp_id | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    wp_id = wp_id_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('wpId', 'WP ID', None, None, wp_id, wp_id_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 7:wp_name | Offset: 96, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 96
     wp_name_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     wp_name = wp_name_raw
     running_bit_offset += bits_to_skip
@@ -34682,42 +35235,42 @@ def decode_pgn_130074(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130074(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130074."""
     data_raw = 0
-    # startWpId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
+    # startWpId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'startWpId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Start WP ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 0
-    # nitems | Offset: 8, Length: 8, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 0
+    # nitems | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'nitems')
     if field is None:
         raise Exception("Cant encode this message, missing 'nItems'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 8
-    # numberOfValidWpsInTheWpList | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # numberOfValidWpsInTheWpList | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'numberOfValidWpsInTheWpList')
     if field is None:
         raise Exception("Cant encode this message, missing 'Number of valid WPs in the WP-List'")
     field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 16
-    # databaseId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 32
+    # databaseId | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'databaseId')
     if field is None:
         raise Exception("Cant encode this message, missing 'Database ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 32
-    # reserved_40 | Offset: 40, Length: 8, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_40')
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    # reserved_64 | Offset: 64, Length: 16, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_64')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0xFF) << 40
-    # wpId | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFFFF) << 64
+    # wpId | Offset: 80, Length: 16, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'wpId')
     if field is None:
         raise Exception("Cant encode this message, missing 'WP ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 80
     raise Exception ("PGN 130074 not supporting encoding for now as WP Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130074 not supporting encoding for now as WP Latitude is missing BitLength or BitOffset")
     raise Exception ("PGN 130074 not supporting encoding for now as WP Longitude is missing BitLength or BitOffset")
@@ -35650,69 +36203,77 @@ def decode_pgn_130322(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130322."""
     nmea2000Message = NMEA2000Message(130322, 'currentStationData', 'Current Station Data')
     running_bit_offset = 0
-    # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    mode = mode_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('mode', 'Mode', None, None, mode, mode_raw, None, FieldTypes.NUMBER, False))
+    mode_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    mode = master_dict['RESIDUAL_MODE'].get(mode_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('mode', 'Mode', None, None, mode, mode_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 4
 
-    # 2:reserved_4 | Offset: 4, Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    # 2:state | Offset: 4, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 4
-    reserved_4 = reserved_4_raw = decode_int(_data_raw_, running_bit_offset, 4)
-    nmea2000Message.fields.append(NMEA2000Field('reserved_4', 'Reserved', None, None, reserved_4, reserved_4_raw, None, FieldTypes.RESERVED, False))
-    running_bit_offset += 4
+    state_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    state = master_dict['FLOOD_STATE'].get(state_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('state', 'State', None, None, state, state_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
 
-    # 3:measurement_date | Offset: 8, Length: 16, Signed: False Resolution: 1, Field Type: DATE, Match: , PartOfPrimaryKey: ,
+    # 3:reserved_7 | Offset: 7, Length: 1, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 7
+    reserved_7 = reserved_7_raw = decode_int(_data_raw_, running_bit_offset, 1)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_7', 'Reserved', None, None, reserved_7, reserved_7_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 1
+
+    # 4:measurement_date | Offset: 8, Length: 16, Signed: False Resolution: 1, Field Type: DATE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
     measurement_date_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     measurement_date = decode_date(measurement_date_raw)
     nmea2000Message.fields.append(NMEA2000Field('measurementDate', 'Measurement Date', None, 'd', measurement_date, measurement_date_raw, PhysicalQuantities.DATE, FieldTypes.DATE, False))
     running_bit_offset += 16
 
-    # 4:measurement_time | Offset: 24, Length: 32, Signed: False Resolution: 0.0001, Field Type: TIME, Match: , PartOfPrimaryKey: ,
+    # 5:measurement_time | Offset: 24, Length: 32, Signed: False Resolution: 0.0001, Field Type: TIME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
     measurement_time_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.0001)
     measurement_time = decode_time(measurement_time_raw)
     nmea2000Message.fields.append(NMEA2000Field('measurementTime', 'Measurement Time', "Seconds since midnight", 's', measurement_time, measurement_time_raw, PhysicalQuantities.TIME, FieldTypes.TIME, False))
     running_bit_offset += 32
 
-    # 5:station_latitude | Offset: 56, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:station_latitude | Offset: 56, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
     station_latitude = station_latitude_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-07)
     nmea2000Message.fields.append(NMEA2000Field('stationLatitude', 'Station Latitude', None, 'deg', station_latitude, station_latitude_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 6:station_longitude | Offset: 88, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:station_longitude | Offset: 88, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
     station_longitude = station_longitude_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-07)
     nmea2000Message.fields.append(NMEA2000Field('stationLongitude', 'Station Longitude', None, 'deg', station_longitude, station_longitude_raw, PhysicalQuantities.GEOGRAPHICAL_COORDINATE, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 7:measurement_depth | Offset: 120, Length: 32, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 8:measurement_depth | Offset: 120, Length: 32, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 120
     measurement_depth = measurement_depth_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('measurementDepth', 'Measurement Depth', "Depth below transducer", 'm', measurement_depth, measurement_depth_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 8:current_speed | Offset: 152, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 9:current_speed | Offset: 152, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 152
     current_speed = current_speed_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('currentSpeed', 'Current speed', None, 'm/s', current_speed, current_speed_raw, PhysicalQuantities.SPEED, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 9:current_flow_direction | Offset: 168, Length: 16, Signed: False Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 10:current_flow_direction | Offset: 168, Length: 16, Signed: False Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 168
     current_flow_direction = current_flow_direction_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.0001)
     nmea2000Message.fields.append(NMEA2000Field('currentFlowDirection', 'Current flow direction', None, 'rad', current_flow_direction, current_flow_direction_raw, PhysicalQuantities.ANGLE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 10:water_temperature | Offset: 184, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 11:water_temperature | Offset: 184, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 184
     water_temperature = water_temperature_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('waterTemperature', 'Water Temperature', None, 'K', water_temperature, water_temperature_raw, PhysicalQuantities.TEMPERATURE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 11:station_id | Offset: 200, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    # 12:station_id | Offset: 200, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 200
     station_id_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     station_id = station_id_raw
@@ -35720,7 +36281,7 @@ def decode_pgn_130322(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('stationId', 'Station ID', None, None, station_id, station_id_raw, None, FieldTypes.STRING_LAU, False))
     
 
-    # 12:station_name | Offset: , Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
+    # 13:station_name | Offset: , Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
     station_name_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     station_name = station_name_raw
     running_bit_offset += bits_to_skip
@@ -35732,18 +36293,24 @@ def decode_pgn_130322(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130322(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130322."""
     data_raw = 0
-    # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: NUMBER
+    # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'mode')
     if field is None:
         raise Exception("Cant encode this message, missing 'Mode'")
-    field_value = encode_number(field.value, 4, False, 1)
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_RESIDUAL_MODE(field.value)
     data_raw |= (field_value & 0xF) << 0
-    # reserved_4 | Offset: 4, Length: 4, Resolution: 1, Field Type: RESERVED
-    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_4')
+    # state | Offset: 4, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = next(f for f in nmea2000Message.fields if f.id == 'state')
+    if field is None:
+        raise Exception("Cant encode this message, missing 'State'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_FLOOD_STATE(field.value)
+    data_raw |= (field_value & 0x7) << 4
+    # reserved_7 | Offset: 7, Length: 1, Resolution: 1, Field Type: RESERVED
+    field = next(f for f in nmea2000Message.fields if f.id == 'reserved_7')
     if field is None:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
-    data_raw |= (field_value & 0xF) << 4
+    data_raw |= (field_value & 0x1) << 7
     # measurementDate | Offset: 8, Length: 16, Resolution: 1, Field Type: DATE
     field = next(f for f in nmea2000Message.fields if f.id == 'measurementDate')
     if field is None:
@@ -35804,10 +36371,11 @@ def decode_pgn_130323(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130323."""
     nmea2000Message = NMEA2000Message(130323, 'meteorologicalStationData', 'Meteorological Station Data')
     running_bit_offset = 0
-    # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    mode = mode_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('mode', 'Mode', None, None, mode, mode_raw, None, FieldTypes.NUMBER, False))
+    mode_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    mode = master_dict['RESIDUAL_MODE'].get(mode_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('mode', 'Mode', None, None, mode, mode_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 4
 
     # 2:reserved_4 | Offset: 4, Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
@@ -35905,11 +36473,11 @@ def decode_pgn_130323(_data_raw_: int) -> NMEA2000Message:
 def encode_pgn_130323(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130323."""
     data_raw = 0
-    # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: NUMBER
+    # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'mode')
     if field is None:
         raise Exception("Cant encode this message, missing 'Mode'")
-    field_value = encode_number(field.value, 4, False, 1)
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_RESIDUAL_MODE(field.value)
     data_raw |= (field_value & 0xF) << 0
     # reserved_4 | Offset: 4, Length: 4, Resolution: 1, Field Type: RESERVED
     field = next(f for f in nmea2000Message.fields if f.id == 'reserved_4')
@@ -35995,10 +36563,11 @@ def decode_pgn_130324(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130324."""
     nmea2000Message = NMEA2000Message(130324, 'mooredBuoyStationData', 'Moored Buoy Station Data')
     running_bit_offset = 0
-    # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    mode = mode_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('mode', 'Mode', None, None, mode, mode_raw, None, FieldTypes.NUMBER, False))
+    mode_raw = decode_int(_data_raw_, running_bit_offset, 4)
+    mode = master_dict['RESIDUAL_MODE'].get(mode_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('mode', 'Mode', None, None, mode, mode_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 4
 
     # 2:reserved_4 | Offset: 4, Length: 4, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
@@ -36064,16 +36633,17 @@ def decode_pgn_130324(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('windGusts', 'Wind Gusts', None, 'm/s', wind_gusts, wind_gusts_raw, PhysicalQuantities.SPEED, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 12:wave_height | Offset: 176, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 12:wave_height | Offset: 176, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 176
-    wave_height = wave_height_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('waveHeight', 'Wave Height', None, None, wave_height, wave_height_raw, None, FieldTypes.NUMBER, False))
+    wave_height = wave_height_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    nmea2000Message.fields.append(NMEA2000Field('waveHeight', 'Wave Height', None, 'm', wave_height, wave_height_raw, PhysicalQuantities.LENGTH, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 13:dominant_wave_period | Offset: 192, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 13:dominant_wave_period | Offset: 192, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 192
-    dominant_wave_period = dominant_wave_period_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('dominantWavePeriod', 'Dominant Wave Period', None, None, dominant_wave_period, dominant_wave_period_raw, None, FieldTypes.NUMBER, False))
+    dominant_wave_period_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
+    dominant_wave_period = decode_time(dominant_wave_period_raw)
+    nmea2000Message.fields.append(NMEA2000Field('dominantWavePeriod', 'Dominant Wave Period', None, 's', dominant_wave_period, dominant_wave_period_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
     # 14:atmospheric_pressure | Offset: 208, Length: 16, Signed: False Resolution: 100, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
@@ -36082,9 +36652,9 @@ def decode_pgn_130324(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('atmosphericPressure', 'Atmospheric Pressure', None, 'Pa', atmospheric_pressure, atmospheric_pressure_raw, PhysicalQuantities.PRESSURE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 15:pressure_tendency_rate | Offset: 224, Length: 16, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 15:pressure_tendency_rate | Offset: 224, Length: 16, Signed: True Resolution: 10, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 224
-    pressure_tendency_rate = pressure_tendency_rate_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 1)
+    pressure_tendency_rate = pressure_tendency_rate_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 10)
     nmea2000Message.fields.append(NMEA2000Field('pressureTendencyRate', 'Pressure Tendency Rate', None, 'Pa/hr', pressure_tendency_rate, pressure_tendency_rate_raw, PhysicalQuantities.PRESSURE_RATE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
@@ -36100,22 +36670,24 @@ def decode_pgn_130324(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('waterTemperature', 'Water Temperature', None, 'K', water_temperature, water_temperature_raw, PhysicalQuantities.TEMPERATURE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 18:station_id | Offset: 272, Length: 64, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
+    # 18:station_id | Offset: 272, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 272
-    station_id = station_id_raw = decode_string_fix(_data_raw_, running_bit_offset, 64)
-    nmea2000Message.fields.append(NMEA2000Field('stationId', 'Station ID', None, None, station_id, station_id_raw, None, FieldTypes.STRING_FIX, False))
-    running_bit_offset += 64
+    station_id_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
+    station_id = station_id_raw
+    running_bit_offset += bits_to_skip
+    nmea2000Message.fields.append(NMEA2000Field('stationId', 'Station ID', None, None, station_id, station_id_raw, None, FieldTypes.STRING_LAU, False))
+    
 
     return nmea2000Message
 
 def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130324."""
     data_raw = 0
-    # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: NUMBER
+    # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = next(f for f in nmea2000Message.fields if f.id == 'mode')
     if field is None:
         raise Exception("Cant encode this message, missing 'Mode'")
-    field_value = encode_number(field.value, 4, False, 1)
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_RESIDUAL_MODE(field.value)
     data_raw |= (field_value & 0xF) << 0
     # reserved_4 | Offset: 4, Length: 4, Resolution: 1, Field Type: RESERVED
     field = next(f for f in nmea2000Message.fields if f.id == 'reserved_4')
@@ -36177,17 +36749,17 @@ def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Wind Gusts'")
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 160
-    # waveHeight | Offset: 176, Length: 16, Resolution: 1, Field Type: NUMBER
+    # waveHeight | Offset: 176, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'waveHeight')
     if field is None:
         raise Exception("Cant encode this message, missing 'Wave Height'")
-    field_value = encode_number(field.value, 16, False, 1)
+    field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 176
-    # dominantWavePeriod | Offset: 192, Length: 16, Resolution: 1, Field Type: NUMBER
+    # dominantWavePeriod | Offset: 192, Length: 16, Resolution: 0.01, Field Type: DURATION
     field = next(f for f in nmea2000Message.fields if f.id == 'dominantWavePeriod')
     if field is None:
         raise Exception("Cant encode this message, missing 'Dominant Wave Period'")
-    field_value = encode_number(field.value, 16, False, 1)
+    field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 192
     # atmosphericPressure | Offset: 208, Length: 16, Resolution: 100, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'atmosphericPressure')
@@ -36195,11 +36767,11 @@ def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Atmospheric Pressure'")
     field_value = encode_number(field.value, 16, False, 100)
     data_raw |= (field_value & 0xFFFF) << 208
-    # pressureTendencyRate | Offset: 224, Length: 16, Resolution: 1, Field Type: NUMBER
+    # pressureTendencyRate | Offset: 224, Length: 16, Resolution: 10, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'pressureTendencyRate')
     if field is None:
         raise Exception("Cant encode this message, missing 'Pressure Tendency Rate'")
-    field_value = encode_number(field.value, 16, True, 1)
+    field_value = encode_number(field.value, 16, True, 10)
     data_raw |= (field_value & 0xFFFF) << 224
     # airTemperature | Offset: 240, Length: 16, Resolution: 0.01, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'airTemperature')
@@ -36213,12 +36785,7 @@ def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Water Temperature'")
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 256
-    # stationId | Offset: 272, Length: 64, Resolution: , Field Type: STRING_FIX
-    field = next(f for f in nmea2000Message.fields if f.id == 'stationId')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Station ID'")
-    raise Exception("Encoding 'STRING_FIX' not supported")
-    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 272
+    raise Exception ("PGN 130324 not supporting encoding for now as Station ID is missing BitLength or BitOffset")
     return data_raw
 
 
@@ -41648,12 +42215,12 @@ def is_fast_pgn_130817() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130817(data_raw: int) -> NMEA2000Message:
-    # navicoProductInformation | Description: Navico: Product Information
+    # navicoUnknown | Description: Navico: Unknown
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
         (((data_raw >> 13) & 0x7) == 4)
         ):
-        return decode_pgn_130817_navicoProductInformation(data_raw)
+        return decode_pgn_130817_navicoUnknown(data_raw)
     
     # lowranceProductInformation | Description: Lowrance: Product Information
     if (
@@ -41665,9 +42232,9 @@ def decode_pgn_130817(data_raw: int) -> NMEA2000Message:
     
     raise Exception("No matching sub-PGN found")
     
-def decode_pgn_130817_navicoProductInformation(_data_raw_: int) -> NMEA2000Message:
+def decode_pgn_130817_navicoUnknown(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130817."""
-    nmea2000Message = NMEA2000Message(130817, 'navicoProductInformation', 'Navico: Product Information')
+    nmea2000Message = NMEA2000Message(130817, 'navicoUnknown', 'Navico: Unknown')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41689,57 +42256,39 @@ def decode_pgn_130817_navicoProductInformation(_data_raw_: int) -> NMEA2000Messa
     nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 3
 
-    # 4:product_code | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
+    # 4:a | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    product_code = product_code_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('productCode', 'Product Code', None, None, product_code, product_code_raw, None, FieldTypes.NUMBER, True))
-    running_bit_offset += 16
-
-    # 5:model | Offset: 32, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 32
-    model = model_raw = decode_string_fix(_data_raw_, running_bit_offset, 256)
-    nmea2000Message.fields.append(NMEA2000Field('model', 'Model', None, None, model, model_raw, None, FieldTypes.STRING_FIX, False))
-    running_bit_offset += 256
-
-    # 6:a | Offset: 288, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 288
     a = a_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('a', 'A', None, None, a, a_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 7:b | Offset: 296, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 296
+    # 5:b | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
     b = b_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('b', 'B', None, None, b, b_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 8:c | Offset: 304, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 304
+    # 6:c | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     c = c_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('c', 'C', None, None, c, c_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 9:firmware_version | Offset: 312, Length: 80, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 312
-    firmware_version = firmware_version_raw = decode_string_fix(_data_raw_, running_bit_offset, 80)
-    nmea2000Message.fields.append(NMEA2000Field('firmwareVersion', 'Firmware version', None, None, firmware_version, firmware_version_raw, None, FieldTypes.STRING_FIX, False))
-    running_bit_offset += 80
+    # 7:d | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    d = d_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('d', 'D', None, None, d, d_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
 
-    # 10:firmware_date | Offset: 392, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 392
-    firmware_date = firmware_date_raw = decode_string_fix(_data_raw_, running_bit_offset, 256)
-    nmea2000Message.fields.append(NMEA2000Field('firmwareDate', 'Firmware date', None, None, firmware_date, firmware_date_raw, None, FieldTypes.STRING_FIX, False))
-    running_bit_offset += 256
-
-    # 11:firmware_time | Offset: 648, Length: 256, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 648
-    firmware_time = firmware_time_raw = decode_string_fix(_data_raw_, running_bit_offset, 256)
-    nmea2000Message.fields.append(NMEA2000Field('firmwareTime', 'Firmware time', None, None, firmware_time, firmware_time_raw, None, FieldTypes.STRING_FIX, False))
-    running_bit_offset += 256
+    # 8:e | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    e = e_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('e', 'E', None, None, e, e_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
 
     return nmea2000Message
 
-def encode_pgn_130817_navicoProductInformation(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130817_navicoUnknown(nmea2000Message: NMEA2000Message) -> int:
     """Encode Nmea2000Message object to binary data for PGN 130817."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41760,54 +42309,36 @@ def encode_pgn_130817_navicoProductInformation(nmea2000Message: NMEA2000Message)
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    # productCode | Offset: 16, Length: 16, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'productCode')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Product Code'")
-    field_value = encode_number(field.value, 16, False, 1)
-    data_raw |= (field_value & 0xFFFF) << 16
-    # model | Offset: 32, Length: 256, Resolution: , Field Type: STRING_FIX
-    field = next(f for f in nmea2000Message.fields if f.id == 'model')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Model'")
-    raise Exception("Encoding 'STRING_FIX' not supported")
-    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 32
-    # a | Offset: 288, Length: 8, Resolution: 1, Field Type: NUMBER
+    # a | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'a')
     if field is None:
         raise Exception("Cant encode this message, missing 'A'")
     field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 288
-    # b | Offset: 296, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFF) << 16
+    # b | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'b')
     if field is None:
         raise Exception("Cant encode this message, missing 'B'")
     field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 296
-    # c | Offset: 304, Length: 8, Resolution: 1, Field Type: NUMBER
+    data_raw |= (field_value & 0xFF) << 24
+    # c | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
     field = next(f for f in nmea2000Message.fields if f.id == 'c')
     if field is None:
         raise Exception("Cant encode this message, missing 'C'")
     field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 304
-    # firmwareVersion | Offset: 312, Length: 80, Resolution: , Field Type: STRING_FIX
-    field = next(f for f in nmea2000Message.fields if f.id == 'firmwareVersion')
+    data_raw |= (field_value & 0xFF) << 32
+    # d | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'd')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Firmware version'")
-    raise Exception("Encoding 'STRING_FIX' not supported")
-    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFF) << 312
-    # firmwareDate | Offset: 392, Length: 256, Resolution: , Field Type: STRING_FIX
-    field = next(f for f in nmea2000Message.fields if f.id == 'firmwareDate')
+        raise Exception("Cant encode this message, missing 'D'")
+    field_value = encode_number(field.value, 8, False, 1)
+    data_raw |= (field_value & 0xFF) << 40
+    # e | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'e')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Firmware date'")
-    raise Exception("Encoding 'STRING_FIX' not supported")
-    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 392
-    # firmwareTime | Offset: 648, Length: 256, Resolution: , Field Type: STRING_FIX
-    field = next(f for f in nmea2000Message.fields if f.id == 'firmwareTime')
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Firmware time'")
-    raise Exception("Encoding 'STRING_FIX' not supported")
-    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 648
+        raise Exception("Cant encode this message, missing 'E'")
+    field_value = encode_number(field.value, 8, False, 1)
+    data_raw |= (field_value & 0xFF) << 48
     return data_raw
 
 def decode_pgn_130817_lowranceProductInformation(_data_raw_: int) -> NMEA2000Message:
@@ -42953,7 +43484,7 @@ def decode_pgn_130820_fusionMedia(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Media", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Track Info", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -42969,30 +43500,30 @@ def decode_pgn_130820_fusionMedia(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('flags', 'Flags', None, None, flags, flags_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
-    # 7:track_number | Offset: 56, Length: 32, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:track__ | Offset: 56, Length: 32, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    track_number = track_number_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('trackNumber', 'Track Number', None, None, track_number, track_number_raw, None, FieldTypes.NUMBER, False))
+    track__ = track___raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('track', 'Track #', None, None, track__, track___raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 8:total_number_of_tracks | Offset: 88, Length: 32, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 8:track_count | Offset: 88, Length: 32, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    total_number_of_tracks = total_number_of_tracks_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('totalNumberOfTracks', 'Total Number of Tracks', None, None, total_number_of_tracks, total_number_of_tracks_raw, None, FieldTypes.NUMBER, False))
+    track_count = track_count_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('trackCount', 'Track Count', None, None, track_count, track_count_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 9:track_length | Offset: 120, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
+    # 9:length | Offset: 120, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 120
-    track_length_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    track_length = decode_time(track_length_raw)
-    nmea2000Message.fields.append(NMEA2000Field('trackLength', 'Track Length', None, 's', track_length, track_length_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
+    length_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
+    length = decode_time(length_raw)
+    nmea2000Message.fields.append(NMEA2000Field('length', 'Length', None, 's', length, length_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
-    # 10:track_position | Offset: 152, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
+    # 10:position_in_track | Offset: 152, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 152
-    track_position_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    track_position = decode_time(track_position_raw)
-    nmea2000Message.fields.append(NMEA2000Field('trackPosition', 'Track Position', None, 's', track_position, track_position_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
+    position_in_track_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
+    position_in_track = decode_time(position_in_track_raw)
+    nmea2000Message.fields.append(NMEA2000Field('positionInTrack', 'Position in track', None, 's', position_in_track, position_in_track_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     return nmea2000Message
@@ -43036,28 +43567,28 @@ def encode_pgn_130820_fusionMedia(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Flags'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_PLAY_STATUS(field.value)
     data_raw |= (field_value & 0xFFFF) << 40
-    # trackNumber | Offset: 56, Length: 32, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'trackNumber')
+    # track | Offset: 56, Length: 32, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'track')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Track Number'")
+        raise Exception("Cant encode this message, missing 'Track #'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 56
-    # totalNumberOfTracks | Offset: 88, Length: 32, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'totalNumberOfTracks')
+    # trackCount | Offset: 88, Length: 32, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'trackCount')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Total Number of Tracks'")
+        raise Exception("Cant encode this message, missing 'Track Count'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 88
-    # trackLength | Offset: 120, Length: 32, Resolution: 0.001, Field Type: DURATION
-    field = next(f for f in nmea2000Message.fields if f.id == 'trackLength')
+    # length | Offset: 120, Length: 32, Resolution: 0.001, Field Type: DURATION
+    field = next(f for f in nmea2000Message.fields if f.id == 'length')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Track Length'")
+        raise Exception("Cant encode this message, missing 'Length'")
     field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 120
-    # trackPosition | Offset: 152, Length: 32, Resolution: 0.001, Field Type: DURATION
-    field = next(f for f in nmea2000Message.fields if f.id == 'trackPosition')
+    # positionInTrack | Offset: 152, Length: 32, Resolution: 0.001, Field Type: DURATION
+    field = next(f for f in nmea2000Message.fields if f.id == 'positionInTrack')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Track Position'")
+        raise Exception("Cant encode this message, missing 'Position in track'")
     field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 152
     return data_raw
@@ -43090,7 +43621,7 @@ def decode_pgn_130820_fusionTrackName(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Track Name", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Track Title", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -43105,10 +43636,10 @@ def decode_pgn_130820_fusionTrackName(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('index', 'Index', None, None, index, index_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 7:name | Offset: 72, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
+    # 7:track | Offset: 72, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    name = name_raw = decode_string_lz(_data_raw_, running_bit_offset)
-    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_LZ, False))
+    track = track_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    nmea2000Message.fields.append(NMEA2000Field('track', 'Track', None, None, track, track_raw, None, FieldTypes.STRING_LZ, False))
     
 
     return nmea2000Message
@@ -43152,7 +43683,7 @@ def encode_pgn_130820_fusionTrackName(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Index'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 40
-    raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
+    raise Exception ("PGN 130820 not supporting encoding for now as Track is missing BitLength or BitOffset")
     return data_raw
 
 def decode_pgn_130820_fusionArtistName(_data_raw_: int) -> NMEA2000Message:
@@ -43183,7 +43714,7 @@ def decode_pgn_130820_fusionArtistName(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Artist Name", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Track Artist", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -43198,10 +43729,10 @@ def decode_pgn_130820_fusionArtistName(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('index', 'Index', None, None, index, index_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 7:name | Offset: 72, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
+    # 7:artist | Offset: 72, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    name = name_raw = decode_string_lz(_data_raw_, running_bit_offset)
-    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_LZ, False))
+    artist = artist_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    nmea2000Message.fields.append(NMEA2000Field('artist', 'Artist', None, None, artist, artist_raw, None, FieldTypes.STRING_LZ, False))
     
 
     return nmea2000Message
@@ -43245,7 +43776,7 @@ def encode_pgn_130820_fusionArtistName(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Index'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 40
-    raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
+    raise Exception ("PGN 130820 not supporting encoding for now as Artist is missing BitLength or BitOffset")
     return data_raw
 
 def decode_pgn_130820_fusionAlbumName(_data_raw_: int) -> NMEA2000Message:
@@ -43276,7 +43807,7 @@ def decode_pgn_130820_fusionAlbumName(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Album Name", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Track Album", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -43291,10 +43822,10 @@ def decode_pgn_130820_fusionAlbumName(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('index', 'Index', None, None, index, index_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 32
 
-    # 7:name | Offset: 72, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
+    # 7:album | Offset: 72, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    name = name_raw = decode_string_lz(_data_raw_, running_bit_offset)
-    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_LZ, False))
+    album = album_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    nmea2000Message.fields.append(NMEA2000Field('album', 'Album', None, None, album, album_raw, None, FieldTypes.STRING_LZ, False))
     
 
     return nmea2000Message
@@ -43338,7 +43869,7 @@ def encode_pgn_130820_fusionAlbumName(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Index'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 40
-    raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
+    raise Exception ("PGN 130820 not supporting encoding for now as Album is missing BitLength or BitOffset")
     return data_raw
 
 def decode_pgn_130820_fusionDeviceName(_data_raw_: int) -> NMEA2000Message:
@@ -43369,7 +43900,7 @@ def decode_pgn_130820_fusionDeviceName(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Device Name", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Unit Name", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:name | Offset: 32, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
@@ -43441,10 +43972,10 @@ def decode_pgn_130820_fusionZoneName(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Zone Name", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
-    # 5:source | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
+    # 5:number | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 32
-    source = source_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('source', 'Source', None, None, source, source_raw, None, FieldTypes.NUMBER, True))
+    number = number_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('number', 'Number', None, None, number, number_raw, None, FieldTypes.NUMBER, True))
     running_bit_offset += 8
 
     # 6:name | Offset: 40, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
@@ -43482,10 +44013,10 @@ def encode_pgn_130820_fusionZoneName(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Message ID'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_STATUS_MESSAGE_ID(field.value)
     data_raw |= (field_value & 0xFFFF) << 16
-    # source | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'source')
+    # number | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'number')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Source'")
+        raise Exception("Cant encode this message, missing 'Number'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 32
     raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
@@ -43519,7 +44050,7 @@ def decode_pgn_130820_fusionTrackPosition(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Track Position", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Track Progress", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -43528,11 +44059,11 @@ def decode_pgn_130820_fusionTrackPosition(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.NUMBER, True))
     running_bit_offset += 8
 
-    # 6:position | Offset: 40, Length: 24, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
+    # 6:progress | Offset: 40, Length: 24, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    position_raw = decode_number(_data_raw_, running_bit_offset, 24, False, 0.001)
-    position = decode_time(position_raw)
-    nmea2000Message.fields.append(NMEA2000Field('position', 'Position', None, 's', position, position_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
+    progress_raw = decode_number(_data_raw_, running_bit_offset, 24, False, 0.001)
+    progress = decode_time(progress_raw)
+    nmea2000Message.fields.append(NMEA2000Field('progress', 'Progress', None, 's', progress, progress_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 24
 
     return nmea2000Message
@@ -43570,10 +44101,10 @@ def encode_pgn_130820_fusionTrackPosition(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Source ID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 32
-    # position | Offset: 40, Length: 24, Resolution: 0.001, Field Type: DURATION
-    field = next(f for f in nmea2000Message.fields if f.id == 'position')
+    # progress | Offset: 40, Length: 24, Resolution: 0.001, Field Type: DURATION
+    field = next(f for f in nmea2000Message.fields if f.id == 'progress')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Position'")
+        raise Exception("Cant encode this message, missing 'Progress'")
     field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 24)
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw
@@ -43634,10 +44165,10 @@ def decode_pgn_130820_fusionTuner(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('signalStrength', 'Signal Strength', None, None, signal_strength, signal_strength_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 9:rds | Offset: 88, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
+    # 9:track | Offset: 88, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    rds = rds_raw = decode_string_lz(_data_raw_, running_bit_offset)
-    nmea2000Message.fields.append(NMEA2000Field('rds', 'RDS', None, None, rds, rds_raw, None, FieldTypes.STRING_LZ, False))
+    track = track_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    nmea2000Message.fields.append(NMEA2000Field('track', 'Track', None, None, track, track_raw, None, FieldTypes.STRING_LZ, False))
     
 
     return nmea2000Message
@@ -43693,7 +44224,7 @@ def encode_pgn_130820_fusionTuner(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Signal Strength'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 80
-    raise Exception ("PGN 130820 not supporting encoding for now as RDS is missing BitLength or BitOffset")
+    raise Exception ("PGN 130820 not supporting encoding for now as Track is missing BitLength or BitOffset")
     return data_raw
 
 def decode_pgn_130820_fusionMarineTuner(_data_raw_: int) -> NMEA2000Message:
@@ -43838,10 +44369,10 @@ def decode_pgn_130820_fusionMarineSquelch(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.NUMBER, True))
     running_bit_offset += 8
 
-    # 6:minimum_level | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:squelch | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    minimum_level = minimum_level_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('minimumLevel', 'Minimum Level', None, None, minimum_level, minimum_level_raw, None, FieldTypes.NUMBER, False))
+    squelch = squelch_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('squelch', 'Squelch', None, None, squelch, squelch_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
     return nmea2000Message
@@ -43879,10 +44410,10 @@ def encode_pgn_130820_fusionMarineSquelch(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Source ID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 32
-    # minimumLevel | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'minimumLevel')
+    # squelch | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'squelch')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Minimum Level'")
+        raise Exception("Cant encode this message, missing 'Squelch'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
     return data_raw
@@ -44029,10 +44560,10 @@ def decode_pgn_130820_fusionMenuItem(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('lockId', 'Lock ID', None, None, lock_id, lock_id_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 9:name | Offset: 88, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
+    # 9:text | Offset: 88, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    name = name_raw = decode_string_lz(_data_raw_, running_bit_offset)
-    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_LZ, False))
+    text = text_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    nmea2000Message.fields.append(NMEA2000Field('text', 'Text', None, None, text, text_raw, None, FieldTypes.STRING_LZ, False))
     
 
     return nmea2000Message
@@ -44088,7 +44619,7 @@ def encode_pgn_130820_fusionMenuItem(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Lock ID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 80
-    raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
+    raise Exception ("PGN 130820 not supporting encoding for now as Text is missing BitLength or BitOffset")
     return data_raw
 
 def decode_pgn_130820_fusionAuxGain(_data_raw_: int) -> NMEA2000Message:
@@ -44215,11 +44746,11 @@ def decode_pgn_130820_fusionUsbRepeatStatus(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('id', 'ID', "USB repeat", None, id, id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 32
 
-    # 6:value | Offset: 64, Length: 32, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 6:status | Offset: 64, Length: 32, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    value_raw = decode_int(_data_raw_, running_bit_offset, 32)
-    value = master_dict['FUSION_REPEAT_STATUS'].get(value_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('value', 'Value', None, None, value, value_raw, None, FieldTypes.LOOKUP, False))
+    status_raw = decode_int(_data_raw_, running_bit_offset, 32)
+    status = master_dict['FUSION_REPEAT_STATUS'].get(status_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('status', 'Status', None, None, status, status_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 32
 
     return nmea2000Message
@@ -44257,10 +44788,10 @@ def encode_pgn_130820_fusionUsbRepeatStatus(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'ID'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_SETTING(field.value)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    # value | Offset: 64, Length: 32, Resolution: 1, Field Type: LOOKUP
-    field = next(f for f in nmea2000Message.fields if f.id == 'value')
+    # status | Offset: 64, Length: 32, Resolution: 1, Field Type: LOOKUP
+    field = next(f for f in nmea2000Message.fields if f.id == 'status')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Value'")
+        raise Exception("Cant encode this message, missing 'Status'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_REPEAT_STATUS(field.value)
     data_raw |= (field_value & 0xFFFFFFFF) << 64
     return data_raw
@@ -44729,28 +45260,28 @@ def decode_pgn_130820_fusionSublevels(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Sublevels", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
-    # 5:zone_1_sublevel | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:zone_1 | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    zone_1_sublevel = zone_1_sublevel_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zone1Sublevel', 'Zone 1 Sublevel', None, None, zone_1_sublevel, zone_1_sublevel_raw, None, FieldTypes.NUMBER, False))
+    zone_1 = zone_1_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('zone1', 'Zone 1', None, None, zone_1, zone_1_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 6:zone_2_sublevel | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:zone_2 | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    zone_2_sublevel = zone_2_sublevel_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zone2Sublevel', 'Zone 2 Sublevel', None, None, zone_2_sublevel, zone_2_sublevel_raw, None, FieldTypes.NUMBER, False))
+    zone_2 = zone_2_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('zone2', 'Zone 2', None, None, zone_2, zone_2_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 7:zone_3_sublevel | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:zone_3 | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    zone_3_sublevel = zone_3_sublevel_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zone3Sublevel', 'Zone 3 Sublevel', None, None, zone_3_sublevel, zone_3_sublevel_raw, None, FieldTypes.NUMBER, False))
+    zone_3 = zone_3_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('zone3', 'Zone 3', None, None, zone_3, zone_3_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 8:zone_4_sublevel | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 8:zone_4 | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    zone_4_sublevel = zone_4_sublevel_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zone4Sublevel', 'Zone 4 Sublevel', None, None, zone_4_sublevel, zone_4_sublevel_raw, None, FieldTypes.NUMBER, False))
+    zone_4 = zone_4_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('zone4', 'Zone 4', None, None, zone_4, zone_4_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
     return nmea2000Message
@@ -44782,28 +45313,28 @@ def encode_pgn_130820_fusionSublevels(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Message ID'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_STATUS_MESSAGE_ID(field.value)
     data_raw |= (field_value & 0xFFFF) << 16
-    # zone1Sublevel | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'zone1Sublevel')
+    # zone1 | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'zone1')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Zone 1 Sublevel'")
+        raise Exception("Cant encode this message, missing 'Zone 1'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 32
-    # zone2Sublevel | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'zone2Sublevel')
+    # zone2 | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'zone2')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Zone 2 Sublevel'")
+        raise Exception("Cant encode this message, missing 'Zone 2'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    # zone3Sublevel | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'zone3Sublevel')
+    # zone3 | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'zone3')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Zone 3 Sublevel'")
+        raise Exception("Cant encode this message, missing 'Zone 3'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 48
-    # zone4Sublevel | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'zone4Sublevel')
+    # zone4 | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'zone4')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Zone 4 Sublevel'")
+        raise Exception("Cant encode this message, missing 'Zone 4'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
     return data_raw
@@ -44836,7 +45367,7 @@ def decode_pgn_130820_fusionEq(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "EQ", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Tone", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:zone | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -44851,10 +45382,10 @@ def decode_pgn_130820_fusionEq(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('bass', 'Bass', None, None, bass, bass_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 7:middle | Offset: 48, Length: 8, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:mid | Offset: 48, Length: 8, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    middle = middle_raw = decode_number(_data_raw_, running_bit_offset, 8, True, 1)
-    nmea2000Message.fields.append(NMEA2000Field('middle', 'Middle', None, None, middle, middle_raw, None, FieldTypes.NUMBER, False))
+    mid = mid_raw = decode_number(_data_raw_, running_bit_offset, 8, True, 1)
+    nmea2000Message.fields.append(NMEA2000Field('mid', 'Mid', None, None, mid, mid_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
     # 8:treble | Offset: 56, Length: 8, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
@@ -44904,10 +45435,10 @@ def encode_pgn_130820_fusionEq(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Bass'")
     field_value = encode_number(field.value, 8, True, 1)
     data_raw |= (field_value & 0xFF) << 40
-    # middle | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'middle')
+    # mid | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'mid')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Middle'")
+        raise Exception("Cant encode this message, missing 'Mid'")
     field_value = encode_number(field.value, 8, True, 1)
     data_raw |= (field_value & 0xFF) << 48
     # treble | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -45056,31 +45587,31 @@ def decode_pgn_130820_fusionVolumes(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Volumes", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Volume", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
-    # 5:zone_1_volume | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:zone_1 | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    zone_1_volume = zone_1_volume_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zone1Volume', 'Zone 1 Volume', None, None, zone_1_volume, zone_1_volume_raw, None, FieldTypes.NUMBER, False))
+    zone_1 = zone_1_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('zone1', 'Zone 1', None, None, zone_1, zone_1_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 6:zone_2_volume | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:zone_2 | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    zone_2_volume = zone_2_volume_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zone2Volume', 'Zone 2 Volume', None, None, zone_2_volume, zone_2_volume_raw, None, FieldTypes.NUMBER, False))
+    zone_2 = zone_2_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('zone2', 'Zone 2', None, None, zone_2, zone_2_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 7:zone_3_volume | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:zone_3 | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    zone_3_volume = zone_3_volume_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zone3Volume', 'Zone 3 Volume', None, None, zone_3_volume, zone_3_volume_raw, None, FieldTypes.NUMBER, False))
+    zone_3 = zone_3_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('zone3', 'Zone 3', None, None, zone_3, zone_3_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 8:zone_4_volume | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 8:zone_4 | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    zone_4_volume = zone_4_volume_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('zone4Volume', 'Zone 4 Volume', None, None, zone_4_volume, zone_4_volume_raw, None, FieldTypes.NUMBER, False))
+    zone_4 = zone_4_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('zone4', 'Zone 4', None, None, zone_4, zone_4_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
     return nmea2000Message
@@ -45112,28 +45643,28 @@ def encode_pgn_130820_fusionVolumes(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Message ID'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_STATUS_MESSAGE_ID(field.value)
     data_raw |= (field_value & 0xFFFF) << 16
-    # zone1Volume | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'zone1Volume')
+    # zone1 | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'zone1')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Zone 1 Volume'")
+        raise Exception("Cant encode this message, missing 'Zone 1'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 32
-    # zone2Volume | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'zone2Volume')
+    # zone2 | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'zone2')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Zone 2 Volume'")
+        raise Exception("Cant encode this message, missing 'Zone 2'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    # zone3Volume | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'zone3Volume')
+    # zone3 | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'zone3')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Zone 3 Volume'")
+        raise Exception("Cant encode this message, missing 'Zone 3'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 48
-    # zone4Volume | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'zone4Volume')
+    # zone4 | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'zone4')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Zone 4 Volume'")
+        raise Exception("Cant encode this message, missing 'Zone 4'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
     return data_raw
@@ -45374,7 +45905,7 @@ def decode_pgn_130820_fusionPowerState(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Power State", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Power", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:state | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
@@ -45574,7 +46105,7 @@ def decode_pgn_130820_fusionSiriusxmChannel(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Sirius Channel", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "SiriusXM Channel", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -45583,16 +46114,16 @@ def decode_pgn_130820_fusionSiriusxmChannel(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.NUMBER, True))
     running_bit_offset += 8
 
-    # 6:channel | Offset: 40, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:channel_number | Offset: 40, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    channel = channel_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('channel', 'Channel', None, None, channel, channel_raw, None, FieldTypes.NUMBER, False))
+    channel_number = channel_number_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('channelNumber', 'Channel Number', None, None, channel_number, channel_number_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 7:name | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
+    # 7:channel | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    name = name_raw = decode_string_lz(_data_raw_, running_bit_offset)
-    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_LZ, False))
+    channel = channel_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    nmea2000Message.fields.append(NMEA2000Field('channel', 'Channel', None, None, channel, channel_raw, None, FieldTypes.STRING_LZ, False))
     
 
     return nmea2000Message
@@ -45630,13 +46161,13 @@ def encode_pgn_130820_fusionSiriusxmChannel(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'Source ID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 32
-    # channel | Offset: 40, Length: 16, Resolution: 1, Field Type: NUMBER
-    field = next(f for f in nmea2000Message.fields if f.id == 'channel')
+    # channelNumber | Offset: 40, Length: 16, Resolution: 1, Field Type: NUMBER
+    field = next(f for f in nmea2000Message.fields if f.id == 'channelNumber')
     if field is None:
-        raise Exception("Cant encode this message, missing 'Channel'")
+        raise Exception("Cant encode this message, missing 'Channel Number'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 40
-    raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
+    raise Exception ("PGN 130820 not supporting encoding for now as Channel is missing BitLength or BitOffset")
     return data_raw
 
 def decode_pgn_130820_fusionSiriusxmTitle(_data_raw_: int) -> NMEA2000Message:
@@ -45667,7 +46198,7 @@ def decode_pgn_130820_fusionSiriusxmTitle(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Sirius Title", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "SiriusXM Title", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -45682,10 +46213,10 @@ def decode_pgn_130820_fusionSiriusxmTitle(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('channel', 'Channel', None, None, channel, channel_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 7:name | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
+    # 7:title | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    name = name_raw = decode_string_lz(_data_raw_, running_bit_offset)
-    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_LZ, False))
+    title = title_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    nmea2000Message.fields.append(NMEA2000Field('title', 'Title', None, None, title, title_raw, None, FieldTypes.STRING_LZ, False))
     
 
     return nmea2000Message
@@ -45729,7 +46260,7 @@ def encode_pgn_130820_fusionSiriusxmTitle(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Channel'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 40
-    raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
+    raise Exception ("PGN 130820 not supporting encoding for now as Title is missing BitLength or BitOffset")
     return data_raw
 
 def decode_pgn_130820_fusionSiriusxmArtist(_data_raw_: int) -> NMEA2000Message:
@@ -45760,7 +46291,7 @@ def decode_pgn_130820_fusionSiriusxmArtist(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Sirius Artist", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "SiriusXM Artist", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -45775,10 +46306,10 @@ def decode_pgn_130820_fusionSiriusxmArtist(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('channel', 'Channel', None, None, channel, channel_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 7:name | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
+    # 7:artist | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    name = name_raw = decode_string_lz(_data_raw_, running_bit_offset)
-    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_LZ, False))
+    artist = artist_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    nmea2000Message.fields.append(NMEA2000Field('artist', 'Artist', None, None, artist, artist_raw, None, FieldTypes.STRING_LZ, False))
     
 
     return nmea2000Message
@@ -45822,7 +46353,7 @@ def encode_pgn_130820_fusionSiriusxmArtist(nmea2000Message: NMEA2000Message) -> 
         raise Exception("Cant encode this message, missing 'Channel'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 40
-    raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
+    raise Exception ("PGN 130820 not supporting encoding for now as Artist is missing BitLength or BitOffset")
     return data_raw
 
 def decode_pgn_130820_fusionSiriusxmContentInfo(_data_raw_: int) -> NMEA2000Message:
@@ -45853,7 +46384,7 @@ def decode_pgn_130820_fusionSiriusxmContentInfo(_data_raw_: int) -> NMEA2000Mess
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Sirius Content Info", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "SiriusXM Genre", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -45868,10 +46399,10 @@ def decode_pgn_130820_fusionSiriusxmContentInfo(_data_raw_: int) -> NMEA2000Mess
     nmea2000Message.fields.append(NMEA2000Field('channel', 'Channel', None, None, channel, channel_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 7:name | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
+    # 7:genre | Offset: 56, Length: , Signed: False Resolution: , Field Type: STRING_LZ, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    name = name_raw = decode_string_lz(_data_raw_, running_bit_offset)
-    nmea2000Message.fields.append(NMEA2000Field('name', 'Name', None, None, name, name_raw, None, FieldTypes.STRING_LZ, False))
+    genre = genre_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    nmea2000Message.fields.append(NMEA2000Field('genre', 'Genre', None, None, genre, genre_raw, None, FieldTypes.STRING_LZ, False))
     
 
     return nmea2000Message
@@ -45915,7 +46446,7 @@ def encode_pgn_130820_fusionSiriusxmContentInfo(nmea2000Message: NMEA2000Message
         raise Exception("Cant encode this message, missing 'Channel'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 40
-    raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
+    raise Exception ("PGN 130820 not supporting encoding for now as Genre is missing BitLength or BitOffset")
     return data_raw
 
 def decode_pgn_130820_fusionSiriusxmCategory(_data_raw_: int) -> NMEA2000Message:
@@ -45946,7 +46477,7 @@ def decode_pgn_130820_fusionSiriusxmCategory(_data_raw_: int) -> NMEA2000Message
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Sirius Category", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "SiriusXM Category", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -46039,7 +46570,7 @@ def decode_pgn_130820_fusionSiriusxmSignal(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Sirius Signal", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "SiriusXm Signal", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
@@ -46125,7 +46656,7 @@ def decode_pgn_130820_fusionSiriusxmPresets(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 16
     message_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     message_id = master_dict['FUSION_STATUS_MESSAGE_ID'].get(message_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "Sirius Presets", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('messageId', 'Message ID', "SiriusXM Presets", None, message_id, message_id_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 16
 
     # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
