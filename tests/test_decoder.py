@@ -176,7 +176,7 @@ def test_STRING_FIX_parse():
     assert msg.fields[5].name == "Model Serial Code"
     assert msg.fields[5].value == 'XD18A0019'
     assert msg.fields[6].name == "Certification Level"
-    assert msg.fields[6].value == 3
+    assert msg.fields[6].raw_value == 3
     assert msg.fields[7].name == "Load Equivalency"
     assert msg.fields[7].value == 0
 
@@ -200,7 +200,7 @@ def test_STRING_LZ_parse():
     assert msg.fields[6].value == 88000000
     assert msg.fields[6].unit_of_measurement == 'Hz'
     assert msg.fields[6].physical_quantities == PhysicalQuantities.FREQUENCY
-    assert msg.fields[8].name == 'RDS'
+    assert msg.fields[8].name == 'Track'
     assert msg.fields[8].value == 'AVROTROS'
 
 def test_STRING_LAU_parse():
