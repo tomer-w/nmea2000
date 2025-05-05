@@ -97,7 +97,7 @@ class AsyncIOClient:
             try:
                 await self.status_callback(self.state)
             except Exception as e:
-                self.logger.error(f"Error in status callback: {e}")
+                self.logger.error(f"Error in status callback: {e}", exc_info=True)
 
     async def connect(self):
         """Establish connection to the NMEA2000 gateway.
@@ -204,7 +204,7 @@ class AsyncIOClient:
                 try:
                     await self.receive_callback(data)
                 except Exception as e:
-                    self.logger.error(f"Error in receive callback: {e}")
+                    self.logger.error(f"Error in receive callback: {e}", exc_info=True)
             self.queue.task_done()
         self.logger.info("process queue loop terminated")
 
