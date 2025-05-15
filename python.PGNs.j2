@@ -113,7 +113,7 @@ def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message:
     {% if ns_pgn.fallback_pgn is defined -%}
     return decode_pgn_{{ ns_pgn.fallback_pgn.PGN }}_{{ ns_pgn.fallback_pgn.Id }}(data_raw)
     {% else %}
-    raise Exception("No matching sub-PGN found")
+    raise Exception("PGN {{ pgns_in_group[0].PGN }} No matching sub-PGN found")
     {% endif %}
 {%- endif %}
 {%- for pgn in pgns_in_group %}
