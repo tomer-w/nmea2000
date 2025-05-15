@@ -138,7 +138,7 @@ def decode_time(seconds_since_midnight: int) -> time:
 
     # Validate input
     if not (0 <= seconds_since_midnight < 86400):  # There are 86400 seconds in a day
-        return "0:0:0"
+        return time(hour=0, minute=0, second=0)
 
     hours = seconds_since_midnight // 3600  # 3600 seconds in an hour
     minutes = (seconds_since_midnight % 3600) // 60
