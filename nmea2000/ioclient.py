@@ -6,6 +6,8 @@ from typing import Callable, Awaitable, Optional
 import serial_asyncio
 from tenacity import retry, stop_never, wait_exponential, retry_if_exception_type
 
+from nmea2000.consts import PhysicalQuantities
+
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 from .message import NMEA2000Message
@@ -31,8 +33,9 @@ class AsyncIOClient:
     and _send_impl methods.
     """
     def __init__(self, 
-                 exclude_pgns=[], 
-                 include_pgns=[]):
+                 exclude_pgns:list[str]=[], 
+                 include_pgns:list[str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={}):
         """Initialize the AsyncIOClient.
         
         Args:
@@ -45,7 +48,7 @@ class AsyncIOClient:
         self.receive_callback = None
         self.status_callback = None
         self.queue = asyncio.Queue()
-        self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns)
+        self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns, preferred_units = preferred_units)
         self.encoder = NMEA2000Encoder()
         self.lock = asyncio.Lock()
         
@@ -230,8 +233,9 @@ class TcpNmea2000Gateway(AsyncIOClient):
     def __init__(self,
                  host: str,
                  port: int, 
-                 exclude_pgns=[], 
-                 include_pgns=[]):
+                 exclude_pgns:list[str]=[], 
+                 include_pgns:list[str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={}):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -240,7 +244,7 @@ class TcpNmea2000Gateway(AsyncIOClient):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
-        super().__init__(exclude_pgns, include_pgns)
+        super().__init__(exclude_pgns, include_pgns, preferred_units)
         self.host = host
         self.port = port
         self.lock = asyncio.Lock()
@@ -305,8 +309,10 @@ class UsbNmea2000Gateway(AsyncIOClient):
     """
     def __init__(self,
                  port: str,
-                 exclude_pgns=[], 
-                 include_pgns=[]):
+                 exclude_pgns:list[str]=[], 
+                 include_pgns:list[str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={}
+                 ):
         """Initialize a USB/Serial NMEA2000 gateway client.
         
         Args:
@@ -314,7 +320,7 @@ class UsbNmea2000Gateway(AsyncIOClient):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
-        super().__init__(exclude_pgns, include_pgns)
+        super().__init__(exclude_pgns, include_pgns, preferred_units)
         self.port = port
         self._buffer = None
 
