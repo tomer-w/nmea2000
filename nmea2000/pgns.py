@@ -12244,8 +12244,7 @@ def decode_pgn_65409(_data_raw_: int) -> NMEA2000Message:
 
     # 5:duration_of_interval | Offset: 24, Length: 16, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    duration_of_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.001)
-    duration_of_interval = decode_time(duration_of_interval_raw)
+    duration_of_interval = duration_of_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('durationOfInterval', 'Duration of interval', None, 's', duration_of_interval, duration_of_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -12693,15 +12692,13 @@ def decode_pgn_126208_nmeaRequestGroupFunction(_data_raw_: int) -> NMEA2000Messa
 
     # 3:transmission_interval | Offset: 32, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    transmission_interval_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    transmission_interval = decode_time(transmission_interval_raw)
+    transmission_interval = transmission_interval_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('transmissionInterval', 'Transmission interval', "0x0: Turn off transmission; 0xFFFF FFFE = Restore default interval, 0xFFFF FFFF in this field and 0xFFFF in field 4 = Transmit now without changing timing variables", 's', transmission_interval, transmission_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 4:transmission_interval_offset | Offset: 64, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    transmission_interval_offset_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    transmission_interval_offset = decode_time(transmission_interval_offset_raw)
+    transmission_interval_offset = transmission_interval_offset_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('transmissionIntervalOffset', 'Transmission interval offset', None, 's', transmission_interval_offset, transmission_interval_offset_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -15159,15 +15156,13 @@ def decode_pgn_126720_airmarCalibrateCompass(_data_raw_: int) -> NMEA2000Message
 
     # 15:pitch_and_roll_damping | Offset: 160, Length: 16, Signed: True Resolution: 0.05, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
-    pitch_and_roll_damping_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.05)
-    pitch_and_roll_damping = decode_time(pitch_and_roll_damping_raw)
+    pitch_and_roll_damping = pitch_and_roll_damping_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.05)
     nmea2000Message.fields.append(NMEA2000Field('pitchAndRollDamping', 'Pitch and Roll damping', "default 30, range 0 to 200", 's', pitch_and_roll_damping, pitch_and_roll_damping_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
     # 16:compass_rate_gyro_damping | Offset: 176, Length: 16, Signed: True Resolution: 0.05, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 176
-    compass_rate_gyro_damping_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.05)
-    compass_rate_gyro_damping = decode_time(compass_rate_gyro_damping_raw)
+    compass_rate_gyro_damping = compass_rate_gyro_damping_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 0.05)
     nmea2000Message.fields.append(NMEA2000Field('compassRateGyroDamping', 'Compass/Rate gyro damping', "default -30, range -2400 to 2400, negative indicates rate gyro is to be used in compass calculations", 's', compass_rate_gyro_damping, compass_rate_gyro_damping_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -15776,8 +15771,7 @@ def decode_pgn_126720_airmarSpeedFilterNone(_data_raw_: int) -> NMEA2000Message:
 
     # 7:sample_interval | Offset: 32, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    sample_interval = decode_time(sample_interval_raw)
+    sample_interval = sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('sampleInterval', 'Sample interval', "Interval of time between successive samples of the paddlewheel pulse accumulator", 's', sample_interval, sample_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -15875,15 +15869,13 @@ def decode_pgn_126720_airmarSpeedFilterIir(_data_raw_: int) -> NMEA2000Message:
 
     # 7:sample_interval | Offset: 32, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    sample_interval = decode_time(sample_interval_raw)
+    sample_interval = sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('sampleInterval', 'Sample interval', "Interval of time between successive samples of the paddlewheel pulse accumulator", 's', sample_interval, sample_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
     # 8:filter_duration | Offset: 48, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    filter_duration_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    filter_duration = decode_time(filter_duration_raw)
+    filter_duration = filter_duration_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('filterDuration', 'Filter duration', "Duration of filter, must be bigger than the sample interval", 's', filter_duration, filter_duration_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -15987,8 +15979,7 @@ def decode_pgn_126720_airmarTemperatureFilterNone(_data_raw_: int) -> NMEA2000Me
 
     # 7:sample_interval | Offset: 32, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    sample_interval = decode_time(sample_interval_raw)
+    sample_interval = sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('sampleInterval', 'Sample interval', "Interval of time between successive samples of the water temperature thermistor", 's', sample_interval, sample_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -16086,15 +16077,13 @@ def decode_pgn_126720_airmarTemperatureFilterIir(_data_raw_: int) -> NMEA2000Mes
 
     # 7:sample_interval | Offset: 32, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    sample_interval = decode_time(sample_interval_raw)
+    sample_interval = sample_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('sampleInterval', 'Sample interval', "Interval of time between successive samples of the water temperature thermistor", 's', sample_interval, sample_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
     # 8:filter_duration | Offset: 48, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    filter_duration_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    filter_duration = decode_time(filter_duration_raw)
+    filter_duration = filter_duration_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('filterDuration', 'Filter duration', "Duration of filter, must be bigger than the sample interval", 's', filter_duration, filter_duration_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -18105,8 +18094,7 @@ def decode_pgn_126993(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 0
     # 1:data_transmit_offset | Offset: 0, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    data_transmit_offset_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    data_transmit_offset = decode_time(data_transmit_offset_raw)
+    data_transmit_offset = data_transmit_offset_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('dataTransmitOffset', 'Data transmit offset', "Offset in transmit time from time of request command: 0x0 = transmit immediately, 0xFFFF = Do not change offset.", 's', data_transmit_offset, data_transmit_offset_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -19380,8 +19368,7 @@ def decode_pgn_127489(_data_raw_: int) -> NMEA2000Message:
 
     # 7:total_engine_hours | Offset: 88, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    total_engine_hours_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
-    total_engine_hours = decode_time(total_engine_hours_raw)
+    total_engine_hours = total_engine_hours_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('totalEngineHours', 'Total Engine hours', None, 's', total_engine_hours, total_engine_hours_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -19653,8 +19640,7 @@ def decode_pgn_127491(_data_raw_: int) -> NMEA2000Message:
 
     # 3:time_remaining | Offset: 16, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    time_remaining_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
-    time_remaining = decode_time(time_remaining_raw)
+    time_remaining = time_remaining_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
     nmea2000Message.fields.append(NMEA2000Field('timeRemaining', 'Time Remaining', "Time remaining at current rate of discharge", 's', time_remaining, time_remaining_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -19950,8 +19936,7 @@ def decode_pgn_127494(_data_raw_: int) -> NMEA2000Message:
 
     # 13:drive_motor_hours | Offset: 192, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 192
-    drive_motor_hours_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
-    drive_motor_hours = decode_time(drive_motor_hours_raw)
+    drive_motor_hours = drive_motor_hours_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('driveMotorHours', 'Drive/Motor Hours', None, 's', drive_motor_hours, drive_motor_hours_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -20257,8 +20242,7 @@ def decode_pgn_127496(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 0
     # 1:time_to_empty | Offset: 0, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    time_to_empty_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    time_to_empty = decode_time(time_to_empty_raw)
+    time_to_empty = time_to_empty_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('timeToEmpty', 'Time to Empty', None, 's', time_to_empty, time_to_empty_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -20276,8 +20260,7 @@ def decode_pgn_127496(_data_raw_: int) -> NMEA2000Message:
 
     # 4:trip_run_time | Offset: 80, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
-    trip_run_time_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    trip_run_time = decode_time(trip_run_time_raw)
+    trip_run_time = trip_run_time_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('tripRunTime', 'Trip Run Time', None, 's', trip_run_time, trip_run_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -21777,8 +21760,7 @@ def decode_pgn_127506(_data_raw_: int) -> NMEA2000Message:
 
     # 6:time_remaining | Offset: 40, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    time_remaining_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
-    time_remaining = decode_time(time_remaining_raw)
+    time_remaining = time_remaining_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
     nmea2000Message.fields.append(NMEA2000Field('timeRemaining', 'Time Remaining', "Time remaining at current rate of discharge", 's', time_remaining, time_remaining_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -21905,8 +21887,7 @@ def decode_pgn_127507(_data_raw_: int) -> NMEA2000Message:
 
     # 8:equalization_time_remaining | Offset: 32, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    equalization_time_remaining_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
-    equalization_time_remaining = decode_time(equalization_time_remaining_raw)
+    equalization_time_remaining = equalization_time_remaining_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
     nmea2000Message.fields.append(NMEA2000Field('equalizationTimeRemaining', 'Equalization Time Remaining', None, 's', equalization_time_remaining, equalization_time_remaining_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -22205,8 +22186,7 @@ def decode_pgn_127510(_data_raw_: int) -> NMEA2000Message:
 
     # 11:equalize_time | Offset: 48, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    equalize_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
-    equalize_time = decode_time(equalize_time_raw)
+    equalize_time = equalize_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
     nmea2000Message.fields.append(NMEA2000Field('equalizeTime', 'Equalize Time', None, 's', equalize_time, equalize_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -22338,8 +22318,7 @@ def decode_pgn_127511(_data_raw_: int) -> NMEA2000Message:
 
     # 8:load_sense_interval | Offset: 48, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    load_sense_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    load_sense_interval = decode_time(load_sense_interval_raw)
+    load_sense_interval = load_sense_interval_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('loadSenseInterval', 'Load Sense Interval', None, 's', load_sense_interval, load_sense_interval_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -23677,8 +23656,7 @@ def decode_pgn_128006(_data_raw_: int) -> NMEA2000Message:
 
     # 8:command_timeout | Offset: 40, Length: 8, Signed: False Resolution: 0.005, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    command_timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
-    command_timeout = decode_time(command_timeout_raw)
+    command_timeout = command_timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
     nmea2000Message.fields.append(NMEA2000Field('commandTimeout', 'Command Timeout', None, 's', command_timeout, command_timeout_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 8
 
@@ -23878,8 +23856,7 @@ def decode_pgn_128008(_data_raw_: int) -> NMEA2000Message:
 
     # 6:operating_time | Offset: 48, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    operating_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
-    operating_time = decode_time(operating_time_raw)
+    operating_time = operating_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
     nmea2000Message.fields.append(NMEA2000Field('operatingTime', 'Operating Time', None, 's', operating_time, operating_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -24228,8 +24205,7 @@ def decode_pgn_128520(_data_raw_: int) -> NMEA2000Message:
 
     # 13:tcpa | Offset: 144, Length: 32, Signed: True Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 144
-    tcpa_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 0.001)
-    tcpa = decode_time(tcpa_raw)
+    tcpa = tcpa_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('tcpa', 'TCPA', "negative = time elapsed since event, positive = time to go", 's', tcpa, tcpa_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -25009,8 +24985,7 @@ def decode_pgn_128776(_data_raw_: int) -> NMEA2000Message:
 
     # 12:command_timeout | Offset: 40, Length: 8, Signed: False Resolution: 0.005, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    command_timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
-    command_timeout = decode_time(command_timeout_raw)
+    command_timeout = command_timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
     nmea2000Message.fields.append(NMEA2000Field('commandTimeout', 'Command Timeout', "If timeout elapses the thruster stops operating and reverts to static mode", 's', command_timeout, command_timeout_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 8
 
@@ -25299,8 +25274,7 @@ def decode_pgn_128778(_data_raw_: int) -> NMEA2000Message:
 
     # 6:total_motor_time | Offset: 40, Length: 16, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    total_motor_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
-    total_motor_time = decode_time(total_motor_time_raw)
+    total_motor_time = total_motor_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 60)
     nmea2000Message.fields.append(NMEA2000Field('totalMotorTime', 'Total Motor Time', None, 's', total_motor_time, total_motor_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -25589,8 +25563,7 @@ def decode_pgn_129027(_data_raw_: int) -> NMEA2000Message:
 
     # 2:time_delta | Offset: 8, Length: 8, Signed: False Resolution: 0.005, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
-    time_delta_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
-    time_delta = decode_time(time_delta_raw)
+    time_delta = time_delta_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
     nmea2000Message.fields.append(NMEA2000Field('timeDelta', 'Time Delta', None, 's', time_delta, time_delta_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 8
 
@@ -25653,8 +25626,7 @@ def decode_pgn_129028(_data_raw_: int) -> NMEA2000Message:
 
     # 2:time_delta | Offset: 8, Length: 8, Signed: False Resolution: 0.005, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
-    time_delta_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
-    time_delta = decode_time(time_delta_raw)
+    time_delta = time_delta_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 0.005)
     nmea2000Message.fields.append(NMEA2000Field('timeDelta', 'Time Delta', None, 's', time_delta, time_delta_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 8
 
@@ -25857,8 +25829,7 @@ def decode_pgn_129029(_data_raw_: int) -> NMEA2000Message:
 
     # 18:age_of_dgnss_corrections | Offset: 360, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 360
-    age_of_dgnss_corrections_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    age_of_dgnss_corrections = decode_time(age_of_dgnss_corrections_raw)
+    age_of_dgnss_corrections = age_of_dgnss_corrections_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('ageOfDgnssCorrections', 'Age of DGNSS Corrections', None, 's', age_of_dgnss_corrections, age_of_dgnss_corrections_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -26001,8 +25972,7 @@ def decode_pgn_129033(_data_raw_: int) -> NMEA2000Message:
 
     # 3:local_offset | Offset: 48, Length: 16, Signed: True Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    local_offset_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 60)
-    local_offset = decode_time(local_offset_raw)
+    local_offset = local_offset_raw = decode_number(_data_raw_, running_bit_offset, 16, True, 60)
     nmea2000Message.fields.append(NMEA2000Field('localOffset', 'Local Offset', None, 's', local_offset, local_offset_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -27992,8 +27962,7 @@ def decode_pgn_129301(_data_raw_: int) -> NMEA2000Message:
 
     # 2:time_to_mark | Offset: 8, Length: 32, Signed: True Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 8
-    time_to_mark_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 0.001)
-    time_to_mark = decode_time(time_to_mark_raw)
+    time_to_mark = time_to_mark_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('timeToMark', 'Time to mark', "negative = elapsed since event, positive = time to go", 's', time_to_mark, time_to_mark_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -28247,8 +28216,7 @@ def decode_pgn_129538(_data_raw_: int) -> NMEA2000Message:
 
     # 8:max_correction_age | Offset: 72, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    max_correction_age_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    max_correction_age = decode_time(max_correction_age_raw)
+    max_correction_age = max_correction_age_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('maxCorrectionAge', 'Max Correction Age', None, 's', max_correction_age, max_correction_age_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -29052,8 +29020,7 @@ def decode_pgn_129546(_data_raw_: int) -> NMEA2000Message:
 
     # 4:pseudorange_residual_filtering_time_constant | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    pseudorange_residual_filtering_time_constant_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    pseudorange_residual_filtering_time_constant = decode_time(pseudorange_residual_filtering_time_constant_raw)
+    pseudorange_residual_filtering_time_constant = pseudorange_residual_filtering_time_constant_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('pseudorangeResidualFilteringTimeConstant', 'Pseudorange Residual Filtering Time Constant', None, 's', pseudorange_residual_filtering_time_constant, pseudorange_residual_filtering_time_constant_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -29240,8 +29207,7 @@ def decode_pgn_129549(_data_raw_: int) -> NMEA2000Message:
 
     # 4:time_of_corrections | Offset: 24, Length: 16, Signed: False Resolution: 0.1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    time_of_corrections_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.1)
-    time_of_corrections = decode_time(time_of_corrections_raw)
+    time_of_corrections = time_of_corrections_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.1)
     nmea2000Message.fields.append(NMEA2000Field('timeOfCorrections', 'Time of corrections', None, 's', time_of_corrections, time_of_corrections_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -29551,8 +29517,7 @@ def decode_pgn_129551(_data_raw_: int) -> NMEA2000Message:
 
     # 13:time_since_last_sat_differential_sync | Offset: 128, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    time_since_last_sat_differential_sync_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    time_since_last_sat_differential_sync = decode_time(time_since_last_sat_differential_sync_raw)
+    time_since_last_sat_differential_sync = time_since_last_sat_differential_sync_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('timeSinceLastSatDifferentialSync', 'Time since Last Sat Differential Sync', "Age of differential corrections", 's', time_since_last_sat_differential_sync, time_since_last_sat_differential_sync_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -32047,8 +32012,7 @@ def decode_pgn_129805(_data_raw_: int) -> NMEA2000Message:
 
     # 9:timeout | Offset: 72, Length: 8, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 60)
-    timeout = decode_time(timeout_raw)
+    timeout = timeout_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 60)
     nmea2000Message.fields.append(NMEA2000Field('timeout', 'Timeout', None, 's', timeout, timeout_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 8
 
@@ -32537,8 +32501,7 @@ def decode_pgn_129807(_data_raw_: int) -> NMEA2000Message:
 
     # 17:quiet_time | Offset: 220, Length: 4, Signed: False Resolution: 60, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 220
-    quiet_time_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 60)
-    quiet_time = decode_time(quiet_time_raw)
+    quiet_time = quiet_time_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 60)
     nmea2000Message.fields.append(NMEA2000Field('quietTime', 'Quiet Time', "Commanded quiet time", 's', quiet_time, quiet_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 4
 
@@ -33429,50 +33392,43 @@ def decode_pgn_130052(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 0
     # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    group_repetition_interval__gri_ = decode_time(group_repetition_interval__gri__raw)
+    group_repetition_interval__gri_ = group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('groupRepetitionIntervalGri', 'Group Repetition Interval (GRI)', None, 's', group_repetition_interval__gri_, group_repetition_interval__gri__raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 2:master_range | Offset: 32, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    master_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    master_range = decode_time(master_range_raw)
+    master_range = master_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('masterRange', 'Master Range', None, 's', master_range, master_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 3:v_secondary_td | Offset: 64, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    v_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    v_secondary_td = decode_time(v_secondary_td_raw)
+    v_secondary_td = v_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('vSecondaryTd', 'V Secondary TD', None, 's', v_secondary_td, v_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 4:w_secondary_td | Offset: 96, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 96
-    w_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    w_secondary_td = decode_time(w_secondary_td_raw)
+    w_secondary_td = w_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('wSecondaryTd', 'W Secondary TD', None, 's', w_secondary_td, w_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 5:x_secondary_td | Offset: 128, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    x_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    x_secondary_td = decode_time(x_secondary_td_raw)
+    x_secondary_td = x_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('xSecondaryTd', 'X Secondary TD', None, 's', x_secondary_td, x_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 6:y_secondary_td | Offset: 160, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
-    y_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    y_secondary_td = decode_time(y_secondary_td_raw)
+    y_secondary_td = y_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('ySecondaryTd', 'Y Secondary TD', None, 's', y_secondary_td, y_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 7:z_secondary_td | Offset: 192, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 192
-    z_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    z_secondary_td = decode_time(z_secondary_td_raw)
+    z_secondary_td = z_secondary_td_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('zSecondaryTd', 'Z Secondary TD', None, 's', z_secondary_td, z_secondary_td_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -33638,50 +33594,43 @@ def decode_pgn_130053(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 0
     # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    group_repetition_interval__gri_ = decode_time(group_repetition_interval__gri__raw)
+    group_repetition_interval__gri_ = group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('groupRepetitionIntervalGri', 'Group Repetition Interval (GRI)', None, 's', group_repetition_interval__gri_, group_repetition_interval__gri__raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 2:master_range | Offset: 32, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    master_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    master_range = decode_time(master_range_raw)
+    master_range = master_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('masterRange', 'Master Range', None, 's', master_range, master_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 3:v_secondary_range | Offset: 64, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    v_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    v_secondary_range = decode_time(v_secondary_range_raw)
+    v_secondary_range = v_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('vSecondaryRange', 'V Secondary Range', None, 's', v_secondary_range, v_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 4:w_secondary_range | Offset: 96, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 96
-    w_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    w_secondary_range = decode_time(w_secondary_range_raw)
+    w_secondary_range = w_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('wSecondaryRange', 'W Secondary Range', None, 's', w_secondary_range, w_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 5:x_secondary_range | Offset: 128, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    x_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    x_secondary_range = decode_time(x_secondary_range_raw)
+    x_secondary_range = x_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('xSecondaryRange', 'X Secondary Range', None, 's', x_secondary_range, x_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 6:y_secondary_range | Offset: 160, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
-    y_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    y_secondary_range = decode_time(y_secondary_range_raw)
+    y_secondary_range = y_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('ySecondaryRange', 'Y Secondary Range', None, 's', y_secondary_range, y_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 7:z_secondary_range | Offset: 192, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 192
-    z_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    z_secondary_range = decode_time(z_secondary_range_raw)
+    z_secondary_range = z_secondary_range_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('zSecondaryRange', 'Z Secondary Range', None, 's', z_secondary_range, z_secondary_range_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -33847,8 +33796,7 @@ def decode_pgn_130054(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = 0
     # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
-    group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    group_repetition_interval__gri_ = decode_time(group_repetition_interval__gri__raw)
+    group_repetition_interval__gri_ = group_repetition_interval__gri__raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('groupRepetitionIntervalGri', 'Group Repetition Interval (GRI)', None, 's', group_repetition_interval__gri_, group_repetition_interval__gri__raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -33866,15 +33814,13 @@ def decode_pgn_130054(_data_raw_: int) -> NMEA2000Message:
 
     # 4:station_ecd | Offset: 56, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    station_ecd_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    station_ecd = decode_time(station_ecd_raw)
+    station_ecd = station_ecd_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('stationEcd', 'Station ECD', None, 's', station_ecd, station_ecd_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 5:station_asf | Offset: 88, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    station_asf_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
-    station_asf = decode_time(station_asf_raw)
+    station_asf = station_asf_raw = decode_number(_data_raw_, running_bit_offset, 32, True, 1e-09)
     nmea2000Message.fields.append(NMEA2000Field('stationAsf', 'Station ASF', None, 's', station_asf, station_asf_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -36652,8 +36598,7 @@ def decode_pgn_130324(_data_raw_: int) -> NMEA2000Message:
 
     # 13:dominant_wave_period | Offset: 192, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 192
-    dominant_wave_period_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
-    dominant_wave_period = decode_time(dominant_wave_period_raw)
+    dominant_wave_period = dominant_wave_period_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.01)
     nmea2000Message.fields.append(NMEA2000Field('dominantWavePeriod', 'Dominant Wave Period', None, 's', dominant_wave_period, dominant_wave_period_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -37748,8 +37693,7 @@ def decode_pgn_130567(_data_raw_: int) -> NMEA2000Message:
 
     # 23:run_time | Offset: 160, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 160
-    run_time_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
-    run_time = decode_time(run_time_raw)
+    run_time = run_time_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('runTime', 'Run Time', None, 's', run_time, run_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -37941,15 +37885,13 @@ def decode_pgn_130569(_data_raw_: int) -> NMEA2000Message:
 
     # 6:elapsed_track_time | Offset: 64, Length: 16, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    elapsed_track_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    elapsed_track_time = decode_time(elapsed_track_time_raw)
+    elapsed_track_time = elapsed_track_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('elapsedTrackTime', 'Elapsed Track Time', None, 's', elapsed_track_time, elapsed_track_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
     # 7:track_time | Offset: 80, Length: 16, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
-    track_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
-    track_time = decode_time(track_time_raw)
+    track_time = track_time_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('trackTime', 'Track Time', None, 's', track_time, track_time_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 16
 
@@ -40884,15 +40826,13 @@ def decode_pgn_130816_sonichubPlaylist(_data_raw_: int) -> NMEA2000Message:
 
     # 11:length | Offset: 120, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 120
-    length_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    length = decode_time(length_raw)
+    length = length_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('length', 'Length', None, 's', length, length_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 12:position_in_track | Offset: 152, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 152
-    position_in_track_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    position_in_track = decode_time(position_in_track_raw)
+    position_in_track = position_in_track_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('positionInTrack', 'Position in track', None, 's', position_in_track, position_in_track_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -41909,8 +41849,7 @@ def decode_pgn_130816_sonichubPosition(_data_raw_: int) -> NMEA2000Message:
 
     # 7:position | Offset: 40, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    position_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    position = decode_time(position_raw)
+    position = position_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('position', 'Position', None, 's', position, position_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -43525,15 +43464,13 @@ def decode_pgn_130820_fusionMedia(_data_raw_: int) -> NMEA2000Message:
 
     # 9:length | Offset: 120, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 120
-    length_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    length = decode_time(length_raw)
+    length = length_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('length', 'Length', None, 's', length, length_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 10:position_in_track | Offset: 152, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 152
-    position_in_track_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
-    position_in_track = decode_time(position_in_track_raw)
+    position_in_track = position_in_track_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('positionInTrack', 'Position in track', None, 's', position_in_track, position_in_track_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
@@ -44072,8 +44009,7 @@ def decode_pgn_130820_fusionTrackPosition(_data_raw_: int) -> NMEA2000Message:
 
     # 6:progress | Offset: 40, Length: 24, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    progress_raw = decode_number(_data_raw_, running_bit_offset, 24, False, 0.001)
-    progress = decode_time(progress_raw)
+    progress = progress_raw = decode_number(_data_raw_, running_bit_offset, 24, False, 0.001)
     nmea2000Message.fields.append(NMEA2000Field('progress', 'Progress', None, 's', progress, progress_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 24
 
@@ -48434,22 +48370,19 @@ def decode_pgn_130837_maretronSwitchStatusTimer(_data_raw_: int) -> NMEA2000Mess
 
     # 8:accumulated_off_period | Offset: 80, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
-    accumulated_off_period_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
-    accumulated_off_period = decode_time(accumulated_off_period_raw)
+    accumulated_off_period = accumulated_off_period_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('accumulatedOffPeriod', 'Accumulated OFF Period', None, 's', accumulated_off_period, accumulated_off_period_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 9:accumulated_on_period | Offset: 112, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 112
-    accumulated_on_period_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
-    accumulated_on_period = decode_time(accumulated_on_period_raw)
+    accumulated_on_period = accumulated_on_period_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('accumulatedOnPeriod', 'Accumulated ON Period', None, 's', accumulated_on_period, accumulated_on_period_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 
     # 10:accumulated_error_period | Offset: 144, Length: 32, Signed: False Resolution: 1, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 144
-    accumulated_error_period_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
-    accumulated_error_period = decode_time(accumulated_error_period_raw)
+    accumulated_error_period = accumulated_error_period_raw = decode_number(_data_raw_, running_bit_offset, 32, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('accumulatedErrorPeriod', 'Accumulated ERROR Period', None, 's', accumulated_error_period, accumulated_error_period_raw, PhysicalQuantities.DURATION, FieldTypes.DURATION, False))
     running_bit_offset += 32
 

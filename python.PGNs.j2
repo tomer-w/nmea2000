@@ -134,7 +134,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     {%- if field.BitOffset is defined %}
     running_bit_offset = {{ field.BitOffset }}
     {%- endif %}
-    {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN'%}
+    {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN' or field.FieldType == 'DURATION' %}
     {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
         {%- elif field.FieldType == 'LOOKUP' %}
     {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
@@ -167,7 +167,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset += bits_to_skip
         {%- elif field.FieldType == 'FLOAT'%}
     {{ field_name }} = {{ field_name }}_raw = decode_float(_data_raw_, running_bit_offset, {{ field.BitLength }})
-        {%- elif field.FieldType == 'TIME' or field.FieldType == 'DURATION' %}
+        {%- elif field.FieldType == 'TIME' %}
     {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
     {{ field_name }} = decode_time({{ field_name }}_raw)
         {%- elif field.FieldType == 'DATE' %}

@@ -85,8 +85,8 @@ class NMEA2000Field:
     name: str | None = None
     description: str | None = None
     unit_of_measurement: str | None = None
-    value: str | int | float | bytes = 0
-    raw_value: int | bytes = 0
+    value: str | int | float | bytes  | None= 0
+    raw_value: int | bytes | None = 0
     physical_quantities: PhysicalQuantities | None = None
     type: FieldTypes = FieldTypes.NUMBER
     part_of_primary_key: bool | None = None
