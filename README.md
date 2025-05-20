@@ -8,7 +8,7 @@ A Python library for encoding and decoding NMEA 2000 frames. The encoding and de
 - **Decode NMEA 2000 frames**: Parse and interpret raw NMEA 2000 data.
 - **Encode NMEA 2000 frames**: Convert structured data back into the NMEA 2000 frame format.
 - **USB client**: Send and receive NMEA 2000 data over CANBUS USB devices like [Waveshare USB-CAN-A](https://www.waveshare.com/wiki/USB-CAN-A)
-- **TCP client**: Send and receive NMEA 2000 data over CANBUS TCP devices like [ECAN-W01S](https://www.cdebyte.com/products/ECAN-W01S) or [ECAN-E01](https://www.cdebyte.com/products/ECAN-E01)
+- **TCP client**: Send and receive NMEA 2000 data over CANBUS TCP devices like [EBYTE ECAN-W01S](https://www.cdebyte.com/products/ECAN-W01S), [EBYTE ECAN-E01](https://www.cdebyte.com/products/ECAN-E01) or [Yacht Devices YDEN-02](https://yachtdevicesus.com/products/nmea-2000-ethernet-gateway-yden-02)
 - **PGN-specific parsing**: Handle various PGNs with specific parsing rules based on [canboat](https://canboat.github.io/canboat/canboat.html).
 - **Stateful decoder**: The decoder support NMEA 2000 fast messages which are split between CANBUS messages.
 - **CLI support**: Built-in command-line interface for encoding and decoding frames.
@@ -65,7 +65,7 @@ print(decoded_frame)
 ### TCP Client CLI
 
 ```bash
-nmea2000-cli tcp_client --server 192.168.0.46 --port 8881
+nmea2000-cli tcp_client --server 192.168.0.46 --port 8881 --type actisense
 ```
 
 ### TCP Client code
@@ -75,7 +75,7 @@ async def handle_received_data(message: NMEA2000Message):
     """User-defined callback function for received data."""
     print(f"Callback: Received {message}")
     
-client = AsyncTCPClient(ip, port)
+client = EByteNmea2000Gateway(ip, port)
 client.set_receive_callback(handle_received_data)  # Register callback
 ```
 
@@ -106,15 +106,43 @@ from nmea2000.encoder import NMEA2000Encoder
 # Initialize encoder
 encoder = NMEA2000Encoder()
 
-# Data to encode
-data = {"manufacturer_code": 1234, "pgn": 65280, "payload": "example_payload"}
+# Data to encode: vessel heading message (PGN 127250)
+   message = NMEA2000Message(
+        PGN=127250,
+        priority=2,
+        source=1,
+        destination=255,
+        fields=[
+            NMEA2000Field(
+                id="sid",
+                raw_value=0,
+            ),
+            NMEA2000Field(
+                id="heading",
+                value=1, # 1 radian is 57 degrees
+            ),
+            NMEA2000Field(
+                id="deviation",
+                raw_value=0,
+            ),
+            NMEA2000Field(
+                id="variation",
+                raw_value=0,
+            ),
+            NMEA2000Field(
+                id="reference",
+                raw_value=0,
+            ),
+            NMEA2000Field(
+                id="reserved_58",
+                raw_value=0,
+            )
+        ]
+    )
 
-# Encode to NMEA 2000 frame
-encoded_frame = encoder.encode_pgn_65280(data)
-
-# Print encoded frame
-print(encoded_frame)
-``` -->
+msg_bytes = encoder.encode_tcp(_generate_test_message())
+print(msg_bytes)
+```
 
 ## Development
 I welcome contributions, feedback, and suggestions to improve this project. If you have any ideas for new features, bug fixes, or improvements, feel free to open an issue or create a pull request. I’m always happy to collaborate and learn from the community!

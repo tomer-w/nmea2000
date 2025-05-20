@@ -1,6 +1,6 @@
 from nmea2000.message import NMEA2000Message, NMEA2000Field
 from nmea2000.encoder import NMEA2000Encoder
-from nmea2000.consts import PhysicalQuantities, FieldTypes
+from nmea2000.consts import PhysicalQuantities
 from .test_decoder import _get_decoder
 
 def _generate_test_message() -> NMEA2000Message:
@@ -14,60 +14,27 @@ def _generate_test_message() -> NMEA2000Message:
         fields=[
             NMEA2000Field(
                 id="sid",
-                name="Sequence ID",
-                description="Sequence ID",
-                unit_of_measurement="",
-                value=0,
                 raw_value=0,
-                physical_quantities=None,
-                type=FieldTypes.NUMBER
             ),
             NMEA2000Field(
                 id="heading",
-                name="Heading",
-                description="Vessel Heading",
-                unit_of_measurement="rad",
-                value=1,
-                raw_value=1,
-                physical_quantities=PhysicalQuantities.ANGLE,
-                type=FieldTypes.FLOAT
+                value=1, # 1 radian is 57 degrees
             ),
             NMEA2000Field(
                 id="deviation",
-                name="Deviation",
-                description="Magnetic Deviation",
-                unit_of_measurement="rad",
-                value=0,
                 raw_value=0,
-                physical_quantities=PhysicalQuantities.ANGLE,
-                type=FieldTypes.FLOAT
             ),
             NMEA2000Field(
                 id="variation",
-                name="Variation",
-                description="Magnetic Variation",
-                unit_of_measurement="rad",
-                value=0,
                 raw_value=0,
-                physical_quantities=PhysicalQuantities.ANGLE,
-                type=FieldTypes.FLOAT
             ),
             NMEA2000Field(
                 id="reference",
-                name="Reference",
-                description="Heading Reference",
-                unit_of_measurement="",
-                value=0,
                 raw_value=0,
-                physical_quantities=None,
-                type=FieldTypes.LOOKUP
             ),
             NMEA2000Field(
                 id="reserved_58",
-                name="Reserved",
-                value=0,
                 raw_value=0,
-                type=FieldTypes.RESERVED
             )
         ]
     )

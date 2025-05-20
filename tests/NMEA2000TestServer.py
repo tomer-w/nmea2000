@@ -6,7 +6,7 @@ import math
 from typing import List
 from nmea2000.message import NMEA2000Message, NMEA2000Field
 from nmea2000.encoder import NMEA2000Encoder
-from nmea2000.consts import PhysicalQuantities, FieldTypes
+from nmea2000.consts import PhysicalQuantities, FieldTypes, Type
 
 # Configure logging
 logging.basicConfig(
@@ -15,11 +15,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("NMEA2000TestServer")
 
-
 class NMEA2000TestServer:
     """Test TCP server that simulates a NMEA2000 gateway."""
 
-    def __init__(self, host: str = '127.0.0.1', port: int = 10110):
+    def __init__(self, host, port: int, type: Type):
         """Initialize the test server.
 
         Args:
@@ -28,6 +27,7 @@ class NMEA2000TestServer:
         """
         self.host = host
         self.port = port
+        self.type = type
         self.server = None
         self.clients: List[asyncio.StreamWriter] = []
         self.running = False
@@ -70,6 +70,19 @@ class NMEA2000TestServer:
                 pass
             logger.info(f"Connection from {addr} closed")
 
+    async def send_single_message(self):
+        # Generate a test message
+        if self.type == Type.EBYTE:
+            message = self._generate_test_message()
+
+            # Encode the message using the NMEA2000Encoder
+            tcp_data = self.encoder.encode_tcp(message)[0]
+            logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
+        else:
+            tcp_data = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
+        # Send the encoded message to all connected clients
+        await self.send_to_clients(tcp_data)
+
     async def broadcast_test_messages(self):
         """Broadcast test NMEA2000 messages to all connected clients."""
         while self.running:
@@ -78,15 +91,7 @@ class NMEA2000TestServer:
                 continue
 
             try:
-                # Generate a test message
-                message = self._generate_test_message()
-
-                # Encode the message using the NMEA2000Encoder
-                tcp_data = self.encoder.encode_tcp(message)[0]
-                logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
-
-                # Send the encoded message to all connected clients
-                await self._send_to_clients(tcp_data)
+                await self.send_single_message()
             except Exception as e:
                 logger.error(f"Error broadcasting message: {e}")
 
@@ -172,7 +177,7 @@ class NMEA2000TestServer:
         """Generate a simulated raw heading value in radians * 10000."""
         return int(self._generate_heading() * 10000)
 
-    async def _send_to_clients(self, data: bytes):
+    async def send_to_clients(self, data: bytes):
         """Send data to all connected clients."""
         disconnected_clients = []
         for writer in self.clients:
@@ -198,10 +203,12 @@ class NMEA2000TestServer:
         addr = self.server.sockets[0].getsockname()
         logger.info(f'NMEA2000 Test Server running on {addr}')
 
+    def start_broadcast(self):
         # Start broadcasting test messages
         asyncio.create_task(self.broadcast_test_messages())
 
     async def wait(self):
+        assert self.server is not None
         async with self.server:
             await self.server.serve_forever()
 
@@ -228,10 +235,12 @@ async def main():
     parser = argparse.ArgumentParser(description='NMEA2000 Test TCP Server')
     parser.add_argument('--host', type=str, default='127.0.0.1', help='Host address to bind to')
     parser.add_argument('--port', type=int, default=8881, help='Port to listen on')
+    parser.add_argument("--type", type=lambda s: Type[s.upper()], default=Type.ACTISENSE, help="Type of TCP server (e.g. EBYTE or ACTISENSE)")
     args = parser.parse_args()
 
-    server = NMEA2000TestServer(host=args.host, port=args.port)
+    server = NMEA2000TestServer(host=args.host, port=args.port, type=args.type)
     await server.start()
+    server.start_broadcast()
     try:
         await server.wait()
     except KeyboardInterrupt:

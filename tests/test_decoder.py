@@ -1,4 +1,3 @@
-from datetime import time
 import json
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
@@ -65,7 +64,7 @@ def test_bitlookup_parse():
     assert msg.fields[5].name == "Fuel Rate"
     assert msg.fields[5].value is None
     assert msg.fields[6].name == "Total Engine hours"
-    assert msg.fields[6].value == time(1,10,10)
+    assert msg.fields[6].value == 4210
     assert msg.fields[7].name == "Coolant Pressure"
     assert msg.fields[7].value is None
     assert msg.fields[8].name == "Fuel Pressure"
@@ -106,7 +105,7 @@ def test_bitlookup_parse2():
     assert msg.fields[5].name == "Fuel Rate"
     assert msg.fields[5].value == 112.5
     assert msg.fields[6].name == "Total Engine hours"
-    assert msg.fields[6].value == time(1,10,10)
+    assert msg.fields[6].value == 4210
     assert msg.fields[7].name == "Coolant Pressure"
     assert msg.fields[7].value == 8.208
     assert msg.fields[7].unit_of_measurement == "Bar"
@@ -256,9 +255,7 @@ def test_json():
         assert field2.value == field.value
         assert field2.raw_value == field.raw_value
 
-def test_fast_parse():
-    decoder = _get_decoder()
-    msg = decoder.decode_actisense_string("A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000")
+def _validate_130842_message(msg: NMEA2000Message):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 130842
     assert msg.priority == 7
@@ -285,6 +282,12 @@ def test_fast_parse():
     assert msg.fields[10].value == 0
     assert msg.fields[11].id == "i"
     assert msg.fields[11].value == 0
+
+
+def test_fast_parse():
+    decoder = _get_decoder()
+    msg = decoder.decode_actisense_string("A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000")
+    _validate_130842_message(msg)
 
 def test_encode():
     decoder = _get_decoder()

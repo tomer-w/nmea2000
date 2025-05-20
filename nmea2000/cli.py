@@ -3,8 +3,10 @@ import asyncio
 import sys
 import logging
 
+from nmea2000.consts import Type
+
 from .message import NMEA2000Message
-from .ioclient import AsyncIOClient, TcpNmea2000Gateway, UsbNmea2000Gateway, State
+from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, WaveShareNmea2000Gateway
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 
@@ -46,6 +48,9 @@ async def interactive_client(client: AsyncIOClient):
                     print(f"Error: {e}")
                     print("Not valid NMEA2000Message json")
                     continue
+    except KeyboardInterrupt:
+        sys.stdout.flush()
+        pass
     finally:
         await client.close()
         print("Connection closed.")
@@ -124,6 +129,12 @@ def main():
         required=True, 
         help="Server port number"
     )
+    tcp_client_parser.add_argument(
+        "--type",
+        type=lambda s: Type[s.upper()],
+        required=True,
+        help="Type of TCP server (e.g. EBYTE or ACTISENSE)"
+    )
 
     # USB client command
     usb_client_parser = subparsers.add_parser("usb_client", help="start USB client to CANBUS gateway (for example, ECAN-E01 or ECAN-W01)")
@@ -179,12 +190,14 @@ def main():
             
     elif args.command == "tcp_client":
         # Create TCP client passing callbacks in constructor
-        client = TcpNmea2000Gateway(args.server, args.port)
-        asyncio.run(interactive_client(client))
+        if args.type == Type.EBYTE:
+            client = EByteNmea2000Gateway(args.server, args.port)
+        elif args.type == Type.ACTISENSE:
+            client = ActisenseNmea2000Gateway(args.server, args.port)            
     elif args.command == "usb_client":
         # Create USB client passing callbacks in constructor
-        client = UsbNmea2000Gateway(args.port)
-        asyncio.run(interactive_client(client))
+        client = WaveShareNmea2000Gateway(args.port)
+    asyncio.run(interactive_client(client))
 
 if __name__ == "__main__":
     main()

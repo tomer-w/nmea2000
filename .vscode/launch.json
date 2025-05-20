@@ -40,7 +40,7 @@
             "request": "launch",
             "module": "nmea2000.cli",
             "console": "externalTerminal",
-            "args": ["--verbose", "tcp_client", "--server", "192.168.0.47", "--port", "8881"]
+            "args": ["--verbose", "tcp_client", "--server", "192.168.0.47", "--port", "8881", "--type", "EBYTE"]
         },
         {
             "name": "cli usb_client",

@@ -170,6 +170,7 @@ class AsyncIOClient:
         """
         try:
             msgs =  self._encode_impl(nmea2000Message)
+            assert self.writer is not None
             for msg in msgs:
                 self.writer.write(msg)
                 await self.writer.drain()
@@ -224,7 +225,7 @@ class AsyncIOClient:
         )
 
 
-class TcpNmea2000Gateway(AsyncIOClient):
+class EByteNmea2000Gateway(AsyncIOClient):
     """TCP implementation of AsyncIOClient for NMEA2000 gateways.
     
     This class implements a TCP client for connecting to NMEA2000 networks
@@ -300,8 +301,79 @@ class TcpNmea2000Gateway(AsyncIOClient):
         """
         return self.encoder.encode_tcp(nmea2000Message)
     
+class ActisenseNmea2000Gateway(AsyncIOClient):
+    """TCP implementation of AsyncIOClient for NMEA2000 Actisense gateways.
+    
+    This class implements a TCP client for connecting to NMEA2000 networks
+    through TCP-based gateways like Actisense <model name>.
+    """
+    def __init__(self,
+                 host: str,
+                 port: int, 
+                 exclude_pgns:list[str]=[], 
+                 include_pgns:list[str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={}):
+        """Initialize a TCP NMEA2000 gateway client.
+        
+        Args:
+            host: Server hostname or IP address.
+            port: Server port number.
+            exclude_pgns: List of PGNs to exclude from processing.
+            include_pgns: List of PGNs to include for processing.
+        """
+        super().__init__(exclude_pgns, include_pgns, preferred_units)
+        self.host = host
+        self.port = port
+        self.lock = asyncio.Lock()
 
-class UsbNmea2000Gateway(AsyncIOClient):
+    async def _connect_impl(self):
+        """Connect to the TCP server.
+        
+        This method establishes a TCP connection to the server and configures
+        TCP keepalive to detect dropped connections. It's called by the
+        connect() method.
+        """
+        self.logger.info(f"Connecting to {self.host}:{self.port}")
+        self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+        # Get the underlying socket
+        sock = self.writer.get_extra_info("socket")
+        if sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 30)  # Idle time before keepalive probes (Linux/macOS)
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
+        self.logger.info(f"Connected to {self.host}:{self.port}")
+
+    async def _receive_impl(self):
+        """Receive data from the TCP connection.
+        
+        This method reads exactly 13 bytes from the TCP connection (the size of
+        a standard NMEA2000 message) and processes it. It's called repeatedly
+        by the _receive_loop() method.
+        """
+        data = await self.reader.readline()
+        self.logger.info(f"Received: {data.hex()}")
+        line = data.decode('utf-8', errors='ignore').strip()
+        try:
+            message = self.decoder.decode_actisense_string(line)
+        except Exception as e:
+            self.logger.warning(f"decoding failed. text: {line}, bytes: {data.hex()}. Error: {e}")
+            return
+
+        self.logger.info(f"Received message: {message}")
+        if message is not None:
+            await self.queue.put(message)
+
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+        """Encode a NMEA2000 message over the TCP connection.
+        
+        Args:
+            nmea2000Message: The NMEA2000Message object to encode.
+        """
+        return self.encoder.encode_tcp(nmea2000Message)
+    
+
+class WaveShareNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.
     
     This class implements a USB/Serial client for connecting to NMEA2000 networks
@@ -354,6 +426,7 @@ class UsbNmea2000Gateway(AsyncIOClient):
         """
         data = await self.reader.read(100)
         self.logger.info(f"Received: {data.hex()}")
+        assert self._buffer is not None
         self._buffer.extend(data)
 
         # Continue processing as long as there's data in the buffer
