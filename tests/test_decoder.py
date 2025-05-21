@@ -9,7 +9,7 @@ dump_to_folder = None
 def _get_decoder(exclude_pgns = [], include_pgns = [], preferred_units = {}):
     return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, preferred_units = preferred_units, dump_to_folder=dump_to_folder)
 
-def _validate_65280_message(msg: NMEA2000Message):
+def _validate_65280_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 65280
     assert msg.priority == 7
@@ -36,6 +36,29 @@ def test_single_parse():
     decoder = _get_decoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
+
+def test_yacht_devices_decode():
+    decoder = _get_decoder()
+    msg = decoder.decode_yacht_devices_string("00:01:54.330 R 15FD0A10 00 00 00 68 65 0F 00 FF")
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 130314
+    assert msg.id == "actualPressure"
+    assert msg.priority == 5
+    assert msg.source == 16
+    assert msg.destination == 255
+    assert msg.description == "Actual Pressure"
+    assert msg.fields[0].name == "SID"
+    assert msg.fields[0].value == 0
+    assert msg.fields[1].name == "Instance"
+    assert msg.fields[1].value == 0
+    assert msg.fields[2].name == "Source"
+    assert msg.fields[2].value == "Atmospheric"
+    assert msg.fields[3].name == "Pressure"
+    assert msg.fields[3].value == 100900
+    assert msg.fields[3].unit_of_measurement == "Pa"
+    assert msg.fields[3].physical_quantities == PhysicalQuantities.PRESSURE
+    assert msg.fields[4].name == "Reserved"
+    assert msg.fields[4].value == 255
 
 def test_bitlookup_parse():
     decoder = _get_decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C"})

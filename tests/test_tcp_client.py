@@ -1,6 +1,6 @@
 import logging
-from nmea2000.consts import Type
-from nmea2000.ioclient import ActisenseNmea2000Gateway, EByteNmea2000Gateway, State
+from nmea2000.consts import PhysicalQuantities, Type
+from nmea2000.ioclient import TextNmea2000Gateway, EByteNmea2000Gateway, State
 from nmea2000.message import NMEA2000Message
 from tests.test_decoder import _validate_130842_message, _validate_65280_message
 from .NMEA2000TestServer import NMEA2000TestServer
@@ -32,8 +32,10 @@ def _create_server_client(type: Type):
     server = NMEA2000TestServer("127.0.0.1", 8881, type)
     if type == Type.EBYTE:
         client = EByteNmea2000Gateway("127.0.0.1", 8881)
-    else:
-        client = ActisenseNmea2000Gateway("127.0.0.1", 8881)
+    elif type == Type.ACTISENSE:
+        client = TextNmea2000Gateway("127.0.0.1", 8881, Type.ACTISENSE)            
+    elif type == Type.YACHT_DEVICES:
+        client = TextNmea2000Gateway("127.0.0.1", 8881, Type.YACHT_DEVICES)            
     client.set_receive_callback(handle_received_message)
     client.set_status_callback(handle_status_change)
 
@@ -91,7 +93,45 @@ async def test_single_message_ACTISENSE_2():
     await client.close()
     await server.stop()
 
+async def test_single_message_YACHT_DEVICES():
+    server,client, receive_signal, receive_queue = _create_server_client(Type.YACHT_DEVICES)
+    await server.start()
+    await client.connect()
+    
+    # Wait for the signal that a message was received
+    try:
+        await server.send_to_clients("00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n".encode('utf-8'))
+        await asyncio.wait_for(receive_signal.wait(), timeout=10)
+    except asyncio.TimeoutError:
+        raise AssertionError("Timed out waiting for receive signal")
+    msg = await receive_queue.get()
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 127257
+    assert msg.priority == 5
+    assert msg.source == 16
+    assert msg.destination == 255
+    assert msg.description == "Attitude"
+    assert len(msg.fields) == 5  
+    assert msg.fields[0].id == "sid"
+    assert msg.fields[0].value == 0
+    assert msg.fields[1].id == "yaw"
+    assert msg.fields[1].value == 0
+    assert msg.fields[1].unit_of_measurement == 'rad'
+    assert msg.fields[1].physical_quantities == PhysicalQuantities.ANGLE
+    assert msg.fields[2].id == "pitch"
+    assert msg.fields[2].value == 0.3045
+    assert msg.fields[2].unit_of_measurement == 'rad'
+    assert msg.fields[2].physical_quantities == PhysicalQuantities.ANGLE
+    assert msg.fields[3].id == "roll"
+    assert msg.fields[3].value == -0.0227
+    assert msg.fields[3].unit_of_measurement == 'rad'
+    assert msg.fields[3].physical_quantities == PhysicalQuantities.ANGLE
+    assert msg.fields[4].id == "reserved_56"
+    assert msg.fields[4].value == 255
+    await client.close()
+    await server.stop()
+
 # async def test_server():
-#     server = NMEA2000TestServer("127.0.0.1", 8881, Type.ACTISENSE)
+#     server = NMEA2000TestServer("127.0.0.1", 8881, Type.YACHT_DEVICES)
 #     await server.start()
 #     await server.broadcast_test_messages()

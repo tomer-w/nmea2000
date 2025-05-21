@@ -124,7 +124,7 @@ class NMEA2000Decoder():
             return None
 
     def decode_actisense_string(self, actisense_string: str) -> NMEA2000Message | None:
-        """Process an Actisense packet string and extract the PGN, source ID, and CAN data."""
+        """Process an Actisense packet string and extract the PGN, source ID, and CAN data. Based on: https://actisense.com/knowledge-base/nmea-2000/w2k-1-nmea-2000-to-wifi-gateway/nmea-2000-ascii-output-format/"""
         # Split the Actisense string by spaces
         parts = actisense_string.split()
         
@@ -159,7 +159,34 @@ class NMEA2000Decoder():
         logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {src}, PGN: {pgn}, CAN Data: {reversed_bytes}")
         
         return self._decode(pgn, priority, src, dest, timestamp, bytes(reversed_bytes), True)
+
+    def decode_yacht_devices_string(self, yd_string: str) -> NMEA2000Message | None:
+        """Process an Yacht Devices string and extract the PGN, source ID, and CAN data. Based on: https://www.yachtd.com/downloads/ydwg02.pdf page 62-63"""
+        # Split the Actisense string by spaces
+        parts = yd_string.split()
         
+        if len(parts) < 4:
+            raise ValueError("Invalid Yacht Devices string format")
+        
+        if parts[1] != "R":
+            raise ValueError("Invalid format: 2nd part should be 'R'")
+    
+        # Extract the timestamp from the first part
+        timestamp = datetime.strptime(parts[0], "%H:%M:%S.%f")
+
+        # Extract the PGN, priority, destination, and source from the second part
+        msgid = int(parts[2], 16)
+        pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(msgid)
+        
+        # Extract the CAN data from the remaining parts
+        can_data = parts[3:][::-1]
+        can_data_bytes = [int(byte, 16) for byte in can_data]
+
+        # Log the extracted information
+        logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {source_id}, PGN: {pgn_id}, CAN Data: {can_data_bytes}")
+        
+        return self._decode(pgn_id, priority, source_id, dest, timestamp, bytes(can_data_bytes))
+
     def decode_basic_string(self, basic_string: str, already_combined: bool = False) -> NMEA2000Message | None:
         """Process an Actisense packet string and extract the PGN, source ID, and CAN data."""
         # Split the Actisense string by spaces

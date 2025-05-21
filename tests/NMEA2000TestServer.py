@@ -78,8 +78,12 @@ class NMEA2000TestServer:
             # Encode the message using the NMEA2000Encoder
             tcp_data = self.encoder.encode_tcp(message)[0]
             logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
-        else:
+        elif self.type == Type.ACTISENSE:
             tcp_data = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
+        elif self.type == Type.YACHT_DEVICES:
+            tcp_data = "00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n".encode('utf-8')
+        else:
+            raise Exception ("Type not supported")
         # Send the encoded message to all connected clients
         await self.send_to_clients(tcp_data)
 

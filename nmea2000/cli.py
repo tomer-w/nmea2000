@@ -6,7 +6,7 @@ import logging
 from nmea2000.consts import Type
 
 from .message import NMEA2000Message
-from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, WaveShareNmea2000Gateway
+from .ioclient import AsyncIOClient, EByteNmea2000Gateway, State, TextNmea2000Gateway, WaveShareNmea2000Gateway
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 
@@ -129,15 +129,22 @@ def main():
         required=True, 
         help="Server port number"
     )
+    def parse_type(value):
+        try:
+            return Type[value.upper()]
+        except KeyError:
+            valid = ", ".join(t.name for t in Type)
+            raise argparse.ArgumentTypeError(f"Invalid type: {value}. Valid options are: {valid}.")
+
     tcp_client_parser.add_argument(
         "--type",
-        type=lambda s: Type[s.upper()],
+        type=parse_type,
         required=True,
-        help="Type of TCP server (e.g. EBYTE or ACTISENSE)"
+        help="Type of TCP server (EBYTE, ACTISENSE, or YACHT_DEVICES)"
     )
 
     # USB client command
-    usb_client_parser = subparsers.add_parser("usb_client", help="start USB client to CANBUS gateway (for example, ECAN-E01 or ECAN-W01)")
+    usb_client_parser = subparsers.add_parser("usb_client", help="start USB client to CANBUS gateway (for example, Waveshare USB-CAN-A)")
     usb_client_parser.add_argument(
         "--port", 
         type=str, 
@@ -193,7 +200,9 @@ def main():
         if args.type == Type.EBYTE:
             client = EByteNmea2000Gateway(args.server, args.port)
         elif args.type == Type.ACTISENSE:
-            client = ActisenseNmea2000Gateway(args.server, args.port)            
+            client = TextNmea2000Gateway(args.server, args.port, Type.ACTISENSE)            
+        elif args.type == Type.YACHT_DEVICES:
+            client = TextNmea2000Gateway(args.server, args.port, Type.YACHT_DEVICES)            
     elif args.command == "usb_client":
         # Create USB client passing callbacks in constructor
         client = WaveShareNmea2000Gateway(args.port)

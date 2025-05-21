@@ -8,7 +8,11 @@ A Python library for encoding and decoding NMEA 2000 frames. The encoding and de
 - **Decode NMEA 2000 frames**: Parse and interpret raw NMEA 2000 data.
 - **Encode NMEA 2000 frames**: Convert structured data back into the NMEA 2000 frame format.
 - **USB client**: Send and receive NMEA 2000 data over CANBUS USB devices like [Waveshare USB-CAN-A](https://www.waveshare.com/wiki/USB-CAN-A)
-- **TCP client**: Send and receive NMEA 2000 data over CANBUS TCP devices like [EBYTE ECAN-W01S](https://www.cdebyte.com/products/ECAN-W01S), [EBYTE ECAN-E01](https://www.cdebyte.com/products/ECAN-E01) or [Yacht Devices YDEN-02](https://yachtdevicesus.com/products/nmea-2000-ethernet-gateway-yden-02)
+- **TCP client**: Send and receive NMEA 2000 data over CANBUS TCP devices like:
+     - [EBYTE ECAN-W01S](https://www.cdebyte.com/products/ECAN-W01S)
+     - [EBYTE ECAN-E01](https://www.cdebyte.com/products/ECAN-E01)
+     - [Actisense W2K-1](https://actisense.com/products/w2k-1-nmea-2000-wifi-gateway/)
+     - [Yacht Devices YDEN-02](https://yachtdevicesus.com/products/nmea-2000-ethernet-gateway-yden-02)
 - **PGN-specific parsing**: Handle various PGNs with specific parsing rules based on [canboat](https://canboat.github.io/canboat/canboat.html).
 - **Stateful decoder**: The decoder support NMEA 2000 fast messages which are split between CANBUS messages.
 - **CLI support**: Built-in command-line interface for encoding and decoding frames.

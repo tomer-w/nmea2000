@@ -6,7 +6,7 @@ from typing import Callable, Awaitable, Optional
 import serial_asyncio
 from tenacity import retry, stop_never, wait_exponential, retry_if_exception_type
 
-from nmea2000.consts import PhysicalQuantities
+from nmea2000.consts import PhysicalQuantities, Type
 
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
@@ -301,15 +301,16 @@ class EByteNmea2000Gateway(AsyncIOClient):
         """
         return self.encoder.encode_tcp(nmea2000Message)
     
-class ActisenseNmea2000Gateway(AsyncIOClient):
+class TextNmea2000Gateway(AsyncIOClient):
     """TCP implementation of AsyncIOClient for NMEA2000 Actisense gateways.
     
     This class implements a TCP client for connecting to NMEA2000 networks
-    through TCP-based gateways like Actisense <model name>.
+    through TCP-based gateways like Actisense W2K-1 or Yacht Devices YDEN-02.
     """
     def __init__(self,
                  host: str,
                  port: int, 
+                 type: Type,
                  exclude_pgns:list[str]=[], 
                  include_pgns:list[str]=[],
                  preferred_units:dict[PhysicalQuantities, str]={}):
@@ -321,9 +322,13 @@ class ActisenseNmea2000Gateway(AsyncIOClient):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
+        if type != Type.ACTISENSE and type != Type.YACHT_DEVICES:
+            raise ValueError(f"Invalid type: {type}. Must be either ACTISENSE or YACHT_DEVICES.")
+        
         super().__init__(exclude_pgns, include_pgns, preferred_units)
         self.host = host
         self.port = port
+        self.type = type    
         self.lock = asyncio.Lock()
 
     async def _connect_impl(self):
@@ -355,7 +360,10 @@ class ActisenseNmea2000Gateway(AsyncIOClient):
         self.logger.info(f"Received: {data.hex()}")
         line = data.decode('utf-8', errors='ignore').strip()
         try:
-            message = self.decoder.decode_actisense_string(line)
+            if self.type == Type.ACTISENSE:
+                message = self.decoder.decode_actisense_string(line)
+            elif self.type == Type.YACHT_DEVICES:
+                message = self.decoder.decode_yacht_devices_string(line)
         except Exception as e:
             self.logger.warning(f"decoding failed. text: {line}, bytes: {data.hex()}. Error: {e}")
             return
