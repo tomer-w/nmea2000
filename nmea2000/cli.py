@@ -6,7 +6,7 @@ import logging
 from nmea2000.consts import Type
 
 from .message import NMEA2000Message
-from .ioclient import AsyncIOClient, EByteNmea2000Gateway, State, TextNmea2000Gateway, WaveShareNmea2000Gateway
+from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 
@@ -166,7 +166,8 @@ def main():
         # Decode from a frame string if provided
         if args.frame:
             decoded = decoder.decode_actisense_string(args.frame)
-            print(decoded.to_json())
+            if decoded is not None:
+                print(decoded.to_json())
 
         # Decode from a file if provided
         elif args.file:
@@ -198,13 +199,17 @@ def main():
     elif args.command == "tcp_client":
         # Create TCP client passing callbacks in constructor
         if args.type == Type.EBYTE:
+            logger.info("Using EByteNmea2000Gateway with server: %s, port: %d", args.server, args.port)
             client = EByteNmea2000Gateway(args.server, args.port)
         elif args.type == Type.ACTISENSE:
-            client = TextNmea2000Gateway(args.server, args.port, Type.ACTISENSE)            
+            logger.info("Using ActisenseNmea2000Gateway with server: %s, port: %d", args.server, args.port)
+            client = ActisenseNmea2000Gateway(args.server, args.port)            
         elif args.type == Type.YACHT_DEVICES:
-            client = TextNmea2000Gateway(args.server, args.port, Type.YACHT_DEVICES)            
+            logger.info("Using YachtDevicesNmea2000Gateway with server: %s, port: %d", args.server, args.port)
+            client = YachtDevicesNmea2000Gateway(args.server, args.port)            
     elif args.command == "usb_client":
         # Create USB client passing callbacks in constructor
+        logger.info("Using WaveShareNmea2000Gateway with port: %s", args.port)
         client = WaveShareNmea2000Gateway(args.port)
     asyncio.run(interactive_client(client))
 

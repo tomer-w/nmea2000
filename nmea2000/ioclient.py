@@ -5,6 +5,7 @@ import enum
 from typing import Callable, Awaitable, Optional
 import serial_asyncio
 from tenacity import retry, stop_never, wait_exponential, retry_if_exception_type
+from abc import ABC, abstractmethod
 
 from nmea2000.consts import PhysicalQuantities, Type
 
@@ -23,8 +24,7 @@ class State(enum.Enum):
     DISCONNECTED = 0
     CONNECTED = 1
     CLOSED = 2
-
-class AsyncIOClient:
+class AsyncIOClient(ABC):
     """Base class for asynchronous NMEA2000 clients.
     
     This abstract class implements common functionality for TCP and Serial clients,
@@ -32,6 +32,22 @@ class AsyncIOClient:
     and state management. Subclasses must implement _connect_impl, _receive_impl,
     and _send_impl methods.
     """
+
+    @abstractmethod
+    async def _connect_impl(self):
+        """Subclasses must implement."""
+        pass
+
+    @abstractmethod
+    async def _receive_impl(self):
+        """Subclasses must implement."""
+        pass
+
+    @abstractmethod
+    async def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+        """Subclasses must implement."""
+        pass
+
     def __init__(self, 
                  exclude_pgns:list[str]=[], 
                  include_pgns:list[str]=[],
@@ -169,11 +185,11 @@ class AsyncIOClient:
             nmea2000Message: The NMEA2000Message object to send.
         """
         try:
-            msgs =  self._encode_impl(nmea2000Message)
+            msgs =  await self._encode_impl(nmea2000Message)
             assert self.writer is not None
             for msg in msgs:
                 self.writer.write(msg)
-                await self.writer.drain()
+                self.writer.drain()
                 self.logger.info(f"Sent: {msg.hex()}")
 
         except ValueError as ve:
@@ -379,7 +395,50 @@ class TextNmea2000Gateway(AsyncIOClient):
             nmea2000Message: The NMEA2000Message object to encode.
         """
         return self.encoder.encode_tcp(nmea2000Message)
+
+class ActisenseNmea2000Gateway(TextNmea2000Gateway):
+    """TCP implementation of AsyncIOClient for NMEA2000 Actisense gateways.
     
+    This class implements a TCP client for connecting to NMEA2000 networks
+    through TCP-based gateways like Actisense W2K-1.
+    """
+    def __init__(self,
+                 host: str,
+                 port: int, 
+                 exclude_pgns:list[str]=[], 
+                 include_pgns:list[str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={}):
+        """Initialize a TCP NMEA2000 gateway client.
+        
+        Args:
+            host: Server hostname or IP address.
+            port: Server port number.
+            exclude_pgns: List of PGNs to exclude from processing.
+            include_pgns: List of PGNs to include for processing.
+        """        
+        super().__init__(host, port, Type.ACTISENSE, exclude_pgns, include_pgns, preferred_units)
+
+class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
+    """TCP implementation of AsyncIOClient for NMEA2000 Yacht Devices gateways.
+    
+    This class implements a TCP client for connecting to NMEA2000 networks
+    through TCP-based gateways like Yacht Devices YDEN-02.
+    """
+    def __init__(self,
+                 host: str,
+                 port: int, 
+                 exclude_pgns:list[str]=[], 
+                 include_pgns:list[str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={}):
+        """Initialize a TCP NMEA2000 gateway client.
+        
+        Args:
+            host: Server hostname or IP address.
+            port: Server port number.
+            exclude_pgns: List of PGNs to exclude from processing.
+            include_pgns: List of PGNs to include for processing.
+        """        
+        super().__init__(host, port, Type.YACHT_DEVICES, exclude_pgns, include_pgns, preferred_units)
 
 class WaveShareNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.

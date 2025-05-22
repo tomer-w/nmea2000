@@ -1,6 +1,6 @@
 import logging
 from nmea2000.consts import PhysicalQuantities, Type
-from nmea2000.ioclient import TextNmea2000Gateway, EByteNmea2000Gateway, State
+from nmea2000.ioclient import ActisenseNmea2000Gateway, EByteNmea2000Gateway, State, YachtDevicesNmea2000Gateway
 from nmea2000.message import NMEA2000Message
 from tests.test_decoder import _validate_130842_message, _validate_65280_message
 from .NMEA2000TestServer import NMEA2000TestServer
@@ -33,9 +33,9 @@ def _create_server_client(type: Type):
     if type == Type.EBYTE:
         client = EByteNmea2000Gateway("127.0.0.1", 8881)
     elif type == Type.ACTISENSE:
-        client = TextNmea2000Gateway("127.0.0.1", 8881, Type.ACTISENSE)            
+        client = ActisenseNmea2000Gateway("127.0.0.1", 8881)            
     elif type == Type.YACHT_DEVICES:
-        client = TextNmea2000Gateway("127.0.0.1", 8881, Type.YACHT_DEVICES)            
+        client = YachtDevicesNmea2000Gateway("127.0.0.1", 8881)            
     client.set_receive_callback(handle_received_message)
     client.set_status_callback(handle_status_change)
 
