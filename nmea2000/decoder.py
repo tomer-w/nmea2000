@@ -1,4 +1,3 @@
-import sys
 import logging
 import binascii
 from datetime import datetime, timedelta
@@ -339,7 +338,6 @@ class NMEA2000Decoder():
         nmea2000Message = decode_func(int.from_bytes(data, "big"))
         nmea2000Message.add_data(src, dest, priority, timestamp)
         nmea2000Message.apply_preferred_units(self.preferred_units)
-        sys.stdout.write(nmea2000Message.to_string_test_style()+"\n")
         if self.dump_to_folder is not None:
             str = nmea2000Message.to_json()
             filename = f"nmea_{nmea2000Message.PGN}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}.json"
