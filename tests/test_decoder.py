@@ -1,13 +1,15 @@
 import json
+import uuid
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.consts import PhysicalQuantities, FieldTypes
+import os
 
-dump_to_folder = None
-#dump_to_folder = 'jsons'
+dump_to_file = None
+#dump_to_file = './dumps/pgn_dump.json'
 
 def _get_decoder(exclude_pgns = [], include_pgns = [], preferred_units = {}):
-    return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, preferred_units = preferred_units, dump_to_folder=dump_to_folder)
+    return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, preferred_units = preferred_units, dump_to_file=dump_to_file)
 
 def _validate_65280_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
@@ -36,6 +38,17 @@ def test_single_parse():
     decoder = _get_decoder()
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
+
+def test_single_parse_with_json():
+    filename = f"./dumps/pgn_dump_{uuid.uuid4().hex[:8]}.json"
+    with NMEA2000Decoder(dump_to_file=filename, dump_pgns=[65280]) as decoder:
+        msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
+    _validate_65280_message(msg)
+    assert os.path.exists(filename)
+    with open(filename, "r") as f:
+        lines = f.read().splitlines()
+        assert len(lines) == 1
+    os.remove(filename)
 
 def test_yacht_devices_decode():
     decoder = _get_decoder()

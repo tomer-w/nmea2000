@@ -49,9 +49,11 @@ class AsyncIOClient(ABC):
         pass
 
     def __init__(self, 
-                 exclude_pgns:list[str]=[], 
-                 include_pgns:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={}):
+                 exclude_pgns:list[int | str]=[], 
+                 include_pgns:list[int | str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={},
+                 dump_to_file: str | None = None,
+                 dump_pgns:list[int | str]=[]):
         """Initialize the AsyncIOClient.
         
         Args:
@@ -64,12 +66,16 @@ class AsyncIOClient(ABC):
         self.receive_callback = None
         self.status_callback = None
         self.queue = asyncio.Queue()
-        self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns, preferred_units = preferred_units)
+        self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns, preferred_units = preferred_units, dump_to_file=dump_to_file, dump_pgns = dump_pgns)
         self.encoder = NMEA2000Encoder()
         self.lock = asyncio.Lock()
         
         # Setup logging
         self.logger = logging.getLogger(__name__)
+        
+        self._process_queue_task = asyncio.create_task(self._process_queue())  # Track the process queue task
+        self._receive_task = None  # Track the receive loop task
+
 
     def set_status_callback(self, callback: Optional[Callable[[State], Awaitable[None]]]):
         """Registers a callback to be executed when the connection status changes.
@@ -151,8 +157,13 @@ class AsyncIOClient(ABC):
                 await self._connect_impl()            
                 await self._update_state(State.CONNECTED)
 
-                asyncio.create_task(self._receive_loop())  # Start background receiver
-                asyncio.create_task(self._process_queue())  # Start processing queue
+                # Cancel any existing receive loop task
+                if self._receive_task and not self._receive_task.done():
+                    self._receive_task.cancel()
+                    await asyncio.sleep(0)  # Allow cancellation to propagate
+
+                # Start a new receive loop task
+                self._receive_task = asyncio.create_task(self._receive_loop())
 
             if self._state == State.CONNECTED:
                 return
@@ -209,6 +220,14 @@ class AsyncIOClient(ABC):
         await self._update_state(State.CLOSED)
         if self.writer:
             self.writer.close()
+        # Cancel the receive loop task if it exists
+        if self._receive_task and not self._receive_task.done():
+            self._receive_task.cancel()
+            await asyncio.sleep(0)  # Allow cancellation to propagate
+        # Cancel the process queue task if it exists
+        if self._process_queue_task and not self._process_queue_task.done():
+            self._process_queue_task.cancel()
+            await asyncio.sleep(0)  # Allow cancellation to propagate
         self.logger.info("Connection closed.")
 
     async def _process_queue(self):
@@ -220,9 +239,10 @@ class AsyncIOClient(ABC):
         self.logger.info("process queue loop started")
         while self._state != State.CLOSED:
             data = await self.queue.get()
-            if self.receive_callback:
+            receive_callback = self.receive_callback
+            if receive_callback:
                 try:
-                    await self.receive_callback(data)
+                    await receive_callback(data)
                 except Exception as e:
                     self.logger.error(f"Error in receive callback: {e}", exc_info=True)
             self.queue.task_done()
@@ -250,9 +270,11 @@ class EByteNmea2000Gateway(AsyncIOClient):
     def __init__(self,
                  host: str,
                  port: int, 
-                 exclude_pgns:list[str]=[], 
-                 include_pgns:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={}):
+                 exclude_pgns:list[int | str]=[], 
+                 include_pgns:list[int | str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={},
+                 dump_to_file: str | None = None,
+                 dump_pgns:list[int | str]=[]):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -261,7 +283,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
-        super().__init__(exclude_pgns, include_pgns, preferred_units)
+        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
         self.host = host
         self.port = port
         self.lock = asyncio.Lock()
@@ -327,9 +349,11 @@ class TextNmea2000Gateway(AsyncIOClient):
                  host: str,
                  port: int, 
                  type: Type,
-                 exclude_pgns:list[str]=[], 
-                 include_pgns:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={}):
+                 exclude_pgns:list[int | str]=[], 
+                 include_pgns:list[int | str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={},
+                 dump_to_file: str | None = None,
+                 dump_pgns:list[int | str]=[]):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -341,7 +365,7 @@ class TextNmea2000Gateway(AsyncIOClient):
         if type != Type.ACTISENSE and type != Type.YACHT_DEVICES:
             raise ValueError(f"Invalid type: {type}. Must be either ACTISENSE or YACHT_DEVICES.")
         
-        super().__init__(exclude_pgns, include_pgns, preferred_units)
+        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
         self.host = host
         self.port = port
         self.type = type    
@@ -403,11 +427,13 @@ class ActisenseNmea2000Gateway(TextNmea2000Gateway):
     through TCP-based gateways like Actisense W2K-1.
     """
     def __init__(self,
-                 host: str,
-                 port: int, 
-                 exclude_pgns:list[str]=[], 
-                 include_pgns:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={}):
+                host: str,
+                port: int, 
+                exclude_pgns:list[int | str]=[], 
+                include_pgns:list[int | str]=[],
+                preferred_units:dict[PhysicalQuantities, str]={},
+                dump_to_file: str | None = None,
+                dump_pgns:list[int | str]=[]):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -416,7 +442,7 @@ class ActisenseNmea2000Gateway(TextNmea2000Gateway):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """        
-        super().__init__(host, port, Type.ACTISENSE, exclude_pgns, include_pgns, preferred_units)
+        super().__init__(host, port, Type.ACTISENSE, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
 
 class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
     """TCP implementation of AsyncIOClient for NMEA2000 Yacht Devices gateways.
@@ -427,9 +453,11 @@ class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
     def __init__(self,
                  host: str,
                  port: int, 
-                 exclude_pgns:list[str]=[], 
-                 include_pgns:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={}):
+                 exclude_pgns:list[int | str]=[], 
+                 include_pgns:list[int | str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={},
+                 dump_to_file: str | None = None,
+                 dump_pgns:list[int | str]=[]):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -438,7 +466,7 @@ class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """        
-        super().__init__(host, port, Type.YACHT_DEVICES, exclude_pgns, include_pgns, preferred_units)
+        super().__init__(host, port, Type.YACHT_DEVICES, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
 
 class WaveShareNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.
@@ -448,10 +476,11 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
     """
     def __init__(self,
                  port: str,
-                 exclude_pgns:list[str]=[], 
-                 include_pgns:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={}
-                 ):
+                 exclude_pgns:list[int | str]=[], 
+                 include_pgns:list[int | str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={},
+                 dump_to_file: str | None = None,
+                 dump_pgns:list[int | str]=[]):
         """Initialize a USB/Serial NMEA2000 gateway client.
         
         Args:
@@ -459,7 +488,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
-        super().__init__(exclude_pgns, include_pgns, preferred_units)
+        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
         self.port = port
         self._buffer = None
 

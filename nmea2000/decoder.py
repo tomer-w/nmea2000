@@ -1,12 +1,11 @@
 import logging
 import binascii
+import os
 from datetime import datetime, timedelta
 from typing import Tuple
 from .message import NMEA2000Message
 from .pgns import *  # noqa: F403
 from .consts import PhysicalQuantities
-import os
-import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +20,12 @@ class fast_pgn_metadata():
         return f"<fast_pgn_metadata frames={len(self.frames)} payload_length={self.payload_length} bytes_stored={self.bytes_stored} sequence_counter={self.sequence_counter}>"
 
 class NMEA2000Decoder():
-    def __init__(self, exclude_pgns:list[int | str]=[], include_pgns:list[int | str]=[], preferred_units:dict[PhysicalQuantities, str]={}, dump_to_folder: str | None = None) -> None:
+    def __init__(self, exclude_pgns:list[int | str]=[], include_pgns:list[int | str]=[], preferred_units:dict[PhysicalQuantities, str]={}, dump_to_file: str | None = None, dump_pgns:list[int | str]=[]) -> None:
         self.data = {}
-        self.dump_to_folder = dump_to_folder
+        self.dump_TextIOWrapper = None
+        if dump_to_file:
+            os.makedirs(os.path.dirname(dump_to_file), exist_ok=True)
+            self.dump_TextIOWrapper = open(dump_to_file, 'a')
         if not isinstance(exclude_pgns, list):
             raise ValueError("exclude_pgns must be a list")
         if not isinstance(include_pgns, list):
@@ -33,6 +35,7 @@ class NMEA2000Decoder():
         
         self.exclude_pgns, self.exclude_pgns_ids = self.split_pgn_list(exclude_pgns)
         self.include_pgns, self.include_pgns_ids = self.split_pgn_list(include_pgns)
+        self.dump_include_pgns, self.dump_include_pgns_ids = self.split_pgn_list(dump_pgns)
         self.preferred_units = {k: v.lower() for k, v in preferred_units.items()}
         
     @staticmethod
@@ -359,9 +362,22 @@ class NMEA2000Decoder():
 
         nmea2000Message.add_data(src, dest, priority, timestamp)
         nmea2000Message.apply_preferred_units(self.preferred_units)
-        if self.dump_to_folder is not None:
-            str = nmea2000Message.to_json()
-            filename = f"nmea_{nmea2000Message.PGN}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}.json"
-            with open(os.path.join(self.dump_to_folder, filename), 'w') as f:
-                f.write(str)
+        if (self.dump_TextIOWrapper is not None) and (len(self.dump_include_pgns)+len(self.dump_include_pgns_ids) == 0 or nmea2000Message.PGN in self.dump_include_pgns or nmea2000Message.id in self.dump_include_pgns_ids):
+            str = nmea2000Message.to_json() + "\n"
+            self.dump_TextIOWrapper.write(str)
         return nmea2000Message
+
+    def close(self):
+        """Close the dump_TextIOWrapper file if it is open."""
+        if self.dump_TextIOWrapper:
+            self.dump_TextIOWrapper.close()
+            self.dump_TextIOWrapper = None
+            logger.info("dump_TextIOWrapper file has been closed.")
+
+    def __enter__(self):
+        """Enter the runtime context related to this object."""
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Exit the runtime context and clean up resources."""
+        self.close()
