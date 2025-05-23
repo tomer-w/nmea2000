@@ -3,7 +3,7 @@ from nmea2000.decoder import NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
 from .test_decoder import _get_decoder
 
-def _validate_129029_message(msg: NMEA2000Message):
+def _validate_129029_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 129029
     assert msg.priority == 3
@@ -85,7 +85,25 @@ def test_decode_strings_from_file_2():
         else:
             assert msg is None
     assert counter == 16
-    
+
+def test_decode_strings_from_file_2_exclude_id():
+    with open("tests/recombine-frames-2.in", "r") as f:
+        lines = f.read().splitlines()
+
+    decoder = _get_decoder(exclude_pgns=["0x1ef00ManufacturerProprietaryFastPacketAddressed"])
+    counter = 0
+    for line in lines:
+        input_data = line.strip()
+        if input_data.startswith('#') or len(input_data) <= 1:
+            continue
+        counter += 1
+        msg = decoder.decode_basic_string(input_data)
+        if counter == 11:
+            _validate_129029_message(msg)
+        else:
+            assert msg is None
+    assert counter == 16
+
 def test_decode_strings_from_file_3():
     with open("tests/recombine-frames-3.in", "r") as f:
         lines = f.read().splitlines()

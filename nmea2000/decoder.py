@@ -21,7 +21,7 @@ class fast_pgn_metadata():
         return f"<fast_pgn_metadata frames={len(self.frames)} payload_length={self.payload_length} bytes_stored={self.bytes_stored} sequence_counter={self.sequence_counter}>"
 
 class NMEA2000Decoder():
-    def __init__(self, exclude_pgns:list[str]=[], include_pgns:list[str]=[], preferred_units:dict[PhysicalQuantities, str]={}, dump_to_folder: str | None = None) -> None:
+    def __init__(self, exclude_pgns:list[int | str]=[], include_pgns:list[int | str]=[], preferred_units:dict[PhysicalQuantities, str]={}, dump_to_folder: str | None = None) -> None:
         self.data = {}
         self.dump_to_folder = dump_to_folder
         if not isinstance(exclude_pgns, list):
@@ -31,10 +31,23 @@ class NMEA2000Decoder():
         if len(exclude_pgns) > 0 and len(include_pgns) > 0:
             raise ValueError("Only one of exclude_pgns or include_pgns can be used")
         
-        self.exclude_pgns = exclude_pgns
-        self.include_pgns = include_pgns
+        self.exclude_pgns, self.exclude_pgns_ids = self.split_pgn_list(exclude_pgns)
+        self.include_pgns, self.include_pgns_ids = self.split_pgn_list(include_pgns)
         self.preferred_units = {k: v.lower() for k, v in preferred_units.items()}
         
+    @staticmethod
+    def split_pgn_list(pgn_list: list[int | str]) -> Tuple[list[int], list[str]]:
+        """Split a list of PGNs into two lists: one for integers and one for strings."""
+        int_list = []
+        str_list = []
+        for pgn in pgn_list:
+            if isinstance(pgn, int):
+                int_list.append(pgn)
+            elif isinstance(pgn, str):
+                str_list.append(pgn)
+            else:
+                raise ValueError(f"Invalid PGN type: {type(pgn)}. Must be int or str.")
+        return int_list, str_list
 
     def _decode_fast_message(self, pgn, priority, src, dest, timestamp, can_data) -> NMEA2000Message | None:
         """Parse a fast packet message and store the data until all frames are received."""
@@ -316,7 +329,7 @@ class NMEA2000Decoder():
             logger.debug(f"Excluding PGN: {pgn_id}")
             return None
         if len(self.include_pgns) > 0 and pgn_id not in self.include_pgns:
-            logger.debug(f"Excluding PGN: {pgn_id}")
+            logger.debug(f"Excluding (by include) PGN: {pgn_id}")
             return None
 
         is_fast = False
@@ -328,7 +341,7 @@ class NMEA2000Decoder():
         else:
             return self._call_decode_function(pgn_id, priority, source_id, destination_id, timestamp, can_data)
 
-    def _call_decode_function(self, pgn:int, priority: int, src: int, dest: int, timestamp: datetime, data:bytes) -> NMEA2000Message:
+    def _call_decode_function(self, pgn:int, priority: int, src: int, dest: int, timestamp: datetime, data:bytes) -> NMEA2000Message | None:
         decode_func_name = f'decode_pgn_{pgn}'
         decode_func = globals().get(decode_func_name)
 
@@ -336,6 +349,14 @@ class NMEA2000Decoder():
             raise ValueError(f"No decoding function found for PGN: {pgn}")
 
         nmea2000Message = decode_func(int.from_bytes(data, "big"))
+        # Check if the PGN should be excluded or included by ID
+        if nmea2000Message.id in self.exclude_pgns_ids:
+            logger.debug(f"Excluding PGN by id: {nmea2000Message.id}")
+            return None
+        if len(self.include_pgns_ids) > 0 and nmea2000Message.id not in self.include_pgns_ids:
+            logger.debug(f"Excluding (by include) PGN by id: {nmea2000Message.id}")
+            return None
+
         nmea2000Message.add_data(src, dest, priority, timestamp)
         nmea2000Message.apply_preferred_units(self.preferred_units)
         if self.dump_to_folder is not None:
