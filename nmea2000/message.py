@@ -23,12 +23,14 @@ class NMEA2000Message:
     destination: int = 0
     priority: int = 0
     timestamp: datetime = datetime.now()
+    source_iso_name: int | None = None
 
-    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime):
+    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: int):
         self.source = src
         self.destination = dest
         self.priority = priority
         self.timestamp = timestamp
+        self.source_iso_name = source_iso_name
 
     def apply_preferred_units(self, preferred_units: dict[PhysicalQuantities, str]):
         if len(preferred_units) == 0:
@@ -57,7 +59,7 @@ class NMEA2000Message:
                     f.value = radians_to_degrees(f.value)
 
     def __repr__(self):
-        return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, dest={self.destination}, description={self.description}, fields={self.fields})"
+        return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, source_iso_name={self.source_iso_name}, dest={self.destination}, description={self.description}, fields={self.fields})"
 
     def to_string_test_style(self):
         fields_str = ', '.join([field.to_string_test_style() for field in self.fields])

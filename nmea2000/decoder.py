@@ -37,6 +37,7 @@ class NMEA2000Decoder():
         self.include_pgns, self.include_pgns_ids = self.split_pgn_list(include_pgns)
         self.dump_include_pgns, self.dump_include_pgns_ids = self.split_pgn_list(dump_pgns)
         self.preferred_units = {k: v.lower() for k, v in preferred_units.items()}
+        self.source_to_iso_name = {}
         
     @staticmethod
     def split_pgn_list(pgn_list: list[int | str]) -> Tuple[list[int], list[str]]:
@@ -351,7 +352,8 @@ class NMEA2000Decoder():
         if not decode_func:
             raise ValueError(f"No decoding function found for PGN: {pgn}")
 
-        nmea2000Message = decode_func(int.from_bytes(data, "big"))
+        data_int = int.from_bytes(data, "big")
+        nmea2000Message = decode_func(data_int)
         # Check if the PGN should be excluded or included by ID
         if nmea2000Message.id in self.exclude_pgns_ids:
             logger.debug(f"Excluding PGN by id: {nmea2000Message.id}")
@@ -359,12 +361,21 @@ class NMEA2000Decoder():
         if len(self.include_pgns_ids) > 0 and nmea2000Message.id not in self.include_pgns_ids:
             logger.debug(f"Excluding (by include) PGN by id: {nmea2000Message.id}")
             return None
-
-        nmea2000Message.add_data(src, dest, priority, timestamp)
-        nmea2000Message.apply_preferred_units(self.preferred_units)
+        
+        # Handle dump to file
         if (self.dump_TextIOWrapper is not None) and (len(self.dump_include_pgns)+len(self.dump_include_pgns_ids) == 0 or nmea2000Message.PGN in self.dump_include_pgns or nmea2000Message.id in self.dump_include_pgns_ids):
             str = nmea2000Message.to_json() + "\n"
             self.dump_TextIOWrapper.write(str)
+        
+        # Handle ISO Address Claim messages and enrichment
+        if nmea2000Message.PGN == 60928:
+            # In this message the data is a 64 bit unique NAME which is stable between network restarts
+            self.source_to_iso_name[src] = data_int
+        source_iso_name = self.source_to_iso_name.get(src, None)
+
+        nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name)
+        nmea2000Message.apply_preferred_units(self.preferred_units)
+
         return nmea2000Message
 
     def close(self):

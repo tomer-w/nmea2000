@@ -6,7 +6,7 @@ from nmea2000.consts import PhysicalQuantities, FieldTypes
 import os
 
 dump_to_file = None
-#dump_to_file = './dumps/pgn_dump.json'
+#dump_to_file = './dumps/pgn_dump.jsonl'
 
 def _get_decoder(exclude_pgns = [], include_pgns = [], preferred_units = {}):
     return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, preferred_units = preferred_units, dump_to_file=dump_to_file)
@@ -40,7 +40,7 @@ def test_single_parse():
     _validate_65280_message(msg)
 
 def test_single_parse_with_json():
-    filename = f"./dumps/pgn_dump_{uuid.uuid4().hex[:8]}.json"
+    filename = f"./dumps/pgn_dump_{uuid.uuid4().hex[:8]}.jsonl"
     with NMEA2000Decoder(dump_to_file=filename, dump_pgns=[65280]) as decoder:
         msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
@@ -318,6 +318,22 @@ def _validate_130842_message(msg: NMEA2000Message):
     assert msg.fields[10].value == 0
     assert msg.fields[11].id == "i"
     assert msg.fields[11].value == 0
+
+
+def test_iso_address_parse():
+    decoder = _get_decoder()
+    msg_60928 = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
+    assert isinstance(msg_60928, NMEA2000Message)
+    assert msg_60928.source_iso_name is not None
+    msg_126998 = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
+    assert isinstance(msg_126998, NMEA2000Message)
+    assert msg_126998.PGN == 126998
+    assert msg_126998.source_iso_name is not None
+    assert msg_126998.source_iso_name == msg_60928.source_iso_name
+    msg_126998_2 = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,4,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
+    assert isinstance(msg_126998_2, NMEA2000Message)
+    assert msg_126998_2.PGN == 126998
+    assert msg_126998_2.source_iso_name is None
 
 
 def test_fast_parse():
