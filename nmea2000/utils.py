@@ -4,7 +4,7 @@ from datetime import date, timedelta
 import struct
 import math
 from datetime import time
-from typing import Optional
+from typing import Optional, Tuple
 
 def kelvin_to_fahrenheit(kelvin):
     """
@@ -92,7 +92,7 @@ def decode_int(data_raw: int, bit_offset: int, bit_length: int):
     result = data_raw & mask
     return result
 
-def decode_date(days_since_epoch: int) -> date:
+def decode_date(days_since_epoch: int | float | None) -> date | None:
     """
     Decodes an integer representing the number of days since 1970-01-01 (UNIX epoch)
     """
@@ -124,7 +124,7 @@ def encode_date(decoded_date: date) -> int:
     return days_since_epoch
 
 
-def decode_time(seconds_since_midnight: int) -> time:
+def decode_time(seconds_since_midnight: int | float | None) -> time | None:
     """
     Decodes an integer representing seconds since midnight into a time object.
     Returns:
@@ -217,12 +217,12 @@ def decode_float(data_raw: int, bit_offset: int, bit_length: int):
     
     return decoded_float
 
-def encode_float(float_number):
+def encode_float(float_number) -> int:
     """
     Encodes a Python float into a 32-bit integer representing an IEEE-754 floating-point number in little endian format.
     """
     if float_number is None:
-        return None
+        raise ValueError("Cannot encode None as a float")
 
     # Pack the float into bytes using the '<f' format which specifies little-endian 32-bit floating point.
     bytes_data = struct.pack('<f', float_number)
@@ -233,7 +233,7 @@ def encode_float(float_number):
     return encoded_int
 
 
-def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: int) -> Optional[int]:
+def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: float) -> Optional[float]:
     """
     The function follows specific decoding rules based on the bit length of the number:
     - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (None is returned).
@@ -333,7 +333,7 @@ def decode_string_lz(data_raw: int, bit_offset: int) -> str:
     decoded_str = byte_arr_str.decode('utf-8', errors='ignore')
     return decoded_str
     
-def decode_string_lau(data_raw: int, bit_offset: int) -> str:
+def decode_string_lau(data_raw: int, bit_offset: int) -> Tuple[str | None, int]:
     data_raw = data_raw >> bit_offset
     byte_arr = data_raw.to_bytes(((data_raw.bit_length() + 7) // 8)+1, byteorder='little')
     if len(byte_arr) < 2:

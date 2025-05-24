@@ -19,6 +19,9 @@ class fast_pgn_metadata():
     def __repr__(self):
         return f"<fast_pgn_metadata frames={len(self.frames)} payload_length={self.payload_length} bytes_stored={self.bytes_stored} sequence_counter={self.sequence_counter}>"
 
+ISO_CLAIM_PGN = 60928
+ISO_CLAIM_PGN_ID = "isoAddressClaim"
+
 class NMEA2000Decoder():
     def __init__(self, exclude_pgns:list[int | str]=[], include_pgns:list[int | str]=[], preferred_units:dict[PhysicalQuantities, str]={}, dump_to_file: str | None = None, dump_pgns:list[int | str]=[]) -> None:
         self.data = {}
@@ -38,7 +41,21 @@ class NMEA2000Decoder():
         self.dump_include_pgns, self.dump_include_pgns_ids = self.split_pgn_list(dump_pgns)
         self.preferred_units = {k: v.lower() for k, v in preferred_units.items()}
         self.source_to_iso_name = {}
-        
+
+        self.iso_claim_filter = (ISO_CLAIM_PGN in self.exclude_pgns) or ("isoAddressClaim" in self.exclude_pgns_ids)
+        if self.iso_claim_filter:
+            while ISO_CLAIM_PGN in self.exclude_pgns:
+                self.exclude_pgns.remove(ISO_CLAIM_PGN)    
+            while ISO_CLAIM_PGN_ID in self.exclude_pgns_ids:
+                self.exclude_pgns_ids.remove(ISO_CLAIM_PGN_ID)    
+            logger.info("iso address claim will be removed later")
+
+        logger.info("PGN filter exclude: %s, %s", self.exclude_pgns, self.exclude_pgns_ids)
+        logger.info("PGN filter include: %s, %s", self.include_pgns, self.include_pgns_ids)
+        logger.info("Preffered units: %s", self.preferred_units)
+        logger.info("Dump location: %s, PGNs: %s", dump_to_file, dump_pgns)
+
+            
     @staticmethod
     def split_pgn_list(pgn_list: list[int | str]) -> Tuple[list[int], list[str]]:
         """Split a list of PGNs into two lists: one for integers and one for strings."""
@@ -368,9 +385,12 @@ class NMEA2000Decoder():
             self.dump_TextIOWrapper.write(str)
         
         # Handle ISO Address Claim messages and enrichment
-        if nmea2000Message.PGN == 60928:
+        if nmea2000Message.PGN == ISO_CLAIM_PGN:
             # In this message the data is a 64 bit unique NAME which is stable between network restarts
             self.source_to_iso_name[src] = data_int
+            if self.iso_claim_filter:
+                return None
+            
         source_iso_name = self.source_to_iso_name.get(src, None)
 
         nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name)

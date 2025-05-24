@@ -29879,6 +29879,7 @@ def decode_pgn_129792(_data_raw_: int) -> NMEA2000Message:
 
     # 12:binary_data | Offset: 136, Length: , Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 136
+    assert number_of_bits_in_binary_data_field is int
     binary_data = binary_data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, number_of_bits_in_binary_data_field))
     nmea2000Message.fields.append(NMEA2000Field('binaryData', 'Binary Data', None, None, binary_data, binary_data_raw, None, FieldTypes.BINARY, False))
     
@@ -30504,6 +30505,7 @@ def decode_pgn_129795(_data_raw_: int) -> NMEA2000Message:
 
     # 12:binary_data | Offset: 104, Length: , Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 104
+    assert number_of_bits_in_binary_data_field is int
     binary_data = binary_data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, number_of_bits_in_binary_data_field))
     nmea2000Message.fields.append(NMEA2000Field('binaryData', 'Binary Data', None, None, binary_data, binary_data_raw, None, FieldTypes.BINARY, False))
     
@@ -30763,6 +30765,7 @@ def decode_pgn_129797(_data_raw_: int) -> NMEA2000Message:
 
     # 8:binary_data | Offset: 64, Length: , Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
+    assert number_of_bits_in_binary_data_field is int
     binary_data = binary_data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, number_of_bits_in_binary_data_field))
     nmea2000Message.fields.append(NMEA2000Field('binaryData', 'Binary Data', None, None, binary_data, binary_data_raw, None, FieldTypes.BINARY, False))
     
@@ -46620,6 +46623,7 @@ def decode_pgn_130820_fusionSiriusxmPresets(_data_raw_: int) -> NMEA2000Message:
 
     # 7:values | Offset: 48, Length: , Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
+    assert count is int
     values = values_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, count))
     nmea2000Message.fields.append(NMEA2000Field('values', 'Values', "Preset Values. There will be Count / 4 presets stored", None, values, values_raw, None, FieldTypes.BINARY, False))
     

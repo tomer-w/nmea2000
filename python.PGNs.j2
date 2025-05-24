@@ -188,6 +188,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
             {%- else -%}
             {%- set length_field = pgn.Fields[field.BitLengthField-1] %}
             {%- set length_field_name = generate_field_python_name(length_field.Name, length_field.FieldType, length_field.BitOffset) %}
+    assert {{ length_field_name }} is int
     {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, {{ length_field_name }}))
             {%- endif -%}
         {%- else %}

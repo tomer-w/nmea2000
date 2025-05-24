@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime, time
 import binascii
 from dataclasses import dataclass, field
 from typing import Any
@@ -87,8 +87,8 @@ class NMEA2000Field:
     name: str | None = None
     description: str | None = None
     unit_of_measurement: str | None = None
-    value: str | int | float | bytes  | None= 0
-    raw_value: int | bytes | None = 0
+    value: str | int | float | bytes | time | date | None= 0
+    raw_value: int | float | str | bytes | None = 0
     physical_quantities: PhysicalQuantities | None = None
     type: FieldTypes = FieldTypes.NUMBER
     part_of_primary_key: bool | None = None
@@ -109,12 +109,12 @@ class NMEA2000Field:
 class LookupFieldTypeEnumeration:
     name: str
     field_type: FieldTypes
-    resolution: float
-    unit: str
+    resolution: float | None
+    unit: str | None
     bits: int
-    lookup_enumeration: str
+    lookup_enumeration: str | None
 
-    def __init__(self, name: str, field_type: FieldTypes, resolution: float, unit: str, bits: int, lookup_enumeration: str):
+    def __init__(self, name: str, field_type: FieldTypes, resolution: float | None, unit: str | None, bits: int, lookup_enumeration: str | None):
         self.name = name
         self.field_type = field_type
         self.resolution = resolution

@@ -291,7 +291,7 @@ def test_json():
         assert field2.value == field.value
         assert field2.raw_value == field.raw_value
 
-def _validate_130842_message(msg: NMEA2000Message):
+def _validate_130842_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 130842
     assert msg.priority == 7
@@ -334,6 +334,15 @@ def test_iso_address_parse():
     assert isinstance(msg_126998_2, NMEA2000Message)
     assert msg_126998_2.PGN == 126998
     assert msg_126998_2.source_iso_name is None
+
+def test_iso_address_parse_exclude():
+    decoder = _get_decoder(exclude_pgns=[60928])
+    msg_60928 = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
+    assert msg_60928 is None
+    msg_126998 = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
+    assert isinstance(msg_126998, NMEA2000Message)
+    assert msg_126998.PGN == 126998
+    assert msg_126998.source_iso_name == 13857746478299126779
 
 
 def test_fast_parse():
