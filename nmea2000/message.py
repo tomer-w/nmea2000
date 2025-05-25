@@ -85,19 +85,21 @@ class NMEA2000Message:
     def get_field_by_id(self, id: str) -> NMEA2000Field:
         field = next((f for f in self.fields if f.id == id), None)
         if field is None:
-            raise ValueError(f"Field with id '{id}' is missing.")
+            raise ValueError(f"PGN: {self.id}: Field with id '{id}' is missing.")
         return field
 
-    def get_field_int_value_by_id(self, id: str) -> int:
+    def get_field_int_value_by_id(self, id: str, default_value: int | None = None) -> int:
         field = self.get_field_by_id(id)
         if not isinstance(field.value, int):
-            raise ValueError(f"Field with id '{id}' is not an integer. It is {type(field.value).__name__}.")
+            if default_value is not None:
+                return default_value
+            raise ValueError(f"PGN: {self.id}: Field with id '{id}' is not an integer. It is {type(field.value).__name__}.")
         return field.value
 
     def get_field_str_value_by_id(self, id: str) -> str:
         field = self.get_field_by_id(id)
         if not isinstance(field.value, str):
-            raise ValueError(f"Field with id '{id}' is not a string. It is {type(field.value).__name__}.")
+            raise ValueError(f"PGN: {self.id}: Field with id '{id}' is not a string. It is {type(field.value).__name__}.")
         return field.value
     
 # NMEA2000Field class represents a single NMEA 2000 field
@@ -163,14 +165,14 @@ class IsoName:
             name: The 64-bit NAME field value as an integer.
         """
         self.name = name
-        self.unique_number = message.get_field_int_value_by_id('uniqueNumber')
+        self.unique_number = message.get_field_int_value_by_id('uniqueNumber', 0)
         self.manufacturer_code = message.get_field_str_value_by_id('manufacturerCode')
         self.device_instance = (
-            message.get_field_int_value_by_id('deviceInstanceUpper') << 3
-        ) | message.get_field_int_value_by_id('deviceInstanceLower')
+            message.get_field_int_value_by_id('deviceInstanceUpper', 0) << 3
+        ) | message.get_field_int_value_by_id('deviceInstanceLower', 0)
         self.device_function = message.get_field_str_value_by_id('deviceFunction')
         self.device_class = message.get_field_str_value_by_id('deviceClass')
-        self.system_instance = message.get_field_int_value_by_id('systemInstance')
+        self.system_instance = message.get_field_int_value_by_id('systemInstance', 0)
         self.industry_group = message.get_field_str_value_by_id('industryGroup')
         self.arbitrary_address_capable = message.get_field_str_value_by_id('arbitraryAddressCapable') == "Yes"
 

@@ -339,6 +339,12 @@ def test_iso_address_parse():
     assert msg_126998_2.PGN == 126998
     assert msg_126998_2.source_iso_name is None
 
+def test_iso_address_parse_zero():
+    decoder = _get_decoder()
+    msg_60928 = decoder.decode_basic_string("2000-09-10T12:10:16.614Z,6,60928,5,255,8,f5,01,c0,2c,ef,aa,46,c0", True)
+    assert isinstance(msg_60928, NMEA2000Message)
+    assert msg_60928.source_iso_name is not None
+
 def test_iso_address_parse_exclude():
     decoder = _get_decoder(exclude_pgns=[60928])
     msg_60928 = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
