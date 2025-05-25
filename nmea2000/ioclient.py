@@ -4,7 +4,8 @@ import socket
 from enum import Enum
 from typing import Callable, Awaitable, Optional
 import serial_asyncio
-from tenacity import retry, stop_never, wait_exponential, retry_if_exception_type
+from tenacity import stop_never, wait_exponential, retry_if_exception_type
+from tenacity.asyncio import AsyncRetrying
 from abc import ABC, abstractmethod
 
 from nmea2000.consts import PhysicalQuantities
@@ -149,31 +150,31 @@ class AsyncIOClient(ABC):
             return
 
         async with self.lock:
-            @retry(
-                stop=stop_never,  # Retry forever 
-                wait=wait_exponential(multiplier=0.5, max=10),  # Exponential backoff (0.5s, 1s, 2s, ...)
-                retry=retry_if_exception_type(Exception),  # Only retry on exceptions
-                before_sleep=self.log_before_retry  # Log each failure before sleeping
-            )
-            async def retrying_task():
-                if self._state == State.CLOSED:
-                    self.logger.info("Object terminated. stop connect retry.")
-                    return
-                
-                await self._connect_impl()            
-                await self._update_state(State.CONNECTED)
-
-                # Cancel any existing receive loop task
-                if self._receive_task and not self._receive_task.done():
-                    self._receive_task.cancel()
-                    await asyncio.sleep(0)  # Allow cancellation to propagate
-
-                # Start a new receive loop task
-                self._receive_task = asyncio.create_task(self._receive_loop())
-
             if self._state == State.CONNECTED:
                 return
-            await retrying_task()
+                
+            # Use AsyncRetrying for proper async behavior
+            async for attempt in AsyncRetrying(
+                stop=stop_never,  # Retry forever
+                wait=wait_exponential(multiplier=0.5, max=10),  # Exponential backoff
+                retry=retry_if_exception_type(Exception),  # Only retry on exceptions
+                before_sleep=self.log_before_retry  # Log each failure before sleeping
+            ):
+                with attempt:
+                    if self._state == State.CLOSED:
+                        self.logger.info("Object terminated. stop connect retry.")
+                        return
+                    
+                    await self._connect_impl()            
+                    await self._update_state(State.CONNECTED)
+    
+                    # Cancel any existing receive loop task
+                    if self._receive_task and not self._receive_task.done():
+                        self._receive_task.cancel()
+                        await asyncio.sleep(0)  # Allow cancellation to propagate
+    
+                    # Start a new receive loop task
+                    self._receive_task = asyncio.create_task(self._receive_loop())
 
     async def _receive_loop(self):
         """Background task that continuously receives messages from the gateway.
@@ -206,7 +207,7 @@ class AsyncIOClient(ABC):
             assert self.writer is not None
             for msg in msgs:
                 self.writer.write(msg)
-                self.writer.drain()
+                await self.writer.drain()
                 self.logger.info(f"Sent: {msg.hex()}")
 
         except ValueError as ve:
@@ -266,6 +267,14 @@ class AsyncIOClient(ABC):
             retry_state.next_action.sleep if retry_state.next_action else 0
         )
 
+    async def __aenter__(self):
+        """Enter the async runtime context related to this object."""
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        """Exit the async runtime context and clean up resources."""
+        await self.close()
+        
 
 class EByteNmea2000Gateway(AsyncIOClient):
     """TCP implementation of AsyncIOClient for NMEA2000 gateways.

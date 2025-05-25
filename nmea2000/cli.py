@@ -3,10 +3,8 @@ import asyncio
 import sys
 import logging
 
-from nmea2000.consts import Type
-
 from .message import NMEA2000Message
-from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway
+from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, Type, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 
@@ -207,11 +205,12 @@ def main():
         elif args.type == Type.YACHT_DEVICES:
             logger.info("Using YachtDevicesNmea2000Gateway with server: %s, port: %d", args.server, args.port)
             client = YachtDevicesNmea2000Gateway(args.server, args.port)            
+        asyncio.run(interactive_client(client))
     elif args.command == "usb_client":
         # Create USB client passing callbacks in constructor
         logger.info("Using WaveShareNmea2000Gateway with port: %s", args.port)
         client = WaveShareNmea2000Gateway(args.port)
-    asyncio.run(interactive_client(client))
+        asyncio.run(interactive_client(client))
 
 if __name__ == "__main__":
     main()

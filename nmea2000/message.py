@@ -12,7 +12,7 @@ from .utils import kelvin_to_celsius, kelvin_to_fahrenheit, pascal_to_bar, pasca
 def int_to_bytes(value):
     # Determine the number of bytes needed
     byte_length = (value.bit_length() + 8) // 8 or 1
-    return value.to_bytes(byte_length, byteorder="big", signed=True)
+    return value.to_bytes(byte_length, byteorder="big", signed=False)
 
 # NMEA2000Message class represents a single NMEA 2000 PGN
 @dataclass
@@ -83,19 +83,22 @@ class NMEA2000Message:
         return msg
     
     def get_field_by_id(self, id: str) -> NMEA2000Field:
-        return next(f for f in self.fields if f.id == id)
-    
+        field = next((f for f in self.fields if f.id == id), None)
+        if field is None:
+            raise ValueError(f"Field with id '{id}' is missing.")
+        return field
+
     def get_field_int_value_by_id(self, id: str) -> int:
-        field = next(f for f in self.fields if f.id == id)
-        value = field.value
-        assert isinstance(value, int)
-        return value
-    
+        field = self.get_field_by_id(id)
+        if not isinstance(field.value, int):
+            raise ValueError(f"Field with id '{id}' is not an integer. It is {type(field.value).__name__}.")
+        return field.value
+
     def get_field_str_value_by_id(self, id: str) -> str:
-        field = next(f for f in self.fields if f.id == id)
-        value = field.value
-        assert isinstance(value, str)
-        return value
+        field = self.get_field_by_id(id)
+        if not isinstance(field.value, str):
+            raise ValueError(f"Field with id '{id}' is not a string. It is {type(field.value).__name__}.")
+        return field.value
     
 # NMEA2000Field class represents a single NMEA 2000 field
 @dataclass
@@ -148,6 +151,7 @@ class IsoName:
     device_class: str
     system_instance: int
     industry_group: str
+    arbitrary_address_capable: bool
     name: int
 
     def __init__(self, message: NMEA2000Message, name: int):
@@ -156,7 +160,9 @@ class IsoName:
 
         Args:
             message: An NMEA2000Message object containing the NAME field data.
+            name: The 64-bit NAME field value as an integer.
         """
+        self.name = name
         self.unique_number = message.get_field_int_value_by_id('uniqueNumber')
         self.manufacturer_code = message.get_field_str_value_by_id('manufacturerCode')
         self.device_instance = (
@@ -164,10 +170,9 @@ class IsoName:
         ) | message.get_field_int_value_by_id('deviceInstanceLower')
         self.device_function = message.get_field_str_value_by_id('deviceFunction')
         self.device_class = message.get_field_str_value_by_id('deviceClass')
-        self.industry_group = message.get_field_str_value_by_id('industryGroup')
         self.system_instance = message.get_field_int_value_by_id('systemInstance')
         self.industry_group = message.get_field_str_value_by_id('industryGroup')
-        self.name = name
+        self.arbitrary_address_capable = message.get_field_str_value_by_id('arbitraryAddressCapable') == "Yes"
 
     def __repr__(self):
         return (
@@ -177,4 +182,7 @@ class IsoName:
             f"device_function='{self.device_function}', "
             f"device_class='{self.device_class}', "
             f"system_instance={self.system_instance}, "
-            f"industry_group='{self.industry_group}'")
+            f"industry_group='{self.industry_group}', "
+            f"arbitrary_address_capable={self.arbitrary_address_capable}, "
+            f"name={self.name})"
+        )
