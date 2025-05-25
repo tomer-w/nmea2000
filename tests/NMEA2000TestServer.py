@@ -4,9 +4,10 @@ import argparse
 import time
 import math
 from typing import List
+from nmea2000.ioclient import Type
 from nmea2000.message import NMEA2000Message, NMEA2000Field
 from nmea2000.encoder import NMEA2000Encoder
-from nmea2000.consts import PhysicalQuantities, FieldTypes, Type
+from nmea2000.consts import PhysicalQuantities, FieldTypes
 
 # Configure logging
 logging.basicConfig(
