@@ -1,6 +1,6 @@
 import logging
-from nmea2000.consts import PhysicalQuantities, Type
-from nmea2000.ioclient import ActisenseNmea2000Gateway, EByteNmea2000Gateway, State, YachtDevicesNmea2000Gateway
+from nmea2000.consts import PhysicalQuantities
+from nmea2000.ioclient import ActisenseNmea2000Gateway, EByteNmea2000Gateway, State, Type, YachtDevicesNmea2000Gateway
 from nmea2000.message import NMEA2000Message
 from tests.test_decoder import _validate_130842_message, _validate_65280_message
 from .NMEA2000TestServer import NMEA2000TestServer

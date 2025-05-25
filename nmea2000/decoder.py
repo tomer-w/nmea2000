@@ -3,7 +3,7 @@ import binascii
 import os
 from datetime import datetime, timedelta
 from typing import Tuple
-from .message import NMEA2000Message
+from .message import IsoName, NMEA2000Message
 from .pgns import *  # noqa: F403
 from .consts import PhysicalQuantities
 
@@ -387,7 +387,7 @@ class NMEA2000Decoder():
         # Handle ISO Address Claim messages and enrichment
         if nmea2000Message.PGN == ISO_CLAIM_PGN:
             # In this message the data is a 64 bit unique NAME which is stable between network restarts
-            self.source_to_iso_name[src] = data_int
+            self.source_to_iso_name[src] = IsoName(nmea2000Message, data_int)
             if self.iso_claim_filter:
                 return None
             

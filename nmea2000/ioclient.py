@@ -1,19 +1,19 @@
 import asyncio
 import logging
 import socket
-import enum
+from enum import Enum
 from typing import Callable, Awaitable, Optional
 import serial_asyncio
 from tenacity import retry, stop_never, wait_exponential, retry_if_exception_type
 from abc import ABC, abstractmethod
 
-from nmea2000.consts import PhysicalQuantities, Type
+from nmea2000.consts import PhysicalQuantities
 
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 from .message import NMEA2000Message
 
-class State(enum.Enum):
+class State(Enum):
     """Connection states for NMEA2000 clients.
     
     Attributes:
@@ -24,6 +24,12 @@ class State(enum.Enum):
     DISCONNECTED = 0
     CONNECTED = 1
     CLOSED = 2
+
+class Type(Enum):
+    EBYTE = 0
+    ACTISENSE = 1
+    YACHT_DEVICES = 2
+
 class AsyncIOClient(ABC):
     """Base class for asynchronous NMEA2000 clients.
     

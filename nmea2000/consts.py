@@ -1,9 +1,5 @@
 from enum import Enum, auto
-class Type(Enum):
-    EBYTE = 0
-    ACTISENSE = 1
-    YACHT_DEVICES = 2
-    
+
 class PhysicalQuantities(Enum):
     ELECTRICAL_CURRENT = auto(), # Ampere (A)
     ELECTRICAL_CHARGE = auto(), # Coulomb (C)

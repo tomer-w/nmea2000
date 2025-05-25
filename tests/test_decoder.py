@@ -5,6 +5,9 @@ from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.consts import PhysicalQuantities, FieldTypes
 import os
 
+from nmea2000.message import IsoName
+
+
 dump_to_file = None
 #dump_to_file = './dumps/pgn_dump.jsonl'
 
@@ -33,6 +36,7 @@ def _validate_65280_message(msg: NMEA2000Message | None):
     assert msg.fields[3].type == FieldTypes.NUMBER
     assert msg.fields[3].physical_quantities == PhysicalQuantities.DISTANCE
     assert not msg.fields[3].part_of_primary_key
+    assert msg.get_field_str_value_by_id("industryCode") == "Marine"
 
 def test_single_parse():
     decoder = _get_decoder()
@@ -342,7 +346,8 @@ def test_iso_address_parse_exclude():
     msg_126998 = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
     assert isinstance(msg_126998, NMEA2000Message)
     assert msg_126998.PGN == 126998
-    assert msg_126998.source_iso_name == 13857746478299126779
+    assert isinstance(msg_126998.source_iso_name, IsoName)
+    assert msg_126998.source_iso_name.name == 13857746478299126779
 
 
 def test_fast_parse():

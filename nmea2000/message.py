@@ -1,5 +1,7 @@
-from datetime import date, datetime, time
+from __future__ import annotations
+
 import binascii
+from datetime import date, datetime, time
 from dataclasses import dataclass, field
 from typing import Any
 import orjson
@@ -18,14 +20,14 @@ class NMEA2000Message:
     PGN: int
     id: str = ''
     description: str = ''
-    fields: list = field(default_factory=list)
+    fields: list[NMEA2000Field] = field(default_factory=list)
     source: int = 0
     destination: int = 0
     priority: int = 0
     timestamp: datetime = datetime.now()
-    source_iso_name: int | None = None
+    source_iso_name: IsoName | None = None
 
-    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: int):
+    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName):
         self.source = src
         self.destination = dest
         self.priority = priority
@@ -79,7 +81,22 @@ class NMEA2000Message:
         msg = NMEA2000Message(**data)
         msg.fields = [NMEA2000Field(**field) for field in data.get("fields", [])]
         return msg
-
+    
+    def get_field_by_id(self, id: str) -> NMEA2000Field:
+        return next(f for f in self.fields if f.id == id)
+    
+    def get_field_int_value_by_id(self, id: str) -> int:
+        field = next(f for f in self.fields if f.id == id)
+        value = field.value
+        assert isinstance(value, int)
+        return value
+    
+    def get_field_str_value_by_id(self, id: str) -> str:
+        field = next(f for f in self.fields if f.id == id)
+        value = field.value
+        assert isinstance(value, str)
+        return value
+    
 # NMEA2000Field class represents a single NMEA 2000 field
 @dataclass
 class NMEA2000Field:
@@ -87,7 +104,7 @@ class NMEA2000Field:
     name: str | None = None
     description: str | None = None
     unit_of_measurement: str | None = None
-    value: str | int | float | bytes | time | date | None= 0
+    value: str | int | float | bytes | time | date | None = 0
     raw_value: int | float | str | bytes | None = 0
     physical_quantities: PhysicalQuantities | None = None
     type: FieldTypes = FieldTypes.NUMBER
@@ -105,7 +122,7 @@ class NMEA2000Field:
         else:
             raw_value_hex = self.raw_value
         return f'{self.name} = {self.value} (bytes = "{raw_value_hex}")'
-
+    
 class LookupFieldTypeEnumeration:
     name: str
     field_type: FieldTypes
@@ -121,3 +138,43 @@ class LookupFieldTypeEnumeration:
         self.unit = unit
         self.bits = bits
         self.lookup_enumeration = lookup_enumeration
+
+@dataclass
+class IsoName:
+    unique_number: int
+    manufacturer_code: str
+    device_instance: int
+    device_function: str
+    device_class: str
+    system_instance: int
+    industry_group: str
+    name: int
+
+    def __init__(self, message: NMEA2000Message, name: int):
+        """
+        Initialize an IsoName object from an NMEA2000Message.
+
+        Args:
+            message: An NMEA2000Message object containing the NAME field data.
+        """
+        self.unique_number = message.get_field_int_value_by_id('uniqueNumber')
+        self.manufacturer_code = message.get_field_str_value_by_id('manufacturerCode')
+        self.device_instance = (
+            message.get_field_int_value_by_id('deviceInstanceUpper') << 3
+        ) | message.get_field_int_value_by_id('deviceInstanceLower')
+        self.device_function = message.get_field_str_value_by_id('deviceFunction')
+        self.device_class = message.get_field_str_value_by_id('deviceClass')
+        self.industry_group = message.get_field_str_value_by_id('industryGroup')
+        self.system_instance = message.get_field_int_value_by_id('systemInstance')
+        self.industry_group = message.get_field_str_value_by_id('industryGroup')
+        self.name = name
+
+    def __repr__(self):
+        return (
+            f"IsoName(unique_number={self.unique_number}, "
+            f"manufacturer_code='{self.manufacturer_code}', "
+            f"device_instance={self.device_instance}, "
+            f"device_function='{self.device_function}', "
+            f"device_class='{self.device_class}', "
+            f"system_instance={self.system_instance}, "
+            f"industry_group='{self.industry_group}'")

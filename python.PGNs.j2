@@ -218,7 +218,7 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
     {%- else %}
     {%- set field_id = generate_field_id(field.Id, field.FieldType, field.BitOffset) %}
     # {{ field_id }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}
-    field = next(f for f in nmea2000Message.fields if f.id == '{{ field_id }}')
+    field = nmea2000Message.get_field_by_id("{{ field_id }}")
     if field is None:
         raise Exception("Cant encode this message, missing '{{field.Name}}'")
     {%- if field.FieldType == 'NUMBER' %}
