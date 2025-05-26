@@ -2008,9 +2008,8 @@ master_dict = {
         8: "4800",
         9: "9600",
         10: "19200",
-        11: "19200",
-        12: "38400",
-        13: "57600",
+        11: "38400",
+        12: "57600",
     },
     'SERIAL_DETECTION_MODE': {
         0: "Auto bit rate",
@@ -5558,9 +5557,8 @@ lookup_dict_encode_SERIAL_BIT_RATE = {
     "4800" : 8,
     "9600" : 9,
     "19200" : 10,
-    "19200" : 11,
-    "38400" : 12,
-    "57600" : 13,
+    "38400" : 11,
+    "57600" : 12,
 }
 def lookup_encode_SERIAL_BIT_RATE(value):
     result = lookup_dict_encode_SERIAL_BIT_RATE.get(value, None)
@@ -5870,7 +5868,7 @@ lookup_field_type_dict_SIMNET_KEY_VALUE = {
     5160: LookupFieldTypeEnumeration("Time format", FieldTypes.LOOKUP, None, None, 8, "SIMNET_TIME_FORMAT"),
     5161: LookupFieldTypeEnumeration("Time hour display", FieldTypes.LOOKUP, None, None, 8, "SIMNET_HOUR_DISPLAY"),
     9983: LookupFieldTypeEnumeration("Night mode", FieldTypes.LOOKUP, None, None, 8, "SIMNET_NIGHT_MODE"),
-    11524: LookupFieldTypeEnumeration("True wind shift", FieldTypes.NUMBER, 0.01, "m/s", 16, None),
+    11524: LookupFieldTypeEnumeration("True wind shift", FieldTypes.NUMBER, 0.0001, "rad", 16, None),
     22296: LookupFieldTypeEnumeration("AP low boat speed", FieldTypes.NUMBER, 0.01, "m/s", 16, None),
     32789: LookupFieldTypeEnumeration("Alert bits", FieldTypes.BITLOOKUP, None, None, 16, None),
     44079: LookupFieldTypeEnumeration("Night mode color", FieldTypes.LOOKUP, None, None, 8, "SIMNET_NIGHT_MODE_COLOR"),
@@ -35262,11 +35260,11 @@ def decode_pgn_130306(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('windAngle', 'Wind Angle', None, 'rad', wind_angle, wind_angle_raw, PhysicalQuantities.ANGLE, FieldTypes.NUMBER, False))
     running_bit_offset += 16
 
-    # 4:reference | Offset: 40, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 4:reference | Offset: 40, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 40
     reference_raw = decode_int(_data_raw_, running_bit_offset, 3)
     reference = master_dict['WIND_REFERENCE'].get(reference_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('reference', 'Reference', None, None, reference, reference_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('reference', 'Reference', None, None, reference, reference_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 3
 
     # 5:reserved_43 | Offset: 43, Length: 21, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
