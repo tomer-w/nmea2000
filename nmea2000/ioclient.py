@@ -56,11 +56,12 @@ class AsyncIOClient(ABC):
         pass
 
     def __init__(self, 
-                 exclude_pgns:list[int | str]=[], 
-                 include_pgns:list[int | str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={},
-                 dump_to_file: str | None = None,
-                 dump_pgns:list[int | str]=[]):
+                 exclude_pgns:list[int | str], 
+                 include_pgns:list[int | str],
+                 preferred_units:dict[PhysicalQuantities, str],
+                 dump_to_file: str | None,
+                 dump_pgns:list[int | str],
+                 build_network_map: bool):
         """Initialize the AsyncIOClient.
         
         Args:
@@ -73,7 +74,7 @@ class AsyncIOClient(ABC):
         self.receive_callback = None
         self.status_callback = None
         self.queue = asyncio.Queue()
-        self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns, preferred_units = preferred_units, dump_to_file=dump_to_file, dump_pgns = dump_pgns)
+        self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns, preferred_units = preferred_units, dump_to_file=dump_to_file, dump_pgns = dump_pgns, build_network_map = build_network_map)
         self.encoder = NMEA2000Encoder()
         self.lock = asyncio.Lock()
         
@@ -289,7 +290,8 @@ class EByteNmea2000Gateway(AsyncIOClient):
                  include_pgns:list[int | str]=[],
                  preferred_units:dict[PhysicalQuantities, str]={},
                  dump_to_file: str | None = None,
-                 dump_pgns:list[int | str]=[]):
+                 dump_pgns:list[int | str]=[],
+                 build_network_map: bool = False):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -298,7 +300,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
-        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
+        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map)
         self.host = host
         self.port = port
         self.lock = asyncio.Lock()
@@ -368,7 +370,8 @@ class TextNmea2000Gateway(AsyncIOClient):
                  include_pgns:list[int | str]=[],
                  preferred_units:dict[PhysicalQuantities, str]={},
                  dump_to_file: str | None = None,
-                 dump_pgns:list[int | str]=[]):
+                 dump_pgns:list[int | str]=[],
+                 build_network_map: bool = False):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -380,7 +383,7 @@ class TextNmea2000Gateway(AsyncIOClient):
         if type != Type.ACTISENSE and type != Type.YACHT_DEVICES:
             raise ValueError(f"Invalid type: {type}. Must be either ACTISENSE or YACHT_DEVICES.")
         
-        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
+        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map)
         self.host = host
         self.port = port
         self.type = type    
@@ -448,7 +451,8 @@ class ActisenseNmea2000Gateway(TextNmea2000Gateway):
                 include_pgns:list[int | str]=[],
                 preferred_units:dict[PhysicalQuantities, str]={},
                 dump_to_file: str | None = None,
-                dump_pgns:list[int | str]=[]):
+                dump_pgns:list[int | str]=[],
+                 build_network_map: bool = False):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -457,7 +461,7 @@ class ActisenseNmea2000Gateway(TextNmea2000Gateway):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """        
-        super().__init__(host, port, Type.ACTISENSE, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
+        super().__init__(host, port, Type.ACTISENSE, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map)
 
 class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
     """TCP implementation of AsyncIOClient for NMEA2000 Yacht Devices gateways.
@@ -472,7 +476,8 @@ class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
                  include_pgns:list[int | str]=[],
                  preferred_units:dict[PhysicalQuantities, str]={},
                  dump_to_file: str | None = None,
-                 dump_pgns:list[int | str]=[]):
+                 dump_pgns:list[int | str]=[],
+                 build_network_map: bool = False):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
@@ -481,7 +486,7 @@ class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """        
-        super().__init__(host, port, Type.YACHT_DEVICES, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
+        super().__init__(host, port, Type.YACHT_DEVICES, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map)
 
 class WaveShareNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.
@@ -495,7 +500,8 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
                  include_pgns:list[int | str]=[],
                  preferred_units:dict[PhysicalQuantities, str]={},
                  dump_to_file: str | None = None,
-                 dump_pgns:list[int | str]=[]):
+                 dump_pgns:list[int | str]=[],
+                 build_network_map: bool = False):
         """Initialize a USB/Serial NMEA2000 gateway client.
         
         Args:
@@ -503,7 +509,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
-        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns)
+        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map)
         self.port = port
         self._buffer = None
 

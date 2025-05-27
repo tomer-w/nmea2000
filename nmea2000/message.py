@@ -3,10 +3,14 @@ from __future__ import annotations
 import binascii
 from datetime import date, datetime, time
 from dataclasses import dataclass, field
+import hashlib
+import logging
 from typing import Any
 import orjson
 from .consts import PhysicalQuantities, FieldTypes
 from .utils import kelvin_to_celsius, kelvin_to_fahrenheit, pascal_to_bar, pascal_to_PSI, radians_to_degrees
+
+logger = logging.getLogger(__name__)
 
 # Helper function
 def int_to_bytes(value):
@@ -26,13 +30,25 @@ class NMEA2000Message:
     priority: int = 0
     timestamp: datetime = datetime.now()
     source_iso_name: IsoName | None = None
+    hash: str | None = None
 
-    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName):
+    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName, build_network_map: bool):
         self.source = src
         self.destination = dest
         self.priority = priority
         self.timestamp = timestamp
         self.source_iso_name = source_iso_name
+        self.hash = None
+
+        if build_network_map:
+            # Using MD5 as we don't need secure hashing and speed matters
+            primary_key = f"{self.id}_{self.source_iso_name.name}"
+            for nmea_field in self.fields:
+                if nmea_field.part_of_primary_key:
+                    primary_key += "_" + str(nmea_field.raw_value)
+            logger.debug("primary key: %s. iso name: %s", primary_key, self.source_iso_name)
+            self.hash = hashlib.md5(primary_key.encode()).hexdigest()
+
 
     def apply_preferred_units(self, preferred_units: dict[PhysicalQuantities, str]):
         if len(preferred_units) == 0:

@@ -11,8 +11,8 @@ from nmea2000.message import IsoName
 dump_to_file = None
 #dump_to_file = './dumps/pgn_dump.jsonl'
 
-def _get_decoder(exclude_pgns = [], include_pgns = [], preferred_units = {}):
-    return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, preferred_units = preferred_units, dump_to_file=dump_to_file)
+def _get_decoder(exclude_pgns = [], include_pgns = [], preferred_units = {}, build_network_map = False):
+    return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, preferred_units = preferred_units, dump_to_file=dump_to_file, build_network_map = build_network_map)
 
 def _validate_65280_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
@@ -325,7 +325,7 @@ def _validate_130842_message(msg: NMEA2000Message | None):
 
 
 def test_iso_address_parse():
-    decoder = _get_decoder()
+    decoder = _get_decoder(build_network_map = True)
     msg_60928 = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
     assert isinstance(msg_60928, NMEA2000Message)
     assert msg_60928.source_iso_name is not None
@@ -334,10 +334,9 @@ def test_iso_address_parse():
     assert msg_126998.PGN == 126998
     assert msg_126998.source_iso_name is not None
     assert msg_126998.source_iso_name == msg_60928.source_iso_name
+    assert msg_126998.hash == "027d58d31145159c43becc14347a9c7d"
     msg_126998_2 = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,4,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
-    assert isinstance(msg_126998_2, NMEA2000Message)
-    assert msg_126998_2.PGN == 126998
-    assert msg_126998_2.source_iso_name is None
+    assert msg_126998_2 is None
 
 def test_iso_address_parse_zero():
     decoder = _get_decoder()

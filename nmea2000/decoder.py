@@ -23,9 +23,17 @@ ISO_CLAIM_PGN = 60928
 ISO_CLAIM_PGN_ID = "isoAddressClaim"
 
 class NMEA2000Decoder():
-    def __init__(self, exclude_pgns:list[int | str]=[], include_pgns:list[int | str]=[], preferred_units:dict[PhysicalQuantities, str]={}, dump_to_file: str | None = None, dump_pgns:list[int | str]=[]) -> None:
+    def __init__(self,
+                 exclude_pgns:list[int | str]=[],
+                 include_pgns:list[int | str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={},
+                 dump_to_file: str | None = None,
+                 dump_pgns:list[int | str]=[],
+                 build_network_map: bool = False,
+                 ) -> None:
         self.data = {}
         self.dump_TextIOWrapper = None
+        self.build_network_map = build_network_map
         if dump_to_file:
             os.makedirs(os.path.dirname(dump_to_file), exist_ok=True)
             self.dump_TextIOWrapper = open(dump_to_file, 'a')
@@ -392,8 +400,11 @@ class NMEA2000Decoder():
                 return None
             
         source_iso_name = self.source_to_iso_name.get(src, None)
+        if source_iso_name is None and self.build_network_map:
+            logger.warning("No ISO name found for source %s in PGN id %s. Skipping the message.", src, nmea2000Message.id)
+            return None
 
-        nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name)
+        nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name, self.build_network_map)
         nmea2000Message.apply_preferred_units(self.preferred_units)
 
         return nmea2000Message
