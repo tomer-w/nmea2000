@@ -34,6 +34,7 @@ class NMEA2000Decoder():
         self.data = {}
         self.dump_TextIOWrapper = None
         self.build_network_map = build_network_map
+        self.started_at = datetime.now()
         if dump_to_file:
             os.makedirs(os.path.dirname(dump_to_file), exist_ok=True)
             self.dump_TextIOWrapper = open(dump_to_file, 'a')
@@ -401,7 +402,10 @@ class NMEA2000Decoder():
             
         source_iso_name = self.source_to_iso_name.get(src, None)
         if source_iso_name is None and self.build_network_map:
-            logger.warning("No ISO name found for source %s in PGN id %s. Skipping the message.", src, nmea2000Message.id)
+            if self.started_at < datetime.now() - timedelta(minutes=10):
+                logger.warning("No ISO name found for source %s in PGN id %s. Skipping the message.", src, nmea2000Message.id)
+            else:
+                logger.info("No ISO name found for source %s in PGN id %s. Skipping the message.", src, nmea2000Message.id)
             return None
 
         nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name, self.build_network_map)
