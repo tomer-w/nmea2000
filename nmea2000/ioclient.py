@@ -191,10 +191,10 @@ class AsyncIOClient(ABC):
         msg = NMEA2000Message.from_json(json_str)
         await self.send(msg)
         await asyncio.sleep(2)
-        msg.fields[0].raw_value = 126996
+        msg.fields[0].value = 126996
         await self.send(msg)
         await asyncio.sleep(2)
-        msg.fields[0].raw_value = 126998
+        msg.fields[0].value = 126998
         await self.send(msg)
 
     async def _receive_loop(self):
