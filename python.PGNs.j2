@@ -208,7 +208,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
 {% endfor %}
     return nmea2000Message
 
-def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN {{ pgn.PGN }}."""
     data_raw = 0
     {%- for field in pgn.Fields %}
@@ -221,7 +221,7 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
     field = nmea2000Message.get_field_by_id("{{ field_id }}")
     if field is None:
         raise Exception("Cant encode this message, missing '{{field.Name}}'")
-    {%- if field.FieldType == 'NUMBER' %}
+    {%- if field.FieldType == 'NUMBER' or field.FieldType == 'PGN'%}
     field_value = encode_number(field.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
     {%- elif field.FieldType == 'RESERVED' %}
     field_value = field.value
@@ -239,6 +239,6 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> int:
     data_raw |= (field_value & {{ bits_to_hex(field.BitLength) }}) << {{ field.BitOffset }}
     {%- endif %}
     {%- endfor %}
-    return data_raw
+    return data_raw.to_bytes({{pgn.Length | default('(data_raw.bit_length() + 7) // 8') }}, byteorder="little")
 {% endfor %}
 {% endfor %}

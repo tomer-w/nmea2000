@@ -11,7 +11,7 @@ class NMEA2000Encoder:
         # Sequence counter (3 bits)
         self.sequence_counter = 0
         
-    def _call_encode_function(self, nmea2000Message: NMEA2000Message) -> bytearray:
+    def _call_encode_function(self, nmea2000Message: NMEA2000Message) -> bytes:
         encode_func_name = f'encode_pgn_{nmea2000Message.PGN}'
         encode_func = globals().get(encode_func_name)
 
@@ -23,14 +23,12 @@ class NMEA2000Encoder:
                 raise ValueError(f"No encoding function found for PGN: {nmea2000Message.PGN}")
         
         try:
-            can_data_int = encode_func(nmea2000Message)
+            can_data_bytes = encode_func(nmea2000Message)
         except Exception as e:
             raise ValueError(e)
-        return can_data_int
+        return can_data_bytes
 
-    def _encode_fast_message(self, pgn: int, priority: int, src: int, dest: int, payload: int) -> list[bytes]:
-        payload_bytes = payload.to_bytes((payload.bit_length() + 7) // 8, byteorder="big")
-        payload_bytes = payload_bytes[::-1]
+    def _encode_fast_message(self, pgn: int, priority: int, src: int, dest: int, payload_bytes: bytes) -> list[bytes]:
         payload_length = len(payload_bytes)
 
         first_frame_capacity = 6
@@ -63,7 +61,7 @@ class NMEA2000Encoder:
         self.sequence_counter = (self.sequence_counter + 1) % 8
         return packets
 
-
+    @staticmethod
     def _build_header(pgn_id: int, source: int, dest: int, priority: int) -> int:
         """
         Builds a 29-bit CAN frame ID (ID0 - ID28) from PGN, source ID, destination, and priority.
@@ -96,19 +94,16 @@ class NMEA2000Encoder:
         if not (0 <= nmea2000Message.PGN <= 0x3FFFF):  # PGN is 18 bits
             raise ValueError("PGN ID must be between 0 and 0x3FFFF")
 
-        can_data_int = self._call_encode_function(nmea2000Message)
+        can_data_bytes = self._call_encode_function(nmea2000Message)
 
         is_fast = NMEA2000Decoder._isFastPGN(nmea2000Message.PGN)
         if is_fast:
-            bytes_list = self._encode_fast_message(nmea2000Message.PGN, nmea2000Message.priority, nmea2000Message.source, nmea2000Message.destination, can_data_int)
+            bytes_list = self._encode_fast_message(nmea2000Message.PGN, nmea2000Message.priority, nmea2000Message.source, nmea2000Message.destination, can_data_bytes)
             return bytes_list
         else:
-            can_data_bytes = can_data_int.to_bytes(8, "big")
-            # Reverse CAN data to match decode behavior
-            can_data_reversed = can_data_bytes[::-1]
-            return [can_data_reversed]
+            return [can_data_bytes]
 
-    def encode_tcp(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+    def encode_ebyte(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         encoded_messages = self._encode(nmea2000Message)                
         # Construct the frame ID
         frame_id_int = NMEA2000Encoder._build_header(nmea2000Message.PGN, nmea2000Message.source, nmea2000Message.destination, nmea2000Message.priority)
@@ -150,9 +145,8 @@ class NMEA2000Encoder:
         # Convert PGN to hex
         pgn_part = f"{pgn:05X}"
 
-        nmea_int = self._call_encode_function(nmea2000Message)
-        byte_length = (nmea_int.bit_length() + 7) // 8
-        can_data_part = nmea_int.to_bytes(byte_length, byteorder="big")[::-1].hex().upper()
+        can_data_bytes = self._call_encode_function(nmea2000Message)
+        can_data_part = can_data_bytes.hex().upper()
 
         # Construct the final Actisense string
         actisense_string = f"{first_part} {pgn_part} {can_data_part}"
@@ -160,3 +154,19 @@ class NMEA2000Encoder:
         logger.debug(f"Encoded Actisense string: {actisense_string}")
         
         return actisense_string
+    
+    @staticmethod
+    def bytes_to_hex_string(data: bytes) -> str:
+        return ' '.join(f'{byte:02X}' for byte in data)
+    
+    def encode_yacht_devices(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+        encoded_messages = self._encode(nmea2000Message)                
+        # Construct the frame ID
+        frame_id_int = NMEA2000Encoder._build_header(nmea2000Message.PGN, nmea2000Message.source, nmea2000Message.destination, nmea2000Message.priority)
+        frame_id_bytes = frame_id_int.to_bytes(4, byteorder='big')
+        result = []
+        for message in encoded_messages:
+            # Construct and return the full packet 
+            text_msg = frame_id_bytes.hex().upper() + " " + self.bytes_to_hex_string(message) + "\r\n"
+            result.append(text_msg.encode())
+        return result

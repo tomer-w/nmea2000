@@ -69,8 +69,9 @@ class AsyncIOClient(ABC):
             include_pgns: List of PGNs to include for processing.
         """
         self._state = State.DISCONNECTED
+        self.build_network_map = build_network_map
         self.reader = None
-        self.writer = None
+        self.writer: asyncio.StreamWriter | None = None
         self.receive_callback = None
         self.status_callback = None
         self.queue = asyncio.Queue()
@@ -176,6 +177,21 @@ class AsyncIOClient(ABC):
     
                     # Start a new receive loop task
                     self._receive_task = asyncio.create_task(self._receive_loop())
+                    if self.build_network_map:
+                        asyncio.create_task(self._seed_network_map())
+
+    async def _seed_network_map(self):
+        # To seed the network map we will send request for 3 PGNS: 60928, 126996, 126998 
+        await asyncio.sleep(2)
+        json_str = '{"PGN":59904,"id":"isoRequest","description":"ISO Request","fields":[{"id":"pgn","name":"PGN","description":null,"unit_of_measurement":null,"value":60928,"raw_value":60928,"physical_quantities":null,"type":[13],"part_of_primary_key":false}],"source":0,"destination":255,"priority":6,"timestamp":"2012-06-17T15:02:11","source_iso_name":null,"hash":null}'
+        msg = NMEA2000Message.from_json(json_str)
+        await self.send(msg)
+        await asyncio.sleep(2)
+        msg.fields[0].raw_value = 126996
+        await self.send(msg)
+        await asyncio.sleep(2)
+        msg.fields[0].raw_value = 126998
+        await self.send(msg)
 
     async def _receive_loop(self):
         """Background task that continuously receives messages from the gateway.
@@ -354,7 +370,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode_tcp(nmea2000Message)
+        return self.encoder.encode_ebyte(nmea2000Message)
     
 class TextNmea2000Gateway(AsyncIOClient):
     """TCP implementation of AsyncIOClient for NMEA2000 Actisense gateways.
@@ -430,14 +446,6 @@ class TextNmea2000Gateway(AsyncIOClient):
         if message is not None:
             await self.queue.put(message)
 
-    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
-        """Encode a NMEA2000 message over the TCP connection.
-        
-        Args:
-            nmea2000Message: The NMEA2000Message object to encode.
-        """
-        return self.encoder.encode_tcp(nmea2000Message)
-
 class ActisenseNmea2000Gateway(TextNmea2000Gateway):
     """TCP implementation of AsyncIOClient for NMEA2000 Actisense gateways.
     
@@ -463,6 +471,14 @@ class ActisenseNmea2000Gateway(TextNmea2000Gateway):
         """        
         super().__init__(host, port, Type.ACTISENSE, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map)
 
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+        """Encode a NMEA2000 message over the TCP connection.
+        
+        Args:
+            nmea2000Message: The NMEA2000Message object to encode.
+        """
+        raise NotImplementedError("Actisense encoding not implemented yet.")
+
 class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
     """TCP implementation of AsyncIOClient for NMEA2000 Yacht Devices gateways.
     
@@ -487,6 +503,14 @@ class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
             include_pgns: List of PGNs to include for processing.
         """        
         super().__init__(host, port, Type.YACHT_DEVICES, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map)
+
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+        """Encode a NMEA2000 message over the TCP connection.
+        
+        Args:
+            nmea2000Message: The NMEA2000Message object to encode.
+        """
+        return self.encoder.encode_yacht_devices(nmea2000Message)
 
 class WaveShareNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.

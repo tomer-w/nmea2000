@@ -6052,7 +6052,7 @@ def decode_pgn_59392(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 59392."""
     data_raw = 0
     # data | Offset: 0, Length: 64, Resolution: 1, Field Type: BINARY
@@ -6061,7 +6061,7 @@ def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 0
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_59392(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 59392."""
@@ -6094,7 +6094,7 @@ def decode_pgn_59392(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 59392."""
     data_raw = 0
     # control | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -6119,9 +6119,9 @@ def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> int:
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_59904() -> bool:
@@ -6139,16 +6139,16 @@ def decode_pgn_59904(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_59904(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_59904(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 59904."""
     data_raw = 0
     # pgn | Offset: 0, Length: 24, Resolution: 1, Field Type: PGN
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 0
-    return data_raw
+    return data_raw.to_bytes(3, byteorder="little")
 
 
 def is_fast_pgn_60160() -> bool:
@@ -6172,7 +6172,7 @@ def decode_pgn_60160(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_60160(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_60160(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 60160."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -6187,7 +6187,7 @@ def encode_pgn_60160(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFF) << 8
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_60416() -> bool:
@@ -6265,7 +6265,7 @@ def decode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(_data
 
     return nmea2000Message
 
-def encode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 60416."""
     data_raw = 0
     # groupFunctionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -6296,9 +6296,9 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(nmea2
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_60416_isoTransportProtocolConnectionManagementClearToSend(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
@@ -6337,7 +6337,7 @@ def decode_pgn_60416_isoTransportProtocolConnectionManagementClearToSend(_data_r
 
     return nmea2000Message
 
-def encode_pgn_60416_isoTransportProtocolConnectionManagementClearToSend(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_60416_isoTransportProtocolConnectionManagementClearToSend(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 60416."""
     data_raw = 0
     # groupFunctionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -6368,9 +6368,9 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementClearToSend(nmea200
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_60416_isoTransportProtocolConnectionManagementEndOfMessage(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
@@ -6409,7 +6409,7 @@ def decode_pgn_60416_isoTransportProtocolConnectionManagementEndOfMessage(_data_
 
     return nmea2000Message
 
-def encode_pgn_60416_isoTransportProtocolConnectionManagementEndOfMessage(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_60416_isoTransportProtocolConnectionManagementEndOfMessage(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 60416."""
     data_raw = 0
     # groupFunctionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -6440,9 +6440,9 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementEndOfMessage(nmea20
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_60416_isoTransportProtocolConnectionManagementBroadcastAnnounce(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
@@ -6481,7 +6481,7 @@ def decode_pgn_60416_isoTransportProtocolConnectionManagementBroadcastAnnounce(_
 
     return nmea2000Message
 
-def encode_pgn_60416_isoTransportProtocolConnectionManagementBroadcastAnnounce(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_60416_isoTransportProtocolConnectionManagementBroadcastAnnounce(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 60416."""
     data_raw = 0
     # groupFunctionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -6512,9 +6512,9 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementBroadcastAnnounce(n
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_60416_isoTransportProtocolConnectionManagementAbort(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
@@ -6547,7 +6547,7 @@ def decode_pgn_60416_isoTransportProtocolConnectionManagementAbort(_data_raw_: i
 
     return nmea2000Message
 
-def encode_pgn_60416_isoTransportProtocolConnectionManagementAbort(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_60416_isoTransportProtocolConnectionManagementAbort(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 60416."""
     data_raw = 0
     # groupFunctionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -6572,9 +6572,9 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementAbort(nmea2000Messa
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_60928() -> bool:
@@ -6654,7 +6654,7 @@ def decode_pgn_60928(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_60928(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_60928(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 60928."""
     data_raw = 0
     # uniqueNumber | Offset: 0, Length: 21, Resolution: 1, Field Type: NUMBER
@@ -6717,7 +6717,7 @@ def encode_pgn_60928(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Arbitrary address capable'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_YES_NO(field.value)
     data_raw |= (field_value & 0x1) << 63
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_61184() -> bool:
@@ -6781,7 +6781,7 @@ def decode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(_data_raw
 
     return nmea2000Message
 
-def encode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 61184."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -6808,7 +6808,7 @@ def encode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(nmea2000M
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_61184_seatalkWirelessKeypadLightControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 61184."""
@@ -6866,7 +6866,7 @@ def decode_pgn_61184_seatalkWirelessKeypadLightControl(_data_raw_: int) -> NMEA2
 
     return nmea2000Message
 
-def encode_pgn_61184_seatalkWirelessKeypadLightControl(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_61184_seatalkWirelessKeypadLightControl(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 61184."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -6917,7 +6917,7 @@ def encode_pgn_61184_seatalkWirelessKeypadLightControl(nmea2000Message: NMEA2000
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_61184_seatalkWirelessKeypadControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 61184."""
@@ -6969,7 +6969,7 @@ def decode_pgn_61184_seatalkWirelessKeypadControl(_data_raw_: int) -> NMEA2000Me
 
     return nmea2000Message
 
-def encode_pgn_61184_seatalkWirelessKeypadControl(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_61184_seatalkWirelessKeypadControl(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 61184."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -7014,7 +7014,7 @@ def encode_pgn_61184_seatalkWirelessKeypadControl(nmea2000Message: NMEA2000Messa
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_61184_victronBatteryRegister(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 61184."""
@@ -7054,7 +7054,7 @@ def decode_pgn_61184_victronBatteryRegister(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_61184_victronBatteryRegister(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_61184_victronBatteryRegister(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 61184."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -7087,7 +7087,7 @@ def encode_pgn_61184_victronBatteryRegister(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'Payload'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_61440() -> bool:
@@ -7125,7 +7125,7 @@ def decode_pgn_61440(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_61440(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_61440(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 61440."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -7152,7 +7152,7 @@ def encode_pgn_61440(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65001() -> bool:
@@ -7188,7 +7188,7 @@ def decode_pgn_65001(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65001(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65001(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65001."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -7215,7 +7215,7 @@ def encode_pgn_65001(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65002() -> bool:
@@ -7251,7 +7251,7 @@ def decode_pgn_65002(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65002(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65002(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65002."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -7278,7 +7278,7 @@ def encode_pgn_65002(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65003() -> bool:
@@ -7314,7 +7314,7 @@ def decode_pgn_65003(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65003(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65003(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65003."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -7341,7 +7341,7 @@ def encode_pgn_65003(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65004() -> bool:
@@ -7377,7 +7377,7 @@ def decode_pgn_65004(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65004(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65004(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65004."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -7404,7 +7404,7 @@ def encode_pgn_65004(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65005() -> bool:
@@ -7428,7 +7428,7 @@ def decode_pgn_65005(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65005(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65005(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65005."""
     data_raw = 0
     # totalEnergyExport | Offset: 0, Length: 32, Resolution: 3600000.0, Field Type: NUMBER
@@ -7443,7 +7443,7 @@ def encode_pgn_65005(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Total Energy Import'")
     field_value = encode_number(field.value, 32, False, 3600000.0)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65006() -> bool:
@@ -7480,7 +7480,7 @@ def decode_pgn_65006(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65006(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65006(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65006."""
     data_raw = 0
     # reactivePower | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -7507,7 +7507,7 @@ def encode_pgn_65006(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFFFFFF) << 34
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65007() -> bool:
@@ -7531,7 +7531,7 @@ def decode_pgn_65007(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65007(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65007(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65007."""
     data_raw = 0
     # realPower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -7546,7 +7546,7 @@ def encode_pgn_65007(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Apparent Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65008() -> bool:
@@ -7582,7 +7582,7 @@ def decode_pgn_65008(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65008(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65008(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65008."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -7609,7 +7609,7 @@ def encode_pgn_65008(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AC RMS Current'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65009() -> bool:
@@ -7646,7 +7646,7 @@ def decode_pgn_65009(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65009(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65009(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65009."""
     data_raw = 0
     # reactivePower | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -7673,7 +7673,7 @@ def encode_pgn_65009(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFFFFFF) << 34
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65010() -> bool:
@@ -7697,7 +7697,7 @@ def decode_pgn_65010(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65010(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65010(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65010."""
     data_raw = 0
     # realPower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -7712,7 +7712,7 @@ def encode_pgn_65010(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Apparent Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65011() -> bool:
@@ -7748,7 +7748,7 @@ def decode_pgn_65011(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65011(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65011(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65011."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -7775,7 +7775,7 @@ def encode_pgn_65011(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AC RMS Current'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65012() -> bool:
@@ -7812,7 +7812,7 @@ def decode_pgn_65012(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65012(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65012(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65012."""
     data_raw = 0
     # reactivePower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -7839,7 +7839,7 @@ def encode_pgn_65012(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFF) << 50
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65013() -> bool:
@@ -7863,7 +7863,7 @@ def decode_pgn_65013(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65013(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65013(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65013."""
     data_raw = 0
     # realPower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -7878,7 +7878,7 @@ def encode_pgn_65013(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Apparent Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65014() -> bool:
@@ -7914,7 +7914,7 @@ def decode_pgn_65014(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65014(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65014(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65014."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -7941,7 +7941,7 @@ def encode_pgn_65014(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AC RMS Current'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65015() -> bool:
@@ -7978,7 +7978,7 @@ def decode_pgn_65015(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65015(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65015(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65015."""
     data_raw = 0
     # reactivePower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8005,7 +8005,7 @@ def encode_pgn_65015(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFF) << 50
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65016() -> bool:
@@ -8029,7 +8029,7 @@ def decode_pgn_65016(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65016(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65016(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65016."""
     data_raw = 0
     # realPower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8044,7 +8044,7 @@ def encode_pgn_65016(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Apparent Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65017() -> bool:
@@ -8080,7 +8080,7 @@ def decode_pgn_65017(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65017(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65017(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65017."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -8107,7 +8107,7 @@ def encode_pgn_65017(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AC RMS Current'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65018() -> bool:
@@ -8131,7 +8131,7 @@ def decode_pgn_65018(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65018(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65018(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65018."""
     data_raw = 0
     # totalEnergyExport | Offset: 0, Length: 32, Resolution: 3600000.0, Field Type: NUMBER
@@ -8146,7 +8146,7 @@ def encode_pgn_65018(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Total Energy Import'")
     field_value = encode_number(field.value, 32, False, 3600000.0)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65019() -> bool:
@@ -8183,7 +8183,7 @@ def decode_pgn_65019(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65019(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65019(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65019."""
     data_raw = 0
     # reactivePower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8210,7 +8210,7 @@ def encode_pgn_65019(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFF) << 50
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65020() -> bool:
@@ -8234,7 +8234,7 @@ def decode_pgn_65020(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65020(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65020(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65020."""
     data_raw = 0
     # realPower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8249,7 +8249,7 @@ def encode_pgn_65020(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Apparent Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65021() -> bool:
@@ -8285,7 +8285,7 @@ def decode_pgn_65021(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65021(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65021(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65021."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -8312,7 +8312,7 @@ def encode_pgn_65021(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AC RMS Current'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65022() -> bool:
@@ -8349,7 +8349,7 @@ def decode_pgn_65022(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65022(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65022(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65022."""
     data_raw = 0
     # reactivePower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8376,7 +8376,7 @@ def encode_pgn_65022(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFF) << 50
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65023() -> bool:
@@ -8400,7 +8400,7 @@ def decode_pgn_65023(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65023(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65023(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65023."""
     data_raw = 0
     # realPower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8415,7 +8415,7 @@ def encode_pgn_65023(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Apparent Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65024() -> bool:
@@ -8451,7 +8451,7 @@ def decode_pgn_65024(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65024(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65024(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65024."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -8478,7 +8478,7 @@ def encode_pgn_65024(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AC RMS Current'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65025() -> bool:
@@ -8515,7 +8515,7 @@ def decode_pgn_65025(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65025(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65025(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65025."""
     data_raw = 0
     # reactivePower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8542,7 +8542,7 @@ def encode_pgn_65025(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFF) << 50
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65026() -> bool:
@@ -8566,7 +8566,7 @@ def decode_pgn_65026(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65026(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65026(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65026."""
     data_raw = 0
     # realPower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8581,7 +8581,7 @@ def encode_pgn_65026(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Apparent Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65027() -> bool:
@@ -8617,7 +8617,7 @@ def decode_pgn_65027(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65027(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65027(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65027."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -8644,7 +8644,7 @@ def encode_pgn_65027(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AC RMS Current'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65028() -> bool:
@@ -8681,7 +8681,7 @@ def decode_pgn_65028(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65028(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65028(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65028."""
     data_raw = 0
     # reactivePower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8708,7 +8708,7 @@ def encode_pgn_65028(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFF) << 50
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65029() -> bool:
@@ -8732,7 +8732,7 @@ def decode_pgn_65029(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65029(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65029(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65029."""
     data_raw = 0
     # realPower | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -8747,7 +8747,7 @@ def encode_pgn_65029(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Apparent Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65030() -> bool:
@@ -8783,7 +8783,7 @@ def decode_pgn_65030(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65030(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65030(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65030."""
     data_raw = 0
     # lineLineAcRmsVoltage | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -8810,7 +8810,7 @@ def encode_pgn_65030(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'AC RMS Current'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65240() -> bool:
@@ -8896,7 +8896,7 @@ def decode_pgn_65240(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65240(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65240(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65240."""
     data_raw = 0
     # uniqueNumber | Offset: 0, Length: 21, Resolution: 1, Field Type: BINARY
@@ -8965,7 +8965,7 @@ def encode_pgn_65240(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'New Source Address'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 64
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 
 def is_fast_pgn_65280() -> bool:
@@ -9014,7 +9014,7 @@ def decode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(
 
     return nmea2000Message
 
-def encode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65280."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9041,7 +9041,7 @@ def encode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_65280_furunoHeave(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65280."""
@@ -9081,7 +9081,7 @@ def decode_pgn_65280_furunoHeave(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65280_furunoHeave(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65280_furunoHeave(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65280."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9114,7 +9114,7 @@ def encode_pgn_65280_furunoHeave(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65284() -> bool:
@@ -9170,7 +9170,7 @@ def decode_pgn_65284(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65284(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65284(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65284."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9215,7 +9215,7 @@ def encode_pgn_65284(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65285() -> bool:
@@ -9279,7 +9279,7 @@ def decode_pgn_65285_airmarBootStateAcknowledgment(_data_raw_: int) -> NMEA2000M
 
     return nmea2000Message
 
-def encode_pgn_65285_airmarBootStateAcknowledgment(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65285_airmarBootStateAcknowledgment(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65285."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9312,7 +9312,7 @@ def encode_pgn_65285_airmarBootStateAcknowledgment(nmea2000Message: NMEA2000Mess
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x1FFFFFFFFFFF) << 19
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_65285_lowranceTemperature(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65285."""
@@ -9359,7 +9359,7 @@ def decode_pgn_65285_lowranceTemperature(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65285_lowranceTemperature(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65285_lowranceTemperature(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65285."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9398,7 +9398,7 @@ def encode_pgn_65285_lowranceTemperature(nmea2000Message: NMEA2000Message) -> in
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65286() -> bool:
@@ -9485,7 +9485,7 @@ def decode_pgn_65286_chetcoDimmer(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65286_chetcoDimmer(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65286_chetcoDimmer(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65286."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9542,7 +9542,7 @@ def encode_pgn_65286_chetcoDimmer(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Control'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_65286_airmarBootStateRequest(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65286."""
@@ -9576,7 +9576,7 @@ def decode_pgn_65286_airmarBootStateRequest(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65286_airmarBootStateRequest(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65286_airmarBootStateRequest(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65286."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9603,7 +9603,7 @@ def encode_pgn_65286_airmarBootStateRequest(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65287() -> bool:
@@ -9679,7 +9679,7 @@ def decode_pgn_65287_airmarAccessLevel(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65287_airmarAccessLevel(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65287_airmarAccessLevel(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65287."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9724,7 +9724,7 @@ def encode_pgn_65287_airmarAccessLevel(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Access Seed/Key'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_65287_simnetConfigureTemperatureSensor(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65287."""
@@ -9758,7 +9758,7 @@ def decode_pgn_65287_simnetConfigureTemperatureSensor(_data_raw_: int) -> NMEA20
 
     return nmea2000Message
 
-def encode_pgn_65287_simnetConfigureTemperatureSensor(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65287_simnetConfigureTemperatureSensor(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65287."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9785,7 +9785,7 @@ def encode_pgn_65287_simnetConfigureTemperatureSensor(nmea2000Message: NMEA2000M
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65288() -> bool:
@@ -9850,7 +9850,7 @@ def decode_pgn_65288(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65288(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65288(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65288."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9901,7 +9901,7 @@ def encode_pgn_65288(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Alarm Priority'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65289() -> bool:
@@ -9939,7 +9939,7 @@ def decode_pgn_65289(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65289(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65289(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65289."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -9966,7 +9966,7 @@ def encode_pgn_65289(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65290() -> bool:
@@ -10004,7 +10004,7 @@ def decode_pgn_65290(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65290(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65290(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65290."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10031,7 +10031,7 @@ def encode_pgn_65290(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65292() -> bool:
@@ -10069,7 +10069,7 @@ def decode_pgn_65292(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65292(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65292(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65292."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10096,7 +10096,7 @@ def encode_pgn_65292(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65293() -> bool:
@@ -10153,7 +10153,7 @@ def decode_pgn_65293_simnetLgc2000Configuration(_data_raw_: int) -> NMEA2000Mess
 
     return nmea2000Message
 
-def encode_pgn_65293_simnetLgc2000Configuration(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65293_simnetLgc2000Configuration(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65293."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10180,7 +10180,7 @@ def encode_pgn_65293_simnetLgc2000Configuration(nmea2000Message: NMEA2000Message
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_65293_diverseYachtServicesLoadCell(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65293."""
@@ -10226,7 +10226,7 @@ def decode_pgn_65293_diverseYachtServicesLoadCell(_data_raw_: int) -> NMEA2000Me
 
     return nmea2000Message
 
-def encode_pgn_65293_diverseYachtServicesLoadCell(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65293_diverseYachtServicesLoadCell(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65293."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10265,7 +10265,7 @@ def encode_pgn_65293_diverseYachtServicesLoadCell(nmea2000Message: NMEA2000Messa
         raise Exception("Cant encode this message, missing 'Load Cell'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65302() -> bool:
@@ -10327,7 +10327,7 @@ def decode_pgn_65302(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65302(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65302(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65302."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10378,7 +10378,7 @@ def encode_pgn_65302(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65305() -> bool:
@@ -10482,7 +10482,7 @@ def decode_pgn_65305_simnetDeviceStatus(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65305_simnetDeviceStatus(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65305_simnetDeviceStatus(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65305."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10527,7 +10527,7 @@ def encode_pgn_65305_simnetDeviceStatus(nmea2000Message: NMEA2000Message) -> int
         raise Exception("Cant encode this message, missing 'Spare'")
     raise Exception("Encoding 'SPARE' not supported")
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_65305_simnetDeviceStatusRequest(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
@@ -10575,7 +10575,7 @@ def decode_pgn_65305_simnetDeviceStatusRequest(_data_raw_: int) -> NMEA2000Messa
 
     return nmea2000Message
 
-def encode_pgn_65305_simnetDeviceStatusRequest(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65305_simnetDeviceStatusRequest(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65305."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10614,7 +10614,7 @@ def encode_pgn_65305_simnetDeviceStatusRequest(nmea2000Message: NMEA2000Message)
         raise Exception("Cant encode this message, missing 'Spare'")
     raise Exception("Encoding 'SPARE' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_65305_simnetPilotMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
@@ -10669,7 +10669,7 @@ def decode_pgn_65305_simnetPilotMode(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65305_simnetPilotMode(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65305_simnetPilotMode(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65305."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10714,7 +10714,7 @@ def encode_pgn_65305_simnetPilotMode(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Spare'")
     raise Exception("Encoding 'SPARE' not supported")
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_65305_simnetDeviceModeRequest(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
@@ -10762,7 +10762,7 @@ def decode_pgn_65305_simnetDeviceModeRequest(_data_raw_: int) -> NMEA2000Message
 
     return nmea2000Message
 
-def encode_pgn_65305_simnetDeviceModeRequest(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65305_simnetDeviceModeRequest(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65305."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10801,7 +10801,7 @@ def encode_pgn_65305_simnetDeviceModeRequest(nmea2000Message: NMEA2000Message) -
         raise Exception("Cant encode this message, missing 'Spare'")
     raise Exception("Encoding 'SPARE' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_65305_simnetSailingProcessorStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
@@ -10849,7 +10849,7 @@ def decode_pgn_65305_simnetSailingProcessorStatus(_data_raw_: int) -> NMEA2000Me
 
     return nmea2000Message
 
-def encode_pgn_65305_simnetSailingProcessorStatus(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65305_simnetSailingProcessorStatus(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65305."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10888,7 +10888,7 @@ def encode_pgn_65305_simnetSailingProcessorStatus(nmea2000Message: NMEA2000Messa
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65309() -> bool:
@@ -10944,7 +10944,7 @@ def decode_pgn_65309(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65309(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65309(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65309."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10989,7 +10989,7 @@ def encode_pgn_65309(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65312() -> bool:
@@ -11039,7 +11039,7 @@ def decode_pgn_65312(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65312(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65312(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65312."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -11078,7 +11078,7 @@ def encode_pgn_65312(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65340() -> bool:
@@ -11146,7 +11146,7 @@ def decode_pgn_65340(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65340(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65340(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65340."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -11203,7 +11203,7 @@ def encode_pgn_65340(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65341() -> bool:
@@ -11260,7 +11260,7 @@ def decode_pgn_65341(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65341(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65341(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65341."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -11305,7 +11305,7 @@ def encode_pgn_65341(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Angle'")
     field_value = encode_number(field.value, 16, False, 0.0001)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65345() -> bool:
@@ -11355,7 +11355,7 @@ def decode_pgn_65345(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65345(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65345(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65345."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -11394,7 +11394,7 @@ def encode_pgn_65345(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65350() -> bool:
@@ -11436,7 +11436,7 @@ def decode_pgn_65350(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65350(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65350(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65350."""
     data_raw = 0
     # a | Offset: 0, Length: 16, Resolution: 0.0001, Field Type: NUMBER
@@ -11469,7 +11469,7 @@ def encode_pgn_65350(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65359() -> bool:
@@ -11525,7 +11525,7 @@ def decode_pgn_65359(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65359(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65359(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65359."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -11570,7 +11570,7 @@ def encode_pgn_65359(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65360() -> bool:
@@ -11626,7 +11626,7 @@ def decode_pgn_65360(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65360(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65360(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65360."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -11671,7 +11671,7 @@ def encode_pgn_65360(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65361() -> bool:
@@ -11723,7 +11723,7 @@ def decode_pgn_65361(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65361(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65361(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65361."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -11762,7 +11762,7 @@ def encode_pgn_65361(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65371() -> bool:
@@ -11842,7 +11842,7 @@ def decode_pgn_65371(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65371(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65371(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65371."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -11911,7 +11911,7 @@ def encode_pgn_65371(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65374() -> bool:
@@ -11967,7 +11967,7 @@ def decode_pgn_65374(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65374(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65374(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65374."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -12012,7 +12012,7 @@ def encode_pgn_65374(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65379() -> bool:
@@ -12069,7 +12069,7 @@ def decode_pgn_65379(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65379(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65379(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65379."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -12114,7 +12114,7 @@ def encode_pgn_65379(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65408() -> bool:
@@ -12165,7 +12165,7 @@ def decode_pgn_65408(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65408(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65408(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65408."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -12204,7 +12204,7 @@ def encode_pgn_65408(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFF) << 28
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65409() -> bool:
@@ -12260,7 +12260,7 @@ def decode_pgn_65409(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65409(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65409(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65409."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -12305,7 +12305,7 @@ def encode_pgn_65409(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65410() -> bool:
@@ -12361,7 +12361,7 @@ def decode_pgn_65410(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65410(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65410(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65410."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -12406,7 +12406,7 @@ def encode_pgn_65410(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65420() -> bool:
@@ -12474,7 +12474,7 @@ def decode_pgn_65420(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65420(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65420(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65420."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -12531,7 +12531,7 @@ def encode_pgn_65420(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_65480() -> bool:
@@ -12569,7 +12569,7 @@ def decode_pgn_65480(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65480(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_65480(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65480."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -12596,7 +12596,7 @@ def encode_pgn_65480(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_126208() -> bool:
@@ -12660,7 +12660,7 @@ def decode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(_data_raw_: 
 
     return nmea2000Message
 
-def encode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126208."""
     data_raw = 0
     # data | Offset: 0, Length: 1784, Resolution: 1, Field Type: BINARY
@@ -12669,7 +12669,7 @@ def encode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(nmea2000Mess
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 0
-    return data_raw
+    return data_raw.to_bytes(223, byteorder="little")
 
 def decode_pgn_126208_nmeaRequestGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
@@ -12720,7 +12720,7 @@ def decode_pgn_126208_nmeaRequestGroupFunction(_data_raw_: int) -> NMEA2000Messa
 
     return nmea2000Message
 
-def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126208."""
     data_raw = 0
     # functionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -12733,7 +12733,7 @@ def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message)
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 8
     # transmissionInterval | Offset: 32, Length: 32, Resolution: 0.001, Field Type: DURATION
     field = nmea2000Message.get_field_by_id("transmissionInterval")
@@ -12760,7 +12760,7 @@ def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message)
     raise Exception("Encoding 'FIELD_INDEX' not supported")
     data_raw |= (field_value & 0xFF) << 88
     raise Exception ("PGN 126208 not supporting encoding for now as Value is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_126208_nmeaCommandGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
@@ -12812,7 +12812,7 @@ def decode_pgn_126208_nmeaCommandGroupFunction(_data_raw_: int) -> NMEA2000Messa
 
     return nmea2000Message
 
-def encode_pgn_126208_nmeaCommandGroupFunction(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126208_nmeaCommandGroupFunction(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126208."""
     data_raw = 0
     # functionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -12825,7 +12825,7 @@ def encode_pgn_126208_nmeaCommandGroupFunction(nmea2000Message: NMEA2000Message)
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 8
     # priority | Offset: 32, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("priority")
@@ -12852,7 +12852,7 @@ def encode_pgn_126208_nmeaCommandGroupFunction(nmea2000Message: NMEA2000Message)
     raise Exception("Encoding 'FIELD_INDEX' not supported")
     data_raw |= (field_value & 0xFF) << 48
     raise Exception ("PGN 126208 not supporting encoding for now as Value is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_126208_nmeaAcknowledgeGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
@@ -12900,7 +12900,7 @@ def decode_pgn_126208_nmeaAcknowledgeGroupFunction(_data_raw_: int) -> NMEA2000M
 
     return nmea2000Message
 
-def encode_pgn_126208_nmeaAcknowledgeGroupFunction(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126208_nmeaAcknowledgeGroupFunction(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126208."""
     data_raw = 0
     # functionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -12913,7 +12913,7 @@ def encode_pgn_126208_nmeaAcknowledgeGroupFunction(nmea2000Message: NMEA2000Mess
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 8
     # pgnErrorCode | Offset: 32, Length: 4, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("pgnErrorCode")
@@ -12939,7 +12939,7 @@ def encode_pgn_126208_nmeaAcknowledgeGroupFunction(nmea2000Message: NMEA2000Mess
         raise Exception("Cant encode this message, missing 'Parameter'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_PARAMETER_FIELD(field.value)
     data_raw |= (field_value & 0xF) << 48
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_126208_nmeaReadFieldsGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
@@ -13008,7 +13008,7 @@ def decode_pgn_126208_nmeaReadFieldsGroupFunction(_data_raw_: int) -> NMEA2000Me
 
     return nmea2000Message
 
-def encode_pgn_126208_nmeaReadFieldsGroupFunction(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126208_nmeaReadFieldsGroupFunction(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126208."""
     data_raw = 0
     # functionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -13021,7 +13021,7 @@ def encode_pgn_126208_nmeaReadFieldsGroupFunction(nmea2000Message: NMEA2000Messa
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 8
     # manufacturerCode | Offset: 32, Length: 11, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("manufacturerCode")
@@ -13037,7 +13037,7 @@ def encode_pgn_126208_nmeaReadFieldsGroupFunction(nmea2000Message: NMEA2000Messa
     raise Exception ("PGN 126208 not supporting encoding for now as Selection Parameter is missing BitLength or BitOffset")
     raise Exception ("PGN 126208 not supporting encoding for now as Selection Value is missing BitLength or BitOffset")
     raise Exception ("PGN 126208 not supporting encoding for now as Parameter is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_126208_nmeaReadFieldsReplyGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
@@ -13111,7 +13111,7 @@ def decode_pgn_126208_nmeaReadFieldsReplyGroupFunction(_data_raw_: int) -> NMEA2
 
     return nmea2000Message
 
-def encode_pgn_126208_nmeaReadFieldsReplyGroupFunction(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126208_nmeaReadFieldsReplyGroupFunction(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126208."""
     data_raw = 0
     # functionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -13124,7 +13124,7 @@ def encode_pgn_126208_nmeaReadFieldsReplyGroupFunction(nmea2000Message: NMEA2000
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 8
     # manufacturerCode | Offset: 32, Length: 11, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("manufacturerCode")
@@ -13141,7 +13141,7 @@ def encode_pgn_126208_nmeaReadFieldsReplyGroupFunction(nmea2000Message: NMEA2000
     raise Exception ("PGN 126208 not supporting encoding for now as Selection Value is missing BitLength or BitOffset")
     raise Exception ("PGN 126208 not supporting encoding for now as Parameter is missing BitLength or BitOffset")
     raise Exception ("PGN 126208 not supporting encoding for now as Value is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_126208_nmeaWriteFieldsGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
@@ -13215,7 +13215,7 @@ def decode_pgn_126208_nmeaWriteFieldsGroupFunction(_data_raw_: int) -> NMEA2000M
 
     return nmea2000Message
 
-def encode_pgn_126208_nmeaWriteFieldsGroupFunction(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126208_nmeaWriteFieldsGroupFunction(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126208."""
     data_raw = 0
     # functionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -13228,7 +13228,7 @@ def encode_pgn_126208_nmeaWriteFieldsGroupFunction(nmea2000Message: NMEA2000Mess
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 8
     # manufacturerCode | Offset: 32, Length: 11, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("manufacturerCode")
@@ -13245,7 +13245,7 @@ def encode_pgn_126208_nmeaWriteFieldsGroupFunction(nmea2000Message: NMEA2000Mess
     raise Exception ("PGN 126208 not supporting encoding for now as Selection Value is missing BitLength or BitOffset")
     raise Exception ("PGN 126208 not supporting encoding for now as Parameter is missing BitLength or BitOffset")
     raise Exception ("PGN 126208 not supporting encoding for now as Value is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
@@ -13319,7 +13319,7 @@ def decode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(_data_raw_: int) -> NMEA
 
     return nmea2000Message
 
-def encode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126208."""
     data_raw = 0
     # functionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -13332,7 +13332,7 @@ def encode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(nmea2000Message: NMEA200
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 8
     # manufacturerCode | Offset: 32, Length: 11, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("manufacturerCode")
@@ -13349,7 +13349,7 @@ def encode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(nmea2000Message: NMEA200
     raise Exception ("PGN 126208 not supporting encoding for now as Selection Value is missing BitLength or BitOffset")
     raise Exception ("PGN 126208 not supporting encoding for now as Parameter is missing BitLength or BitOffset")
     raise Exception ("PGN 126208 not supporting encoding for now as Value is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_126464() -> bool:
@@ -13374,7 +13374,7 @@ def decode_pgn_126464(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126464(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126464(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126464."""
     data_raw = 0
     # functionCode | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -13387,9 +13387,9 @@ def encode_pgn_126464(nmea2000Message: NMEA2000Message) -> int:
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 8
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_126720() -> bool:
@@ -13682,7 +13682,7 @@ def decode_pgn_126720_0x1ef00ManufacturerProprietaryFastPacketAddressed(_data_ra
 
     return nmea2000Message
 
-def encode_pgn_126720_0x1ef00ManufacturerProprietaryFastPacketAddressed(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_0x1ef00ManufacturerProprietaryFastPacketAddressed(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -13709,7 +13709,7 @@ def encode_pgn_126720_0x1ef00ManufacturerProprietaryFastPacketAddressed(nmea2000
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(223, byteorder="little")
 
 def decode_pgn_126720_seatalk1PilotMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -13780,7 +13780,7 @@ def decode_pgn_126720_seatalk1PilotMode(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_seatalk1PilotMode(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_seatalk1PilotMode(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -13843,7 +13843,7 @@ def encode_pgn_126720_seatalk1PilotMode(nmea2000Message: NMEA2000Message) -> int
         raise Exception("Cant encode this message, missing 'Unknown 2'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFF) << 88
-    return data_raw
+    return data_raw.to_bytes(21, byteorder="little")
 
 def decode_pgn_126720_fusionMediaControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -13896,7 +13896,7 @@ def decode_pgn_126720_fusionMediaControl(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_fusionMediaControl(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_fusionMediaControl(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -13941,7 +13941,7 @@ def encode_pgn_126720_fusionMediaControl(nmea2000Message: NMEA2000Message) -> in
         raise Exception("Cant encode this message, missing 'Command'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_COMMAND(field.value)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_fusionSiriusControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -13994,7 +13994,7 @@ def decode_pgn_126720_fusionSiriusControl(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_fusionSiriusControl(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_fusionSiriusControl(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14039,7 +14039,7 @@ def encode_pgn_126720_fusionSiriusControl(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Command'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_SIRIUS_COMMAND(field.value)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_fusionRequestStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14080,7 +14080,7 @@ def decode_pgn_126720_fusionRequestStatus(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_fusionRequestStatus(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_fusionRequestStatus(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14113,7 +14113,7 @@ def encode_pgn_126720_fusionRequestStatus(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Unknown'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 24
-    return data_raw
+    return data_raw.to_bytes(4, byteorder="little")
 
 def decode_pgn_126720_fusionSetSource(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14160,7 +14160,7 @@ def decode_pgn_126720_fusionSetSource(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_fusionSetSource(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_fusionSetSource(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14199,7 +14199,7 @@ def encode_pgn_126720_fusionSetSource(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Source ID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 32
-    return data_raw
+    return data_raw.to_bytes(5, byteorder="little")
 
 def decode_pgn_126720_fusionSetMute(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14241,7 +14241,7 @@ def decode_pgn_126720_fusionSetMute(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_fusionSetMute(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_fusionSetMute(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14274,7 +14274,7 @@ def encode_pgn_126720_fusionSetMute(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Command'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MUTE_COMMAND(field.value)
     data_raw |= (field_value & 0xFF) << 24
-    return data_raw
+    return data_raw.to_bytes(4, byteorder="little")
 
 def decode_pgn_126720_fusionSetZoneVolume(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14327,7 +14327,7 @@ def decode_pgn_126720_fusionSetZoneVolume(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_fusionSetZoneVolume(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_fusionSetZoneVolume(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14372,7 +14372,7 @@ def encode_pgn_126720_fusionSetZoneVolume(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Volume'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_fusionSetAllVolumes(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14437,7 +14437,7 @@ def decode_pgn_126720_fusionSetAllVolumes(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_fusionSetAllVolumes(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_fusionSetAllVolumes(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14494,7 +14494,7 @@ def encode_pgn_126720_fusionSetAllVolumes(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Zone4'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_126720_seatalk1Keystroke(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14559,7 +14559,7 @@ def decode_pgn_126720_seatalk1Keystroke(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_seatalk1Keystroke(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_seatalk1Keystroke(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14616,7 +14616,7 @@ def encode_pgn_126720_seatalk1Keystroke(nmea2000Message: NMEA2000Message) -> int
         raise Exception("Cant encode this message, missing 'Unknown data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 64
-    return data_raw
+    return data_raw.to_bytes(22, byteorder="little")
 
 def decode_pgn_126720_seatalk1DeviceIdentification(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14669,7 +14669,7 @@ def decode_pgn_126720_seatalk1DeviceIdentification(_data_raw_: int) -> NMEA2000M
 
     return nmea2000Message
 
-def encode_pgn_126720_seatalk1DeviceIdentification(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_seatalk1DeviceIdentification(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14714,7 +14714,7 @@ def encode_pgn_126720_seatalk1DeviceIdentification(nmea2000Message: NMEA2000Mess
         raise Exception("Cant encode this message, missing 'device'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_SEATALK_DEVICE_ID(field.value)
     data_raw |= (field_value & 0xFF) << 48
-    return data_raw
+    return data_raw.to_bytes(7, byteorder="little")
 
 def decode_pgn_126720_seatalk1DisplayBrightness(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14779,7 +14779,7 @@ def decode_pgn_126720_seatalk1DisplayBrightness(_data_raw_: int) -> NMEA2000Mess
 
     return nmea2000Message
 
-def encode_pgn_126720_seatalk1DisplayBrightness(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_seatalk1DisplayBrightness(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14836,7 +14836,7 @@ def encode_pgn_126720_seatalk1DisplayBrightness(nmea2000Message: NMEA2000Message
         raise Exception("Cant encode this message, missing 'Unknown 2'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFF) << 64
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 def decode_pgn_126720_seatalk1DisplayColor(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14902,7 +14902,7 @@ def decode_pgn_126720_seatalk1DisplayColor(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_seatalk1DisplayColor(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_seatalk1DisplayColor(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14959,7 +14959,7 @@ def encode_pgn_126720_seatalk1DisplayColor(nmea2000Message: NMEA2000Message) -> 
         raise Exception("Cant encode this message, missing 'Unknown 2'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFF) << 64
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 def decode_pgn_126720_airmarAttitudeOffset(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15012,7 +15012,7 @@ def decode_pgn_126720_airmarAttitudeOffset(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarAttitudeOffset(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarAttitudeOffset(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -15057,7 +15057,7 @@ def encode_pgn_126720_airmarAttitudeOffset(nmea2000Message: NMEA2000Message) -> 
         raise Exception("Cant encode this message, missing 'Roll offset'")
     field_value = encode_number(field.value, 16, True, 0.0001)
     data_raw |= (field_value & 0xFFFF) << 56
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 def decode_pgn_126720_airmarCalibrateCompass(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15166,7 +15166,7 @@ def decode_pgn_126720_airmarCalibrateCompass(_data_raw_: int) -> NMEA2000Message
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarCalibrateCompass(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarCalibrateCompass(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -15265,7 +15265,7 @@ def encode_pgn_126720_airmarCalibrateCompass(nmea2000Message: NMEA2000Message) -
         raise Exception("Cant encode this message, missing 'Compass/Rate gyro damping'")
     field_value = int(field.raw_value / 0.05) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 176
-    return data_raw
+    return data_raw.to_bytes(24, byteorder="little")
 
 def decode_pgn_126720_airmarTrueWindOptions(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15313,7 +15313,7 @@ def decode_pgn_126720_airmarTrueWindOptions(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarTrueWindOptions(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarTrueWindOptions(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -15352,7 +15352,7 @@ def encode_pgn_126720_airmarTrueWindOptions(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFFFF) << 26
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_airmarSimulateMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15400,7 +15400,7 @@ def decode_pgn_126720_airmarSimulateMode(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarSimulateMode(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarSimulateMode(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -15439,7 +15439,7 @@ def encode_pgn_126720_airmarSimulateMode(nmea2000Message: NMEA2000Message) -> in
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFFFF) << 26
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_airmarCalibrateDepth(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15486,7 +15486,7 @@ def decode_pgn_126720_airmarCalibrateDepth(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarCalibrateDepth(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarCalibrateDepth(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -15525,7 +15525,7 @@ def encode_pgn_126720_airmarCalibrateDepth(nmea2000Message: NMEA2000Message) -> 
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_airmarCalibrateSpeed(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15578,7 +15578,7 @@ def decode_pgn_126720_airmarCalibrateSpeed(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarCalibrateSpeed(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarCalibrateSpeed(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -15623,7 +15623,7 @@ def encode_pgn_126720_airmarCalibrateSpeed(nmea2000Message: NMEA2000Message) -> 
         raise Exception("Cant encode this message, missing 'Output speed'")
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_126720_airmarCalibrateTemperature(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15677,7 +15677,7 @@ def decode_pgn_126720_airmarCalibrateTemperature(_data_raw_: int) -> NMEA2000Mes
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarCalibrateTemperature(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarCalibrateTemperature(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -15722,7 +15722,7 @@ def encode_pgn_126720_airmarCalibrateTemperature(nmea2000Message: NMEA2000Messag
         raise Exception("Cant encode this message, missing 'Temperature offset'")
     field_value = encode_number(field.value, 16, True, 0.001)
     data_raw |= (field_value & 0xFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_airmarSpeedFilterNone(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15775,7 +15775,7 @@ def decode_pgn_126720_airmarSpeedFilterNone(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarSpeedFilterNone(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarSpeedFilterNone(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -15820,7 +15820,7 @@ def encode_pgn_126720_airmarSpeedFilterNone(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'Sample interval'")
     field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_airmarSpeedFilterIir(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15879,7 +15879,7 @@ def decode_pgn_126720_airmarSpeedFilterIir(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarSpeedFilterIir(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarSpeedFilterIir(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -15930,7 +15930,7 @@ def encode_pgn_126720_airmarSpeedFilterIir(nmea2000Message: NMEA2000Message) -> 
         raise Exception("Cant encode this message, missing 'Filter duration'")
     field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_126720_airmarTemperatureFilterNone(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -15983,7 +15983,7 @@ def decode_pgn_126720_airmarTemperatureFilterNone(_data_raw_: int) -> NMEA2000Me
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarTemperatureFilterNone(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarTemperatureFilterNone(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -16028,7 +16028,7 @@ def encode_pgn_126720_airmarTemperatureFilterNone(nmea2000Message: NMEA2000Messa
         raise Exception("Cant encode this message, missing 'Sample interval'")
     field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_airmarTemperatureFilterIir(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -16087,7 +16087,7 @@ def decode_pgn_126720_airmarTemperatureFilterIir(_data_raw_: int) -> NMEA2000Mes
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarTemperatureFilterIir(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarTemperatureFilterIir(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -16138,7 +16138,7 @@ def encode_pgn_126720_airmarTemperatureFilterIir(nmea2000Message: NMEA2000Messag
         raise Exception("Cant encode this message, missing 'Filter duration'")
     field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_126720_airmarNmea2000Options(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -16186,7 +16186,7 @@ def decode_pgn_126720_airmarNmea2000Options(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarNmea2000Options(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarNmea2000Options(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -16225,7 +16225,7 @@ def encode_pgn_126720_airmarNmea2000Options(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFFFF) << 26
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_126720_airmarAddressableMultiFrame(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -16259,7 +16259,7 @@ def decode_pgn_126720_airmarAddressableMultiFrame(_data_raw_: int) -> NMEA2000Me
 
     return nmea2000Message
 
-def encode_pgn_126720_airmarAddressableMultiFrame(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_airmarAddressableMultiFrame(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -16286,7 +16286,7 @@ def encode_pgn_126720_airmarAddressableMultiFrame(nmea2000Message: NMEA2000Messa
         raise Exception("Cant encode this message, missing 'Proprietary ID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 16
-    return data_raw
+    return data_raw.to_bytes(3, byteorder="little")
 
 def decode_pgn_126720_maretronSlaveResponse(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -16338,7 +16338,7 @@ def decode_pgn_126720_maretronSlaveResponse(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_maretronSlaveResponse(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_maretronSlaveResponse(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -16383,7 +16383,7 @@ def encode_pgn_126720_maretronSlaveResponse(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'Status'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_126720_garminDayMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -16461,7 +16461,7 @@ def decode_pgn_126720_garminDayMode(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_garminDayMode(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_garminDayMode(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -16530,7 +16530,7 @@ def encode_pgn_126720_garminDayMode(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Backlight'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_GARMIN_BACKLIGHT_LEVEL(field.value)
     data_raw |= (field_value & 0xFF) << 80
-    return data_raw
+    return data_raw.to_bytes(11, byteorder="little")
 
 def decode_pgn_126720_garminNightMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -16608,7 +16608,7 @@ def decode_pgn_126720_garminNightMode(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_garminNightMode(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_garminNightMode(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -16677,7 +16677,7 @@ def encode_pgn_126720_garminNightMode(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Backlight'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_GARMIN_BACKLIGHT_LEVEL(field.value)
     data_raw |= (field_value & 0xFF) << 80
-    return data_raw
+    return data_raw.to_bytes(11, byteorder="little")
 
 def decode_pgn_126720_garminColorMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -16755,7 +16755,7 @@ def decode_pgn_126720_garminColorMode(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126720_garminColorMode(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126720_garminColorMode(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -16824,7 +16824,7 @@ def encode_pgn_126720_garminColorMode(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Color'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_GARMIN_COLOR(field.value)
     data_raw |= (field_value & 0xFF) << 80
-    return data_raw
+    return data_raw.to_bytes(11, byteorder="little")
 
 
 def is_fast_pgn_126976() -> bool:
@@ -16843,7 +16843,7 @@ def decode_pgn_126976(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126976(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126976(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126976."""
     data_raw = 0
     # data | Offset: 0, Length: 1784, Resolution: 1, Field Type: BINARY
@@ -16852,7 +16852,7 @@ def encode_pgn_126976(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 0
-    return data_raw
+    return data_raw.to_bytes(223, byteorder="little")
 
 
 def is_fast_pgn_126983() -> bool:
@@ -17001,7 +17001,7 @@ def decode_pgn_126983(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126983(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126983(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126983."""
     data_raw = 0
     # alertType | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -17130,7 +17130,7 @@ def encode_pgn_126983(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Alert State'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_ALERT_STATE(field.value)
     data_raw |= (field_value & 0xFF) << 216
-    return data_raw
+    return data_raw.to_bytes(28, byteorder="little")
 
 
 def is_fast_pgn_126984() -> bool:
@@ -17217,7 +17217,7 @@ def decode_pgn_126984(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126984(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126984(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126984."""
     data_raw = 0
     # alertType | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -17292,7 +17292,7 @@ def encode_pgn_126984(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3F) << 194
-    return data_raw
+    return data_raw.to_bytes(25, byteorder="little")
 
 
 def is_fast_pgn_126985() -> bool:
@@ -17382,7 +17382,7 @@ def decode_pgn_126985(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126985(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126985(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126985."""
     data_raw = 0
     # alertType | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -17447,7 +17447,7 @@ def encode_pgn_126985(nmea2000Message: NMEA2000Message) -> int:
     data_raw |= (field_value & 0xFF) << 128
     raise Exception ("PGN 126985 not supporting encoding for now as Alert Text Description is missing BitLength or BitOffset")
     raise Exception ("PGN 126985 not supporting encoding for now as Alert Location Text Description is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_126986() -> bool:
@@ -17551,7 +17551,7 @@ def decode_pgn_126986(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126986(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126986(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126986."""
     data_raw = 0
     # alertType | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -17644,7 +17644,7 @@ def encode_pgn_126986(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Escalation Period'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 152
-    return data_raw
+    return data_raw.to_bytes(20, byteorder="little")
 
 
 def is_fast_pgn_126987() -> bool:
@@ -17742,7 +17742,7 @@ def decode_pgn_126987(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126987(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126987(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126987."""
     data_raw = 0
     # alertType | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -17829,7 +17829,7 @@ def encode_pgn_126987(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Threshold Level'")
     field_value = encode_number(field.value, 64, False, 1)
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 160
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_126988() -> bool:
@@ -17921,7 +17921,7 @@ def decode_pgn_126988(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126988(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126988(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126988."""
     data_raw = 0
     # alertType | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -18002,7 +18002,7 @@ def encode_pgn_126988(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Value Data'")
     field_value = encode_number(field.value, 64, False, 1)
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFF) << 152
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_126992() -> bool:
@@ -18047,7 +18047,7 @@ def decode_pgn_126992(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126992(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126992(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126992."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -18080,7 +18080,7 @@ def encode_pgn_126992(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Time'")
     field_value = int(field.raw_value / 0.0001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_126993() -> bool:
@@ -18131,7 +18131,7 @@ def decode_pgn_126993(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126993(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126993(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126993."""
     data_raw = 0
     # dataTransmitOffset | Offset: 0, Length: 16, Resolution: 0.01, Field Type: DURATION
@@ -18170,7 +18170,7 @@ def encode_pgn_126993(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFFFFFFF) << 30
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_126996() -> bool:
@@ -18231,7 +18231,7 @@ def decode_pgn_126996(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126996(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126996(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126996."""
     data_raw = 0
     # nmea2000Version | Offset: 0, Length: 16, Resolution: 0.001, Field Type: NUMBER
@@ -18282,7 +18282,7 @@ def encode_pgn_126996(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Load Equivalency'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 1064
-    return data_raw
+    return data_raw.to_bytes(134, byteorder="little")
 
 
 def is_fast_pgn_126998() -> bool:
@@ -18316,13 +18316,13 @@ def decode_pgn_126998(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_126998(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_126998(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126998."""
     data_raw = 0
     raise Exception ("PGN 126998 not supporting encoding for now as Installation Description #1 is missing BitLength or BitOffset")
     raise Exception ("PGN 126998 not supporting encoding for now as Installation Description #2 is missing BitLength or BitOffset")
     raise Exception ("PGN 126998 not supporting encoding for now as Manufacturer Information is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_127233() -> bool:
@@ -18449,7 +18449,7 @@ def decode_pgn_127233(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127233(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127233(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127233."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -18560,7 +18560,7 @@ def encode_pgn_127233(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x1F) << 275
-    return data_raw
+    return data_raw.to_bytes(35, byteorder="little")
 
 
 def is_fast_pgn_127237() -> bool:
@@ -18688,7 +18688,7 @@ def decode_pgn_127237(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127237(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127237(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127237."""
     data_raw = 0
     # rudderLimitExceeded | Offset: 0, Length: 2, Resolution: 1, Field Type: LOOKUP
@@ -18799,7 +18799,7 @@ def encode_pgn_127237(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Vessel Heading'")
     field_value = encode_number(field.value, 16, False, 0.0001)
     data_raw |= (field_value & 0xFFFF) << 152
-    return data_raw
+    return data_raw.to_bytes(21, byteorder="little")
 
 
 def is_fast_pgn_127245() -> bool:
@@ -18848,7 +18848,7 @@ def decode_pgn_127245(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127245(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127245(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127245."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -18887,7 +18887,7 @@ def encode_pgn_127245(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127250() -> bool:
@@ -18936,7 +18936,7 @@ def decode_pgn_127250(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127250(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127250(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127250."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -18975,7 +18975,7 @@ def encode_pgn_127250(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3F) << 58
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127251() -> bool:
@@ -19005,7 +19005,7 @@ def decode_pgn_127251(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127251(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127251(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127251."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -19026,7 +19026,7 @@ def encode_pgn_127251(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127252() -> bool:
@@ -19056,7 +19056,7 @@ def decode_pgn_127252(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127252(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127252(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127252."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -19077,7 +19077,7 @@ def encode_pgn_127252(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFF) << 24
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127257() -> bool:
@@ -19119,7 +19119,7 @@ def decode_pgn_127257(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127257(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127257(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127257."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -19152,7 +19152,7 @@ def encode_pgn_127257(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127258() -> bool:
@@ -19202,7 +19202,7 @@ def decode_pgn_127258(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127258(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127258(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127258."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -19241,7 +19241,7 @@ def encode_pgn_127258(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127488() -> bool:
@@ -19284,7 +19284,7 @@ def decode_pgn_127488(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127488(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127488(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127488."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -19317,7 +19317,7 @@ def encode_pgn_127488(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127489() -> bool:
@@ -19416,7 +19416,7 @@ def decode_pgn_127489(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127489(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127489(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127489."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -19503,7 +19503,7 @@ def encode_pgn_127489(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Engine Torque'")
     field_value = encode_number(field.value, 8, True, 1)
     data_raw |= (field_value & 0xFF) << 200
-    return data_raw
+    return data_raw.to_bytes(26, byteorder="little")
 
 
 def is_fast_pgn_127490() -> bool:
@@ -19563,7 +19563,7 @@ def decode_pgn_127490(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127490(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127490(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127490."""
     data_raw = 0
     # inverterMotorIdentifier | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -19614,7 +19614,7 @@ def encode_pgn_127490(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Shaft Torque'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 80
-    return data_raw
+    return data_raw.to_bytes(12, byteorder="little")
 
 
 def is_fast_pgn_127491() -> bool:
@@ -19686,7 +19686,7 @@ def decode_pgn_127491(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127491(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127491(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127491."""
     data_raw = 0
     # energyStorageIdentifier | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -19749,7 +19749,7 @@ def encode_pgn_127491(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Heating System Status'")
     field_value = encode_number(field.value, 4, False, 1)
     data_raw |= (field_value & 0xF) << 116
-    return data_raw
+    return data_raw.to_bytes(15, byteorder="little")
 
 
 def is_fast_pgn_127493() -> bool:
@@ -19805,7 +19805,7 @@ def decode_pgn_127493(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127493(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127493(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127493."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -19850,7 +19850,7 @@ def encode_pgn_127493(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127494() -> bool:
@@ -19940,7 +19940,7 @@ def decode_pgn_127494(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127494(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127494(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127494."""
     data_raw = 0
     # inverterMotorIdentifier | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -20021,7 +20021,7 @@ def encode_pgn_127494(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Drive/Motor Hours'")
     field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 192
-    return data_raw
+    return data_raw.to_bytes(28, byteorder="little")
 
 
 def is_fast_pgn_127495() -> bool:
@@ -20129,7 +20129,7 @@ def decode_pgn_127495(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127495(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127495(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127495."""
     data_raw = 0
     # energyStorageIdentifier | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -20228,7 +20228,7 @@ def encode_pgn_127495(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Minimum Charge (SOC)'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 160
-    return data_raw
+    return data_raw.to_bytes(21, byteorder="little")
 
 
 def is_fast_pgn_127496() -> bool:
@@ -20264,7 +20264,7 @@ def decode_pgn_127496(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127496(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127496(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127496."""
     data_raw = 0
     # timeToEmpty | Offset: 0, Length: 32, Resolution: 0.001, Field Type: DURATION
@@ -20291,7 +20291,7 @@ def encode_pgn_127496(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Trip Run Time'")
     field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 80
-    return data_raw
+    return data_raw.to_bytes(14, byteorder="little")
 
 
 def is_fast_pgn_127497() -> bool:
@@ -20334,7 +20334,7 @@ def decode_pgn_127497(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127497(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127497(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127497."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -20367,7 +20367,7 @@ def encode_pgn_127497(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Instantaneous Fuel Economy'")
     field_value = encode_number(field.value, 16, True, 0.1)
     data_raw |= (field_value & 0xFFFF) << 56
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 
 def is_fast_pgn_127498() -> bool:
@@ -20407,7 +20407,7 @@ def decode_pgn_127498(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127498(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127498(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127498."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -20424,7 +20424,7 @@ def encode_pgn_127498(nmea2000Message: NMEA2000Message) -> int:
     data_raw |= (field_value & 0xFFFF) << 8
     raise Exception ("PGN 127498 not supporting encoding for now as VIN is missing BitLength or BitOffset")
     raise Exception ("PGN 127498 not supporting encoding for now as Software ID is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_127500() -> bool:
@@ -20484,7 +20484,7 @@ def decode_pgn_127500(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127500(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127500(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127500."""
     data_raw = 0
     # sequenceId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -20535,7 +20535,7 @@ def encode_pgn_127500(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'TimeOFF'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127501() -> bool:
@@ -20749,7 +20749,7 @@ def decode_pgn_127501(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127501(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127501(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127501."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -20926,7 +20926,7 @@ def encode_pgn_127501(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Indicator28'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_OFF_ON(field.value)
     data_raw |= (field_value & 0x3) << 62
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127502() -> bool:
@@ -21140,7 +21140,7 @@ def decode_pgn_127502(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127502(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127502(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127502."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -21317,7 +21317,7 @@ def encode_pgn_127502(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Switch28'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_OFF_ON_CONTROL(field.value)
     data_raw |= (field_value & 0x3) << 62
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127503() -> bool:
@@ -21403,7 +21403,7 @@ def decode_pgn_127503(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127503(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127503(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127503."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -21478,7 +21478,7 @@ def encode_pgn_127503(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Power factor'")
     field_value = encode_number(field.value, 8, True, 0.01)
     data_raw |= (field_value & 0xFF) << 152
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_127504() -> bool:
@@ -21564,7 +21564,7 @@ def decode_pgn_127504(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127504(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127504(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127504."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -21639,7 +21639,7 @@ def encode_pgn_127504(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Power factor'")
     field_value = encode_number(field.value, 8, True, 0.01)
     data_raw |= (field_value & 0xFF) << 152
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_127505() -> bool:
@@ -21682,7 +21682,7 @@ def decode_pgn_127505(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127505(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127505(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127505."""
     data_raw = 0
     # instance | Offset: 0, Length: 4, Resolution: 1, Field Type: NUMBER
@@ -21715,7 +21715,7 @@ def encode_pgn_127505(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127506() -> bool:
@@ -21776,7 +21776,7 @@ def decode_pgn_127506(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127506(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127506(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127506."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -21827,7 +21827,7 @@ def encode_pgn_127506(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Remaining capacity'")
     field_value = encode_number(field.value, 16, False, 3600)
     data_raw |= (field_value & 0xFFFF) << 72
-    return data_raw
+    return data_raw.to_bytes(11, byteorder="little")
 
 
 def is_fast_pgn_127507() -> bool:
@@ -21891,7 +21891,7 @@ def decode_pgn_127507(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127507(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127507(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127507."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -21942,7 +21942,7 @@ def encode_pgn_127507(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Equalization Time Remaining'")
     field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 
 def is_fast_pgn_127508() -> bool:
@@ -21984,7 +21984,7 @@ def decode_pgn_127508(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127508(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127508(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127508."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22017,7 +22017,7 @@ def encode_pgn_127508(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'SID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127509() -> bool:
@@ -22067,7 +22067,7 @@ def decode_pgn_127509(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127509(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127509(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127509."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22106,7 +22106,7 @@ def encode_pgn_127509(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3) << 30
-    return data_raw
+    return data_raw.to_bytes(4, byteorder="little")
 
 
 def is_fast_pgn_127510() -> bool:
@@ -22190,7 +22190,7 @@ def decode_pgn_127510(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127510(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127510(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127510."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22259,7 +22259,7 @@ def encode_pgn_127510(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Equalize Time'")
     field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127511() -> bool:
@@ -22322,7 +22322,7 @@ def decode_pgn_127511(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127511(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127511(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127511."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22373,7 +22373,7 @@ def encode_pgn_127511(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Load Sense Interval'")
     field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127512() -> bool:
@@ -22410,7 +22410,7 @@ def decode_pgn_127512(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127512(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127512(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127512."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22437,7 +22437,7 @@ def encode_pgn_127512(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xF) << 20
-    return data_raw
+    return data_raw.to_bytes(3, byteorder="little")
 
 
 def is_fast_pgn_127513() -> bool:
@@ -22513,7 +22513,7 @@ def decode_pgn_127513(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127513(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127513(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127513."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22576,7 +22576,7 @@ def encode_pgn_127513(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Charge Efficiency Factor'")
     field_value = encode_number(field.value, 8, True, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127514() -> bool:
@@ -22628,7 +22628,7 @@ def decode_pgn_127514(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127514(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127514(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127514."""
     data_raw = 0
     # instance | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22667,7 +22667,7 @@ def encode_pgn_127514(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Generator Off Reason'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_AGS_OFF_REASON(field.value)
     data_raw |= (field_value & 0xFF) << 32
-    return data_raw
+    return data_raw.to_bytes(5, byteorder="little")
 
 
 def is_fast_pgn_127744() -> bool:
@@ -22703,7 +22703,7 @@ def decode_pgn_127744(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127744(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127744(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127744."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22730,7 +22730,7 @@ def encode_pgn_127744(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127745() -> bool:
@@ -22766,7 +22766,7 @@ def decode_pgn_127745(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127745(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127745(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127745."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22793,7 +22793,7 @@ def encode_pgn_127745(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127746() -> bool:
@@ -22829,7 +22829,7 @@ def decode_pgn_127746(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127746(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127746(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127746."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22856,7 +22856,7 @@ def encode_pgn_127746(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Power'")
     field_value = encode_number(field.value, 32, True, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127747() -> bool:
@@ -22898,7 +22898,7 @@ def decode_pgn_127747(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127747(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127747(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127747."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -22931,7 +22931,7 @@ def encode_pgn_127747(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Frequency'")
     field_value = encode_number(field.value, 16, False, 0.1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127748() -> bool:
@@ -22973,7 +22973,7 @@ def decode_pgn_127748(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127748(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127748(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127748."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23006,7 +23006,7 @@ def encode_pgn_127748(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Frequency'")
     field_value = encode_number(field.value, 16, False, 0.1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127749() -> bool:
@@ -23048,7 +23048,7 @@ def decode_pgn_127749(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127749(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127749(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127749."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23081,7 +23081,7 @@ def encode_pgn_127749(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Frequency'")
     field_value = encode_number(field.value, 16, False, 0.1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127750() -> bool:
@@ -23146,7 +23146,7 @@ def decode_pgn_127750(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127750(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127750(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127750."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: BINARY
@@ -23197,7 +23197,7 @@ def encode_pgn_127750(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_127751() -> bool:
@@ -23239,7 +23239,7 @@ def decode_pgn_127751(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_127751(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_127751(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 127751."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: BINARY
@@ -23272,7 +23272,7 @@ def encode_pgn_127751(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128000() -> bool:
@@ -23302,7 +23302,7 @@ def decode_pgn_128000(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128000(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128000(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128000."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23323,7 +23323,7 @@ def encode_pgn_128000(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFF) << 24
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128001() -> bool:
@@ -23365,7 +23365,7 @@ def decode_pgn_128001(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128001(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128001(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128001."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23398,7 +23398,7 @@ def encode_pgn_128001(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128002() -> bool:
@@ -23452,7 +23452,7 @@ def decode_pgn_128002(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128002(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128002(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128002."""
     data_raw = 0
     # inverterMotorController | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23497,7 +23497,7 @@ def encode_pgn_128002(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Motor DC Current'")
     field_value = encode_number(field.value, 16, True, 0.1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128003() -> bool:
@@ -23551,7 +23551,7 @@ def decode_pgn_128003(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128003(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128003(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128003."""
     data_raw = 0
     # energyStorageIdentifier | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23596,7 +23596,7 @@ def encode_pgn_128003(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128006() -> bool:
@@ -23666,7 +23666,7 @@ def decode_pgn_128006(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128006(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128006(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128006."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23723,7 +23723,7 @@ def encode_pgn_128006(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Azimuth Control'")
     field_value = encode_number(field.value, 16, False, 0.0001)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128007() -> bool:
@@ -23772,7 +23772,7 @@ def decode_pgn_128007(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128007(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128007(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128007."""
     data_raw = 0
     # identifier | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23811,7 +23811,7 @@ def encode_pgn_128007(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Maximum Rotational Speed'")
     field_value = encode_number(field.value, 16, False, 0.25)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128008() -> bool:
@@ -23860,7 +23860,7 @@ def decode_pgn_128008(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128008(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128008(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128008."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23899,7 +23899,7 @@ def encode_pgn_128008(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Operating Time'")
     field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128259() -> bool:
@@ -23948,7 +23948,7 @@ def decode_pgn_128259(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128259(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128259(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128259."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -23987,7 +23987,7 @@ def encode_pgn_128259(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFF) << 52
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128267() -> bool:
@@ -24023,7 +24023,7 @@ def decode_pgn_128267(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128267(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128267(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128267."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -24050,7 +24050,7 @@ def encode_pgn_128267(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Range'")
     field_value = encode_number(field.value, 8, False, 10)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128275() -> bool:
@@ -24088,7 +24088,7 @@ def decode_pgn_128275(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128275(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128275(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128275."""
     data_raw = 0
     # date | Offset: 0, Length: 16, Resolution: 1, Field Type: DATE
@@ -24115,7 +24115,7 @@ def encode_pgn_128275(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Trip Log'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 80
-    return data_raw
+    return data_raw.to_bytes(14, byteorder="little")
 
 
 def is_fast_pgn_128520() -> bool:
@@ -24235,7 +24235,7 @@ def decode_pgn_128520(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128520."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -24325,7 +24325,7 @@ def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 128520 not supporting encoding for now as Name is missing BitLength or BitOffset")
     raise Exception ("PGN 128520 not supporting encoding for now as Reference Target is missing BitLength or BitOffset")
     raise Exception ("PGN 128520 not supporting encoding for now as Reserved is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_128538() -> bool:
@@ -24529,7 +24529,7 @@ def decode_pgn_128538(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128538(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128538(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128538."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -24724,7 +24724,7 @@ def encode_pgn_128538(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xF) << 172
-    return data_raw
+    return data_raw.to_bytes(22, byteorder="little")
 
 
 def is_fast_pgn_128768() -> bool:
@@ -24772,7 +24772,7 @@ def decode_pgn_128768(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128768(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128768(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128768."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -24811,7 +24811,7 @@ def encode_pgn_128768(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3FFFFFFFF) << 30
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128769() -> bool:
@@ -24859,7 +24859,7 @@ def decode_pgn_128769(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128769(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128769(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128769."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -24898,7 +24898,7 @@ def encode_pgn_128769(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128776() -> bool:
@@ -25002,7 +25002,7 @@ def decode_pgn_128776(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128776(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128776(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128776."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -25089,7 +25089,7 @@ def encode_pgn_128776(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFF) << 52
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128777() -> bool:
@@ -25166,7 +25166,7 @@ def decode_pgn_128777(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128777(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128777(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128777."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -25229,7 +25229,7 @@ def encode_pgn_128777(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Windlass Operating Events'")
     raise Exception("Encoding 'BITLOOKUP' not supported")
     data_raw |= (field_value & 0x3F) << 58
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128778() -> bool:
@@ -25284,7 +25284,7 @@ def decode_pgn_128778(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128778(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128778(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128778."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -25329,7 +25329,7 @@ def encode_pgn_128778(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_128780() -> bool:
@@ -25377,7 +25377,7 @@ def decode_pgn_128780(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_128780(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_128780(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 128780."""
     data_raw = 0
     # actuatorIdentifier | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -25416,7 +25416,7 @@ def encode_pgn_128780(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129025() -> bool:
@@ -25440,7 +25440,7 @@ def decode_pgn_129025(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129025(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129025(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129025."""
     data_raw = 0
     # latitude | Offset: 0, Length: 32, Resolution: 1e-07, Field Type: NUMBER
@@ -25455,7 +25455,7 @@ def encode_pgn_129025(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Longitude'")
     field_value = encode_number(field.value, 32, True, 1e-07)
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129026() -> bool:
@@ -25504,7 +25504,7 @@ def decode_pgn_129026(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129026(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129026(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129026."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -25543,7 +25543,7 @@ def encode_pgn_129026(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129027() -> bool:
@@ -25579,7 +25579,7 @@ def decode_pgn_129027(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129027(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129027(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129027."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -25606,7 +25606,7 @@ def encode_pgn_129027(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Longitude Delta'")
     field_value = encode_number(field.value, 24, True, 2.77778e-09)
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129028() -> bool:
@@ -25662,7 +25662,7 @@ def decode_pgn_129028(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129028(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129028(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129028."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -25707,7 +25707,7 @@ def encode_pgn_129028(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Altitude Delta'")
     field_value = encode_number(field.value, 24, True, 0.001)
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129029() -> bool:
@@ -25833,7 +25833,7 @@ def decode_pgn_129029(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129029(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129029(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129029."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -25944,7 +25944,7 @@ def encode_pgn_129029(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Age of DGNSS Corrections'")
     field_value = int(field.raw_value / 0.01) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 360
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129033() -> bool:
@@ -25976,7 +25976,7 @@ def decode_pgn_129033(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129033(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129033(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129033."""
     data_raw = 0
     # date | Offset: 0, Length: 16, Resolution: 1, Field Type: DATE
@@ -25997,7 +25997,7 @@ def encode_pgn_129033(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Local Offset'")
     field_value = int(field.raw_value / 60) if field.raw_value is not None else encode_time(field.value, 16)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129038() -> bool:
@@ -26137,7 +26137,7 @@ def decode_pgn_129038(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129038(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129038(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129038."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -26260,7 +26260,7 @@ def encode_pgn_129038(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Sequence ID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 216
-    return data_raw
+    return data_raw.to_bytes(28, byteorder="little")
 
 
 def is_fast_pgn_129039() -> bool:
@@ -26423,7 +26423,7 @@ def decode_pgn_129039(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129039(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129039(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129039."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -26564,7 +26564,7 @@ def encode_pgn_129039(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x7FFF) << 201
-    return data_raw
+    return data_raw.to_bytes(27, byteorder="little")
 
 
 def is_fast_pgn_129040() -> bool:
@@ -26748,7 +26748,7 @@ def decode_pgn_129040(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129040(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129040(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129040."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -26913,7 +26913,7 @@ def encode_pgn_129040(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x1F) << 427
-    return data_raw
+    return data_raw.to_bytes(54, byteorder="little")
 
 
 def is_fast_pgn_129041() -> bool:
@@ -27076,7 +27076,7 @@ def decode_pgn_129041(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129041(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129041(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129041."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -27212,7 +27212,7 @@ def encode_pgn_129041(nmea2000Message: NMEA2000Message) -> int:
     field_value = field.value
     data_raw |= (field_value & 0x7) << 205
     raise Exception ("PGN 129041 not supporting encoding for now as AtoN Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129044() -> bool:
@@ -27254,7 +27254,7 @@ def decode_pgn_129044(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129044(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129044(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129044."""
     data_raw = 0
     # localDatum | Offset: 0, Length: 32, Resolution: , Field Type: STRING_FIX
@@ -27287,7 +27287,7 @@ def encode_pgn_129044(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reference Datum'")
     raise Exception("Encoding 'STRING_FIX' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 128
-    return data_raw
+    return data_raw.to_bytes(20, byteorder="little")
 
 
 def is_fast_pgn_129045() -> bool:
@@ -27359,7 +27359,7 @@ def decode_pgn_129045(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129045(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129045(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129045."""
     data_raw = 0
     # deltaX | Offset: 0, Length: 32, Resolution: 0.01, Field Type: NUMBER
@@ -27422,7 +27422,7 @@ def encode_pgn_129045(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Datum Name'")
     raise Exception("Encoding 'STRING_FIX' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 288
-    return data_raw
+    return data_raw.to_bytes(40, byteorder="little")
 
 
 def is_fast_pgn_129283() -> bool:
@@ -27472,7 +27472,7 @@ def decode_pgn_129283(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129283(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129283(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129283."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -27511,7 +27511,7 @@ def encode_pgn_129283(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129284() -> bool:
@@ -27619,7 +27619,7 @@ def decode_pgn_129284(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129284(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129284(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129284."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -27712,7 +27712,7 @@ def encode_pgn_129284(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Waypoint Closing Velocity'")
     field_value = encode_number(field.value, 16, True, 0.01)
     data_raw |= (field_value & 0xFFFF) << 256
-    return data_raw
+    return data_raw.to_bytes(34, byteorder="little")
 
 
 def is_fast_pgn_129285() -> bool:
@@ -27803,7 +27803,7 @@ def decode_pgn_129285(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129285(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129285(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129285."""
     data_raw = 0
     # startRps | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -27854,7 +27854,7 @@ def encode_pgn_129285(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 129285 not supporting encoding for now as WP Name is missing BitLength or BitOffset")
     raise Exception ("PGN 129285 not supporting encoding for now as WP Latitude is missing BitLength or BitOffset")
     raise Exception ("PGN 129285 not supporting encoding for now as WP Longitude is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129291() -> bool:
@@ -27903,7 +27903,7 @@ def decode_pgn_129291(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129291(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129291(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129291."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -27942,7 +27942,7 @@ def encode_pgn_129291(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129301() -> bool:
@@ -27985,7 +27985,7 @@ def decode_pgn_129301(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129301(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129301(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129301."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -28018,7 +28018,7 @@ def encode_pgn_129301(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Mark ID'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(10, byteorder="little")
 
 
 def is_fast_pgn_129302() -> bool:
@@ -28094,7 +28094,7 @@ def decode_pgn_129302(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129302(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129302(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129302."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -28157,7 +28157,7 @@ def encode_pgn_129302(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Destination Mark ID'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 104
-    return data_raw
+    return data_raw.to_bytes(17, byteorder="little")
 
 
 def is_fast_pgn_129538() -> bool:
@@ -28239,7 +28239,7 @@ def decode_pgn_129538(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129538(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129538(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129538."""
     data_raw = 0
     # svElevationMask | Offset: 0, Length: 16, Resolution: 0.0001, Field Type: NUMBER
@@ -28308,7 +28308,7 @@ def encode_pgn_129538(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3F) << 122
-    return data_raw
+    return data_raw.to_bytes(16, byteorder="little")
 
 
 def is_fast_pgn_129539() -> bool:
@@ -28364,7 +28364,7 @@ def decode_pgn_129539(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129539(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129539(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129539."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -28409,7 +28409,7 @@ def encode_pgn_129539(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'TDOP'")
     field_value = encode_number(field.value, 16, True, 0.01)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129540() -> bool:
@@ -28489,7 +28489,7 @@ def decode_pgn_129540(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129540(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129540(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129540."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -28558,7 +28558,7 @@ def encode_pgn_129540(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xF) << 116
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129541() -> bool:
@@ -28654,7 +28654,7 @@ def decode_pgn_129541(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129541(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129541(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129541."""
     data_raw = 0
     # prn | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -28741,7 +28741,7 @@ def encode_pgn_129541(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3) << 206
-    return data_raw
+    return data_raw.to_bytes(26, byteorder="little")
 
 
 def is_fast_pgn_129542() -> bool:
@@ -28801,7 +28801,7 @@ def decode_pgn_129542(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129542(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129542(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129542."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -28852,7 +28852,7 @@ def encode_pgn_129542(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'STD of Alt Error'")
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 104
-    return data_raw
+    return data_raw.to_bytes(15, byteorder="little")
 
 
 def is_fast_pgn_129545() -> bool:
@@ -28925,7 +28925,7 @@ def decode_pgn_129545(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129545(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129545(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129545."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -28988,7 +28988,7 @@ def encode_pgn_129545(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Std Deviation of bias'")
     field_value = encode_number(field.value, 16, True, 0.01)
     data_raw |= (field_value & 0xFFFF) << 104
-    return data_raw
+    return data_raw.to_bytes(15, byteorder="little")
 
 
 def is_fast_pgn_129546() -> bool:
@@ -29030,7 +29030,7 @@ def decode_pgn_129546(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129546(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129546(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129546."""
     data_raw = 0
     # radialPositionErrorMaximumThreshold | Offset: 0, Length: 16, Resolution: 0.01, Field Type: NUMBER
@@ -29063,7 +29063,7 @@ def encode_pgn_129546(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129547() -> bool:
@@ -29123,7 +29123,7 @@ def decode_pgn_129547(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129547(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129547(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129547."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -29174,7 +29174,7 @@ def encode_pgn_129547(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Std Dev Alt Error'")
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 104
-    return data_raw
+    return data_raw.to_bytes(15, byteorder="little")
 
 
 def is_fast_pgn_129549() -> bool:
@@ -29254,7 +29254,7 @@ def decode_pgn_129549(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129549(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129549(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129549."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -29323,7 +29323,7 @@ def encode_pgn_129549(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'IOD'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 120
-    return data_raw
+    return data_raw.to_bytes(16, byteorder="little")
 
 
 def is_fast_pgn_129550() -> bool:
@@ -29381,7 +29381,7 @@ def decode_pgn_129550(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129550(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129550(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129550."""
     data_raw = 0
     # channel | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -29426,7 +29426,7 @@ def encode_pgn_129550(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_129551() -> bool:
@@ -29527,7 +29527,7 @@ def decode_pgn_129551(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129551(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129551(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129551."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -29614,7 +29614,7 @@ def encode_pgn_129551(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Satellite Service ID No.'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 144
-    return data_raw
+    return data_raw.to_bytes(20, byteorder="little")
 
 
 def is_fast_pgn_129556() -> bool:
@@ -29710,7 +29710,7 @@ def decode_pgn_129556(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129556(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129556(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129556."""
     data_raw = 0
     # prn | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -29797,7 +29797,7 @@ def encode_pgn_129556(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing '(tau)nA'")
     field_value = encode_number(field.value, 12, False, 1)
     data_raw |= (field_value & 0xFFF) << 196
-    return data_raw
+    return data_raw.to_bytes(26, byteorder="little")
 
 
 def is_fast_pgn_129792() -> bool:
@@ -29884,7 +29884,7 @@ def decode_pgn_129792(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129792(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129792(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129792."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -29954,7 +29954,7 @@ def encode_pgn_129792(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 120
     raise Exception ("PGN 129792 not supporting encoding for now as Binary Data is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129793() -> bool:
@@ -30058,7 +30058,7 @@ def decode_pgn_129793(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129793(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129793(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129793."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -30145,7 +30145,7 @@ def encode_pgn_129793(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'GNSS type'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_POSITION_FIX_DEVICE(field.value)
     data_raw |= (field_value & 0xF) << 188
-    return data_raw
+    return data_raw.to_bytes(24, byteorder="little")
 
 
 def is_fast_pgn_129794() -> bool:
@@ -30292,7 +30292,7 @@ def decode_pgn_129794(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129794(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129794(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129794."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -30421,7 +30421,7 @@ def encode_pgn_129794(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x7) << 597
-    return data_raw
+    return data_raw.to_bytes(75, byteorder="little")
 
 
 def is_fast_pgn_129795() -> bool:
@@ -30510,7 +30510,7 @@ def decode_pgn_129795(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129795(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129795(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129795."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -30580,7 +30580,7 @@ def encode_pgn_129795(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 88
     raise Exception ("PGN 129795 not supporting encoding for now as Binary Data is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129796() -> bool:
@@ -30649,7 +30649,7 @@ def decode_pgn_129796(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129796(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129796(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129796."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -30706,7 +30706,7 @@ def encode_pgn_129796(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3F) << 82
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129797() -> bool:
@@ -30770,7 +30770,7 @@ def decode_pgn_129797(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129797(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129797(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129797."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -30816,7 +30816,7 @@ def encode_pgn_129797(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
     raise Exception ("PGN 129797 not supporting encoding for now as Binary Data is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129798() -> bool:
@@ -30937,7 +30937,7 @@ def decode_pgn_129798(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129798(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129798(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129798."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -31042,7 +31042,7 @@ def encode_pgn_129798(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3) << 214
-    return data_raw
+    return data_raw.to_bytes(27, byteorder="little")
 
 
 def is_fast_pgn_129799() -> bool:
@@ -31091,7 +31091,7 @@ def decode_pgn_129799(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129799(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129799(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129799."""
     data_raw = 0
     # rxFrequency | Offset: 0, Length: 32, Resolution: 10, Field Type: NUMBER
@@ -31130,7 +31130,7 @@ def encode_pgn_129799(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Channel Bandwidth'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 136
-    return data_raw
+    return data_raw.to_bytes(19, byteorder="little")
 
 
 def is_fast_pgn_129800() -> bool:
@@ -31187,7 +31187,7 @@ def decode_pgn_129800(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129800(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129800(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129800."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -31232,7 +31232,7 @@ def encode_pgn_129800(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Destination ID'")
     raise Exception("Encoding 'MMSI' not supported")
     data_raw |= (field_value & 0xFFFFFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(10, byteorder="little")
 
 
 def is_fast_pgn_129801() -> bool:
@@ -31316,7 +31316,7 @@ def decode_pgn_129801(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129801(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129801(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129801."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -31380,7 +31380,7 @@ def encode_pgn_129801(nmea2000Message: NMEA2000Message) -> int:
     raise Exception("Encoding 'SPARE' not supported")
     data_raw |= (field_value & 0x1) << 87
     raise Exception ("PGN 129801 not supporting encoding for now as Safety Related Text is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129802() -> bool:
@@ -31439,7 +31439,7 @@ def decode_pgn_129802(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129802(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129802(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129802."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -31479,7 +31479,7 @@ def encode_pgn_129802(nmea2000Message: NMEA2000Message) -> int:
     raise Exception("Encoding 'SPARE' not supported")
     data_raw |= (field_value & 0x3) << 46
     raise Exception ("PGN 129802 not supporting encoding for now as Safety Related Text is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129803() -> bool:
@@ -31629,7 +31629,7 @@ def decode_pgn_129803(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129803(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129803(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129803."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -31764,7 +31764,7 @@ def encode_pgn_129803(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'SID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 200
-    return data_raw
+    return data_raw.to_bytes(26, byteorder="little")
 
 
 def is_fast_pgn_129804() -> bool:
@@ -31863,7 +31863,7 @@ def decode_pgn_129804(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129804(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129804(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129804."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -31950,7 +31950,7 @@ def encode_pgn_129804(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xF) << 180
-    return data_raw
+    return data_raw.to_bytes(23, byteorder="little")
 
 
 def is_fast_pgn_129805() -> bool:
@@ -32025,7 +32025,7 @@ def decode_pgn_129805(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129805(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129805(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129805."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -32088,7 +32088,7 @@ def encode_pgn_129805(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Increment'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 80
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129806() -> bool:
@@ -32247,7 +32247,7 @@ def decode_pgn_129806(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129806(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129806(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129806."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -32388,7 +32388,7 @@ def encode_pgn_129806(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x1) << 247
-    return data_raw
+    return data_raw.to_bytes(31, byteorder="little")
 
 
 def is_fast_pgn_129807() -> bool:
@@ -32520,7 +32520,7 @@ def decode_pgn_129807(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129807(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129807(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129807."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -32637,7 +32637,7 @@ def encode_pgn_129807(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3) << 230
-    return data_raw
+    return data_raw.to_bytes(29, byteorder="little")
 
 
 def is_fast_pgn_129808() -> bool:
@@ -32796,7 +32796,7 @@ def decode_pgn_129808_dscDistressCallInformation(_data_raw_: int) -> NMEA2000Mes
 
     return nmea2000Message
 
-def encode_pgn_129808_dscDistressCallInformation(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129808_dscDistressCallInformation(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129808."""
     data_raw = 0
     # dscFormat | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -32856,7 +32856,7 @@ def encode_pgn_129808_dscDistressCallInformation(nmea2000Message: NMEA2000Messag
     raise Exception ("PGN 129808 not supporting encoding for now as DSC Equipment Assigned Message ID is missing BitLength or BitOffset")
     raise Exception ("PGN 129808 not supporting encoding for now as DSC Expansion Field Symbol is missing BitLength or BitOffset")
     raise Exception ("PGN 129808 not supporting encoding for now as DSC Expansion Field Data is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_129808_dscCallInformation(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129808."""
@@ -32995,7 +32995,7 @@ def decode_pgn_129808_dscCallInformation(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129808_dscCallInformation(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129808_dscCallInformation(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129808."""
     data_raw = 0
     # dscFormatSymbol | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -33055,7 +33055,7 @@ def encode_pgn_129808_dscCallInformation(nmea2000Message: NMEA2000Message) -> in
     raise Exception ("PGN 129808 not supporting encoding for now as DSC Equipment Assigned Message ID is missing BitLength or BitOffset")
     raise Exception ("PGN 129808 not supporting encoding for now as DSC Expansion Field Symbol is missing BitLength or BitOffset")
     raise Exception ("PGN 129808 not supporting encoding for now as DSC Expansion Field Data is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_129809() -> bool:
@@ -33112,7 +33112,7 @@ def decode_pgn_129809(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129809(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129809(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129809."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -33157,7 +33157,7 @@ def encode_pgn_129809(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Sequence ID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 208
-    return data_raw
+    return data_raw.to_bytes(27, byteorder="little")
 
 
 def is_fast_pgn_129810() -> bool:
@@ -33276,7 +33276,7 @@ def decode_pgn_129810(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_129810(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_129810(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 129810."""
     data_raw = 0
     # messageId | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -33381,7 +33381,7 @@ def encode_pgn_129810(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Sequence ID'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 272
-    return data_raw
+    return data_raw.to_bytes(35, byteorder="little")
 
 
 def is_fast_pgn_130052() -> bool:
@@ -33490,7 +33490,7 @@ def decode_pgn_130052(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130052."""
     data_raw = 0
     # groupRepetitionIntervalGri | Offset: 0, Length: 32, Resolution: 1e-09, Field Type: DURATION
@@ -33583,7 +33583,7 @@ def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xF) << 252
-    return data_raw
+    return data_raw.to_bytes(32, byteorder="little")
 
 
 def is_fast_pgn_130053() -> bool:
@@ -33692,7 +33692,7 @@ def decode_pgn_130053(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130053."""
     data_raw = 0
     # groupRepetitionIntervalGri | Offset: 0, Length: 32, Resolution: 1e-09, Field Type: DURATION
@@ -33785,7 +33785,7 @@ def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xF) << 252
-    return data_raw
+    return data_raw.to_bytes(32, byteorder="little")
 
 
 def is_fast_pgn_130054() -> bool:
@@ -33827,7 +33827,7 @@ def decode_pgn_130054(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130054(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130054(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130054."""
     data_raw = 0
     # groupRepetitionIntervalGri | Offset: 0, Length: 32, Resolution: 1e-09, Field Type: DURATION
@@ -33860,7 +33860,7 @@ def encode_pgn_130054(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Station ASF'")
     field_value = int(field.raw_value / 1e-09) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 88
-    return data_raw
+    return data_raw.to_bytes(15, byteorder="little")
 
 
 def is_fast_pgn_130060() -> bool:
@@ -33922,7 +33922,7 @@ def decode_pgn_130060(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130060(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130060(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130060."""
     data_raw = 0
     # hardwareChannelId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -33935,7 +33935,7 @@ def encode_pgn_130060(nmea2000Message: NMEA2000Message) -> int:
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 8
     # dataSourceInstanceFieldNumber | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
     field = nmea2000Message.get_field_by_id("dataSourceInstanceFieldNumber")
@@ -33968,7 +33968,7 @@ def encode_pgn_130060(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 64
     raise Exception ("PGN 130060 not supporting encoding for now as Label is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130061() -> bool:
@@ -34046,7 +34046,7 @@ def decode_pgn_130061(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130061(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130061(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130061."""
     data_raw = 0
     # dataSourceChannelId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -34083,7 +34083,7 @@ def encode_pgn_130061(nmea2000Message: NMEA2000Message) -> int:
     field = nmea2000Message.get_field_by_id("pgn")
     if field is None:
         raise Exception("Cant encode this message, missing 'PGN'")
-    raise Exception("Encoding 'PGN' not supported")
+    field_value = encode_number(field.value, 24, False, 1)
     data_raw |= (field_value & 0xFFFFFF) << 88
     # dataSourceInstanceFieldNumber | Offset: 112, Length: 8, Resolution: 1, Field Type: NUMBER
     field = nmea2000Message.get_field_by_id("dataSourceInstanceFieldNumber")
@@ -34115,7 +34115,7 @@ def encode_pgn_130061(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Parameter Field Number'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 144
-    return data_raw
+    return data_raw.to_bytes(19, byteorder="little")
 
 
 def is_fast_pgn_130064() -> bool:
@@ -34197,7 +34197,7 @@ def decode_pgn_130064(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130064(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130064(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130064."""
     data_raw = 0
     # startDatabaseId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -34232,7 +34232,7 @@ def encode_pgn_130064(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130064 not supporting encoding for now as Number of Routes in Database is missing BitLength or BitOffset")
     raise Exception ("PGN 130064 not supporting encoding for now as Number of WPs in Database is missing BitLength or BitOffset")
     raise Exception ("PGN 130064 not supporting encoding for now as Number of Bytes in Database is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130065() -> bool:
@@ -34299,7 +34299,7 @@ def decode_pgn_130065(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130065(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130065(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130065."""
     data_raw = 0
     # startRouteId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -34336,7 +34336,7 @@ def encode_pgn_130065(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130065 not supporting encoding for now as Reserved is missing BitLength or BitOffset")
     raise Exception ("PGN 130065 not supporting encoding for now as WP Identification Method is missing BitLength or BitOffset")
     raise Exception ("PGN 130065 not supporting encoding for now as Route Status is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130066() -> bool:
@@ -34420,7 +34420,7 @@ def decode_pgn_130066(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130066(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130066(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130066."""
     data_raw = 0
     # databaseId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -34445,7 +34445,7 @@ def encode_pgn_130066(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130066 not supporting encoding for now as WP Identification Method is missing BitLength or BitOffset")
     raise Exception ("PGN 130066 not supporting encoding for now as Route Status is missing BitLength or BitOffset")
     raise Exception ("PGN 130066 not supporting encoding for now as XTE Limit for the Route is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130067() -> bool:
@@ -34511,7 +34511,7 @@ def decode_pgn_130067(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130067(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130067(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130067."""
     data_raw = 0
     # startRps | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -34553,7 +34553,7 @@ def encode_pgn_130067(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130067 not supporting encoding for now as WP Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130067 not supporting encoding for now as WP Latitude is missing BitLength or BitOffset")
     raise Exception ("PGN 130067 not supporting encoding for now as WP Longitude is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130068() -> bool:
@@ -34609,7 +34609,7 @@ def decode_pgn_130068(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130068(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130068(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130068."""
     data_raw = 0
     # startRps | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -34649,7 +34649,7 @@ def encode_pgn_130068(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 80
     raise Exception ("PGN 130068 not supporting encoding for now as WP Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130069() -> bool:
@@ -34716,7 +34716,7 @@ def decode_pgn_130069(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130069(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130069(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130069."""
     data_raw = 0
     # startRps | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -34773,7 +34773,7 @@ def encode_pgn_130069(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3F) << 114
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130070() -> bool:
@@ -34829,7 +34829,7 @@ def decode_pgn_130070(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130070(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130070(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130070."""
     data_raw = 0
     # startId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -34869,7 +34869,7 @@ def encode_pgn_130070(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 80
     raise Exception ("PGN 130070 not supporting encoding for now as Comment is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130071() -> bool:
@@ -34919,7 +34919,7 @@ def decode_pgn_130071(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130071(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130071(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130071."""
     data_raw = 0
     # startRouteId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -34953,7 +34953,7 @@ def encode_pgn_130071(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 64
     raise Exception ("PGN 130071 not supporting encoding for now as Comment is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130072() -> bool:
@@ -34997,7 +34997,7 @@ def decode_pgn_130072(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130072(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130072(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130072."""
     data_raw = 0
     # startDatabaseId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -35025,7 +35025,7 @@ def encode_pgn_130072(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 48
     raise Exception ("PGN 130072 not supporting encoding for now as Comment is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130073() -> bool:
@@ -35079,7 +35079,7 @@ def decode_pgn_130073(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130073(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130073(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130073."""
     data_raw = 0
     # startRps | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -35124,7 +35124,7 @@ def encode_pgn_130073(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Radius of Turn'")
     field_value = encode_number(field.value, 16, True, 1)
     data_raw |= (field_value & 0xFFFF) << 96
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130074() -> bool:
@@ -35190,7 +35190,7 @@ def decode_pgn_130074(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130074(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130074(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130074."""
     data_raw = 0
     # startWpId | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -35232,7 +35232,7 @@ def encode_pgn_130074(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130074 not supporting encoding for now as WP Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130074 not supporting encoding for now as WP Latitude is missing BitLength or BitOffset")
     raise Exception ("PGN 130074 not supporting encoding for now as WP Longitude is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130306() -> bool:
@@ -35275,7 +35275,7 @@ def decode_pgn_130306(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130306(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130306(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130306."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -35308,7 +35308,7 @@ def encode_pgn_130306(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x1FFFFF) << 43
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130310() -> bool:
@@ -35350,7 +35350,7 @@ def decode_pgn_130310(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130310(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130310(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130310."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -35383,7 +35383,7 @@ def encode_pgn_130310(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130311() -> bool:
@@ -35433,7 +35433,7 @@ def decode_pgn_130311(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130311(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130311(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130311."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -35472,7 +35472,7 @@ def encode_pgn_130311(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Atmospheric Pressure'")
     field_value = encode_number(field.value, 16, False, 100)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130312() -> bool:
@@ -35521,7 +35521,7 @@ def decode_pgn_130312(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130312(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130312(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130312."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -35560,7 +35560,7 @@ def encode_pgn_130312(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130313() -> bool:
@@ -35609,7 +35609,7 @@ def decode_pgn_130313(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130313(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130313(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130313."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -35648,7 +35648,7 @@ def encode_pgn_130313(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130314() -> bool:
@@ -35691,7 +35691,7 @@ def decode_pgn_130314(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130314(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130314(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130314."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -35724,7 +35724,7 @@ def encode_pgn_130314(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130315() -> bool:
@@ -35767,7 +35767,7 @@ def decode_pgn_130315(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130315(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130315(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130315."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -35800,7 +35800,7 @@ def encode_pgn_130315(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130316() -> bool:
@@ -35843,7 +35843,7 @@ def decode_pgn_130316(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130316(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130316(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130316."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -35876,7 +35876,7 @@ def encode_pgn_130316(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Set Temperature'")
     field_value = encode_number(field.value, 16, False, 0.1)
     data_raw |= (field_value & 0xFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130320() -> bool:
@@ -35961,7 +35961,7 @@ def decode_pgn_130320(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130320(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130320(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130320."""
     data_raw = 0
     # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -36020,7 +36020,7 @@ def encode_pgn_130320(nmea2000Message: NMEA2000Message) -> int:
     data_raw |= (field_value & 0xFFFF) << 136
     raise Exception ("PGN 130320 not supporting encoding for now as Station ID is missing BitLength or BitOffset")
     raise Exception ("PGN 130320 not supporting encoding for now as Station Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130321() -> bool:
@@ -36098,7 +36098,7 @@ def decode_pgn_130321(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130321(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130321(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130321."""
     data_raw = 0
     # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -36151,7 +36151,7 @@ def encode_pgn_130321(nmea2000Message: NMEA2000Message) -> int:
     data_raw |= (field_value & 0xFFFF) << 152
     raise Exception ("PGN 130321 not supporting encoding for now as Station ID is missing BitLength or BitOffset")
     raise Exception ("PGN 130321 not supporting encoding for now as Station Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130322() -> bool:
@@ -36248,7 +36248,7 @@ def decode_pgn_130322(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130322(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130322(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130322."""
     data_raw = 0
     # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -36319,7 +36319,7 @@ def encode_pgn_130322(nmea2000Message: NMEA2000Message) -> int:
     data_raw |= (field_value & 0xFFFF) << 184
     raise Exception ("PGN 130322 not supporting encoding for now as Station ID is missing BitLength or BitOffset")
     raise Exception ("PGN 130322 not supporting encoding for now as Station Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130323() -> bool:
@@ -36428,7 +36428,7 @@ def decode_pgn_130323(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130323(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130323(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130323."""
     data_raw = 0
     # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -36511,7 +36511,7 @@ def encode_pgn_130323(nmea2000Message: NMEA2000Message) -> int:
     data_raw |= (field_value & 0xFFFF) << 192
     raise Exception ("PGN 130323 not supporting encoding for now as Station ID is missing BitLength or BitOffset")
     raise Exception ("PGN 130323 not supporting encoding for now as Station Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130324() -> bool:
@@ -36637,7 +36637,7 @@ def decode_pgn_130324(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130324."""
     data_raw = 0
     # mode | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -36743,7 +36743,7 @@ def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 256
     raise Exception ("PGN 130324 not supporting encoding for now as Station ID is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130330() -> bool:
@@ -36822,7 +36822,7 @@ def decode_pgn_130330(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130330(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130330(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130330."""
     data_raw = 0
     # globalEnable | Offset: 0, Length: 2, Resolution: 1, Field Type: NUMBER
@@ -36852,7 +36852,7 @@ def encode_pgn_130330(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130330 not supporting encoding for now as Number of Programs is missing BitLength or BitOffset")
     raise Exception ("PGN 130330 not supporting encoding for now as Controller Capabilities is missing BitLength or BitOffset")
     raise Exception ("PGN 130330 not supporting encoding for now as Identify Device is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130560() -> bool:
@@ -36900,7 +36900,7 @@ def decode_pgn_130560(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130560(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130560(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130560."""
     data_raw = 0
     # sid | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -36939,7 +36939,7 @@ def encode_pgn_130560(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130561() -> bool:
@@ -37026,7 +37026,7 @@ def decode_pgn_130561(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130561(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130561(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130561."""
     data_raw = 0
     # zoneIndex | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -37048,7 +37048,7 @@ def encode_pgn_130561(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130561 not supporting encoding for now as Program Color Sequence is missing BitLength or BitOffset")
     raise Exception ("PGN 130561 not supporting encoding for now as Zone Enabled is missing BitLength or BitOffset")
     raise Exception ("PGN 130561 not supporting encoding for now as Reserved is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130562() -> bool:
@@ -37124,7 +37124,7 @@ def decode_pgn_130562(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130562(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130562(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130562."""
     data_raw = 0
     # sceneIndex | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -37144,7 +37144,7 @@ def encode_pgn_130562(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130562 not supporting encoding for now as Program Intensity is missing BitLength or BitOffset")
     raise Exception ("PGN 130562 not supporting encoding for now as Program Rate is missing BitLength or BitOffset")
     raise Exception ("PGN 130562 not supporting encoding for now as Program Color Sequence Rate is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130563() -> bool:
@@ -37254,7 +37254,7 @@ def decode_pgn_130563(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130563(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130563(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130563."""
     data_raw = 0
     # deviceId | Offset: 0, Length: 32, Resolution: 1, Field Type: NUMBER
@@ -37295,7 +37295,7 @@ def encode_pgn_130563(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130563 not supporting encoding for now as Program Color Sequence Rate is missing BitLength or BitOffset")
     raise Exception ("PGN 130563 not supporting encoding for now as Enabled is missing BitLength or BitOffset")
     raise Exception ("PGN 130563 not supporting encoding for now as Reserved is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130564() -> bool:
@@ -37337,7 +37337,7 @@ def decode_pgn_130564(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130564(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130564(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130564."""
     data_raw = 0
     # indexOfFirstDevice | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -37370,7 +37370,7 @@ def encode_pgn_130564(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Status'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 80
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130565() -> bool:
@@ -37430,7 +37430,7 @@ def decode_pgn_130565(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130565(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130565(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130565."""
     data_raw = 0
     # sequenceIndex | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -37481,7 +37481,7 @@ def encode_pgn_130565(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Intensity'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 64
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130566() -> bool:
@@ -37524,7 +37524,7 @@ def decode_pgn_130566(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130566(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130566(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130566."""
     data_raw = 0
     # programId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -37537,7 +37537,7 @@ def encode_pgn_130566(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130566 not supporting encoding for now as Description is missing BitLength or BitOffset")
     raise Exception ("PGN 130566 not supporting encoding for now as Program Capabilities is missing BitLength or BitOffset")
     raise Exception ("PGN 130566 not supporting encoding for now as Reserved is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130567() -> bool:
@@ -37700,7 +37700,7 @@ def decode_pgn_130567(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130567(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130567(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130567."""
     data_raw = 0
     # watermakerOperatingState | Offset: 0, Length: 6, Resolution: 1, Field Type: LOOKUP
@@ -37841,7 +37841,7 @@ def encode_pgn_130567(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Run Time'")
     field_value = int(field.raw_value / 1) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 160
-    return data_raw
+    return data_raw.to_bytes(24, byteorder="little")
 
 
 def is_fast_pgn_130569() -> bool:
@@ -37961,7 +37961,7 @@ def decode_pgn_130569(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130569(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130569(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130569."""
     data_raw = 0
     # zone | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -38066,7 +38066,7 @@ def encode_pgn_130569(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Total Number of Tracks'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 192
-    return data_raw
+    return data_raw.to_bytes(26, byteorder="little")
 
 
 def is_fast_pgn_130570() -> bool:
@@ -38181,7 +38181,7 @@ def decode_pgn_130570(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130570(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130570(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130570."""
     data_raw = 0
     # source | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -38221,7 +38221,7 @@ def encode_pgn_130570(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130570 not supporting encoding for now as Artist Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130570 not supporting encoding for now as Album Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130570 not supporting encoding for now as Station Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130571() -> bool:
@@ -38312,7 +38312,7 @@ def decode_pgn_130571(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130571(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130571(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130571."""
     data_raw = 0
     # source | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -38377,7 +38377,7 @@ def encode_pgn_130571(nmea2000Message: NMEA2000Message) -> int:
     data_raw |= (field_value & 0xFFFFFFFF) << 120
     raise Exception ("PGN 130571 not supporting encoding for now as Name is missing BitLength or BitOffset")
     raise Exception ("PGN 130571 not supporting encoding for now as Artist is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130572() -> bool:
@@ -38449,7 +38449,7 @@ def decode_pgn_130572(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130572(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130572(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130572."""
     data_raw = 0
     # source | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -38481,7 +38481,7 @@ def encode_pgn_130572(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130572 not supporting encoding for now as Group name 2 is missing BitLength or BitOffset")
     raise Exception ("PGN 130572 not supporting encoding for now as Group type 3 is missing BitLength or BitOffset")
     raise Exception ("PGN 130572 not supporting encoding for now as Group name 3 is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130573() -> bool:
@@ -38574,7 +38574,7 @@ def decode_pgn_130573(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130573(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130573(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130573."""
     data_raw = 0
     # idOffset | Offset: 0, Length: 16, Resolution: 1, Field Type: NUMBER
@@ -38620,7 +38620,7 @@ def encode_pgn_130573(nmea2000Message: NMEA2000Message) -> int:
     raise Exception ("PGN 130573 not supporting encoding for now as Connected is missing BitLength or BitOffset")
     raise Exception ("PGN 130573 not supporting encoding for now as Repeat support is missing BitLength or BitOffset")
     raise Exception ("PGN 130573 not supporting encoding for now as Shuffle support is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130574() -> bool:
@@ -38665,7 +38665,7 @@ def decode_pgn_130574(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130574(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130574(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130574."""
     data_raw = 0
     # firstZoneId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -38693,7 +38693,7 @@ def encode_pgn_130574(nmea2000Message: NMEA2000Message) -> int:
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_ENTERTAINMENT_ZONE(field.value)
     data_raw |= (field_value & 0xFF) << 24
     raise Exception ("PGN 130574 not supporting encoding for now as Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130576() -> bool:
@@ -38723,7 +38723,7 @@ def decode_pgn_130576(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130576(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130576(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130576."""
     data_raw = 0
     # portTrimTab | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -38744,7 +38744,7 @@ def encode_pgn_130576(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130577() -> bool:
@@ -38818,7 +38818,7 @@ def decode_pgn_130577(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130577(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130577(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130577."""
     data_raw = 0
     # dataMode | Offset: 0, Length: 4, Resolution: 1, Field Type: LOOKUP
@@ -38881,7 +38881,7 @@ def encode_pgn_130577(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Drift'")
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 96
-    return data_raw
+    return data_raw.to_bytes(14, byteorder="little")
 
 
 def is_fast_pgn_130578() -> bool:
@@ -38929,7 +38929,7 @@ def decode_pgn_130578(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130578(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130578(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130578."""
     data_raw = 0
     # longitudinalSpeedWaterReferenced | Offset: 0, Length: 16, Resolution: 0.001, Field Type: NUMBER
@@ -38968,7 +38968,7 @@ def encode_pgn_130578(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Stern Speed, Ground-referenced'")
     field_value = encode_number(field.value, 16, True, 0.001)
     data_raw |= (field_value & 0xFFFF) << 80
-    return data_raw
+    return data_raw.to_bytes(12, byteorder="little")
 
 
 def is_fast_pgn_130579() -> bool:
@@ -39020,7 +39020,7 @@ def decode_pgn_130579(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130579(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130579(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130579."""
     data_raw = 0
     # power | Offset: 0, Length: 2, Resolution: 1, Field Type: LOOKUP
@@ -39059,7 +39059,7 @@ def encode_pgn_130579(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFFFFF) << 20
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130580() -> bool:
@@ -39098,7 +39098,7 @@ def decode_pgn_130580(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130580(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130580(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130580."""
     data_raw = 0
     # power | Offset: 0, Length: 2, Resolution: 1, Field Type: LOOKUP
@@ -39125,7 +39125,7 @@ def encode_pgn_130580(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Max favorites'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 8
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130581() -> bool:
@@ -39170,7 +39170,7 @@ def decode_pgn_130581(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130581(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130581(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130581."""
     data_raw = 0
     # firstZoneId | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -39198,7 +39198,7 @@ def encode_pgn_130581(nmea2000Message: NMEA2000Message) -> int:
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_ENTERTAINMENT_ZONE(field.value)
     data_raw |= (field_value & 0xFF) << 24
     raise Exception ("PGN 130581 not supporting encoding for now as Zone name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130582() -> bool:
@@ -39256,7 +39256,7 @@ def decode_pgn_130582(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130582(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130582(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130582."""
     data_raw = 0
     # zoneId | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -39301,7 +39301,7 @@ def encode_pgn_130582(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130583() -> bool:
@@ -39346,7 +39346,7 @@ def decode_pgn_130583(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130583(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130583(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130583."""
     data_raw = 0
     # firstPreset | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -39374,7 +39374,7 @@ def encode_pgn_130583(nmea2000Message: NMEA2000Message) -> int:
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_ENTERTAINMENT_EQ(field.value)
     data_raw |= (field_value & 0xFF) << 24
     raise Exception ("PGN 130583 not supporting encoding for now as Preset name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130584() -> bool:
@@ -39430,7 +39430,7 @@ def decode_pgn_130584(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130584(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130584(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130584."""
     data_raw = 0
     # firstAddress | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -39465,7 +39465,7 @@ def encode_pgn_130584(nmea2000Message: NMEA2000Message) -> int:
     data_raw |= (field_value & 0xFF) << 72
     raise Exception ("PGN 130584 not supporting encoding for now as Device name is missing BitLength or BitOffset")
     raise Exception ("PGN 130584 not supporting encoding for now as Signal strength is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130585() -> bool:
@@ -39510,7 +39510,7 @@ def decode_pgn_130585(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130585(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130585(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130585."""
     data_raw = 0
     # sourceNumber | Offset: 0, Length: 8, Resolution: 1, Field Type: NUMBER
@@ -39543,7 +39543,7 @@ def encode_pgn_130585(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Bluetooth address'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 
 def is_fast_pgn_130586() -> bool:
@@ -39637,7 +39637,7 @@ def decode_pgn_130586(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130586(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130586(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130586."""
     data_raw = 0
     # zoneId | Offset: 0, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -39718,7 +39718,7 @@ def encode_pgn_130586(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Channel'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_ENTERTAINMENT_CHANNEL(field.value)
     data_raw |= (field_value & 0xFF) << 112
-    return data_raw
+    return data_raw.to_bytes(15, byteorder="little")
 
 
 def is_fast_pgn_130816() -> bool:
@@ -39892,7 +39892,7 @@ def decode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(_
 
     return nmea2000Message
 
-def encode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # data | Offset: 0, Length: 1784, Resolution: 1, Field Type: BINARY
@@ -39901,7 +39901,7 @@ def encode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(n
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 0
-    return data_raw
+    return data_raw.to_bytes(223, byteorder="little")
 
 def decode_pgn_130816_sonichubInit2(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -39961,7 +39961,7 @@ def decode_pgn_130816_sonichubInit2(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubInit2(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubInit2(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -40012,7 +40012,7 @@ def encode_pgn_130816_sonichubInit2(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'B'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 56
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 def decode_pgn_130816_sonichubAmRadio(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -40097,7 +40097,7 @@ def decode_pgn_130816_sonichubAmRadio(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubAmRadio(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubAmRadio(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -40172,7 +40172,7 @@ def encode_pgn_130816_sonichubAmRadio(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Text'")
     raise Exception("Encoding 'STRING_LZ' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 88
-    return data_raw
+    return data_raw.to_bytes(43, byteorder="little")
 
 def decode_pgn_130816_sonichubZoneInfo(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -40226,7 +40226,7 @@ def decode_pgn_130816_sonichubZoneInfo(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubZoneInfo(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubZoneInfo(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -40271,7 +40271,7 @@ def encode_pgn_130816_sonichubZoneInfo(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Zone'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130816_sonichubSource(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -40326,7 +40326,7 @@ def decode_pgn_130816_sonichubSource(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubSource(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubSource(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -40371,7 +40371,7 @@ def encode_pgn_130816_sonichubSource(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Source'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_SONICHUB_SOURCE(field.value)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130816_sonichubSourceList(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -40437,7 +40437,7 @@ def decode_pgn_130816_sonichubSourceList(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubSourceList(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubSourceList(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -40494,7 +40494,7 @@ def encode_pgn_130816_sonichubSourceList(nmea2000Message: NMEA2000Message) -> in
         raise Exception("Cant encode this message, missing 'Text'")
     raise Exception("Encoding 'STRING_LZ' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 56
-    return data_raw
+    return data_raw.to_bytes(39, byteorder="little")
 
 def decode_pgn_130816_sonichubControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -40549,7 +40549,7 @@ def decode_pgn_130816_sonichubControl(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubControl(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubControl(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -40594,7 +40594,7 @@ def encode_pgn_130816_sonichubControl(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Item'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MUTE_COMMAND(field.value)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130816_sonichubFmRadio(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -40679,7 +40679,7 @@ def decode_pgn_130816_sonichubFmRadio(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubFmRadio(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubFmRadio(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -40754,7 +40754,7 @@ def encode_pgn_130816_sonichubFmRadio(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Text'")
     raise Exception("Encoding 'STRING_LZ' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 88
-    return data_raw
+    return data_raw.to_bytes(43, byteorder="little")
 
 def decode_pgn_130816_sonichubPlaylist(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -40839,7 +40839,7 @@ def decode_pgn_130816_sonichubPlaylist(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubPlaylist(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubPlaylist(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -40914,7 +40914,7 @@ def encode_pgn_130816_sonichubPlaylist(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Position in track'")
     field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 152
-    return data_raw
+    return data_raw.to_bytes(23, byteorder="little")
 
 def decode_pgn_130816_sonichubTrack(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -40974,7 +40974,7 @@ def decode_pgn_130816_sonichubTrack(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubTrack(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubTrack(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41025,7 +41025,7 @@ def encode_pgn_130816_sonichubTrack(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Text'")
     raise Exception("Encoding 'STRING_LZ' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 72
-    return data_raw
+    return data_raw.to_bytes(41, byteorder="little")
 
 def decode_pgn_130816_sonichubArtist(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -41085,7 +41085,7 @@ def decode_pgn_130816_sonichubArtist(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubArtist(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubArtist(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41136,7 +41136,7 @@ def encode_pgn_130816_sonichubArtist(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Text'")
     raise Exception("Encoding 'STRING_LZ' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 72
-    return data_raw
+    return data_raw.to_bytes(41, byteorder="little")
 
 def decode_pgn_130816_sonichubAlbum(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -41196,7 +41196,7 @@ def decode_pgn_130816_sonichubAlbum(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubAlbum(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubAlbum(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41247,7 +41247,7 @@ def encode_pgn_130816_sonichubAlbum(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Text'")
     raise Exception("Encoding 'STRING_LZ' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 72
-    return data_raw
+    return data_raw.to_bytes(41, byteorder="little")
 
 def decode_pgn_130816_sonichubMenuItem(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -41325,7 +41325,7 @@ def decode_pgn_130816_sonichubMenuItem(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubMenuItem(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubMenuItem(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41394,7 +41394,7 @@ def encode_pgn_130816_sonichubMenuItem(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Text'")
     raise Exception("Encoding 'STRING_LZ' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 96
-    return data_raw
+    return data_raw.to_bytes(44, byteorder="little")
 
 def decode_pgn_130816_sonichubZones(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -41448,7 +41448,7 @@ def decode_pgn_130816_sonichubZones(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubZones(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubZones(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41493,7 +41493,7 @@ def encode_pgn_130816_sonichubZones(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Zones'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130816_sonichubMaxVolume(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -41553,7 +41553,7 @@ def decode_pgn_130816_sonichubMaxVolume(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubMaxVolume(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubMaxVolume(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41604,7 +41604,7 @@ def encode_pgn_130816_sonichubMaxVolume(nmea2000Message: NMEA2000Message) -> int
         raise Exception("Cant encode this message, missing 'Level'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 48
-    return data_raw
+    return data_raw.to_bytes(7, byteorder="little")
 
 def decode_pgn_130816_sonichubVolume(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -41664,7 +41664,7 @@ def decode_pgn_130816_sonichubVolume(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubVolume(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubVolume(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41715,7 +41715,7 @@ def encode_pgn_130816_sonichubVolume(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Level'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 48
-    return data_raw
+    return data_raw.to_bytes(7, byteorder="little")
 
 def decode_pgn_130816_sonichubInit1(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -41763,7 +41763,7 @@ def decode_pgn_130816_sonichubInit1(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubInit1(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubInit1(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41802,7 +41802,7 @@ def encode_pgn_130816_sonichubInit1(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Control'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_SONICHUB_CONTROL(field.value)
     data_raw |= (field_value & 0xFF) << 32
-    return data_raw
+    return data_raw.to_bytes(5, byteorder="little")
 
 def decode_pgn_130816_sonichubPosition(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -41856,7 +41856,7 @@ def decode_pgn_130816_sonichubPosition(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubPosition(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubPosition(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -41901,7 +41901,7 @@ def encode_pgn_130816_sonichubPosition(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Position'")
     field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 def decode_pgn_130816_sonichubInit3(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -41961,7 +41961,7 @@ def decode_pgn_130816_sonichubInit3(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_sonichubInit3(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_sonichubInit3(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -42012,7 +42012,7 @@ def encode_pgn_130816_sonichubInit3(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'B'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 48
-    return data_raw
+    return data_raw.to_bytes(7, byteorder="little")
 
 def decode_pgn_130816_simradTextMessage(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
@@ -42089,7 +42089,7 @@ def decode_pgn_130816_simradTextMessage(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130816_simradTextMessage(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130816_simradTextMessage(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130816."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -42158,7 +42158,7 @@ def encode_pgn_130816_simradTextMessage(nmea2000Message: NMEA2000Message) -> int
         raise Exception("Cant encode this message, missing 'Text'")
     raise Exception("Encoding 'STRING_FIX' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 72
-    return data_raw
+    return data_raw.to_bytes(41, byteorder="little")
 
 
 def is_fast_pgn_130817() -> bool:
@@ -42239,7 +42239,7 @@ def decode_pgn_130817_navicoUnknown(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130817_navicoUnknown(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130817_navicoUnknown(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130817."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -42290,7 +42290,7 @@ def encode_pgn_130817_navicoUnknown(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'E'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 48
-    return data_raw
+    return data_raw.to_bytes(7, byteorder="little")
 
 def decode_pgn_130817_lowranceProductInformation(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130817."""
@@ -42366,7 +42366,7 @@ def decode_pgn_130817_lowranceProductInformation(_data_raw_: int) -> NMEA2000Mes
 
     return nmea2000Message
 
-def encode_pgn_130817_lowranceProductInformation(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130817_lowranceProductInformation(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130817."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -42435,7 +42435,7 @@ def encode_pgn_130817_lowranceProductInformation(nmea2000Message: NMEA2000Messag
         raise Exception("Cant encode this message, missing 'Firmware time'")
     raise Exception("Encoding 'STRING_FIX' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 648
-    return data_raw
+    return data_raw.to_bytes(113, byteorder="little")
 
 
 def is_fast_pgn_130818() -> bool:
@@ -42485,7 +42485,7 @@ def decode_pgn_130818(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130818(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130818(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130818."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -42524,7 +42524,7 @@ def encode_pgn_130818(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(223, byteorder="little")
 
 
 def is_fast_pgn_130819() -> bool:
@@ -42556,7 +42556,7 @@ def decode_pgn_130819(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130819(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130819(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130819."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -42577,7 +42577,7 @@ def encode_pgn_130819(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130820() -> bool:
@@ -42943,7 +42943,7 @@ def decode_pgn_130820_simnetReprogramStatus(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_simnetReprogramStatus(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_simnetReprogramStatus(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -42982,7 +42982,7 @@ def encode_pgn_130820_simnetReprogramStatus(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0xFFFFFF) << 32
-    return data_raw
+    return data_raw.to_bytes(7, byteorder="little")
 
 def decode_pgn_130820_furunoUnknown130820(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43040,7 +43040,7 @@ def decode_pgn_130820_furunoUnknown130820(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_furunoUnknown130820(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_furunoUnknown130820(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43091,7 +43091,7 @@ def encode_pgn_130820_furunoUnknown130820(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'E'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 48
-    return data_raw
+    return data_raw.to_bytes(7, byteorder="little")
 
 def decode_pgn_130820_fusionVersions(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43156,7 +43156,7 @@ def decode_pgn_130820_fusionVersions(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionVersions(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionVersions(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43213,7 +43213,7 @@ def encode_pgn_130820_fusionVersions(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Build Number'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 80
-    return data_raw
+    return data_raw.to_bytes(11, byteorder="little")
 
 def decode_pgn_130820_fusionSource(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43279,7 +43279,7 @@ def decode_pgn_130820_fusionSource(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSource(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSource(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43331,7 +43331,7 @@ def encode_pgn_130820_fusionSource(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
     raise Exception ("PGN 130820 not supporting encoding for now as Source is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionSourceCount(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43372,7 +43372,7 @@ def decode_pgn_130820_fusionSourceCount(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSourceCount(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSourceCount(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43405,7 +43405,7 @@ def encode_pgn_130820_fusionSourceCount(nmea2000Message: NMEA2000Message) -> int
         raise Exception("Cant encode this message, missing 'Source Count'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 32
-    return data_raw
+    return data_raw.to_bytes(5, byteorder="little")
 
 def decode_pgn_130820_fusionMedia(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43477,7 +43477,7 @@ def decode_pgn_130820_fusionMedia(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionMedia(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionMedia(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43540,7 +43540,7 @@ def encode_pgn_130820_fusionMedia(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Position in track'")
     field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 32)
     data_raw |= (field_value & 0xFFFFFFFF) << 152
-    return data_raw
+    return data_raw.to_bytes(23, byteorder="little")
 
 def decode_pgn_130820_fusionTrackName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43593,7 +43593,7 @@ def decode_pgn_130820_fusionTrackName(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionTrackName(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionTrackName(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43633,7 +43633,7 @@ def encode_pgn_130820_fusionTrackName(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 40
     raise Exception ("PGN 130820 not supporting encoding for now as Track is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionArtistName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43686,7 +43686,7 @@ def decode_pgn_130820_fusionArtistName(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionArtistName(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionArtistName(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43726,7 +43726,7 @@ def encode_pgn_130820_fusionArtistName(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 40
     raise Exception ("PGN 130820 not supporting encoding for now as Artist is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionAlbumName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43779,7 +43779,7 @@ def decode_pgn_130820_fusionAlbumName(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionAlbumName(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionAlbumName(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43819,7 +43819,7 @@ def encode_pgn_130820_fusionAlbumName(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 40
     raise Exception ("PGN 130820 not supporting encoding for now as Album is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionDeviceName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43860,7 +43860,7 @@ def decode_pgn_130820_fusionDeviceName(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionDeviceName(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionDeviceName(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43888,7 +43888,7 @@ def encode_pgn_130820_fusionDeviceName(nmea2000Message: NMEA2000Message) -> int:
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_STATUS_MESSAGE_ID(field.value)
     data_raw |= (field_value & 0xFFFF) << 16
     raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionZoneName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -43935,7 +43935,7 @@ def decode_pgn_130820_fusionZoneName(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionZoneName(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionZoneName(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -43969,7 +43969,7 @@ def encode_pgn_130820_fusionZoneName(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 32
     raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionTrackPosition(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44016,7 +44016,7 @@ def decode_pgn_130820_fusionTrackPosition(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionTrackPosition(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionTrackPosition(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44055,7 +44055,7 @@ def encode_pgn_130820_fusionTrackPosition(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Progress'")
     field_value = int(field.raw_value / 0.001) if field.raw_value is not None else encode_time(field.value, 24)
     data_raw |= (field_value & 0xFFFFFF) << 40
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_130820_fusionTuner(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44121,7 +44121,7 @@ def decode_pgn_130820_fusionTuner(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionTuner(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionTuner(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44173,7 +44173,7 @@ def encode_pgn_130820_fusionTuner(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 80
     raise Exception ("PGN 130820 not supporting encoding for now as Track is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionMarineTuner(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44232,7 +44232,7 @@ def decode_pgn_130820_fusionMarineTuner(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionMarineTuner(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionMarineTuner(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44278,7 +44278,7 @@ def encode_pgn_130820_fusionMarineTuner(nmea2000Message: NMEA2000Message) -> int
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 48
     raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionMarineSquelch(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44325,7 +44325,7 @@ def decode_pgn_130820_fusionMarineSquelch(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionMarineSquelch(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionMarineSquelch(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44364,7 +44364,7 @@ def encode_pgn_130820_fusionMarineSquelch(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Squelch'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130820_fusionMarineScanMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44412,7 +44412,7 @@ def decode_pgn_130820_fusionMarineScanMode(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionMarineScanMode(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionMarineScanMode(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44451,7 +44451,7 @@ def encode_pgn_130820_fusionMarineScanMode(nmea2000Message: NMEA2000Message) -> 
         raise Exception("Cant encode this message, missing 'Scan'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_YES_NO(field.value)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130820_fusionMenuItem(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44516,7 +44516,7 @@ def decode_pgn_130820_fusionMenuItem(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionMenuItem(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionMenuItem(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44568,7 +44568,7 @@ def encode_pgn_130820_fusionMenuItem(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 80
     raise Exception ("PGN 130820 not supporting encoding for now as Text is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionAuxGain(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44615,7 +44615,7 @@ def decode_pgn_130820_fusionAuxGain(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionAuxGain(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionAuxGain(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44654,7 +44654,7 @@ def encode_pgn_130820_fusionAuxGain(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Gain'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130820_fusionUsbRepeatStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44703,7 +44703,7 @@ def decode_pgn_130820_fusionUsbRepeatStatus(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionUsbRepeatStatus(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionUsbRepeatStatus(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44742,7 +44742,7 @@ def encode_pgn_130820_fusionUsbRepeatStatus(nmea2000Message: NMEA2000Message) ->
         raise Exception("Cant encode this message, missing 'Status'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_REPEAT_STATUS(field.value)
     data_raw |= (field_value & 0xFFFFFFFF) << 64
-    return data_raw
+    return data_raw.to_bytes(12, byteorder="little")
 
 def decode_pgn_130820_fusionSetting(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44790,7 +44790,7 @@ def decode_pgn_130820_fusionSetting(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSetting(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSetting(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44829,7 +44829,7 @@ def encode_pgn_130820_fusionSetting(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Value'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 64
-    return data_raw
+    return data_raw.to_bytes(12, byteorder="little")
 
 def decode_pgn_130820_fusionSettings(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44883,7 +44883,7 @@ def decode_pgn_130820_fusionSettings(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSettings(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSettings(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -44928,7 +44928,7 @@ def encode_pgn_130820_fusionSettings(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Value'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 96
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionMute(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -44970,7 +44970,7 @@ def decode_pgn_130820_fusionMute(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionMute(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionMute(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45003,7 +45003,7 @@ def encode_pgn_130820_fusionMute(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Mute'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MUTE_COMMAND(field.value)
     data_raw |= (field_value & 0xFF) << 32
-    return data_raw
+    return data_raw.to_bytes(5, byteorder="little")
 
 def decode_pgn_130820_fusionBalance(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45050,7 +45050,7 @@ def decode_pgn_130820_fusionBalance(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionBalance(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionBalance(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45089,7 +45089,7 @@ def encode_pgn_130820_fusionBalance(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'VALUE'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130820_fusionLowPassFilter(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45136,7 +45136,7 @@ def decode_pgn_130820_fusionLowPassFilter(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionLowPassFilter(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionLowPassFilter(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45175,7 +45175,7 @@ def encode_pgn_130820_fusionLowPassFilter(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Filter'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130820_fusionSublevels(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45234,7 +45234,7 @@ def decode_pgn_130820_fusionSublevels(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSublevels(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSublevels(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45285,7 +45285,7 @@ def encode_pgn_130820_fusionSublevels(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Zone 4'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_130820_fusionEq(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45344,7 +45344,7 @@ def decode_pgn_130820_fusionEq(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionEq(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionEq(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45395,7 +45395,7 @@ def encode_pgn_130820_fusionEq(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Treble'")
     field_value = encode_number(field.value, 8, True, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_130820_fusionVolumeLimits(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45454,7 +45454,7 @@ def decode_pgn_130820_fusionVolumeLimits(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionVolumeLimits(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionVolumeLimits(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45505,7 +45505,7 @@ def encode_pgn_130820_fusionVolumeLimits(nmea2000Message: NMEA2000Message) -> in
         raise Exception("Cant encode this message, missing 'Zone 4 Volume Limit'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_130820_fusionVolumes(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45564,7 +45564,7 @@ def decode_pgn_130820_fusionVolumes(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionVolumes(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionVolumes(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45615,7 +45615,7 @@ def encode_pgn_130820_fusionVolumes(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Zone 4'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 56
-    return data_raw
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_130820_fusionCapabilities(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45680,7 +45680,7 @@ def decode_pgn_130820_fusionCapabilities(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionCapabilities(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionCapabilities(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45737,7 +45737,7 @@ def encode_pgn_130820_fusionCapabilities(nmea2000Message: NMEA2000Message) -> in
         raise Exception("Cant encode this message, missing 'Global'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 96
-    return data_raw
+    return data_raw.to_bytes(14, byteorder="little")
 
 def decode_pgn_130820_fusionLineLevelControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45784,7 +45784,7 @@ def decode_pgn_130820_fusionLineLevelControl(_data_raw_: int) -> NMEA2000Message
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionLineLevelControl(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionLineLevelControl(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45823,7 +45823,7 @@ def encode_pgn_130820_fusionLineLevelControl(nmea2000Message: NMEA2000Message) -
         raise Exception("Cant encode this message, missing 'Control'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130820_fusionPowerState(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45865,7 +45865,7 @@ def decode_pgn_130820_fusionPowerState(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionPowerState(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionPowerState(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -45898,7 +45898,7 @@ def encode_pgn_130820_fusionPowerState(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'State'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_POWER_STATE(field.value)
     data_raw |= (field_value & 0xFF) << 32
-    return data_raw
+    return data_raw.to_bytes(5, byteorder="little")
 
 def decode_pgn_130820_fusionSiriusxm(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -45966,7 +45966,7 @@ def decode_pgn_130820_fusionSiriusxm(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSiriusxm(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSiriusxm(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46023,7 +46023,7 @@ def encode_pgn_130820_fusionSiriusxm(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Tuning Mode'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_SIRIUS_TUNING_MODE(field.value)
     data_raw |= (field_value & 0xFF) << 72
-    return data_raw
+    return data_raw.to_bytes(10, byteorder="little")
 
 def decode_pgn_130820_fusionSiriusxmChannel(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -46076,7 +46076,7 @@ def decode_pgn_130820_fusionSiriusxmChannel(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSiriusxmChannel(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSiriusxmChannel(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46116,7 +46116,7 @@ def encode_pgn_130820_fusionSiriusxmChannel(nmea2000Message: NMEA2000Message) ->
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 40
     raise Exception ("PGN 130820 not supporting encoding for now as Channel is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionSiriusxmTitle(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -46169,7 +46169,7 @@ def decode_pgn_130820_fusionSiriusxmTitle(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSiriusxmTitle(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSiriusxmTitle(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46209,7 +46209,7 @@ def encode_pgn_130820_fusionSiriusxmTitle(nmea2000Message: NMEA2000Message) -> i
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 40
     raise Exception ("PGN 130820 not supporting encoding for now as Title is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionSiriusxmArtist(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -46262,7 +46262,7 @@ def decode_pgn_130820_fusionSiriusxmArtist(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSiriusxmArtist(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSiriusxmArtist(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46302,7 +46302,7 @@ def encode_pgn_130820_fusionSiriusxmArtist(nmea2000Message: NMEA2000Message) -> 
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 40
     raise Exception ("PGN 130820 not supporting encoding for now as Artist is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionSiriusxmContentInfo(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -46355,7 +46355,7 @@ def decode_pgn_130820_fusionSiriusxmContentInfo(_data_raw_: int) -> NMEA2000Mess
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSiriusxmContentInfo(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSiriusxmContentInfo(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46395,7 +46395,7 @@ def encode_pgn_130820_fusionSiriusxmContentInfo(nmea2000Message: NMEA2000Message
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 40
     raise Exception ("PGN 130820 not supporting encoding for now as Genre is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionSiriusxmCategory(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -46448,7 +46448,7 @@ def decode_pgn_130820_fusionSiriusxmCategory(_data_raw_: int) -> NMEA2000Message
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSiriusxmCategory(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSiriusxmCategory(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46488,7 +46488,7 @@ def encode_pgn_130820_fusionSiriusxmCategory(nmea2000Message: NMEA2000Message) -
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 40
     raise Exception ("PGN 130820 not supporting encoding for now as Name is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130820_fusionSiriusxmSignal(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -46535,7 +46535,7 @@ def decode_pgn_130820_fusionSiriusxmSignal(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSiriusxmSignal(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSiriusxmSignal(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46574,7 +46574,7 @@ def encode_pgn_130820_fusionSiriusxmSignal(nmea2000Message: NMEA2000Message) -> 
         raise Exception("Cant encode this message, missing 'Signal'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 
 def decode_pgn_130820_fusionSiriusxmPresets(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -46628,7 +46628,7 @@ def decode_pgn_130820_fusionSiriusxmPresets(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130820_fusionSiriusxmPresets(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130820_fusionSiriusxmPresets(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130820."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46668,7 +46668,7 @@ def encode_pgn_130820_fusionSiriusxmPresets(nmea2000Message: NMEA2000Message) ->
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
     raise Exception ("PGN 130820 not supporting encoding for now as Values is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130821() -> bool:
@@ -46731,7 +46731,7 @@ def decode_pgn_130821_navicoAsciiData(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130821_navicoAsciiData(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130821_navicoAsciiData(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130821."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46764,7 +46764,7 @@ def encode_pgn_130821_navicoAsciiData(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Message'")
     raise Exception("Encoding 'STRING_FIX' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 24
-    return data_raw
+    return data_raw.to_bytes(233, byteorder="little")
 
 def decode_pgn_130821_furunoUnknown130821(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130821."""
@@ -46852,7 +46852,7 @@ def decode_pgn_130821_furunoUnknown130821(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130821_furunoUnknown130821(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130821_furunoUnknown130821(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130821."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46933,7 +46933,7 @@ def encode_pgn_130821_furunoUnknown130821(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'I'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 88
-    return data_raw
+    return data_raw.to_bytes(12, byteorder="little")
 
 
 def is_fast_pgn_130822() -> bool:
@@ -46971,7 +46971,7 @@ def decode_pgn_130822(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130822(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130822(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130822."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -46998,7 +46998,7 @@ def encode_pgn_130822(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(233, byteorder="little")
 
 
 def is_fast_pgn_130823() -> bool:
@@ -47061,7 +47061,7 @@ def decode_pgn_130823(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130823(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130823(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130823."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47112,7 +47112,7 @@ def encode_pgn_130823(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Set Temperature'")
     field_value = encode_number(field.value, 16, False, 0.1)
     data_raw |= (field_value & 0xFFFF) << 56
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 
 def is_fast_pgn_130824() -> bool:
@@ -47181,7 +47181,7 @@ def decode_pgn_130824_bGKeyValueData(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130824_bGKeyValueData(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130824_bGKeyValueData(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130824."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47215,7 +47215,7 @@ def encode_pgn_130824_bGKeyValueData(nmea2000Message: NMEA2000Message) -> int:
     raise Exception("Encoding 'DYNAMIC_FIELD_LENGTH' not supported")
     data_raw |= (field_value & 0xF) << 28
     raise Exception ("PGN 130824 not supporting encoding for now as Value is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130824_maretronAnnunciator(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130824."""
@@ -47273,7 +47273,7 @@ def decode_pgn_130824_maretronAnnunciator(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130824_maretronAnnunciator(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130824_maretronAnnunciator(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130824."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47324,7 +47324,7 @@ def encode_pgn_130824_maretronAnnunciator(nmea2000Message: NMEA2000Message) -> i
         raise Exception("Cant encode this message, missing 'Field 8'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 56
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 
 def is_fast_pgn_130825() -> bool:
@@ -47362,7 +47362,7 @@ def decode_pgn_130825(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130825(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130825(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130825."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47389,7 +47389,7 @@ def encode_pgn_130825(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Data'")
     raise Exception("Encoding 'BINARY' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFF) << 16
-    return data_raw
+    return data_raw.to_bytes(12, byteorder="little")
 
 
 def is_fast_pgn_130827() -> bool:
@@ -47457,7 +47457,7 @@ def decode_pgn_130827(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130827(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130827(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130827."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47514,7 +47514,7 @@ def encode_pgn_130827(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'F'")
     field_value = encode_number(field.value, 16, False, 1)
     data_raw |= (field_value & 0xFFFF) << 64
-    return data_raw
+    return data_raw.to_bytes(10, byteorder="little")
 
 
 def is_fast_pgn_130828() -> bool:
@@ -47546,7 +47546,7 @@ def decode_pgn_130828(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130828(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130828(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130828."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47567,7 +47567,7 @@ def encode_pgn_130828(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130831() -> bool:
@@ -47599,7 +47599,7 @@ def decode_pgn_130831(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130831(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130831(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130831."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47620,7 +47620,7 @@ def encode_pgn_130831(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130832() -> bool:
@@ -47652,7 +47652,7 @@ def decode_pgn_130832(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130832(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130832(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130832."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47673,7 +47673,7 @@ def encode_pgn_130832(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130833() -> bool:
@@ -47742,7 +47742,7 @@ def decode_pgn_130833(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130833(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130833(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130833."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47799,7 +47799,7 @@ def encode_pgn_130833(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Long name'")
     raise Exception("Encoding 'STRING_FIX' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 112
-    return data_raw
+    return data_raw.to_bytes(30, byteorder="little")
 
 
 def is_fast_pgn_130834() -> bool:
@@ -47831,7 +47831,7 @@ def decode_pgn_130834(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130834(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130834(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130834."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47852,7 +47852,7 @@ def encode_pgn_130834(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130835() -> bool:
@@ -47884,7 +47884,7 @@ def decode_pgn_130835(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130835(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130835(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130835."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -47905,7 +47905,7 @@ def encode_pgn_130835(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130836() -> bool:
@@ -48011,7 +48011,7 @@ def decode_pgn_130836_simnetFluidLevelSensorConfiguration(_data_raw_: int) -> NM
 
     return nmea2000Message
 
-def encode_pgn_130836_simnetFluidLevelSensorConfiguration(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130836_simnetFluidLevelSensorConfiguration(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130836."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48086,7 +48086,7 @@ def encode_pgn_130836_simnetFluidLevelSensorConfiguration(nmea2000Message: NMEA2
         raise Exception("Cant encode this message, missing 'I'")
     field_value = encode_number(field.value, 8, True, 1)
     data_raw |= (field_value & 0xFF) << 104
-    return data_raw
+    return data_raw.to_bytes(14, byteorder="little")
 
 def decode_pgn_130836_maretronSwitchStatusCounter(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130836."""
@@ -48171,7 +48171,7 @@ def decode_pgn_130836_maretronSwitchStatusCounter(_data_raw_: int) -> NMEA2000Me
 
     return nmea2000Message
 
-def encode_pgn_130836_maretronSwitchStatusCounter(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130836_maretronSwitchStatusCounter(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130836."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48246,7 +48246,7 @@ def encode_pgn_130836_maretronSwitchStatusCounter(nmea2000Message: NMEA2000Messa
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3F) << 178
-    return data_raw
+    return data_raw.to_bytes(23, byteorder="little")
 
 
 def is_fast_pgn_130837() -> bool:
@@ -48297,7 +48297,7 @@ def decode_pgn_130837_simnetFuelFlowTurbineConfiguration(_data_raw_: int) -> NME
 
     return nmea2000Message
 
-def encode_pgn_130837_simnetFuelFlowTurbineConfiguration(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130837_simnetFuelFlowTurbineConfiguration(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130837."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48318,7 +48318,7 @@ def encode_pgn_130837_simnetFuelFlowTurbineConfiguration(nmea2000Message: NMEA20
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 def decode_pgn_130837_maretronSwitchStatusTimer(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130837."""
@@ -48403,7 +48403,7 @@ def decode_pgn_130837_maretronSwitchStatusTimer(_data_raw_: int) -> NMEA2000Mess
 
     return nmea2000Message
 
-def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130837."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48478,7 +48478,7 @@ def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3F) << 178
-    return data_raw
+    return data_raw.to_bytes(23, byteorder="little")
 
 
 def is_fast_pgn_130838() -> bool:
@@ -48510,7 +48510,7 @@ def decode_pgn_130838(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130838(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130838(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130838."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48531,7 +48531,7 @@ def encode_pgn_130838(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130839() -> bool:
@@ -48563,7 +48563,7 @@ def decode_pgn_130839(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130839(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130839(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130839."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48584,7 +48584,7 @@ def encode_pgn_130839(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130840() -> bool:
@@ -48616,7 +48616,7 @@ def decode_pgn_130840(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130840(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130840(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130840."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48637,7 +48637,7 @@ def encode_pgn_130840(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130842() -> bool:
@@ -48734,7 +48734,7 @@ def decode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(_data_raw_: int) -> NM
 
     return nmea2000Message
 
-def encode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130842."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48791,7 +48791,7 @@ def encode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(nmea2000Message: NMEA2
         raise Exception("Cant encode this message, missing 'Name'")
     raise Exception("Encoding 'STRING_FIX' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 72
-    return data_raw
+    return data_raw.to_bytes(29, byteorder="little")
 
 def decode_pgn_130842_furunoSixDegreesOfFreedomMovement(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130842."""
@@ -48873,7 +48873,7 @@ def decode_pgn_130842_furunoSixDegreesOfFreedomMovement(_data_raw_: int) -> NMEA
 
     return nmea2000Message
 
-def encode_pgn_130842_furunoSixDegreesOfFreedomMovement(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130842_furunoSixDegreesOfFreedomMovement(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130842."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48948,7 +48948,7 @@ def encode_pgn_130842_furunoSixDegreesOfFreedomMovement(nmea2000Message: NMEA200
         raise Exception("Cant encode this message, missing 'I'")
     field_value = encode_number(field.value, 16, True, 1)
     data_raw |= (field_value & 0xFFFF) << 216
-    return data_raw
+    return data_raw.to_bytes(29, byteorder="little")
 
 def decode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130842."""
@@ -49068,7 +49068,7 @@ def decode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(_data_raw_: int) -> NM
 
     return nmea2000Message
 
-def encode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130842."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -49179,7 +49179,7 @@ def encode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(nmea2000Message: NMEA2
         raise Exception("Cant encode this message, missing 'Reserved'")
     field_value = field.value
     data_raw |= (field_value & 0x3) << 294
-    return data_raw
+    return data_raw.to_bytes(37, byteorder="little")
 
 
 def is_fast_pgn_130843() -> bool:
@@ -49260,7 +49260,7 @@ def decode_pgn_130843_furunoHeelAngleRollInformation(_data_raw_: int) -> NMEA200
 
     return nmea2000Message
 
-def encode_pgn_130843_furunoHeelAngleRollInformation(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130843_furunoHeelAngleRollInformation(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130843."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -49311,7 +49311,7 @@ def encode_pgn_130843_furunoHeelAngleRollInformation(nmea2000Message: NMEA2000Me
         raise Exception("Cant encode this message, missing 'Roll'")
     field_value = encode_number(field.value, 16, True, 0.0001)
     data_raw |= (field_value & 0xFFFF) << 64
-    return data_raw
+    return data_raw.to_bytes(10, byteorder="little")
 
 def decode_pgn_130843_simnetSonarStatusFrequencyAndDspVoltage(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130843."""
@@ -49339,7 +49339,7 @@ def decode_pgn_130843_simnetSonarStatusFrequencyAndDspVoltage(_data_raw_: int) -
 
     return nmea2000Message
 
-def encode_pgn_130843_simnetSonarStatusFrequencyAndDspVoltage(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130843_simnetSonarStatusFrequencyAndDspVoltage(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130843."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -49360,7 +49360,7 @@ def encode_pgn_130843_simnetSonarStatusFrequencyAndDspVoltage(nmea2000Message: N
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130845() -> bool:
@@ -49411,7 +49411,7 @@ def decode_pgn_130845_furunoMultiSatsInViewExtended(_data_raw_: int) -> NMEA2000
 
     return nmea2000Message
 
-def encode_pgn_130845_furunoMultiSatsInViewExtended(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130845_furunoMultiSatsInViewExtended(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130845."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -49432,7 +49432,7 @@ def encode_pgn_130845_furunoMultiSatsInViewExtended(nmea2000Message: NMEA2000Mes
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 def decode_pgn_130845_simnetKeyValue(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130845."""
@@ -49510,7 +49510,7 @@ def decode_pgn_130845_simnetKeyValue(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130845_simnetKeyValue(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130845_simnetKeyValue(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130845."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -49574,7 +49574,7 @@ def encode_pgn_130845_simnetKeyValue(nmea2000Message: NMEA2000Message) -> int:
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 72
     raise Exception ("PGN 130845 not supporting encoding for now as Value is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 
 def is_fast_pgn_130846() -> bool:
@@ -49674,7 +49674,7 @@ def decode_pgn_130846_simnetParameterSet(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130846_simnetParameterSet(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130846_simnetParameterSet(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130846."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -49738,7 +49738,7 @@ def encode_pgn_130846_simnetParameterSet(nmea2000Message: NMEA2000Message) -> in
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 80
     raise Exception ("PGN 130846 not supporting encoding for now as Value is missing BitLength or BitOffset")
-    return data_raw
+    return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
 def decode_pgn_130846_furunoMotionSensorStatusExtended(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130846."""
@@ -49766,7 +49766,7 @@ def decode_pgn_130846_furunoMotionSensorStatusExtended(_data_raw_: int) -> NMEA2
 
     return nmea2000Message
 
-def encode_pgn_130846_furunoMotionSensorStatusExtended(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130846_furunoMotionSensorStatusExtended(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130846."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -49787,7 +49787,7 @@ def encode_pgn_130846_furunoMotionSensorStatusExtended(nmea2000Message: NMEA2000
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    return data_raw
+    return data_raw.to_bytes(2, byteorder="little")
 
 
 def is_fast_pgn_130847() -> bool:
@@ -49849,7 +49849,7 @@ def decode_pgn_130847(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130847(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130847(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130847."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -49900,7 +49900,7 @@ def encode_pgn_130847(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Node Voltage'")
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 64
-    return data_raw
+    return data_raw.to_bytes(10, byteorder="little")
 
 
 def is_fast_pgn_130848() -> bool:
@@ -49968,7 +49968,7 @@ def decode_pgn_130848(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130848(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130848(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130848."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -50025,7 +50025,7 @@ def encode_pgn_130848(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Distance to Waypoint'")
     field_value = encode_number(field.value, 32, False, 0.01)
     data_raw |= (field_value & 0xFFFFFFFF) << 216
-    return data_raw
+    return data_raw.to_bytes(31, byteorder="little")
 
 
 def is_fast_pgn_130850() -> bool:
@@ -50138,7 +50138,7 @@ def decode_pgn_130850_simnetApCommand(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130850_simnetApCommand(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130850_simnetApCommand(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130850."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -50207,7 +50207,7 @@ def encode_pgn_130850_simnetApCommand(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Angle'")
     field_value = encode_number(field.value, 16, False, 0.0001)
     data_raw |= (field_value & 0xFFFF) << 72
-    return data_raw
+    return data_raw.to_bytes(11, byteorder="little")
 
 def decode_pgn_130850_simnetEventCommandApCommand(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130850."""
@@ -50286,7 +50286,7 @@ def decode_pgn_130850_simnetEventCommandApCommand(_data_raw_: int) -> NMEA2000Me
 
     return nmea2000Message
 
-def encode_pgn_130850_simnetEventCommandApCommand(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130850_simnetEventCommandApCommand(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130850."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -50355,7 +50355,7 @@ def encode_pgn_130850_simnetEventCommandApCommand(nmea2000Message: NMEA2000Messa
         raise Exception("Cant encode this message, missing 'Unused C'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 88
-    return data_raw
+    return data_raw.to_bytes(12, byteorder="little")
 
 def decode_pgn_130850_simnetAlarm(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130850."""
@@ -50433,7 +50433,7 @@ def decode_pgn_130850_simnetAlarm(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130850_simnetAlarm(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130850_simnetAlarm(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130850."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -50502,7 +50502,7 @@ def encode_pgn_130850_simnetAlarm(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'G'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 88
-    return data_raw
+    return data_raw.to_bytes(12, byteorder="little")
 
 
 def is_fast_pgn_130851() -> bool:
@@ -50585,7 +50585,7 @@ def decode_pgn_130851(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130851(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130851(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130851."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -50654,7 +50654,7 @@ def encode_pgn_130851(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'G'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 88
-    return data_raw
+    return data_raw.to_bytes(12, byteorder="little")
 
 
 def is_fast_pgn_130856() -> bool:
@@ -50710,7 +50710,7 @@ def decode_pgn_130856(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130856(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130856(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130856."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -50755,7 +50755,7 @@ def encode_pgn_130856(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Text'")
     raise Exception("Encoding 'STRING_FIX' not supported")
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 48
-    return data_raw
+    return data_raw.to_bytes(229, byteorder="little")
 
 
 def is_fast_pgn_130860() -> bool:
@@ -50823,7 +50823,7 @@ def decode_pgn_130860(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130860(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130860(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130860."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -50880,7 +50880,7 @@ def encode_pgn_130860(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'F'")
     field_value = encode_number(field.value, 32, False, 1)
     data_raw |= (field_value & 0xFFFFFFFF) << 152
-    return data_raw
+    return data_raw.to_bytes(23, byteorder="little")
 
 
 def is_fast_pgn_130880() -> bool:
@@ -50936,7 +50936,7 @@ def decode_pgn_130880(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130880(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130880(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130880."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -50981,7 +50981,7 @@ def encode_pgn_130880(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Dewpoint'")
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 56
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 
 def is_fast_pgn_130881() -> bool:
@@ -51037,7 +51037,7 @@ def decode_pgn_130881(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130881(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130881(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130881."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -51082,7 +51082,7 @@ def encode_pgn_130881(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Dewpoint'")
     field_value = encode_number(field.value, 16, False, 0.01)
     data_raw |= (field_value & 0xFFFF) << 56
-    return data_raw
+    return data_raw.to_bytes(9, byteorder="little")
 
 
 def is_fast_pgn_130918() -> bool:
@@ -51162,7 +51162,7 @@ def decode_pgn_130918(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130918(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130918(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130918."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -51231,7 +51231,7 @@ def encode_pgn_130918(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Bearing, Current Waypoint to Next Waypoint, True'")
     field_value = encode_number(field.value, 16, False, 0.0001)
     data_raw |= (field_value & 0xFFFF) << 360
-    return data_raw
+    return data_raw.to_bytes(47, byteorder="little")
 
 
 def is_fast_pgn_130944() -> bool:
@@ -51295,7 +51295,7 @@ def decode_pgn_130944(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130944(nmea2000Message: NMEA2000Message) -> int:
+def encode_pgn_130944(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130944."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -51346,5 +51346,5 @@ def encode_pgn_130944(nmea2000Message: NMEA2000Message) -> int:
         raise Exception("Cant encode this message, missing 'Test result'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw
+    return data_raw.to_bytes(6, byteorder="little")
 

@@ -144,7 +144,7 @@ encoder = NMEA2000Encoder()
         ]
     )
 
-msg_bytes = encoder.encode_tcp(_generate_test_message())
+msg_bytes = encoder.encode_ebyte(_generate_test_message())
 print(msg_bytes)
 ```
 

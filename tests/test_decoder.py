@@ -388,18 +388,29 @@ def test_usb_bytes():
     msg = decoder.decode_usb(bytes.fromhex("aae80900ff1c3f9fdcffffffffff55"))
     _validate_65280_message(msg)
 
-def test_tcp_encode():
+def test_iso_request_decode():
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder()
-    msg = decoder.decode_tcp(bytes.fromhex("8800ff00093f9fdcffffffffff"))
+    msg = decoder.decode_basic_string("2012-06-17-15:02:11.000,6,59904,0,255,3,14,f0,01")
     assert isinstance(msg, NMEA2000Message)
-    msg_bytes = encoder.encode_tcp(msg)[0]
-    assert  msg_bytes == bytes.fromhex("8800ff00093f9fdcffffffffff")
-
-def test_usb_encode():
-    decoder = _get_decoder()
     encoder = NMEA2000Encoder()
-    msg = decoder.decode_usb(bytes.fromhex("aae80900ff003f9fdcffffffffff55"))
-    assert isinstance(msg, NMEA2000Message)
     msg_bytes = encoder.encode_usb(msg)[0]
-    assert  msg_bytes == bytes.fromhex("aae80900ff003f9fdcffffffffff55")
+    assert isinstance(msg_bytes, bytes)
+    msg2 = decoder.decode_usb(msg_bytes)
+    assert isinstance(msg2, NMEA2000Message)
+    assert msg2.PGN == 59904
+    assert msg2.fields[0].raw_value == msg.fields[0].raw_value
+    str_json = msg.to_json()
+    msg3 = NMEA2000Message.from_json(str_json)
+    assert isinstance(msg3, NMEA2000Message)
+    assert msg3.PGN == 59904
+    assert msg3.fields[0].raw_value == msg.fields[0].raw_value
+
+def test_decode_yacht_devices_receive():
+    decoder = _get_decoder()
+    msg = decoder.decode_yacht_devices_string("21:31:42.671 T 01F010B3 FF FF 0C 4F 70 BE 3E 33")
+    assert isinstance(msg, NMEA2000Message)
+
+def test_decode_yacht_devices_receive_2():
+    decoder = _get_decoder()
+    msg = decoder.decode_yacht_devices_string("21:31:42.520 T 01F119B3 57 00 00 8D 0B FA FE FF")
+    assert isinstance(msg, NMEA2000Message)

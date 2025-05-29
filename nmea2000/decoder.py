@@ -210,7 +210,7 @@ class NMEA2000Decoder():
         if len(parts) < 4:
             raise ValueError("Invalid Yacht Devices string format")
         
-        if parts[1] != "R":
+        if parts[1] not in ["R", "T"]:
             raise ValueError("Invalid format: 2nd part should be 'R'")
     
         # Extract the timestamp from the first part

@@ -77,7 +77,7 @@ class NMEA2000TestServer:
             message = self._generate_test_message()
 
             # Encode the message using the NMEA2000Encoder
-            tcp_data = self.encoder.encode_tcp(message)[0]
+            tcp_data = self.encoder.encode_ebyte(message)[0]
             logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
         elif self.type == Type.ACTISENSE:
             tcp_data = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
