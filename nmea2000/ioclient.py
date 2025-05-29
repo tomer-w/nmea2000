@@ -224,7 +224,7 @@ class AsyncIOClient(ABC):
             nmea2000Message: The NMEA2000Message object to send.
         """
         try:
-            msgs =  await self._encode_impl(nmea2000Message)
+            msgs = self._encode_impl(nmea2000Message)
             assert self.writer is not None
             for msg in msgs:
                 self.writer.write(msg)
