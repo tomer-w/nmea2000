@@ -51,7 +51,7 @@ class AsyncIOClient(ABC):
         pass
 
     @abstractmethod
-    async def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         """Subclasses must implement."""
         pass
 
@@ -209,7 +209,7 @@ class AsyncIOClient(ABC):
                 await self._receive_impl()
         except Exception as ex:
             if self._state != State.CLOSED:
-                self.logger.error(f"Connection lost while reading. Error: {ex}. Reconnecting...")
+                self.logger.error(f"Connection lost while reading. Error: {ex}. Reconnecting...", exc_info=True)
                 await self._update_state(State.DISCONNECTED)
                 await self.connect()
         self.logger.info("Received loop terminated")
@@ -235,7 +235,7 @@ class AsyncIOClient(ABC):
                 self.logger.error(f"Failed to encode message. Error {ve}")
         except Exception as ex:
             if self._state != State.CLOSED:
-                self.logger.error(f"Connection lost while sending. Error {ex}. Reconnecting...")
+                self.logger.error(f"Connection lost while sending. Error {ex}. Reconnecting...", exc_info=True)
                 await self._update_state(State.DISCONNECTED)
                 await self.connect()
 
@@ -361,7 +361,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
         try:
             message = self.decoder.decode_tcp(data)
         except Exception as e:
-            self.logger.warning(f"decoding failed. text: {data}, bytes: {data.hex()}. Error: {e}")
+            self.logger.warning(f"decoding failed. text: {data}, bytes: {data.hex()}. Error: {e}", exc_info=True)
             return
 
         self.logger.info(f"Received message: {message}")
@@ -444,7 +444,7 @@ class TextNmea2000Gateway(AsyncIOClient):
             elif self.type == Type.YACHT_DEVICES:
                 message = self.decoder.decode_yacht_devices_string(line)
         except Exception as e:
-            self.logger.warning(f"decoding failed. text: {line}, bytes: {data.hex()}. Error: {e}")
+            self.logger.warning(f"decoding failed. text: {line}, bytes: {data.hex()}. Error: {e}", exc_info=True)
             return
 
         self.logger.info(f"Received message: {message}")
@@ -594,7 +594,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             try:
                 message = self.decoder.decode_usb(packet)
             except Exception as e:
-                self.logger.warning(f"decoding failed. bytes: {packet.hex()}. Error: {e}")
+                self.logger.warning(f"decoding failed. bytes: {packet.hex()}. Error: {e}", exc_info=True)
 
             self.logger.info(f"Received message: {message}")
             if message is not None:
@@ -603,7 +603,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             # Remove the processed packet from the buffer
             self._buffer = self._buffer[end + 1 :]
 
-    async def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         """Encode a NMEA2000 message for USB/Serial device.
         
         Args:
