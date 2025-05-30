@@ -6042,7 +6042,7 @@ def is_fast_pgn_59392() -> bool:
 # ERROR: This PGN is corrupted. It has multiple fields but none of them have a match attribute.
 def decode_pgn_59392(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 59392."""
-    nmea2000Message = NMEA2000Message(59392, '0xe8000xee00StandardizedSingleFrameAddressed', '0xE800-0xEE00: Standardized single-frame addressed')
+    nmea2000Message = NMEA2000Message(PGN=59392, id='0xe8000xee00StandardizedSingleFrameAddressed', description='0xE800-0xEE00: Standardized single-frame addressed')
     running_bit_offset = 0
     # 1:data | Offset: 0, Length: 64, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6065,7 +6065,7 @@ def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_59392(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 59392."""
-    nmea2000Message = NMEA2000Message(59392, 'isoAcknowledgement', 'ISO Acknowledgement')
+    nmea2000Message = NMEA2000Message(PGN=59392, id='isoAcknowledgement', description='ISO Acknowledgement')
     running_bit_offset = 0
     # 1:control | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6129,7 +6129,7 @@ def is_fast_pgn_59904() -> bool:
     return False
 def decode_pgn_59904(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 59904."""
-    nmea2000Message = NMEA2000Message(59904, 'isoRequest', 'ISO Request')
+    nmea2000Message = NMEA2000Message(PGN=59904, id='isoRequest', description='ISO Request')
     running_bit_offset = 0
     # 1:pgn | Offset: 0, Length: 24, Signed: False Resolution: 1, Field Type: PGN, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6156,7 +6156,7 @@ def is_fast_pgn_60160() -> bool:
     return False
 def decode_pgn_60160(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60160."""
-    nmea2000Message = NMEA2000Message(60160, 'isoTransportProtocolDataTransfer', 'ISO Transport Protocol, Data Transfer')
+    nmea2000Message = NMEA2000Message(PGN=60160, id='isoTransportProtocolDataTransfer', description='ISO Transport Protocol, Data Transfer')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6230,7 +6230,7 @@ def decode_pgn_60416(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
-    nmea2000Message = NMEA2000Message(60416, 'isoTransportProtocolConnectionManagementRequestToSend', 'ISO Transport Protocol, Connection Management - Request To Send')
+    nmea2000Message = NMEA2000Message(PGN=60416, id='isoTransportProtocolConnectionManagementRequestToSend', description='ISO Transport Protocol, Connection Management - Request To Send')
     running_bit_offset = 0
     # 1:group_function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 16, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6302,7 +6302,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(nmea2
 
 def decode_pgn_60416_isoTransportProtocolConnectionManagementClearToSend(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
-    nmea2000Message = NMEA2000Message(60416, 'isoTransportProtocolConnectionManagementClearToSend', 'ISO Transport Protocol, Connection Management - Clear To Send')
+    nmea2000Message = NMEA2000Message(PGN=60416, id='isoTransportProtocolConnectionManagementClearToSend', description='ISO Transport Protocol, Connection Management - Clear To Send')
     running_bit_offset = 0
     # 1:group_function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 17, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6374,7 +6374,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementClearToSend(nmea200
 
 def decode_pgn_60416_isoTransportProtocolConnectionManagementEndOfMessage(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
-    nmea2000Message = NMEA2000Message(60416, 'isoTransportProtocolConnectionManagementEndOfMessage', 'ISO Transport Protocol, Connection Management - End Of Message')
+    nmea2000Message = NMEA2000Message(PGN=60416, id='isoTransportProtocolConnectionManagementEndOfMessage', description='ISO Transport Protocol, Connection Management - End Of Message')
     running_bit_offset = 0
     # 1:group_function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 19, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6446,7 +6446,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementEndOfMessage(nmea20
 
 def decode_pgn_60416_isoTransportProtocolConnectionManagementBroadcastAnnounce(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
-    nmea2000Message = NMEA2000Message(60416, 'isoTransportProtocolConnectionManagementBroadcastAnnounce', 'ISO Transport Protocol, Connection Management - Broadcast Announce')
+    nmea2000Message = NMEA2000Message(PGN=60416, id='isoTransportProtocolConnectionManagementBroadcastAnnounce', description='ISO Transport Protocol, Connection Management - Broadcast Announce')
     running_bit_offset = 0
     # 1:group_function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 32, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6518,7 +6518,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementBroadcastAnnounce(n
 
 def decode_pgn_60416_isoTransportProtocolConnectionManagementAbort(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
-    nmea2000Message = NMEA2000Message(60416, 'isoTransportProtocolConnectionManagementAbort', 'ISO Transport Protocol, Connection Management - Abort')
+    nmea2000Message = NMEA2000Message(PGN=60416, id='isoTransportProtocolConnectionManagementAbort', description='ISO Transport Protocol, Connection Management - Abort')
     running_bit_offset = 0
     # 1:group_function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 255, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6582,7 +6582,7 @@ def is_fast_pgn_60928() -> bool:
     return False
 def decode_pgn_60928(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60928."""
-    nmea2000Message = NMEA2000Message(60928, 'isoAddressClaim', 'ISO Address Claim')
+    nmea2000Message = NMEA2000Message(PGN=60928, id='isoAddressClaim', description='ISO Address Claim')
     running_bit_offset = 0
     # 1:unique_number | Offset: 0, Length: 21, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -6751,7 +6751,7 @@ def decode_pgn_61184(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 61184."""
-    nmea2000Message = NMEA2000Message(61184, '0xef00ManufacturerProprietarySingleFrameAddressed', '0xEF00: Manufacturer Proprietary single-frame addressed')
+    nmea2000Message = NMEA2000Message(PGN=61184, id='0xef00ManufacturerProprietarySingleFrameAddressed', description='0xEF00: Manufacturer Proprietary single-frame addressed')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -6812,7 +6812,7 @@ def encode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(nmea2000M
 
 def decode_pgn_61184_seatalkWirelessKeypadLightControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 61184."""
-    nmea2000Message = NMEA2000Message(61184, 'seatalkWirelessKeypadLightControl', 'Seatalk: Wireless Keypad Light Control')
+    nmea2000Message = NMEA2000Message(PGN=61184, id='seatalkWirelessKeypadLightControl', description='Seatalk: Wireless Keypad Light Control')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -6921,7 +6921,7 @@ def encode_pgn_61184_seatalkWirelessKeypadLightControl(nmea2000Message: NMEA2000
 
 def decode_pgn_61184_seatalkWirelessKeypadControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 61184."""
-    nmea2000Message = NMEA2000Message(61184, 'seatalkWirelessKeypadControl', 'Seatalk: Wireless Keypad Control')
+    nmea2000Message = NMEA2000Message(PGN=61184, id='seatalkWirelessKeypadControl', description='Seatalk: Wireless Keypad Control')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -7018,7 +7018,7 @@ def encode_pgn_61184_seatalkWirelessKeypadControl(nmea2000Message: NMEA2000Messa
 
 def decode_pgn_61184_victronBatteryRegister(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 61184."""
-    nmea2000Message = NMEA2000Message(61184, 'victronBatteryRegister', 'Victron Battery Register')
+    nmea2000Message = NMEA2000Message(PGN=61184, id='victronBatteryRegister', description='Victron Battery Register')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 358, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -7095,7 +7095,7 @@ def is_fast_pgn_61440() -> bool:
     return False
 def decode_pgn_61440(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 61440."""
-    nmea2000Message = NMEA2000Message(61440, '0xf0000xfeffStandardizedSingleFrameNonAddressed', '0xF000-0xFEFF: Standardized single-frame non-addressed')
+    nmea2000Message = NMEA2000Message(PGN=61440, id='0xf0000xfeffStandardizedSingleFrameNonAddressed', description='0xF000-0xFEFF: Standardized single-frame non-addressed')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -7160,7 +7160,7 @@ def is_fast_pgn_65001() -> bool:
     return False
 def decode_pgn_65001(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65001."""
-    nmea2000Message = NMEA2000Message(65001, 'bus1PhaseCBasicAcQuantities', 'Bus #1 Phase C Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65001, id='bus1PhaseCBasicAcQuantities', description='Bus #1 Phase C Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7223,7 +7223,7 @@ def is_fast_pgn_65002() -> bool:
     return False
 def decode_pgn_65002(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65002."""
-    nmea2000Message = NMEA2000Message(65002, 'bus1PhaseBBasicAcQuantities', 'Bus #1 Phase B Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65002, id='bus1PhaseBBasicAcQuantities', description='Bus #1 Phase B Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7286,7 +7286,7 @@ def is_fast_pgn_65003() -> bool:
     return False
 def decode_pgn_65003(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65003."""
-    nmea2000Message = NMEA2000Message(65003, 'bus1PhaseABasicAcQuantities', 'Bus #1 Phase A Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65003, id='bus1PhaseABasicAcQuantities', description='Bus #1 Phase A Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7349,7 +7349,7 @@ def is_fast_pgn_65004() -> bool:
     return False
 def decode_pgn_65004(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65004."""
-    nmea2000Message = NMEA2000Message(65004, 'bus1AverageBasicAcQuantities', 'Bus #1 Average Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65004, id='bus1AverageBasicAcQuantities', description='Bus #1 Average Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7412,7 +7412,7 @@ def is_fast_pgn_65005() -> bool:
     return False
 def decode_pgn_65005(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65005."""
-    nmea2000Message = NMEA2000Message(65005, 'utilityTotalAcEnergy', 'Utility Total AC Energy')
+    nmea2000Message = NMEA2000Message(PGN=65005, id='utilityTotalAcEnergy', description='Utility Total AC Energy')
     running_bit_offset = 0
     # 1:total_energy_export | Offset: 0, Length: 32, Signed: False Resolution: 3600000.0, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7451,7 +7451,7 @@ def is_fast_pgn_65006() -> bool:
     return False
 def decode_pgn_65006(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65006."""
-    nmea2000Message = NMEA2000Message(65006, 'utilityPhaseCAcReactivePower', 'Utility Phase C AC Reactive Power')
+    nmea2000Message = NMEA2000Message(PGN=65006, id='utilityPhaseCAcReactivePower', description='Utility Phase C AC Reactive Power')
     running_bit_offset = 0
     # 1:reactive_power | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7515,7 +7515,7 @@ def is_fast_pgn_65007() -> bool:
     return False
 def decode_pgn_65007(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65007."""
-    nmea2000Message = NMEA2000Message(65007, 'utilityPhaseCAcPower', 'Utility Phase C AC Power')
+    nmea2000Message = NMEA2000Message(PGN=65007, id='utilityPhaseCAcPower', description='Utility Phase C AC Power')
     running_bit_offset = 0
     # 1:real_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7554,7 +7554,7 @@ def is_fast_pgn_65008() -> bool:
     return False
 def decode_pgn_65008(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65008."""
-    nmea2000Message = NMEA2000Message(65008, 'utilityPhaseCBasicAcQuantities', 'Utility Phase C Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65008, id='utilityPhaseCBasicAcQuantities', description='Utility Phase C Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7617,7 +7617,7 @@ def is_fast_pgn_65009() -> bool:
     return False
 def decode_pgn_65009(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65009."""
-    nmea2000Message = NMEA2000Message(65009, 'utilityPhaseBAcReactivePower', 'Utility Phase B AC Reactive Power')
+    nmea2000Message = NMEA2000Message(PGN=65009, id='utilityPhaseBAcReactivePower', description='Utility Phase B AC Reactive Power')
     running_bit_offset = 0
     # 1:reactive_power | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7681,7 +7681,7 @@ def is_fast_pgn_65010() -> bool:
     return False
 def decode_pgn_65010(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65010."""
-    nmea2000Message = NMEA2000Message(65010, 'utilityPhaseBAcPower', 'Utility Phase B AC Power')
+    nmea2000Message = NMEA2000Message(PGN=65010, id='utilityPhaseBAcPower', description='Utility Phase B AC Power')
     running_bit_offset = 0
     # 1:real_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7720,7 +7720,7 @@ def is_fast_pgn_65011() -> bool:
     return False
 def decode_pgn_65011(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65011."""
-    nmea2000Message = NMEA2000Message(65011, 'utilityPhaseBBasicAcQuantities', 'Utility Phase B Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65011, id='utilityPhaseBBasicAcQuantities', description='Utility Phase B Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7783,7 +7783,7 @@ def is_fast_pgn_65012() -> bool:
     return False
 def decode_pgn_65012(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65012."""
-    nmea2000Message = NMEA2000Message(65012, 'utilityPhaseAAcReactivePower', 'Utility Phase A AC Reactive Power')
+    nmea2000Message = NMEA2000Message(PGN=65012, id='utilityPhaseAAcReactivePower', description='Utility Phase A AC Reactive Power')
     running_bit_offset = 0
     # 1:reactive_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7847,7 +7847,7 @@ def is_fast_pgn_65013() -> bool:
     return False
 def decode_pgn_65013(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65013."""
-    nmea2000Message = NMEA2000Message(65013, 'utilityPhaseAAcPower', 'Utility Phase A AC Power')
+    nmea2000Message = NMEA2000Message(PGN=65013, id='utilityPhaseAAcPower', description='Utility Phase A AC Power')
     running_bit_offset = 0
     # 1:real_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7886,7 +7886,7 @@ def is_fast_pgn_65014() -> bool:
     return False
 def decode_pgn_65014(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65014."""
-    nmea2000Message = NMEA2000Message(65014, 'utilityPhaseABasicAcQuantities', 'Utility Phase A Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65014, id='utilityPhaseABasicAcQuantities', description='Utility Phase A Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -7949,7 +7949,7 @@ def is_fast_pgn_65015() -> bool:
     return False
 def decode_pgn_65015(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65015."""
-    nmea2000Message = NMEA2000Message(65015, 'utilityTotalAcReactivePower', 'Utility Total AC Reactive Power')
+    nmea2000Message = NMEA2000Message(PGN=65015, id='utilityTotalAcReactivePower', description='Utility Total AC Reactive Power')
     running_bit_offset = 0
     # 1:reactive_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8013,7 +8013,7 @@ def is_fast_pgn_65016() -> bool:
     return False
 def decode_pgn_65016(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65016."""
-    nmea2000Message = NMEA2000Message(65016, 'utilityTotalAcPower', 'Utility Total AC Power')
+    nmea2000Message = NMEA2000Message(PGN=65016, id='utilityTotalAcPower', description='Utility Total AC Power')
     running_bit_offset = 0
     # 1:real_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8052,7 +8052,7 @@ def is_fast_pgn_65017() -> bool:
     return False
 def decode_pgn_65017(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65017."""
-    nmea2000Message = NMEA2000Message(65017, 'utilityAverageBasicAcQuantities', 'Utility Average Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65017, id='utilityAverageBasicAcQuantities', description='Utility Average Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8115,7 +8115,7 @@ def is_fast_pgn_65018() -> bool:
     return False
 def decode_pgn_65018(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65018."""
-    nmea2000Message = NMEA2000Message(65018, 'generatorTotalAcEnergy', 'Generator Total AC Energy')
+    nmea2000Message = NMEA2000Message(PGN=65018, id='generatorTotalAcEnergy', description='Generator Total AC Energy')
     running_bit_offset = 0
     # 1:total_energy_export | Offset: 0, Length: 32, Signed: False Resolution: 3600000.0, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8154,7 +8154,7 @@ def is_fast_pgn_65019() -> bool:
     return False
 def decode_pgn_65019(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65019."""
-    nmea2000Message = NMEA2000Message(65019, 'generatorPhaseCAcReactivePower', 'Generator Phase C AC Reactive Power')
+    nmea2000Message = NMEA2000Message(PGN=65019, id='generatorPhaseCAcReactivePower', description='Generator Phase C AC Reactive Power')
     running_bit_offset = 0
     # 1:reactive_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8218,7 +8218,7 @@ def is_fast_pgn_65020() -> bool:
     return False
 def decode_pgn_65020(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65020."""
-    nmea2000Message = NMEA2000Message(65020, 'generatorPhaseCAcPower', 'Generator Phase C AC Power')
+    nmea2000Message = NMEA2000Message(PGN=65020, id='generatorPhaseCAcPower', description='Generator Phase C AC Power')
     running_bit_offset = 0
     # 1:real_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8257,7 +8257,7 @@ def is_fast_pgn_65021() -> bool:
     return False
 def decode_pgn_65021(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65021."""
-    nmea2000Message = NMEA2000Message(65021, 'generatorPhaseCBasicAcQuantities', 'Generator Phase C Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65021, id='generatorPhaseCBasicAcQuantities', description='Generator Phase C Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8320,7 +8320,7 @@ def is_fast_pgn_65022() -> bool:
     return False
 def decode_pgn_65022(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65022."""
-    nmea2000Message = NMEA2000Message(65022, 'generatorPhaseBAcReactivePower', 'Generator Phase B AC Reactive Power')
+    nmea2000Message = NMEA2000Message(PGN=65022, id='generatorPhaseBAcReactivePower', description='Generator Phase B AC Reactive Power')
     running_bit_offset = 0
     # 1:reactive_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8384,7 +8384,7 @@ def is_fast_pgn_65023() -> bool:
     return False
 def decode_pgn_65023(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65023."""
-    nmea2000Message = NMEA2000Message(65023, 'generatorPhaseBAcPower', 'Generator Phase B AC Power')
+    nmea2000Message = NMEA2000Message(PGN=65023, id='generatorPhaseBAcPower', description='Generator Phase B AC Power')
     running_bit_offset = 0
     # 1:real_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8423,7 +8423,7 @@ def is_fast_pgn_65024() -> bool:
     return False
 def decode_pgn_65024(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65024."""
-    nmea2000Message = NMEA2000Message(65024, 'generatorPhaseBBasicAcQuantities', 'Generator Phase B Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65024, id='generatorPhaseBBasicAcQuantities', description='Generator Phase B Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8486,7 +8486,7 @@ def is_fast_pgn_65025() -> bool:
     return False
 def decode_pgn_65025(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65025."""
-    nmea2000Message = NMEA2000Message(65025, 'generatorPhaseAAcReactivePower', 'Generator Phase A AC Reactive Power')
+    nmea2000Message = NMEA2000Message(PGN=65025, id='generatorPhaseAAcReactivePower', description='Generator Phase A AC Reactive Power')
     running_bit_offset = 0
     # 1:reactive_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8550,7 +8550,7 @@ def is_fast_pgn_65026() -> bool:
     return False
 def decode_pgn_65026(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65026."""
-    nmea2000Message = NMEA2000Message(65026, 'generatorPhaseAAcPower', 'Generator Phase A AC Power')
+    nmea2000Message = NMEA2000Message(PGN=65026, id='generatorPhaseAAcPower', description='Generator Phase A AC Power')
     running_bit_offset = 0
     # 1:real_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8589,7 +8589,7 @@ def is_fast_pgn_65027() -> bool:
     return False
 def decode_pgn_65027(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65027."""
-    nmea2000Message = NMEA2000Message(65027, 'generatorPhaseABasicAcQuantities', 'Generator Phase A Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65027, id='generatorPhaseABasicAcQuantities', description='Generator Phase A Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8652,7 +8652,7 @@ def is_fast_pgn_65028() -> bool:
     return False
 def decode_pgn_65028(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65028."""
-    nmea2000Message = NMEA2000Message(65028, 'generatorTotalAcReactivePower', 'Generator Total AC Reactive Power')
+    nmea2000Message = NMEA2000Message(PGN=65028, id='generatorTotalAcReactivePower', description='Generator Total AC Reactive Power')
     running_bit_offset = 0
     # 1:reactive_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8716,7 +8716,7 @@ def is_fast_pgn_65029() -> bool:
     return False
 def decode_pgn_65029(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65029."""
-    nmea2000Message = NMEA2000Message(65029, 'generatorTotalAcPower', 'Generator Total AC Power')
+    nmea2000Message = NMEA2000Message(PGN=65029, id='generatorTotalAcPower', description='Generator Total AC Power')
     running_bit_offset = 0
     # 1:real_power | Offset: 0, Length: 32, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8755,7 +8755,7 @@ def is_fast_pgn_65030() -> bool:
     return False
 def decode_pgn_65030(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65030."""
-    nmea2000Message = NMEA2000Message(65030, 'generatorAverageBasicAcQuantities', 'Generator Average Basic AC Quantities')
+    nmea2000Message = NMEA2000Message(PGN=65030, id='generatorAverageBasicAcQuantities', description='Generator Average Basic AC Quantities')
     running_bit_offset = 0
     # 1:line_line_ac_rms_voltage | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8819,7 +8819,7 @@ def is_fast_pgn_65240() -> bool:
 
 def decode_pgn_65240(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65240."""
-    nmea2000Message = NMEA2000Message(65240, 'isoCommandedAddress', 'ISO Commanded Address')
+    nmea2000Message = NMEA2000Message(PGN=65240, id='isoCommandedAddress', description='ISO Commanded Address')
     running_bit_offset = 0
     # 1:unique_number | Offset: 0, Length: 21, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -8984,7 +8984,7 @@ def decode_pgn_65280(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65280."""
-    nmea2000Message = NMEA2000Message(65280, '0xff000xffffManufacturerProprietarySingleFrameNonAddressed', '0xFF00-0xFFFF: Manufacturer Proprietary single-frame non-addressed')
+    nmea2000Message = NMEA2000Message(PGN=65280, id='0xff000xffffManufacturerProprietarySingleFrameNonAddressed', description='0xFF00-0xFFFF: Manufacturer Proprietary single-frame non-addressed')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9045,7 +9045,7 @@ def encode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(
 
 def decode_pgn_65280_furunoHeave(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65280."""
-    nmea2000Message = NMEA2000Message(65280, 'furunoHeave', 'Furuno: Heave')
+    nmea2000Message = NMEA2000Message(PGN=65280, id='furunoHeave', description='Furuno: Heave')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1855, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9122,7 +9122,7 @@ def is_fast_pgn_65284() -> bool:
     return False
 def decode_pgn_65284(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65284."""
-    nmea2000Message = NMEA2000Message(65284, 'maretronProprietaryDcBreakerCurrent', 'Maretron: Proprietary DC Breaker Current')
+    nmea2000Message = NMEA2000Message(PGN=65284, id='maretronProprietaryDcBreakerCurrent', description='Maretron: Proprietary DC Breaker Current')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9242,7 +9242,7 @@ def decode_pgn_65285(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_65285_airmarBootStateAcknowledgment(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65285."""
-    nmea2000Message = NMEA2000Message(65285, 'airmarBootStateAcknowledgment', 'Airmar: Boot State Acknowledgment')
+    nmea2000Message = NMEA2000Message(PGN=65285, id='airmarBootStateAcknowledgment', description='Airmar: Boot State Acknowledgment')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9316,7 +9316,7 @@ def encode_pgn_65285_airmarBootStateAcknowledgment(nmea2000Message: NMEA2000Mess
 
 def decode_pgn_65285_lowranceTemperature(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65285."""
-    nmea2000Message = NMEA2000Message(65285, 'lowranceTemperature', 'Lowrance: Temperature')
+    nmea2000Message = NMEA2000Message(PGN=65285, id='lowranceTemperature', description='Lowrance: Temperature')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 140, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9425,7 +9425,7 @@ def decode_pgn_65286(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_65286_chetcoDimmer(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65286."""
-    nmea2000Message = NMEA2000Message(65286, 'chetcoDimmer', 'Chetco: Dimmer')
+    nmea2000Message = NMEA2000Message(PGN=65286, id='chetcoDimmer', description='Chetco: Dimmer')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 409, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9546,7 +9546,7 @@ def encode_pgn_65286_chetcoDimmer(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_65286_airmarBootStateRequest(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65286."""
-    nmea2000Message = NMEA2000Message(65286, 'airmarBootStateRequest', 'Airmar: Boot State Request')
+    nmea2000Message = NMEA2000Message(PGN=65286, id='airmarBootStateRequest', description='Airmar: Boot State Request')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9630,7 +9630,7 @@ def decode_pgn_65287(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_65287_airmarAccessLevel(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65287."""
-    nmea2000Message = NMEA2000Message(65287, 'airmarAccessLevel', 'Airmar: Access Level')
+    nmea2000Message = NMEA2000Message(PGN=65287, id='airmarAccessLevel', description='Airmar: Access Level')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9728,7 +9728,7 @@ def encode_pgn_65287_airmarAccessLevel(nmea2000Message: NMEA2000Message) -> byte
 
 def decode_pgn_65287_simnetConfigureTemperatureSensor(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65287."""
-    nmea2000Message = NMEA2000Message(65287, 'simnetConfigureTemperatureSensor', 'Simnet: Configure Temperature Sensor')
+    nmea2000Message = NMEA2000Message(PGN=65287, id='simnetConfigureTemperatureSensor', description='Simnet: Configure Temperature Sensor')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9793,7 +9793,7 @@ def is_fast_pgn_65288() -> bool:
     return False
 def decode_pgn_65288(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65288."""
-    nmea2000Message = NMEA2000Message(65288, 'seatalkAlarm', 'Seatalk: Alarm')
+    nmea2000Message = NMEA2000Message(PGN=65288, id='seatalkAlarm', description='Seatalk: Alarm')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9909,7 +9909,7 @@ def is_fast_pgn_65289() -> bool:
     return False
 def decode_pgn_65289(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65289."""
-    nmea2000Message = NMEA2000Message(65289, 'simnetTrimTabSensorCalibration', 'Simnet: Trim Tab Sensor Calibration')
+    nmea2000Message = NMEA2000Message(PGN=65289, id='simnetTrimTabSensorCalibration', description='Simnet: Trim Tab Sensor Calibration')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -9974,7 +9974,7 @@ def is_fast_pgn_65290() -> bool:
     return False
 def decode_pgn_65290(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65290."""
-    nmea2000Message = NMEA2000Message(65290, 'simnetPaddleWheelSpeedConfiguration', 'Simnet: Paddle Wheel Speed Configuration')
+    nmea2000Message = NMEA2000Message(PGN=65290, id='simnetPaddleWheelSpeedConfiguration', description='Simnet: Paddle Wheel Speed Configuration')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10039,7 +10039,7 @@ def is_fast_pgn_65292() -> bool:
     return False
 def decode_pgn_65292(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65292."""
-    nmea2000Message = NMEA2000Message(65292, 'simnetClearFluidLevelWarnings', 'Simnet: Clear Fluid Level Warnings')
+    nmea2000Message = NMEA2000Message(PGN=65292, id='simnetClearFluidLevelWarnings', description='Simnet: Clear Fluid Level Warnings')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10123,7 +10123,7 @@ def decode_pgn_65293(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_65293_simnetLgc2000Configuration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65293."""
-    nmea2000Message = NMEA2000Message(65293, 'simnetLgc2000Configuration', 'Simnet: LGC-2000 Configuration')
+    nmea2000Message = NMEA2000Message(PGN=65293, id='simnetLgc2000Configuration', description='Simnet: LGC-2000 Configuration')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10184,7 +10184,7 @@ def encode_pgn_65293_simnetLgc2000Configuration(nmea2000Message: NMEA2000Message
 
 def decode_pgn_65293_diverseYachtServicesLoadCell(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65293."""
-    nmea2000Message = NMEA2000Message(65293, 'diverseYachtServicesLoadCell', 'Diverse Yacht Services: Load Cell')
+    nmea2000Message = NMEA2000Message(PGN=65293, id='diverseYachtServicesLoadCell', description='Diverse Yacht Services: Load Cell')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 641, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10273,7 +10273,7 @@ def is_fast_pgn_65302() -> bool:
     return False
 def decode_pgn_65302(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65302."""
-    nmea2000Message = NMEA2000Message(65302, 'simnetApUnknown1', 'Simnet: AP Unknown 1')
+    nmea2000Message = NMEA2000Message(PGN=65302, id='simnetApUnknown1', description='Simnet: AP Unknown 1', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10431,7 +10431,7 @@ def decode_pgn_65305(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_65305_simnetDeviceStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
-    nmea2000Message = NMEA2000Message(65305, 'simnetDeviceStatus', 'Simnet: Device Status')
+    nmea2000Message = NMEA2000Message(PGN=65305, id='simnetDeviceStatus', description='Simnet: Device Status', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10531,7 +10531,7 @@ def encode_pgn_65305_simnetDeviceStatus(nmea2000Message: NMEA2000Message) -> byt
 
 def decode_pgn_65305_simnetDeviceStatusRequest(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
-    nmea2000Message = NMEA2000Message(65305, 'simnetDeviceStatusRequest', 'Simnet: Device Status Request')
+    nmea2000Message = NMEA2000Message(PGN=65305, id='simnetDeviceStatusRequest', description='Simnet: Device Status Request', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10618,7 +10618,7 @@ def encode_pgn_65305_simnetDeviceStatusRequest(nmea2000Message: NMEA2000Message)
 
 def decode_pgn_65305_simnetPilotMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
-    nmea2000Message = NMEA2000Message(65305, 'simnetPilotMode', 'Simnet: Pilot Mode')
+    nmea2000Message = NMEA2000Message(PGN=65305, id='simnetPilotMode', description='Simnet: Pilot Mode', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10718,7 +10718,7 @@ def encode_pgn_65305_simnetPilotMode(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_65305_simnetDeviceModeRequest(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
-    nmea2000Message = NMEA2000Message(65305, 'simnetDeviceModeRequest', 'Simnet: Device Mode Request')
+    nmea2000Message = NMEA2000Message(PGN=65305, id='simnetDeviceModeRequest', description='Simnet: Device Mode Request', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10805,7 +10805,7 @@ def encode_pgn_65305_simnetDeviceModeRequest(nmea2000Message: NMEA2000Message) -
 
 def decode_pgn_65305_simnetSailingProcessorStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
-    nmea2000Message = NMEA2000Message(65305, 'simnetSailingProcessorStatus', 'Simnet: Sailing Processor Status')
+    nmea2000Message = NMEA2000Message(PGN=65305, id='simnetSailingProcessorStatus', description='Simnet: Sailing Processor Status', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10896,7 +10896,7 @@ def is_fast_pgn_65309() -> bool:
     return False
 def decode_pgn_65309(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65309."""
-    nmea2000Message = NMEA2000Message(65309, 'navicoWirelessBatteryStatus', 'Navico: Wireless Battery Status')
+    nmea2000Message = NMEA2000Message(PGN=65309, id='navicoWirelessBatteryStatus', description='Navico: Wireless Battery Status')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -10997,7 +10997,7 @@ def is_fast_pgn_65312() -> bool:
     return False
 def decode_pgn_65312(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65312."""
-    nmea2000Message = NMEA2000Message(65312, 'navicoWirelessSignalStatus', 'Navico: Wireless Signal Status')
+    nmea2000Message = NMEA2000Message(PGN=65312, id='navicoWirelessSignalStatus', description='Navico: Wireless Signal Status')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -11086,7 +11086,7 @@ def is_fast_pgn_65340() -> bool:
     return False
 def decode_pgn_65340(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65340."""
-    nmea2000Message = NMEA2000Message(65340, 'simnetApUnknown2', 'Simnet: AP Unknown 2')
+    nmea2000Message = NMEA2000Message(PGN=65340, id='simnetApUnknown2', description='Simnet: AP Unknown 2', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -11211,7 +11211,7 @@ def is_fast_pgn_65341() -> bool:
     return False
 def decode_pgn_65341(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65341."""
-    nmea2000Message = NMEA2000Message(65341, 'simnetAutopilotAngle', 'Simnet: Autopilot Angle')
+    nmea2000Message = NMEA2000Message(PGN=65341, id='simnetAutopilotAngle', description='Simnet: Autopilot Angle')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -11313,7 +11313,7 @@ def is_fast_pgn_65345() -> bool:
     return False
 def decode_pgn_65345(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65345."""
-    nmea2000Message = NMEA2000Message(65345, 'seatalkPilotWindDatum', 'Seatalk: Pilot Wind Datum')
+    nmea2000Message = NMEA2000Message(PGN=65345, id='seatalkPilotWindDatum', description='Seatalk: Pilot Wind Datum')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -11402,7 +11402,7 @@ def is_fast_pgn_65350() -> bool:
     return False
 def decode_pgn_65350(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65350."""
-    nmea2000Message = NMEA2000Message(65350, 'simnetMagneticField', 'Simnet: Magnetic Field')
+    nmea2000Message = NMEA2000Message(PGN=65350, id='simnetMagneticField', description='Simnet: Magnetic Field')
     running_bit_offset = 0
     # 1:a | Offset: 0, Length: 16, Signed: True Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -11477,7 +11477,7 @@ def is_fast_pgn_65359() -> bool:
     return False
 def decode_pgn_65359(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65359."""
-    nmea2000Message = NMEA2000Message(65359, 'seatalkPilotHeading', 'Seatalk: Pilot Heading')
+    nmea2000Message = NMEA2000Message(PGN=65359, id='seatalkPilotHeading', description='Seatalk: Pilot Heading')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -11578,7 +11578,7 @@ def is_fast_pgn_65360() -> bool:
     return False
 def decode_pgn_65360(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65360."""
-    nmea2000Message = NMEA2000Message(65360, 'seatalkPilotLockedHeading', 'Seatalk: Pilot Locked Heading')
+    nmea2000Message = NMEA2000Message(PGN=65360, id='seatalkPilotLockedHeading', description='Seatalk: Pilot Locked Heading')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -11679,7 +11679,7 @@ def is_fast_pgn_65361() -> bool:
     return False
 def decode_pgn_65361(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65361."""
-    nmea2000Message = NMEA2000Message(65361, 'seatalkSilenceAlarm', 'Seatalk: Silence Alarm')
+    nmea2000Message = NMEA2000Message(PGN=65361, id='seatalkSilenceAlarm', description='Seatalk: Silence Alarm')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -11770,7 +11770,7 @@ def is_fast_pgn_65371() -> bool:
     return False
 def decode_pgn_65371(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65371."""
-    nmea2000Message = NMEA2000Message(65371, 'seatalkKeypadMessage', 'Seatalk: Keypad Message')
+    nmea2000Message = NMEA2000Message(PGN=65371, id='seatalkKeypadMessage', description='Seatalk: Keypad Message')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -11919,7 +11919,7 @@ def is_fast_pgn_65374() -> bool:
     return False
 def decode_pgn_65374(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65374."""
-    nmea2000Message = NMEA2000Message(65374, 'seatalkKeypadHeartbeat', 'SeaTalk: Keypad Heartbeat')
+    nmea2000Message = NMEA2000Message(PGN=65374, id='seatalkKeypadHeartbeat', description='SeaTalk: Keypad Heartbeat')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -12020,7 +12020,7 @@ def is_fast_pgn_65379() -> bool:
     return False
 def decode_pgn_65379(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65379."""
-    nmea2000Message = NMEA2000Message(65379, 'seatalkPilotMode', 'Seatalk: Pilot Mode')
+    nmea2000Message = NMEA2000Message(PGN=65379, id='seatalkPilotMode', description='Seatalk: Pilot Mode')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -12122,7 +12122,7 @@ def is_fast_pgn_65408() -> bool:
     return False
 def decode_pgn_65408(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65408."""
-    nmea2000Message = NMEA2000Message(65408, 'airmarDepthQualityFactor', 'Airmar: Depth Quality Factor')
+    nmea2000Message = NMEA2000Message(PGN=65408, id='airmarDepthQualityFactor', description='Airmar: Depth Quality Factor')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -12212,7 +12212,7 @@ def is_fast_pgn_65409() -> bool:
     return False
 def decode_pgn_65409(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65409."""
-    nmea2000Message = NMEA2000Message(65409, 'airmarSpeedPulseCount', 'Airmar: Speed Pulse Count')
+    nmea2000Message = NMEA2000Message(PGN=65409, id='airmarSpeedPulseCount', description='Airmar: Speed Pulse Count')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -12313,7 +12313,7 @@ def is_fast_pgn_65410() -> bool:
     return False
 def decode_pgn_65410(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65410."""
-    nmea2000Message = NMEA2000Message(65410, 'airmarDeviceInformation', 'Airmar: Device Information')
+    nmea2000Message = NMEA2000Message(PGN=65410, id='airmarDeviceInformation', description='Airmar: Device Information')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -12414,7 +12414,7 @@ def is_fast_pgn_65420() -> bool:
     return False
 def decode_pgn_65420(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65420."""
-    nmea2000Message = NMEA2000Message(65420, 'simnetApUnknown3', 'Simnet: AP Unknown 3')
+    nmea2000Message = NMEA2000Message(PGN=65420, id='simnetApUnknown3', description='Simnet: AP Unknown 3', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -12539,7 +12539,7 @@ def is_fast_pgn_65480() -> bool:
     return False
 def decode_pgn_65480(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65480."""
-    nmea2000Message = NMEA2000Message(65480, 'simnetAutopilotMode', 'Simnet: Autopilot Mode')
+    nmea2000Message = NMEA2000Message(PGN=65480, id='simnetAutopilotMode', description='Simnet: Autopilot Mode')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -12650,7 +12650,7 @@ def decode_pgn_126208(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
-    nmea2000Message = NMEA2000Message(126208, '0x1ed000x1ee00StandardizedFastPacketAddressed', '0x1ED00 - 0x1EE00: Standardized fast-packet addressed')
+    nmea2000Message = NMEA2000Message(PGN=126208, id='0x1ed000x1ee00StandardizedFastPacketAddressed', description='0x1ED00 - 0x1EE00: Standardized fast-packet addressed')
     running_bit_offset = 0
     # 1:data | Offset: 0, Length: 1784, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -12673,7 +12673,7 @@ def encode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(nmea2000Mess
 
 def decode_pgn_126208_nmeaRequestGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
-    nmea2000Message = NMEA2000Message(126208, 'nmeaRequestGroupFunction', 'NMEA - Request group function')
+    nmea2000Message = NMEA2000Message(PGN=126208, id='nmeaRequestGroupFunction', description='NMEA - Request group function')
     running_bit_offset = 0
     # 1:function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 0, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -12764,7 +12764,7 @@ def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message)
 
 def decode_pgn_126208_nmeaCommandGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
-    nmea2000Message = NMEA2000Message(126208, 'nmeaCommandGroupFunction', 'NMEA - Command group function')
+    nmea2000Message = NMEA2000Message(PGN=126208, id='nmeaCommandGroupFunction', description='NMEA - Command group function')
     running_bit_offset = 0
     # 1:function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -12856,7 +12856,7 @@ def encode_pgn_126208_nmeaCommandGroupFunction(nmea2000Message: NMEA2000Message)
 
 def decode_pgn_126208_nmeaAcknowledgeGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
-    nmea2000Message = NMEA2000Message(126208, 'nmeaAcknowledgeGroupFunction', 'NMEA - Acknowledge group function')
+    nmea2000Message = NMEA2000Message(PGN=126208, id='nmeaAcknowledgeGroupFunction', description='NMEA - Acknowledge group function')
     running_bit_offset = 0
     # 1:function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 2, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -12943,7 +12943,7 @@ def encode_pgn_126208_nmeaAcknowledgeGroupFunction(nmea2000Message: NMEA2000Mess
 
 def decode_pgn_126208_nmeaReadFieldsGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
-    nmea2000Message = NMEA2000Message(126208, 'nmeaReadFieldsGroupFunction', 'NMEA - Read Fields group function')
+    nmea2000Message = NMEA2000Message(PGN=126208, id='nmeaReadFieldsGroupFunction', description='NMEA - Read Fields group function')
     running_bit_offset = 0
     # 1:function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 3, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -13041,7 +13041,7 @@ def encode_pgn_126208_nmeaReadFieldsGroupFunction(nmea2000Message: NMEA2000Messa
 
 def decode_pgn_126208_nmeaReadFieldsReplyGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
-    nmea2000Message = NMEA2000Message(126208, 'nmeaReadFieldsReplyGroupFunction', 'NMEA - Read Fields reply group function')
+    nmea2000Message = NMEA2000Message(PGN=126208, id='nmeaReadFieldsReplyGroupFunction', description='NMEA - Read Fields reply group function')
     running_bit_offset = 0
     # 1:function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -13145,7 +13145,7 @@ def encode_pgn_126208_nmeaReadFieldsReplyGroupFunction(nmea2000Message: NMEA2000
 
 def decode_pgn_126208_nmeaWriteFieldsGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
-    nmea2000Message = NMEA2000Message(126208, 'nmeaWriteFieldsGroupFunction', 'NMEA - Write Fields group function')
+    nmea2000Message = NMEA2000Message(PGN=126208, id='nmeaWriteFieldsGroupFunction', description='NMEA - Write Fields group function')
     running_bit_offset = 0
     # 1:function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 5, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -13249,7 +13249,7 @@ def encode_pgn_126208_nmeaWriteFieldsGroupFunction(nmea2000Message: NMEA2000Mess
 
 def decode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126208."""
-    nmea2000Message = NMEA2000Message(126208, 'nmeaWriteFieldsReplyGroupFunction', 'NMEA - Write Fields reply group function')
+    nmea2000Message = NMEA2000Message(PGN=126208, id='nmeaWriteFieldsReplyGroupFunction', description='NMEA - Write Fields reply group function')
     running_bit_offset = 0
     # 1:function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 6, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -13357,7 +13357,7 @@ def is_fast_pgn_126464() -> bool:
     return True
 def decode_pgn_126464(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126464."""
-    nmea2000Message = NMEA2000Message(126464, 'pgnListTransmitAndReceive', 'PGN List (Transmit and Receive)')
+    nmea2000Message = NMEA2000Message(PGN=126464, id='pgnListTransmitAndReceive', description='PGN List (Transmit and Receive)')
     running_bit_offset = 0
     # 1:function_code | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -13652,7 +13652,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_126720_0x1ef00ManufacturerProprietaryFastPacketAddressed(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, '0x1ef00ManufacturerProprietaryFastPacketAddressed', '0x1EF00: Manufacturer Proprietary fast-packet addressed')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='0x1ef00ManufacturerProprietaryFastPacketAddressed', description='0x1EF00: Manufacturer Proprietary fast-packet addressed')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -13713,7 +13713,7 @@ def encode_pgn_126720_0x1ef00ManufacturerProprietaryFastPacketAddressed(nmea2000
 
 def decode_pgn_126720_seatalk1PilotMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'seatalk1PilotMode', 'Seatalk1: Pilot Mode')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='seatalk1PilotMode', description='Seatalk1: Pilot Mode')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -13847,7 +13847,7 @@ def encode_pgn_126720_seatalk1PilotMode(nmea2000Message: NMEA2000Message) -> byt
 
 def decode_pgn_126720_fusionMediaControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'fusionMediaControl', 'Fusion: Media Control')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='fusionMediaControl', description='Fusion: Media Control')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -13945,7 +13945,7 @@ def encode_pgn_126720_fusionMediaControl(nmea2000Message: NMEA2000Message) -> by
 
 def decode_pgn_126720_fusionSiriusControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'fusionSiriusControl', 'Fusion: Sirius Control')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='fusionSiriusControl', description='Fusion: Sirius Control')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14043,7 +14043,7 @@ def encode_pgn_126720_fusionSiriusControl(nmea2000Message: NMEA2000Message) -> b
 
 def decode_pgn_126720_fusionRequestStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'fusionRequestStatus', 'Fusion: Request Status')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='fusionRequestStatus', description='Fusion: Request Status')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14117,7 +14117,7 @@ def encode_pgn_126720_fusionRequestStatus(nmea2000Message: NMEA2000Message) -> b
 
 def decode_pgn_126720_fusionSetSource(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'fusionSetSource', 'Fusion: Set Source')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='fusionSetSource', description='Fusion: Set Source')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14203,7 +14203,7 @@ def encode_pgn_126720_fusionSetSource(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_126720_fusionSetMute(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'fusionSetMute', 'Fusion: Set Mute')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='fusionSetMute', description='Fusion: Set Mute')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14278,7 +14278,7 @@ def encode_pgn_126720_fusionSetMute(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_126720_fusionSetZoneVolume(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'fusionSetZoneVolume', 'Fusion: Set Zone Volume')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='fusionSetZoneVolume', description='Fusion: Set Zone Volume')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14376,7 +14376,7 @@ def encode_pgn_126720_fusionSetZoneVolume(nmea2000Message: NMEA2000Message) -> b
 
 def decode_pgn_126720_fusionSetAllVolumes(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'fusionSetAllVolumes', 'Fusion: Set All Volumes')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='fusionSetAllVolumes', description='Fusion: Set All Volumes')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14498,7 +14498,7 @@ def encode_pgn_126720_fusionSetAllVolumes(nmea2000Message: NMEA2000Message) -> b
 
 def decode_pgn_126720_seatalk1Keystroke(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'seatalk1Keystroke', 'Seatalk1: Keystroke')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='seatalk1Keystroke', description='Seatalk1: Keystroke')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14620,7 +14620,7 @@ def encode_pgn_126720_seatalk1Keystroke(nmea2000Message: NMEA2000Message) -> byt
 
 def decode_pgn_126720_seatalk1DeviceIdentification(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'seatalk1DeviceIdentification', 'Seatalk1: Device Identification')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='seatalk1DeviceIdentification', description='Seatalk1: Device Identification')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14718,7 +14718,7 @@ def encode_pgn_126720_seatalk1DeviceIdentification(nmea2000Message: NMEA2000Mess
 
 def decode_pgn_126720_seatalk1DisplayBrightness(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'seatalk1DisplayBrightness', 'Seatalk1: Display Brightness')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='seatalk1DisplayBrightness', description='Seatalk1: Display Brightness')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14840,7 +14840,7 @@ def encode_pgn_126720_seatalk1DisplayBrightness(nmea2000Message: NMEA2000Message
 
 def decode_pgn_126720_seatalk1DisplayColor(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'seatalk1DisplayColor', 'Seatalk1: Display Color')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='seatalk1DisplayColor', description='Seatalk1: Display Color')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -14963,7 +14963,7 @@ def encode_pgn_126720_seatalk1DisplayColor(nmea2000Message: NMEA2000Message) -> 
 
 def decode_pgn_126720_airmarAttitudeOffset(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarAttitudeOffset', 'Airmar: Attitude Offset')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarAttitudeOffset', description='Airmar: Attitude Offset')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -15061,7 +15061,7 @@ def encode_pgn_126720_airmarAttitudeOffset(nmea2000Message: NMEA2000Message) -> 
 
 def decode_pgn_126720_airmarCalibrateCompass(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarCalibrateCompass', 'Airmar: Calibrate Compass')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarCalibrateCompass', description='Airmar: Calibrate Compass')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -15269,7 +15269,7 @@ def encode_pgn_126720_airmarCalibrateCompass(nmea2000Message: NMEA2000Message) -
 
 def decode_pgn_126720_airmarTrueWindOptions(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarTrueWindOptions', 'Airmar: True Wind Options')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarTrueWindOptions', description='Airmar: True Wind Options')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -15356,7 +15356,7 @@ def encode_pgn_126720_airmarTrueWindOptions(nmea2000Message: NMEA2000Message) ->
 
 def decode_pgn_126720_airmarSimulateMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarSimulateMode', 'Airmar: Simulate Mode')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarSimulateMode', description='Airmar: Simulate Mode')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -15443,7 +15443,7 @@ def encode_pgn_126720_airmarSimulateMode(nmea2000Message: NMEA2000Message) -> by
 
 def decode_pgn_126720_airmarCalibrateDepth(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarCalibrateDepth', 'Airmar: Calibrate Depth')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarCalibrateDepth', description='Airmar: Calibrate Depth')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -15529,7 +15529,7 @@ def encode_pgn_126720_airmarCalibrateDepth(nmea2000Message: NMEA2000Message) -> 
 
 def decode_pgn_126720_airmarCalibrateSpeed(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarCalibrateSpeed', 'Airmar: Calibrate Speed')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarCalibrateSpeed', description='Airmar: Calibrate Speed')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -15627,7 +15627,7 @@ def encode_pgn_126720_airmarCalibrateSpeed(nmea2000Message: NMEA2000Message) -> 
 
 def decode_pgn_126720_airmarCalibrateTemperature(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarCalibrateTemperature', 'Airmar: Calibrate Temperature')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarCalibrateTemperature', description='Airmar: Calibrate Temperature')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -15726,7 +15726,7 @@ def encode_pgn_126720_airmarCalibrateTemperature(nmea2000Message: NMEA2000Messag
 
 def decode_pgn_126720_airmarSpeedFilterNone(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarSpeedFilterNone', 'Airmar: Speed Filter None')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarSpeedFilterNone', description='Airmar: Speed Filter None')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -15824,7 +15824,7 @@ def encode_pgn_126720_airmarSpeedFilterNone(nmea2000Message: NMEA2000Message) ->
 
 def decode_pgn_126720_airmarSpeedFilterIir(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarSpeedFilterIir', 'Airmar: Speed Filter IIR')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarSpeedFilterIir', description='Airmar: Speed Filter IIR')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -15934,7 +15934,7 @@ def encode_pgn_126720_airmarSpeedFilterIir(nmea2000Message: NMEA2000Message) -> 
 
 def decode_pgn_126720_airmarTemperatureFilterNone(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarTemperatureFilterNone', 'Airmar: Temperature Filter None')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarTemperatureFilterNone', description='Airmar: Temperature Filter None')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -16032,7 +16032,7 @@ def encode_pgn_126720_airmarTemperatureFilterNone(nmea2000Message: NMEA2000Messa
 
 def decode_pgn_126720_airmarTemperatureFilterIir(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarTemperatureFilterIir', 'Airmar: Temperature Filter IIR')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarTemperatureFilterIir', description='Airmar: Temperature Filter IIR')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -16142,7 +16142,7 @@ def encode_pgn_126720_airmarTemperatureFilterIir(nmea2000Message: NMEA2000Messag
 
 def decode_pgn_126720_airmarNmea2000Options(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarNmea2000Options', 'Airmar: NMEA 2000 options')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarNmea2000Options', description='Airmar: NMEA 2000 options')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -16229,7 +16229,7 @@ def encode_pgn_126720_airmarNmea2000Options(nmea2000Message: NMEA2000Message) ->
 
 def decode_pgn_126720_airmarAddressableMultiFrame(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'airmarAddressableMultiFrame', 'Airmar: Addressable Multi-Frame')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='airmarAddressableMultiFrame', description='Airmar: Addressable Multi-Frame')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -16290,7 +16290,7 @@ def encode_pgn_126720_airmarAddressableMultiFrame(nmea2000Message: NMEA2000Messa
 
 def decode_pgn_126720_maretronSlaveResponse(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'maretronSlaveResponse', 'Maretron: Slave Response')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='maretronSlaveResponse', description='Maretron: Slave Response')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -16387,7 +16387,7 @@ def encode_pgn_126720_maretronSlaveResponse(nmea2000Message: NMEA2000Message) ->
 
 def decode_pgn_126720_garminDayMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'garminDayMode', 'Garmin: Day Mode')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='garminDayMode', description='Garmin: Day Mode')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 229, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -16534,7 +16534,7 @@ def encode_pgn_126720_garminDayMode(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_126720_garminNightMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'garminNightMode', 'Garmin: Night Mode')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='garminNightMode', description='Garmin: Night Mode')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 229, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -16681,7 +16681,7 @@ def encode_pgn_126720_garminNightMode(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_126720_garminColorMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
-    nmea2000Message = NMEA2000Message(126720, 'garminColorMode', 'Garmin: Color mode')
+    nmea2000Message = NMEA2000Message(PGN=126720, id='garminColorMode', description='Garmin: Color mode')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 229, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -16833,7 +16833,7 @@ def is_fast_pgn_126976() -> bool:
 
 def decode_pgn_126976(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126976."""
-    nmea2000Message = NMEA2000Message(126976, '0x1f0000x1feffStandardizedMixedSingleFastPacketNonAddressed', '0x1F000-0x1FEFF: Standardized mixed single/fast packet non-addressed')
+    nmea2000Message = NMEA2000Message(PGN=126976, id='0x1f0000x1feffStandardizedMixedSingleFastPacketNonAddressed', description='0x1F000-0x1FEFF: Standardized mixed single/fast packet non-addressed')
     running_bit_offset = 0
     # 1:data | Offset: 0, Length: 1784, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -16860,7 +16860,7 @@ def is_fast_pgn_126983() -> bool:
     return True
 def decode_pgn_126983(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126983."""
-    nmea2000Message = NMEA2000Message(126983, 'alert', 'Alert')
+    nmea2000Message = NMEA2000Message(PGN=126983, id='alert', description='Alert')
     running_bit_offset = 0
     # 1:alert_type | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -17138,7 +17138,7 @@ def is_fast_pgn_126984() -> bool:
     return True
 def decode_pgn_126984(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126984."""
-    nmea2000Message = NMEA2000Message(126984, 'alertResponse', 'Alert Response')
+    nmea2000Message = NMEA2000Message(PGN=126984, id='alertResponse', description='Alert Response')
     running_bit_offset = 0
     # 1:alert_type | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -17300,7 +17300,7 @@ def is_fast_pgn_126985() -> bool:
     return True
 def decode_pgn_126985(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126985."""
-    nmea2000Message = NMEA2000Message(126985, 'alertText', 'Alert Text')
+    nmea2000Message = NMEA2000Message(PGN=126985, id='alertText', description='Alert Text')
     running_bit_offset = 0
     # 1:alert_type | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -17455,7 +17455,7 @@ def is_fast_pgn_126986() -> bool:
     return True
 def decode_pgn_126986(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126986."""
-    nmea2000Message = NMEA2000Message(126986, 'alertConfiguration', 'Alert Configuration')
+    nmea2000Message = NMEA2000Message(PGN=126986, id='alertConfiguration', description='Alert Configuration')
     running_bit_offset = 0
     # 1:alert_type | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -17652,7 +17652,7 @@ def is_fast_pgn_126987() -> bool:
     return True
 def decode_pgn_126987(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126987."""
-    nmea2000Message = NMEA2000Message(126987, 'alertThreshold', 'Alert Threshold')
+    nmea2000Message = NMEA2000Message(PGN=126987, id='alertThreshold', description='Alert Threshold')
     running_bit_offset = 0
     # 1:alert_type | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -17837,7 +17837,7 @@ def is_fast_pgn_126988() -> bool:
     return True
 def decode_pgn_126988(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126988."""
-    nmea2000Message = NMEA2000Message(126988, 'alertValue', 'Alert Value')
+    nmea2000Message = NMEA2000Message(PGN=126988, id='alertValue', description='Alert Value')
     running_bit_offset = 0
     # 1:alert_type | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -18010,7 +18010,7 @@ def is_fast_pgn_126992() -> bool:
     return False
 def decode_pgn_126992(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126992."""
-    nmea2000Message = NMEA2000Message(126992, 'systemTime', 'System Time')
+    nmea2000Message = NMEA2000Message(PGN=126992, id='systemTime', description='System Time', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -18088,7 +18088,7 @@ def is_fast_pgn_126993() -> bool:
     return False
 def decode_pgn_126993(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126993."""
-    nmea2000Message = NMEA2000Message(126993, 'heartbeat', 'Heartbeat')
+    nmea2000Message = NMEA2000Message(PGN=126993, id='heartbeat', description='Heartbeat')
     running_bit_offset = 0
     # 1:data_transmit_offset | Offset: 0, Length: 16, Signed: False Resolution: 0.01, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -18178,7 +18178,7 @@ def is_fast_pgn_126996() -> bool:
     return True
 def decode_pgn_126996(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126996."""
-    nmea2000Message = NMEA2000Message(126996, 'productInformation', 'Product Information')
+    nmea2000Message = NMEA2000Message(PGN=126996, id='productInformation', description='Product Information')
     running_bit_offset = 0
     # 1:nmea_2000_version | Offset: 0, Length: 16, Signed: False Resolution: 0.001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -18290,7 +18290,7 @@ def is_fast_pgn_126998() -> bool:
     return True
 def decode_pgn_126998(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126998."""
-    nmea2000Message = NMEA2000Message(126998, 'configurationInformation', 'Configuration Information')
+    nmea2000Message = NMEA2000Message(PGN=126998, id='configurationInformation', description='Configuration Information')
     running_bit_offset = 0
     # 1:installation_description__1 | Offset: 0, Length: , Signed: False Resolution: , Field Type: STRING_LAU, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -18330,7 +18330,7 @@ def is_fast_pgn_127233() -> bool:
     return True
 def decode_pgn_127233(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127233."""
-    nmea2000Message = NMEA2000Message(127233, 'manOverboardNotification', 'Man Overboard Notification')
+    nmea2000Message = NMEA2000Message(PGN=127233, id='manOverboardNotification', description='Man Overboard Notification')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -18568,7 +18568,7 @@ def is_fast_pgn_127237() -> bool:
     return True
 def decode_pgn_127237(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127237."""
-    nmea2000Message = NMEA2000Message(127237, 'headingTrackControl', 'Heading/Track control')
+    nmea2000Message = NMEA2000Message(PGN=127237, id='headingTrackControl', description='Heading/Track control', ttl=timedelta(milliseconds=250))
     running_bit_offset = 0
     # 1:rudder_limit_exceeded | Offset: 0, Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -18807,7 +18807,7 @@ def is_fast_pgn_127245() -> bool:
     return False
 def decode_pgn_127245(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127245."""
-    nmea2000Message = NMEA2000Message(127245, 'rudder', 'Rudder')
+    nmea2000Message = NMEA2000Message(PGN=127245, id='rudder', description='Rudder', ttl=timedelta(milliseconds=100))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -18895,7 +18895,7 @@ def is_fast_pgn_127250() -> bool:
     return False
 def decode_pgn_127250(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127250."""
-    nmea2000Message = NMEA2000Message(127250, 'vesselHeading', 'Vessel Heading')
+    nmea2000Message = NMEA2000Message(PGN=127250, id='vesselHeading', description='Vessel Heading', ttl=timedelta(milliseconds=100))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -18983,7 +18983,7 @@ def is_fast_pgn_127251() -> bool:
     return False
 def decode_pgn_127251(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127251."""
-    nmea2000Message = NMEA2000Message(127251, 'rateOfTurn', 'Rate of Turn')
+    nmea2000Message = NMEA2000Message(PGN=127251, id='rateOfTurn', description='Rate of Turn', ttl=timedelta(milliseconds=100))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -19034,7 +19034,7 @@ def is_fast_pgn_127252() -> bool:
     return False
 def decode_pgn_127252(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127252."""
-    nmea2000Message = NMEA2000Message(127252, 'heave', 'Heave')
+    nmea2000Message = NMEA2000Message(PGN=127252, id='heave', description='Heave')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -19085,7 +19085,7 @@ def is_fast_pgn_127257() -> bool:
     return False
 def decode_pgn_127257(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127257."""
-    nmea2000Message = NMEA2000Message(127257, 'attitude', 'Attitude')
+    nmea2000Message = NMEA2000Message(PGN=127257, id='attitude', description='Attitude', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -19160,7 +19160,7 @@ def is_fast_pgn_127258() -> bool:
     return False
 def decode_pgn_127258(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127258."""
-    nmea2000Message = NMEA2000Message(127258, 'magneticVariation', 'Magnetic Variation')
+    nmea2000Message = NMEA2000Message(PGN=127258, id='magneticVariation', description='Magnetic Variation', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -19249,7 +19249,7 @@ def is_fast_pgn_127488() -> bool:
     return False
 def decode_pgn_127488(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127488."""
-    nmea2000Message = NMEA2000Message(127488, 'engineParametersRapidUpdate', 'Engine Parameters, Rapid Update')
+    nmea2000Message = NMEA2000Message(PGN=127488, id='engineParametersRapidUpdate', description='Engine Parameters, Rapid Update', ttl=timedelta(milliseconds=100))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -19325,7 +19325,7 @@ def is_fast_pgn_127489() -> bool:
     return True
 def decode_pgn_127489(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127489."""
-    nmea2000Message = NMEA2000Message(127489, 'engineParametersDynamic', 'Engine Parameters, Dynamic')
+    nmea2000Message = NMEA2000Message(PGN=127489, id='engineParametersDynamic', description='Engine Parameters, Dynamic', ttl=timedelta(milliseconds=500))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -19511,7 +19511,7 @@ def is_fast_pgn_127490() -> bool:
     return True
 def decode_pgn_127490(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127490."""
-    nmea2000Message = NMEA2000Message(127490, 'electricDriveStatusDynamic', 'Electric Drive Status, Dynamic')
+    nmea2000Message = NMEA2000Message(PGN=127490, id='electricDriveStatusDynamic', description='Electric Drive Status, Dynamic')
     running_bit_offset = 0
     # 1:inverter_motor_identifier | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -19622,7 +19622,7 @@ def is_fast_pgn_127491() -> bool:
     return True
 def decode_pgn_127491(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127491."""
-    nmea2000Message = NMEA2000Message(127491, 'electricEnergyStorageStatusDynamic', 'Electric Energy Storage Status, Dynamic')
+    nmea2000Message = NMEA2000Message(PGN=127491, id='electricEnergyStorageStatusDynamic', description='Electric Energy Storage Status, Dynamic')
     running_bit_offset = 0
     # 1:energy_storage_identifier | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -19757,7 +19757,7 @@ def is_fast_pgn_127493() -> bool:
     return False
 def decode_pgn_127493(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127493."""
-    nmea2000Message = NMEA2000Message(127493, 'transmissionParametersDynamic', 'Transmission Parameters, Dynamic')
+    nmea2000Message = NMEA2000Message(PGN=127493, id='transmissionParametersDynamic', description='Transmission Parameters, Dynamic', ttl=timedelta(milliseconds=100))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -19858,7 +19858,7 @@ def is_fast_pgn_127494() -> bool:
     return True
 def decode_pgn_127494(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127494."""
-    nmea2000Message = NMEA2000Message(127494, 'electricDriveInformation', 'Electric Drive Information')
+    nmea2000Message = NMEA2000Message(PGN=127494, id='electricDriveInformation', description='Electric Drive Information')
     running_bit_offset = 0
     # 1:inverter_motor_identifier | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -20029,7 +20029,7 @@ def is_fast_pgn_127495() -> bool:
     return True
 def decode_pgn_127495(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127495."""
-    nmea2000Message = NMEA2000Message(127495, 'electricEnergyStorageInformation', 'Electric Energy Storage Information')
+    nmea2000Message = NMEA2000Message(PGN=127495, id='electricEnergyStorageInformation', description='Electric Energy Storage Information')
     running_bit_offset = 0
     # 1:energy_storage_identifier | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -20236,7 +20236,7 @@ def is_fast_pgn_127496() -> bool:
     return True
 def decode_pgn_127496(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127496."""
-    nmea2000Message = NMEA2000Message(127496, 'tripParametersVessel', 'Trip Parameters, Vessel')
+    nmea2000Message = NMEA2000Message(PGN=127496, id='tripParametersVessel', description='Trip Parameters, Vessel', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:time_to_empty | Offset: 0, Length: 32, Signed: False Resolution: 0.001, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -20299,7 +20299,7 @@ def is_fast_pgn_127497() -> bool:
     return True
 def decode_pgn_127497(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127497."""
-    nmea2000Message = NMEA2000Message(127497, 'tripParametersEngine', 'Trip Parameters, Engine')
+    nmea2000Message = NMEA2000Message(PGN=127497, id='tripParametersEngine', description='Trip Parameters, Engine', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -20375,7 +20375,7 @@ def is_fast_pgn_127498() -> bool:
     return True
 def decode_pgn_127498(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127498."""
-    nmea2000Message = NMEA2000Message(127498, 'engineParametersStatic', 'Engine Parameters, Static')
+    nmea2000Message = NMEA2000Message(PGN=127498, id='engineParametersStatic', description='Engine Parameters, Static')
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -20432,7 +20432,7 @@ def is_fast_pgn_127500() -> bool:
     return False
 def decode_pgn_127500(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127500."""
-    nmea2000Message = NMEA2000Message(127500, 'loadControllerConnectionStateControl', 'Load Controller Connection State/Control')
+    nmea2000Message = NMEA2000Message(PGN=127500, id='loadControllerConnectionStateControl', description='Load Controller Connection State/Control')
     running_bit_offset = 0
     # 1:sequence_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -20543,7 +20543,7 @@ def is_fast_pgn_127501() -> bool:
     return False
 def decode_pgn_127501(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127501."""
-    nmea2000Message = NMEA2000Message(127501, 'binarySwitchBankStatus', 'Binary Switch Bank Status')
+    nmea2000Message = NMEA2000Message(PGN=127501, id='binarySwitchBankStatus', description='Binary Switch Bank Status')
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -20934,7 +20934,7 @@ def is_fast_pgn_127502() -> bool:
     return False
 def decode_pgn_127502(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127502."""
-    nmea2000Message = NMEA2000Message(127502, 'switchBankControl', 'Switch Bank Control')
+    nmea2000Message = NMEA2000Message(PGN=127502, id='switchBankControl', description='Switch Bank Control')
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -21325,7 +21325,7 @@ def is_fast_pgn_127503() -> bool:
     return True
 def decode_pgn_127503(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127503."""
-    nmea2000Message = NMEA2000Message(127503, 'acInputStatus', 'AC Input Status')
+    nmea2000Message = NMEA2000Message(PGN=127503, id='acInputStatus', description='AC Input Status', ttl=timedelta(milliseconds=1500))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -21486,7 +21486,7 @@ def is_fast_pgn_127504() -> bool:
     return True
 def decode_pgn_127504(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127504."""
-    nmea2000Message = NMEA2000Message(127504, 'acOutputStatus', 'AC Output Status')
+    nmea2000Message = NMEA2000Message(PGN=127504, id='acOutputStatus', description='AC Output Status', ttl=timedelta(milliseconds=1500))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -21647,7 +21647,7 @@ def is_fast_pgn_127505() -> bool:
     return False
 def decode_pgn_127505(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127505."""
-    nmea2000Message = NMEA2000Message(127505, 'fluidLevel', 'Fluid Level')
+    nmea2000Message = NMEA2000Message(PGN=127505, id='fluidLevel', description='Fluid Level', ttl=timedelta(milliseconds=2500))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -21723,7 +21723,7 @@ def is_fast_pgn_127506() -> bool:
     return True
 def decode_pgn_127506(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127506."""
-    nmea2000Message = NMEA2000Message(127506, 'dcDetailedStatus', 'DC Detailed Status')
+    nmea2000Message = NMEA2000Message(PGN=127506, id='dcDetailedStatus', description='DC Detailed Status', ttl=timedelta(milliseconds=1500))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -21835,7 +21835,7 @@ def is_fast_pgn_127507() -> bool:
     return True
 def decode_pgn_127507(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127507."""
-    nmea2000Message = NMEA2000Message(127507, 'chargerStatus', 'Charger Status')
+    nmea2000Message = NMEA2000Message(PGN=127507, id='chargerStatus', description='Charger Status', ttl=timedelta(milliseconds=1500))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -21950,7 +21950,7 @@ def is_fast_pgn_127508() -> bool:
     return False
 def decode_pgn_127508(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127508."""
-    nmea2000Message = NMEA2000Message(127508, 'batteryStatus', 'Battery Status')
+    nmea2000Message = NMEA2000Message(PGN=127508, id='batteryStatus', description='Battery Status', ttl=timedelta(milliseconds=1500))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -22025,7 +22025,7 @@ def is_fast_pgn_127509() -> bool:
     return True
 def decode_pgn_127509(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127509."""
-    nmea2000Message = NMEA2000Message(127509, 'inverterStatus', 'Inverter Status')
+    nmea2000Message = NMEA2000Message(PGN=127509, id='inverterStatus', description='Inverter Status', ttl=timedelta(milliseconds=1500))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -22114,7 +22114,7 @@ def is_fast_pgn_127510() -> bool:
     return True
 def decode_pgn_127510(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127510."""
-    nmea2000Message = NMEA2000Message(127510, 'chargerConfigurationStatus', 'Charger Configuration Status')
+    nmea2000Message = NMEA2000Message(PGN=127510, id='chargerConfigurationStatus', description='Charger Configuration Status')
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -22267,7 +22267,7 @@ def is_fast_pgn_127511() -> bool:
     return True
 def decode_pgn_127511(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127511."""
-    nmea2000Message = NMEA2000Message(127511, 'inverterConfigurationStatus', 'Inverter Configuration Status')
+    nmea2000Message = NMEA2000Message(PGN=127511, id='inverterConfigurationStatus', description='Inverter Configuration Status')
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -22381,7 +22381,7 @@ def is_fast_pgn_127512() -> bool:
     return True
 def decode_pgn_127512(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127512."""
-    nmea2000Message = NMEA2000Message(127512, 'agsConfigurationStatus', 'AGS Configuration Status')
+    nmea2000Message = NMEA2000Message(PGN=127512, id='agsConfigurationStatus', description='AGS Configuration Status')
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -22445,7 +22445,7 @@ def is_fast_pgn_127513() -> bool:
     return True
 def decode_pgn_127513(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127513."""
-    nmea2000Message = NMEA2000Message(127513, 'batteryConfigurationStatus', 'Battery Configuration Status')
+    nmea2000Message = NMEA2000Message(PGN=127513, id='batteryConfigurationStatus', description='Battery Configuration Status')
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -22584,7 +22584,7 @@ def is_fast_pgn_127514() -> bool:
     return True
 def decode_pgn_127514(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127514."""
-    nmea2000Message = NMEA2000Message(127514, 'agsStatus', 'AGS Status')
+    nmea2000Message = NMEA2000Message(PGN=127514, id='agsStatus', description='AGS Status', ttl=timedelta(milliseconds=1500))
     running_bit_offset = 0
     # 1:instance | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -22675,7 +22675,7 @@ def is_fast_pgn_127744() -> bool:
     return False
 def decode_pgn_127744(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127744."""
-    nmea2000Message = NMEA2000Message(127744, 'acPowerCurrentPhaseA', 'AC Power / Current - Phase A')
+    nmea2000Message = NMEA2000Message(PGN=127744, id='acPowerCurrentPhaseA', description='AC Power / Current - Phase A')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -22738,7 +22738,7 @@ def is_fast_pgn_127745() -> bool:
     return False
 def decode_pgn_127745(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127745."""
-    nmea2000Message = NMEA2000Message(127745, 'acPowerCurrentPhaseB', 'AC Power / Current - Phase B')
+    nmea2000Message = NMEA2000Message(PGN=127745, id='acPowerCurrentPhaseB', description='AC Power / Current - Phase B')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -22801,7 +22801,7 @@ def is_fast_pgn_127746() -> bool:
     return False
 def decode_pgn_127746(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127746."""
-    nmea2000Message = NMEA2000Message(127746, 'acPowerCurrentPhaseC', 'AC Power / Current - Phase C')
+    nmea2000Message = NMEA2000Message(PGN=127746, id='acPowerCurrentPhaseC', description='AC Power / Current - Phase C')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -22864,7 +22864,7 @@ def is_fast_pgn_127747() -> bool:
     return False
 def decode_pgn_127747(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127747."""
-    nmea2000Message = NMEA2000Message(127747, 'acVoltageFrequencyPhaseA', 'AC Voltage / Frequency - Phase A')
+    nmea2000Message = NMEA2000Message(PGN=127747, id='acVoltageFrequencyPhaseA', description='AC Voltage / Frequency - Phase A')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -22939,7 +22939,7 @@ def is_fast_pgn_127748() -> bool:
     return False
 def decode_pgn_127748(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127748."""
-    nmea2000Message = NMEA2000Message(127748, 'acVoltageFrequencyPhaseB', 'AC Voltage / Frequency - Phase B')
+    nmea2000Message = NMEA2000Message(PGN=127748, id='acVoltageFrequencyPhaseB', description='AC Voltage / Frequency - Phase B')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23014,7 +23014,7 @@ def is_fast_pgn_127749() -> bool:
     return False
 def decode_pgn_127749(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127749."""
-    nmea2000Message = NMEA2000Message(127749, 'acVoltageFrequencyPhaseC', 'AC Voltage / Frequency - Phase C')
+    nmea2000Message = NMEA2000Message(PGN=127749, id='acVoltageFrequencyPhaseC', description='AC Voltage / Frequency - Phase C')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23089,7 +23089,7 @@ def is_fast_pgn_127750() -> bool:
     return False
 def decode_pgn_127750(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127750."""
-    nmea2000Message = NMEA2000Message(127750, 'converterStatus', 'Converter Status')
+    nmea2000Message = NMEA2000Message(PGN=127750, id='converterStatus', description='Converter Status')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23205,7 +23205,7 @@ def is_fast_pgn_127751() -> bool:
     return False
 def decode_pgn_127751(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 127751."""
-    nmea2000Message = NMEA2000Message(127751, 'dcVoltageCurrent', 'DC Voltage/Current')
+    nmea2000Message = NMEA2000Message(PGN=127751, id='dcVoltageCurrent', description='DC Voltage/Current')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23280,7 +23280,7 @@ def is_fast_pgn_128000() -> bool:
     return False
 def decode_pgn_128000(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128000."""
-    nmea2000Message = NMEA2000Message(128000, 'leewayAngle', 'Leeway Angle')
+    nmea2000Message = NMEA2000Message(PGN=128000, id='leewayAngle', description='Leeway Angle')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23331,7 +23331,7 @@ def is_fast_pgn_128001() -> bool:
     return False
 def decode_pgn_128001(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128001."""
-    nmea2000Message = NMEA2000Message(128001, 'vesselAcceleration', 'Vessel Acceleration')
+    nmea2000Message = NMEA2000Message(PGN=128001, id='vesselAcceleration', description='Vessel Acceleration')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23406,7 +23406,7 @@ def is_fast_pgn_128002() -> bool:
     return False
 def decode_pgn_128002(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128002."""
-    nmea2000Message = NMEA2000Message(128002, 'electricDriveStatusRapidUpdate', 'Electric Drive Status, Rapid Update')
+    nmea2000Message = NMEA2000Message(PGN=128002, id='electricDriveStatusRapidUpdate', description='Electric Drive Status, Rapid Update')
     running_bit_offset = 0
     # 1:inverter_motor_controller | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23505,7 +23505,7 @@ def is_fast_pgn_128003() -> bool:
     return False
 def decode_pgn_128003(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128003."""
-    nmea2000Message = NMEA2000Message(128003, 'electricEnergyStorageStatusRapidUpdate', 'Electric Energy Storage Status, Rapid Update')
+    nmea2000Message = NMEA2000Message(PGN=128003, id='electricEnergyStorageStatusRapidUpdate', description='Electric Energy Storage Status, Rapid Update')
     running_bit_offset = 0
     # 1:energy_storage_identifier | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23604,7 +23604,7 @@ def is_fast_pgn_128006() -> bool:
     return False
 def decode_pgn_128006(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128006."""
-    nmea2000Message = NMEA2000Message(128006, 'thrusterControlStatus', 'Thruster Control Status')
+    nmea2000Message = NMEA2000Message(PGN=128006, id='thrusterControlStatus', description='Thruster Control Status')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23731,7 +23731,7 @@ def is_fast_pgn_128007() -> bool:
     return False
 def decode_pgn_128007(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128007."""
-    nmea2000Message = NMEA2000Message(128007, 'thrusterInformation', 'Thruster Information')
+    nmea2000Message = NMEA2000Message(PGN=128007, id='thrusterInformation', description='Thruster Information')
     running_bit_offset = 0
     # 1:identifier | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23819,7 +23819,7 @@ def is_fast_pgn_128008() -> bool:
     return False
 def decode_pgn_128008(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128008."""
-    nmea2000Message = NMEA2000Message(128008, 'thrusterMotorStatus', 'Thruster Motor Status')
+    nmea2000Message = NMEA2000Message(PGN=128008, id='thrusterMotorStatus', description='Thruster Motor Status')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23907,7 +23907,7 @@ def is_fast_pgn_128259() -> bool:
     return False
 def decode_pgn_128259(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128259."""
-    nmea2000Message = NMEA2000Message(128259, 'speed', 'Speed')
+    nmea2000Message = NMEA2000Message(PGN=128259, id='speed', description='Speed', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -23995,7 +23995,7 @@ def is_fast_pgn_128267() -> bool:
     return False
 def decode_pgn_128267(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128267."""
-    nmea2000Message = NMEA2000Message(128267, 'waterDepth', 'Water Depth')
+    nmea2000Message = NMEA2000Message(PGN=128267, id='waterDepth', description='Water Depth', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -24058,7 +24058,7 @@ def is_fast_pgn_128275() -> bool:
     return True
 def decode_pgn_128275(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128275."""
-    nmea2000Message = NMEA2000Message(128275, 'distanceLog', 'Distance Log')
+    nmea2000Message = NMEA2000Message(PGN=128275, id='distanceLog', description='Distance Log', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:date | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: DATE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -24123,7 +24123,7 @@ def is_fast_pgn_128520() -> bool:
     return True
 def decode_pgn_128520(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128520."""
-    nmea2000Message = NMEA2000Message(128520, 'trackedTargetData', 'Tracked Target Data')
+    nmea2000Message = NMEA2000Message(PGN=128520, id='trackedTargetData', description='Tracked Target Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -24333,7 +24333,7 @@ def is_fast_pgn_128538() -> bool:
     return True
 def decode_pgn_128538(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128538."""
-    nmea2000Message = NMEA2000Message(128538, 'elevatorCarStatus', 'Elevator Car Status')
+    nmea2000Message = NMEA2000Message(PGN=128538, id='elevatorCarStatus', description='Elevator Car Status')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -24732,7 +24732,7 @@ def is_fast_pgn_128768() -> bool:
     return False
 def decode_pgn_128768(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128768."""
-    nmea2000Message = NMEA2000Message(128768, 'elevatorMotorControl', 'Elevator Motor Control')
+    nmea2000Message = NMEA2000Message(PGN=128768, id='elevatorMotorControl', description='Elevator Motor Control')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -24819,7 +24819,7 @@ def is_fast_pgn_128769() -> bool:
     return False
 def decode_pgn_128769(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128769."""
-    nmea2000Message = NMEA2000Message(128769, 'elevatorDeckPushButton', 'Elevator Deck Push Button')
+    nmea2000Message = NMEA2000Message(PGN=128769, id='elevatorDeckPushButton', description='Elevator Deck Push Button')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -24906,7 +24906,7 @@ def is_fast_pgn_128776() -> bool:
     return False
 def decode_pgn_128776(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128776."""
-    nmea2000Message = NMEA2000Message(128776, 'windlassControlStatus', 'Windlass Control Status')
+    nmea2000Message = NMEA2000Message(PGN=128776, id='windlassControlStatus', description='Windlass Control Status')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -25097,7 +25097,7 @@ def is_fast_pgn_128777() -> bool:
     return False
 def decode_pgn_128777(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128777."""
-    nmea2000Message = NMEA2000Message(128777, 'anchorWindlassOperatingStatus', 'Anchor Windlass Operating Status')
+    nmea2000Message = NMEA2000Message(PGN=128777, id='anchorWindlassOperatingStatus', description='Anchor Windlass Operating Status')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -25237,7 +25237,7 @@ def is_fast_pgn_128778() -> bool:
     return False
 def decode_pgn_128778(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128778."""
-    nmea2000Message = NMEA2000Message(128778, 'anchorWindlassMonitoringStatus', 'Anchor Windlass Monitoring Status')
+    nmea2000Message = NMEA2000Message(PGN=128778, id='anchorWindlassMonitoringStatus', description='Anchor Windlass Monitoring Status')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -25337,7 +25337,7 @@ def is_fast_pgn_128780() -> bool:
     return False
 def decode_pgn_128780(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 128780."""
-    nmea2000Message = NMEA2000Message(128780, 'linearActuatorControlStatus', 'Linear Actuator Control/Status')
+    nmea2000Message = NMEA2000Message(PGN=128780, id='linearActuatorControlStatus', description='Linear Actuator Control/Status')
     running_bit_offset = 0
     # 1:actuator_identifier | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -25424,7 +25424,7 @@ def is_fast_pgn_129025() -> bool:
     return False
 def decode_pgn_129025(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129025."""
-    nmea2000Message = NMEA2000Message(129025, 'positionRapidUpdate', 'Position, Rapid Update')
+    nmea2000Message = NMEA2000Message(PGN=129025, id='positionRapidUpdate', description='Position, Rapid Update', ttl=timedelta(milliseconds=100))
     running_bit_offset = 0
     # 1:latitude | Offset: 0, Length: 32, Signed: True Resolution: 1e-07, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -25463,7 +25463,7 @@ def is_fast_pgn_129026() -> bool:
     return False
 def decode_pgn_129026(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129026."""
-    nmea2000Message = NMEA2000Message(129026, 'cogSogRapidUpdate', 'COG & SOG, Rapid Update')
+    nmea2000Message = NMEA2000Message(PGN=129026, id='cogSogRapidUpdate', description='COG & SOG, Rapid Update', ttl=timedelta(milliseconds=250))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -25551,7 +25551,7 @@ def is_fast_pgn_129027() -> bool:
     return False
 def decode_pgn_129027(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129027."""
-    nmea2000Message = NMEA2000Message(129027, 'positionDeltaRapidUpdate', 'Position Delta, Rapid Update')
+    nmea2000Message = NMEA2000Message(PGN=129027, id='positionDeltaRapidUpdate', description='Position Delta, Rapid Update', ttl=timedelta(milliseconds=100))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -25614,7 +25614,7 @@ def is_fast_pgn_129028() -> bool:
     return False
 def decode_pgn_129028(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129028."""
-    nmea2000Message = NMEA2000Message(129028, 'altitudeDeltaRapidUpdate', 'Altitude Delta, Rapid Update')
+    nmea2000Message = NMEA2000Message(PGN=129028, id='altitudeDeltaRapidUpdate', description='Altitude Delta, Rapid Update', ttl=timedelta(milliseconds=100))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -25715,7 +25715,7 @@ def is_fast_pgn_129029() -> bool:
     return True
 def decode_pgn_129029(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129029."""
-    nmea2000Message = NMEA2000Message(129029, 'gnssPositionData', 'GNSS Position Data')
+    nmea2000Message = NMEA2000Message(PGN=129029, id='gnssPositionData', description='GNSS Position Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -25952,7 +25952,7 @@ def is_fast_pgn_129033() -> bool:
     return False
 def decode_pgn_129033(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129033."""
-    nmea2000Message = NMEA2000Message(129033, 'timeDate', 'Time & Date')
+    nmea2000Message = NMEA2000Message(PGN=129033, id='timeDate', description='Time & Date', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:date | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: DATE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -26005,7 +26005,7 @@ def is_fast_pgn_129038() -> bool:
     return True
 def decode_pgn_129038(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129038."""
-    nmea2000Message = NMEA2000Message(129038, 'aisClassAPositionReport', 'AIS Class A Position Report')
+    nmea2000Message = NMEA2000Message(PGN=129038, id='aisClassAPositionReport', description='AIS Class A Position Report')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -26268,7 +26268,7 @@ def is_fast_pgn_129039() -> bool:
     return True
 def decode_pgn_129039(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129039."""
-    nmea2000Message = NMEA2000Message(129039, 'aisClassBPositionReport', 'AIS Class B Position Report')
+    nmea2000Message = NMEA2000Message(PGN=129039, id='aisClassBPositionReport', description='AIS Class B Position Report')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -26572,7 +26572,7 @@ def is_fast_pgn_129040() -> bool:
     return True
 def decode_pgn_129040(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129040."""
-    nmea2000Message = NMEA2000Message(129040, 'aisClassBExtendedPositionReport', 'AIS Class B Extended Position Report')
+    nmea2000Message = NMEA2000Message(PGN=129040, id='aisClassBExtendedPositionReport', description='AIS Class B Extended Position Report')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -26921,7 +26921,7 @@ def is_fast_pgn_129041() -> bool:
     return True
 def decode_pgn_129041(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129041."""
-    nmea2000Message = NMEA2000Message(129041, 'aisAidsToNavigationAtonReport', 'AIS Aids to Navigation (AtoN) Report')
+    nmea2000Message = NMEA2000Message(PGN=129041, id='aisAidsToNavigationAtonReport', description='AIS Aids to Navigation (AtoN) Report')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -27220,7 +27220,7 @@ def is_fast_pgn_129044() -> bool:
     return True
 def decode_pgn_129044(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129044."""
-    nmea2000Message = NMEA2000Message(129044, 'datum', 'Datum')
+    nmea2000Message = NMEA2000Message(PGN=129044, id='datum', description='Datum', ttl=timedelta(milliseconds=10000))
     running_bit_offset = 0
     # 1:local_datum | Offset: 0, Length: 32, Signed: False Resolution: , Field Type: STRING_FIX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -27295,7 +27295,7 @@ def is_fast_pgn_129045() -> bool:
     return True
 def decode_pgn_129045(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129045."""
-    nmea2000Message = NMEA2000Message(129045, 'userDatum', 'User Datum')
+    nmea2000Message = NMEA2000Message(PGN=129045, id='userDatum', description='User Datum')
     running_bit_offset = 0
     # 1:delta_x | Offset: 0, Length: 32, Signed: True Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -27430,7 +27430,7 @@ def is_fast_pgn_129283() -> bool:
     return False
 def decode_pgn_129283(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129283."""
-    nmea2000Message = NMEA2000Message(129283, 'crossTrackError', 'Cross Track Error')
+    nmea2000Message = NMEA2000Message(PGN=129283, id='crossTrackError', description='Cross Track Error', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -27519,7 +27519,7 @@ def is_fast_pgn_129284() -> bool:
     return True
 def decode_pgn_129284(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129284."""
-    nmea2000Message = NMEA2000Message(129284, 'navigationData', 'Navigation Data')
+    nmea2000Message = NMEA2000Message(PGN=129284, id='navigationData', description='Navigation Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -27720,7 +27720,7 @@ def is_fast_pgn_129285() -> bool:
     return True
 def decode_pgn_129285(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129285."""
-    nmea2000Message = NMEA2000Message(129285, 'navigationRouteWpInformation', 'Navigation - Route/WP Information')
+    nmea2000Message = NMEA2000Message(PGN=129285, id='navigationRouteWpInformation', description='Navigation - Route/WP Information')
     running_bit_offset = 0
     # 1:start_rps_ | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -27862,7 +27862,7 @@ def is_fast_pgn_129291() -> bool:
     return False
 def decode_pgn_129291(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129291."""
-    nmea2000Message = NMEA2000Message(129291, 'setDriftRapidUpdate', 'Set & Drift, Rapid Update')
+    nmea2000Message = NMEA2000Message(PGN=129291, id='setDriftRapidUpdate', description='Set & Drift, Rapid Update', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -27950,7 +27950,7 @@ def is_fast_pgn_129301() -> bool:
     return True
 def decode_pgn_129301(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129301."""
-    nmea2000Message = NMEA2000Message(129301, 'navigationRouteTimeToFromMark', 'Navigation - Route / Time to+from Mark')
+    nmea2000Message = NMEA2000Message(PGN=129301, id='navigationRouteTimeToFromMark', description='Navigation - Route / Time to+from Mark', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -28026,7 +28026,7 @@ def is_fast_pgn_129302() -> bool:
     return True
 def decode_pgn_129302(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129302."""
-    nmea2000Message = NMEA2000Message(129302, 'bearingAndDistanceBetweenTwoMarks', 'Bearing and Distance between two Marks')
+    nmea2000Message = NMEA2000Message(PGN=129302, id='bearingAndDistanceBetweenTwoMarks', description='Bearing and Distance between two Marks')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -28165,7 +28165,7 @@ def is_fast_pgn_129538() -> bool:
     return True
 def decode_pgn_129538(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129538."""
-    nmea2000Message = NMEA2000Message(129538, 'gnssControlStatus', 'GNSS Control Status')
+    nmea2000Message = NMEA2000Message(PGN=129538, id='gnssControlStatus', description='GNSS Control Status')
     running_bit_offset = 0
     # 1:sv_elevation_mask | Offset: 0, Length: 16, Signed: True Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -28316,7 +28316,7 @@ def is_fast_pgn_129539() -> bool:
     return False
 def decode_pgn_129539(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129539."""
-    nmea2000Message = NMEA2000Message(129539, 'gnssDops', 'GNSS DOPs')
+    nmea2000Message = NMEA2000Message(PGN=129539, id='gnssDops', description='GNSS DOPs', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -28417,7 +28417,7 @@ def is_fast_pgn_129540() -> bool:
     return True
 def decode_pgn_129540(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129540."""
-    nmea2000Message = NMEA2000Message(129540, 'gnssSatsInView', 'GNSS Sats in View')
+    nmea2000Message = NMEA2000Message(PGN=129540, id='gnssSatsInView', description='GNSS Sats in View', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -28566,7 +28566,7 @@ def is_fast_pgn_129541() -> bool:
     return True
 def decode_pgn_129541(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129541."""
-    nmea2000Message = NMEA2000Message(129541, 'gpsAlmanacData', 'GPS Almanac Data')
+    nmea2000Message = NMEA2000Message(PGN=129541, id='gpsAlmanacData', description='GPS Almanac Data')
     running_bit_offset = 0
     # 1:prn | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -28749,7 +28749,7 @@ def is_fast_pgn_129542() -> bool:
     return True
 def decode_pgn_129542(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129542."""
-    nmea2000Message = NMEA2000Message(129542, 'gnssPseudorangeNoiseStatistics', 'GNSS Pseudorange Noise Statistics')
+    nmea2000Message = NMEA2000Message(PGN=129542, id='gnssPseudorangeNoiseStatistics', description='GNSS Pseudorange Noise Statistics', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -28860,7 +28860,7 @@ def is_fast_pgn_129545() -> bool:
     return True
 def decode_pgn_129545(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129545."""
-    nmea2000Message = NMEA2000Message(129545, 'gnssRaimOutput', 'GNSS RAIM Output')
+    nmea2000Message = NMEA2000Message(PGN=129545, id='gnssRaimOutput', description='GNSS RAIM Output')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -28996,7 +28996,7 @@ def is_fast_pgn_129546() -> bool:
     return False
 def decode_pgn_129546(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129546."""
-    nmea2000Message = NMEA2000Message(129546, 'gnssRaimSettings', 'GNSS RAIM Settings')
+    nmea2000Message = NMEA2000Message(PGN=129546, id='gnssRaimSettings', description='GNSS RAIM Settings')
     running_bit_offset = 0
     # 1:radial_position_error_maximum_threshold | Offset: 0, Length: 16, Signed: False Resolution: 0.01, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -29071,7 +29071,7 @@ def is_fast_pgn_129547() -> bool:
     return True
 def decode_pgn_129547(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129547."""
-    nmea2000Message = NMEA2000Message(129547, 'gnssPseudorangeErrorStatistics', 'GNSS Pseudorange Error Statistics')
+    nmea2000Message = NMEA2000Message(PGN=129547, id='gnssPseudorangeErrorStatistics', description='GNSS Pseudorange Error Statistics')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -29182,7 +29182,7 @@ def is_fast_pgn_129549() -> bool:
     return True
 def decode_pgn_129549(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129549."""
-    nmea2000Message = NMEA2000Message(129549, 'dgnssCorrections', 'DGNSS Corrections')
+    nmea2000Message = NMEA2000Message(PGN=129549, id='dgnssCorrections', description='DGNSS Corrections')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -29331,7 +29331,7 @@ def is_fast_pgn_129550() -> bool:
     return False
 def decode_pgn_129550(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129550."""
-    nmea2000Message = NMEA2000Message(129550, 'gnssDifferentialCorrectionReceiverInterface', 'GNSS Differential Correction Receiver Interface')
+    nmea2000Message = NMEA2000Message(PGN=129550, id='gnssDifferentialCorrectionReceiverInterface', description='GNSS Differential Correction Receiver Interface')
     running_bit_offset = 0
     # 1:channel | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -29434,7 +29434,7 @@ def is_fast_pgn_129551() -> bool:
     return True
 def decode_pgn_129551(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129551."""
-    nmea2000Message = NMEA2000Message(129551, 'gnssDifferentialCorrectionReceiverSignal', 'GNSS Differential Correction Receiver Signal')
+    nmea2000Message = NMEA2000Message(PGN=129551, id='gnssDifferentialCorrectionReceiverSignal', description='GNSS Differential Correction Receiver Signal')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -29622,7 +29622,7 @@ def is_fast_pgn_129556() -> bool:
     return True
 def decode_pgn_129556(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129556."""
-    nmea2000Message = NMEA2000Message(129556, 'glonassAlmanacData', 'GLONASS Almanac Data')
+    nmea2000Message = NMEA2000Message(PGN=129556, id='glonassAlmanacData', description='GLONASS Almanac Data')
     running_bit_offset = 0
     # 1:prn | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -29805,7 +29805,7 @@ def is_fast_pgn_129792() -> bool:
     return True
 def decode_pgn_129792(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129792."""
-    nmea2000Message = NMEA2000Message(129792, 'aisDgnssBroadcastBinaryMessage', 'AIS DGNSS Broadcast Binary Message')
+    nmea2000Message = NMEA2000Message(PGN=129792, id='aisDgnssBroadcastBinaryMessage', description='AIS DGNSS Broadcast Binary Message')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -29962,7 +29962,7 @@ def is_fast_pgn_129793() -> bool:
     return True
 def decode_pgn_129793(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129793."""
-    nmea2000Message = NMEA2000Message(129793, 'aisUtcAndDateReport', 'AIS UTC and Date Report')
+    nmea2000Message = NMEA2000Message(PGN=129793, id='aisUtcAndDateReport', description='AIS UTC and Date Report')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -30153,7 +30153,7 @@ def is_fast_pgn_129794() -> bool:
     return True
 def decode_pgn_129794(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129794."""
-    nmea2000Message = NMEA2000Message(129794, 'aisClassAStaticAndVoyageRelatedData', 'AIS Class A Static and Voyage Related Data')
+    nmea2000Message = NMEA2000Message(PGN=129794, id='aisClassAStaticAndVoyageRelatedData', description='AIS Class A Static and Voyage Related Data')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -30429,7 +30429,7 @@ def is_fast_pgn_129795() -> bool:
     return True
 def decode_pgn_129795(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129795."""
-    nmea2000Message = NMEA2000Message(129795, 'aisAddressedBinaryMessage', 'AIS Addressed Binary Message')
+    nmea2000Message = NMEA2000Message(PGN=129795, id='aisAddressedBinaryMessage', description='AIS Addressed Binary Message')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -30588,7 +30588,7 @@ def is_fast_pgn_129796() -> bool:
     return True
 def decode_pgn_129796(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129796."""
-    nmea2000Message = NMEA2000Message(129796, 'aisAcknowledge', 'AIS Acknowledge')
+    nmea2000Message = NMEA2000Message(PGN=129796, id='aisAcknowledge', description='AIS Acknowledge')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -30714,7 +30714,7 @@ def is_fast_pgn_129797() -> bool:
     return True
 def decode_pgn_129797(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129797."""
-    nmea2000Message = NMEA2000Message(129797, 'aisBinaryBroadcastMessage', 'AIS Binary Broadcast Message')
+    nmea2000Message = NMEA2000Message(PGN=129797, id='aisBinaryBroadcastMessage', description='AIS Binary Broadcast Message')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -30824,7 +30824,7 @@ def is_fast_pgn_129798() -> bool:
     return True
 def decode_pgn_129798(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129798."""
-    nmea2000Message = NMEA2000Message(129798, 'aisSarAircraftPositionReport', 'AIS SAR Aircraft Position Report')
+    nmea2000Message = NMEA2000Message(PGN=129798, id='aisSarAircraftPositionReport', description='AIS SAR Aircraft Position Report')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -31050,7 +31050,7 @@ def is_fast_pgn_129799() -> bool:
     return True
 def decode_pgn_129799(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129799."""
-    nmea2000Message = NMEA2000Message(129799, 'radioFrequencyModePower', 'Radio Frequency/Mode/Power')
+    nmea2000Message = NMEA2000Message(PGN=129799, id='radioFrequencyModePower', description='Radio Frequency/Mode/Power')
     running_bit_offset = 0
     # 1:rx_frequency | Offset: 0, Length: 32, Signed: False Resolution: 10, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -31138,7 +31138,7 @@ def is_fast_pgn_129800() -> bool:
     return True
 def decode_pgn_129800(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129800."""
-    nmea2000Message = NMEA2000Message(129800, 'aisUtcDateInquiry', 'AIS UTC/Date Inquiry')
+    nmea2000Message = NMEA2000Message(PGN=129800, id='aisUtcDateInquiry', description='AIS UTC/Date Inquiry')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -31240,7 +31240,7 @@ def is_fast_pgn_129801() -> bool:
     return True
 def decode_pgn_129801(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129801."""
-    nmea2000Message = NMEA2000Message(129801, 'aisAddressedSafetyRelatedMessage', 'AIS Addressed Safety Related Message')
+    nmea2000Message = NMEA2000Message(PGN=129801, id='aisAddressedSafetyRelatedMessage', description='AIS Addressed Safety Related Message')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -31388,7 +31388,7 @@ def is_fast_pgn_129802() -> bool:
     return True
 def decode_pgn_129802(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129802."""
-    nmea2000Message = NMEA2000Message(129802, 'aisSafetyRelatedBroadcastMessage', 'AIS Safety Related Broadcast Message')
+    nmea2000Message = NMEA2000Message(PGN=129802, id='aisSafetyRelatedBroadcastMessage', description='AIS Safety Related Broadcast Message')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -31487,7 +31487,7 @@ def is_fast_pgn_129803() -> bool:
     return True
 def decode_pgn_129803(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129803."""
-    nmea2000Message = NMEA2000Message(129803, 'aisInterrogation', 'AIS Interrogation')
+    nmea2000Message = NMEA2000Message(PGN=129803, id='aisInterrogation', description='AIS Interrogation')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -31772,7 +31772,7 @@ def is_fast_pgn_129804() -> bool:
     return True
 def decode_pgn_129804(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129804."""
-    nmea2000Message = NMEA2000Message(129804, 'aisAssignmentModeCommand', 'AIS Assignment Mode Command')
+    nmea2000Message = NMEA2000Message(PGN=129804, id='aisAssignmentModeCommand', description='AIS Assignment Mode Command')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -31958,7 +31958,7 @@ def is_fast_pgn_129805() -> bool:
     return True
 def decode_pgn_129805(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129805."""
-    nmea2000Message = NMEA2000Message(129805, 'aisDataLinkManagementMessage', 'AIS Data Link Management Message')
+    nmea2000Message = NMEA2000Message(PGN=129805, id='aisDataLinkManagementMessage', description='AIS Data Link Management Message')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -32096,7 +32096,7 @@ def is_fast_pgn_129806() -> bool:
     return True
 def decode_pgn_129806(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129806."""
-    nmea2000Message = NMEA2000Message(129806, 'aisChannelManagement', 'AIS Channel Management')
+    nmea2000Message = NMEA2000Message(PGN=129806, id='aisChannelManagement', description='AIS Channel Management')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -32396,7 +32396,7 @@ def is_fast_pgn_129807() -> bool:
     return True
 def decode_pgn_129807(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129807."""
-    nmea2000Message = NMEA2000Message(129807, 'aisClassBGroupAssignment', 'AIS Class B Group Assignment')
+    nmea2000Message = NMEA2000Message(PGN=129807, id='aisClassBGroupAssignment', description='AIS Class B Group Assignment')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -32661,7 +32661,7 @@ def decode_pgn_129808(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_129808_dscDistressCallInformation(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129808."""
-    nmea2000Message = NMEA2000Message(129808, 'dscDistressCallInformation', 'DSC Distress Call Information')
+    nmea2000Message = NMEA2000Message(PGN=129808, id='dscDistressCallInformation', description='DSC Distress Call Information')
     running_bit_offset = 0
     # 1:dsc_format | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -32860,7 +32860,7 @@ def encode_pgn_129808_dscDistressCallInformation(nmea2000Message: NMEA2000Messag
 
 def decode_pgn_129808_dscCallInformation(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129808."""
-    nmea2000Message = NMEA2000Message(129808, 'dscCallInformation', 'DSC Call Information')
+    nmea2000Message = NMEA2000Message(PGN=129808, id='dscCallInformation', description='DSC Call Information')
     running_bit_offset = 0
     # 1:dsc_format_symbol | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -33063,7 +33063,7 @@ def is_fast_pgn_129809() -> bool:
     return True
 def decode_pgn_129809(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129809."""
-    nmea2000Message = NMEA2000Message(129809, 'aisClassBStaticDataMsg24PartA', 'AIS Class B static data (msg 24 Part A)')
+    nmea2000Message = NMEA2000Message(PGN=129809, id='aisClassBStaticDataMsg24PartA', description='AIS Class B static data (msg 24 Part A)')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -33165,7 +33165,7 @@ def is_fast_pgn_129810() -> bool:
     return True
 def decode_pgn_129810(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129810."""
-    nmea2000Message = NMEA2000Message(129810, 'aisClassBStaticDataMsg24PartB', 'AIS Class B static data (msg 24 Part B)')
+    nmea2000Message = NMEA2000Message(PGN=129810, id='aisClassBStaticDataMsg24PartB', description='AIS Class B static data (msg 24 Part B)')
     running_bit_offset = 0
     # 1:message_id | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -33389,7 +33389,7 @@ def is_fast_pgn_130052() -> bool:
     return True
 def decode_pgn_130052(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130052."""
-    nmea2000Message = NMEA2000Message(130052, 'loranCTdData', 'Loran-C TD Data')
+    nmea2000Message = NMEA2000Message(PGN=130052, id='loranCTdData', description='Loran-C TD Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -33591,7 +33591,7 @@ def is_fast_pgn_130053() -> bool:
     return True
 def decode_pgn_130053(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130053."""
-    nmea2000Message = NMEA2000Message(130053, 'loranCRangeData', 'Loran-C Range Data')
+    nmea2000Message = NMEA2000Message(PGN=130053, id='loranCRangeData', description='Loran-C Range Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -33793,7 +33793,7 @@ def is_fast_pgn_130054() -> bool:
     return True
 def decode_pgn_130054(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130054."""
-    nmea2000Message = NMEA2000Message(130054, 'loranCSignalData', 'Loran-C Signal Data')
+    nmea2000Message = NMEA2000Message(PGN=130054, id='loranCSignalData', description='Loran-C Signal Data')
     running_bit_offset = 0
     # 1:group_repetition_interval__gri_ | Offset: 0, Length: 32, Signed: True Resolution: 1e-09, Field Type: DURATION, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -33868,7 +33868,7 @@ def is_fast_pgn_130060() -> bool:
     return True
 def decode_pgn_130060(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130060."""
-    nmea2000Message = NMEA2000Message(130060, 'label', 'Label')
+    nmea2000Message = NMEA2000Message(PGN=130060, id='label', description='Label')
     running_bit_offset = 0
     # 1:hardware_channel_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -33976,7 +33976,7 @@ def is_fast_pgn_130061() -> bool:
     return True
 def decode_pgn_130061(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130061."""
-    nmea2000Message = NMEA2000Message(130061, 'channelSourceConfiguration', 'Channel Source Configuration')
+    nmea2000Message = NMEA2000Message(PGN=130061, id='channelSourceConfiguration', description='Channel Source Configuration')
     running_bit_offset = 0
     # 1:data_source_channel_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -34123,7 +34123,7 @@ def is_fast_pgn_130064() -> bool:
     return True
 def decode_pgn_130064(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130064."""
-    nmea2000Message = NMEA2000Message(130064, 'routeAndWpServiceDatabaseList', 'Route and WP Service - Database List')
+    nmea2000Message = NMEA2000Message(PGN=130064, id='routeAndWpServiceDatabaseList', description='Route and WP Service - Database List')
     running_bit_offset = 0
     # 1:start_database_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -34240,7 +34240,7 @@ def is_fast_pgn_130065() -> bool:
     return True
 def decode_pgn_130065(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130065."""
-    nmea2000Message = NMEA2000Message(130065, 'routeAndWpServiceRouteList', 'Route and WP Service - Route List')
+    nmea2000Message = NMEA2000Message(PGN=130065, id='routeAndWpServiceRouteList', description='Route and WP Service - Route List')
     running_bit_offset = 0
     # 1:start_route_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -34344,7 +34344,7 @@ def is_fast_pgn_130066() -> bool:
     return True
 def decode_pgn_130066(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130066."""
-    nmea2000Message = NMEA2000Message(130066, 'routeAndWpServiceRouteWpListAttributes', 'Route and WP Service - Route/WP-List Attributes')
+    nmea2000Message = NMEA2000Message(PGN=130066, id='routeAndWpServiceRouteWpListAttributes', description='Route and WP Service - Route/WP-List Attributes')
     running_bit_offset = 0
     # 1:database_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -34453,7 +34453,7 @@ def is_fast_pgn_130067() -> bool:
     return True
 def decode_pgn_130067(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130067."""
-    nmea2000Message = NMEA2000Message(130067, 'routeAndWpServiceRouteWpNamePosition', 'Route and WP Service - Route - WP Name & Position')
+    nmea2000Message = NMEA2000Message(PGN=130067, id='routeAndWpServiceRouteWpNamePosition', description='Route and WP Service - Route - WP Name & Position')
     running_bit_offset = 0
     # 1:start_rps_ | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -34561,7 +34561,7 @@ def is_fast_pgn_130068() -> bool:
     return True
 def decode_pgn_130068(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130068."""
-    nmea2000Message = NMEA2000Message(130068, 'routeAndWpServiceRouteWpName', 'Route and WP Service - Route - WP Name')
+    nmea2000Message = NMEA2000Message(PGN=130068, id='routeAndWpServiceRouteWpName', description='Route and WP Service - Route - WP Name')
     running_bit_offset = 0
     # 1:start_rps_ | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -34657,7 +34657,7 @@ def is_fast_pgn_130069() -> bool:
     return True
 def decode_pgn_130069(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130069."""
-    nmea2000Message = NMEA2000Message(130069, 'routeAndWpServiceXteLimitNavigationMethod', 'Route and WP Service - XTE Limit & Navigation Method')
+    nmea2000Message = NMEA2000Message(PGN=130069, id='routeAndWpServiceXteLimitNavigationMethod', description='Route and WP Service - XTE Limit & Navigation Method')
     running_bit_offset = 0
     # 1:start_rps_ | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -34781,7 +34781,7 @@ def is_fast_pgn_130070() -> bool:
     return True
 def decode_pgn_130070(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130070."""
-    nmea2000Message = NMEA2000Message(130070, 'routeAndWpServiceWpComment', 'Route and WP Service - WP Comment')
+    nmea2000Message = NMEA2000Message(PGN=130070, id='routeAndWpServiceWpComment', description='Route and WP Service - WP Comment')
     running_bit_offset = 0
     # 1:start_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -34877,7 +34877,7 @@ def is_fast_pgn_130071() -> bool:
     return True
 def decode_pgn_130071(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130071."""
-    nmea2000Message = NMEA2000Message(130071, 'routeAndWpServiceRouteComment', 'Route and WP Service - Route Comment')
+    nmea2000Message = NMEA2000Message(PGN=130071, id='routeAndWpServiceRouteComment', description='Route and WP Service - Route Comment')
     running_bit_offset = 0
     # 1:start_route_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -34961,7 +34961,7 @@ def is_fast_pgn_130072() -> bool:
     return True
 def decode_pgn_130072(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130072."""
-    nmea2000Message = NMEA2000Message(130072, 'routeAndWpServiceDatabaseComment', 'Route and WP Service - Database Comment')
+    nmea2000Message = NMEA2000Message(PGN=130072, id='routeAndWpServiceDatabaseComment', description='Route and WP Service - Database Comment')
     running_bit_offset = 0
     # 1:start_database_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35033,7 +35033,7 @@ def is_fast_pgn_130073() -> bool:
     return True
 def decode_pgn_130073(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130073."""
-    nmea2000Message = NMEA2000Message(130073, 'routeAndWpServiceRadiusOfTurn', 'Route and WP Service - Radius of Turn')
+    nmea2000Message = NMEA2000Message(PGN=130073, id='routeAndWpServiceRadiusOfTurn', description='Route and WP Service - Radius of Turn')
     running_bit_offset = 0
     # 1:start_rps_ | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35132,7 +35132,7 @@ def is_fast_pgn_130074() -> bool:
     return True
 def decode_pgn_130074(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130074."""
-    nmea2000Message = NMEA2000Message(130074, 'routeAndWpServiceWpListWpNamePosition', 'Route and WP Service - WP List - WP Name & Position')
+    nmea2000Message = NMEA2000Message(PGN=130074, id='routeAndWpServiceWpListWpNamePosition', description='Route and WP Service - WP List - WP Name & Position')
     running_bit_offset = 0
     # 1:start_wp_id | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35240,7 +35240,7 @@ def is_fast_pgn_130306() -> bool:
     return False
 def decode_pgn_130306(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130306."""
-    nmea2000Message = NMEA2000Message(130306, 'windData', 'Wind Data')
+    nmea2000Message = NMEA2000Message(PGN=130306, id='windData', description='Wind Data', ttl=timedelta(milliseconds=100))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35316,7 +35316,7 @@ def is_fast_pgn_130310() -> bool:
     return False
 def decode_pgn_130310(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130310."""
-    nmea2000Message = NMEA2000Message(130310, 'environmentalParametersObsolete', 'Environmental Parameters (obsolete)')
+    nmea2000Message = NMEA2000Message(PGN=130310, id='environmentalParametersObsolete', description='Environmental Parameters (obsolete)', ttl=timedelta(milliseconds=500))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35391,7 +35391,7 @@ def is_fast_pgn_130311() -> bool:
     return False
 def decode_pgn_130311(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130311."""
-    nmea2000Message = NMEA2000Message(130311, 'environmentalParameters', 'Environmental Parameters')
+    nmea2000Message = NMEA2000Message(PGN=130311, id='environmentalParameters', description='Environmental Parameters', ttl=timedelta(milliseconds=500))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35480,7 +35480,7 @@ def is_fast_pgn_130312() -> bool:
     return False
 def decode_pgn_130312(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130312."""
-    nmea2000Message = NMEA2000Message(130312, 'temperature', 'Temperature')
+    nmea2000Message = NMEA2000Message(PGN=130312, id='temperature', description='Temperature', ttl=timedelta(milliseconds=2000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35568,7 +35568,7 @@ def is_fast_pgn_130313() -> bool:
     return False
 def decode_pgn_130313(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130313."""
-    nmea2000Message = NMEA2000Message(130313, 'humidity', 'Humidity')
+    nmea2000Message = NMEA2000Message(PGN=130313, id='humidity', description='Humidity', ttl=timedelta(milliseconds=2000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35656,7 +35656,7 @@ def is_fast_pgn_130314() -> bool:
     return False
 def decode_pgn_130314(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130314."""
-    nmea2000Message = NMEA2000Message(130314, 'actualPressure', 'Actual Pressure')
+    nmea2000Message = NMEA2000Message(PGN=130314, id='actualPressure', description='Actual Pressure', ttl=timedelta(milliseconds=2000))
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35732,7 +35732,7 @@ def is_fast_pgn_130315() -> bool:
     return False
 def decode_pgn_130315(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130315."""
-    nmea2000Message = NMEA2000Message(130315, 'setPressure', 'Set Pressure')
+    nmea2000Message = NMEA2000Message(PGN=130315, id='setPressure', description='Set Pressure')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35808,7 +35808,7 @@ def is_fast_pgn_130316() -> bool:
     return False
 def decode_pgn_130316(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130316."""
-    nmea2000Message = NMEA2000Message(130316, 'temperatureExtendedRange', 'Temperature Extended Range')
+    nmea2000Message = NMEA2000Message(PGN=130316, id='temperatureExtendedRange', description='Temperature Extended Range')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -35884,7 +35884,7 @@ def is_fast_pgn_130320() -> bool:
     return True
 def decode_pgn_130320(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130320."""
-    nmea2000Message = NMEA2000Message(130320, 'tideStationData', 'Tide Station Data')
+    nmea2000Message = NMEA2000Message(PGN=130320, id='tideStationData', description='Tide Station Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -36028,7 +36028,7 @@ def is_fast_pgn_130321() -> bool:
     return True
 def decode_pgn_130321(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130321."""
-    nmea2000Message = NMEA2000Message(130321, 'salinityStationData', 'Salinity Station Data')
+    nmea2000Message = NMEA2000Message(PGN=130321, id='salinityStationData', description='Salinity Station Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -36159,7 +36159,7 @@ def is_fast_pgn_130322() -> bool:
     return True
 def decode_pgn_130322(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130322."""
-    nmea2000Message = NMEA2000Message(130322, 'currentStationData', 'Current Station Data')
+    nmea2000Message = NMEA2000Message(PGN=130322, id='currentStationData', description='Current Station Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -36327,7 +36327,7 @@ def is_fast_pgn_130323() -> bool:
     return True
 def decode_pgn_130323(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130323."""
-    nmea2000Message = NMEA2000Message(130323, 'meteorologicalStationData', 'Meteorological Station Data')
+    nmea2000Message = NMEA2000Message(PGN=130323, id='meteorologicalStationData', description='Meteorological Station Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -36519,7 +36519,7 @@ def is_fast_pgn_130324() -> bool:
     return True
 def decode_pgn_130324(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130324."""
-    nmea2000Message = NMEA2000Message(130324, 'mooredBuoyStationData', 'Moored Buoy Station Data')
+    nmea2000Message = NMEA2000Message(PGN=130324, id='mooredBuoyStationData', description='Moored Buoy Station Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -36751,7 +36751,7 @@ def is_fast_pgn_130330() -> bool:
     return True
 def decode_pgn_130330(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130330."""
-    nmea2000Message = NMEA2000Message(130330, 'lightingSystemSettings', 'Lighting System Settings')
+    nmea2000Message = NMEA2000Message(PGN=130330, id='lightingSystemSettings', description='Lighting System Settings')
     running_bit_offset = 0
     # 1:global_enable | Offset: 0, Length: 2, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -36860,7 +36860,7 @@ def is_fast_pgn_130560() -> bool:
     return False
 def decode_pgn_130560(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130560."""
-    nmea2000Message = NMEA2000Message(130560, 'payloadMass', 'Payload Mass')
+    nmea2000Message = NMEA2000Message(PGN=130560, id='payloadMass', description='Payload Mass')
     running_bit_offset = 0
     # 1:sid | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -36947,7 +36947,7 @@ def is_fast_pgn_130561() -> bool:
     return True
 def decode_pgn_130561(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130561."""
-    nmea2000Message = NMEA2000Message(130561, 'lightingZone', 'Lighting Zone')
+    nmea2000Message = NMEA2000Message(PGN=130561, id='lightingZone', description='Lighting Zone')
     running_bit_offset = 0
     # 1:zone_index | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -37056,7 +37056,7 @@ def is_fast_pgn_130562() -> bool:
     return True
 def decode_pgn_130562(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130562."""
-    nmea2000Message = NMEA2000Message(130562, 'lightingScene', 'Lighting Scene')
+    nmea2000Message = NMEA2000Message(PGN=130562, id='lightingScene', description='Lighting Scene')
     running_bit_offset = 0
     # 1:scene_index | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -37152,7 +37152,7 @@ def is_fast_pgn_130563() -> bool:
     return True
 def decode_pgn_130563(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130563."""
-    nmea2000Message = NMEA2000Message(130563, 'lightingDevice', 'Lighting Device')
+    nmea2000Message = NMEA2000Message(PGN=130563, id='lightingDevice', description='Lighting Device')
     running_bit_offset = 0
     # 1:device_id | Offset: 0, Length: 32, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -37303,7 +37303,7 @@ def is_fast_pgn_130564() -> bool:
     return True
 def decode_pgn_130564(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130564."""
-    nmea2000Message = NMEA2000Message(130564, 'lightingDeviceEnumeration', 'Lighting Device Enumeration')
+    nmea2000Message = NMEA2000Message(PGN=130564, id='lightingDeviceEnumeration', description='Lighting Device Enumeration')
     running_bit_offset = 0
     # 1:index_of_first_device | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -37378,7 +37378,7 @@ def is_fast_pgn_130565() -> bool:
     return True
 def decode_pgn_130565(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130565."""
-    nmea2000Message = NMEA2000Message(130565, 'lightingColorSequence', 'Lighting Color Sequence')
+    nmea2000Message = NMEA2000Message(PGN=130565, id='lightingColorSequence', description='Lighting Color Sequence')
     running_bit_offset = 0
     # 1:sequence_index | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -37489,7 +37489,7 @@ def is_fast_pgn_130566() -> bool:
     return True
 def decode_pgn_130566(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130566."""
-    nmea2000Message = NMEA2000Message(130566, 'lightingProgram', 'Lighting Program')
+    nmea2000Message = NMEA2000Message(PGN=130566, id='lightingProgram', description='Lighting Program')
     running_bit_offset = 0
     # 1:program_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -37545,7 +37545,7 @@ def is_fast_pgn_130567() -> bool:
     return True
 def decode_pgn_130567(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130567."""
-    nmea2000Message = NMEA2000Message(130567, 'watermakerInputSettingAndStatus', 'Watermaker Input Setting and Status')
+    nmea2000Message = NMEA2000Message(PGN=130567, id='watermakerInputSettingAndStatus', description='Watermaker Input Setting and Status')
     running_bit_offset = 0
     # 1:watermaker_operating_state | Offset: 0, Length: 6, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -37849,7 +37849,7 @@ def is_fast_pgn_130569() -> bool:
     return True
 def decode_pgn_130569(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130569."""
-    nmea2000Message = NMEA2000Message(130569, 'currentStatusAndFile', 'Current Status and File')
+    nmea2000Message = NMEA2000Message(PGN=130569, id='currentStatusAndFile', description='Current Status and File')
     running_bit_offset = 0
     # 1:zone | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -38074,7 +38074,7 @@ def is_fast_pgn_130570() -> bool:
     return True
 def decode_pgn_130570(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130570."""
-    nmea2000Message = NMEA2000Message(130570, 'libraryDataFile', 'Library Data File')
+    nmea2000Message = NMEA2000Message(PGN=130570, id='libraryDataFile', description='Library Data File')
     running_bit_offset = 0
     # 1:source | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -38229,7 +38229,7 @@ def is_fast_pgn_130571() -> bool:
     return True
 def decode_pgn_130571(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130571."""
-    nmea2000Message = NMEA2000Message(130571, 'libraryDataGroup', 'Library Data Group')
+    nmea2000Message = NMEA2000Message(PGN=130571, id='libraryDataGroup', description='Library Data Group')
     running_bit_offset = 0
     # 1:source | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -38385,7 +38385,7 @@ def is_fast_pgn_130572() -> bool:
     return True
 def decode_pgn_130572(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130572."""
-    nmea2000Message = NMEA2000Message(130572, 'libraryDataSearch', 'Library Data Search')
+    nmea2000Message = NMEA2000Message(PGN=130572, id='libraryDataSearch', description='Library Data Search')
     running_bit_offset = 0
     # 1:source | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -38489,7 +38489,7 @@ def is_fast_pgn_130573() -> bool:
     return True
 def decode_pgn_130573(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130573."""
-    nmea2000Message = NMEA2000Message(130573, 'supportedSourceData', 'Supported Source Data')
+    nmea2000Message = NMEA2000Message(PGN=130573, id='supportedSourceData', description='Supported Source Data')
     running_bit_offset = 0
     # 1:id_offset | Offset: 0, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -38628,7 +38628,7 @@ def is_fast_pgn_130574() -> bool:
     return True
 def decode_pgn_130574(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130574."""
-    nmea2000Message = NMEA2000Message(130574, 'supportedZoneData', 'Supported Zone Data')
+    nmea2000Message = NMEA2000Message(PGN=130574, id='supportedZoneData', description='Supported Zone Data')
     running_bit_offset = 0
     # 1:first_zone_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -38701,7 +38701,7 @@ def is_fast_pgn_130576() -> bool:
     return False
 def decode_pgn_130576(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130576."""
-    nmea2000Message = NMEA2000Message(130576, 'smallCraftStatus', 'Small Craft Status')
+    nmea2000Message = NMEA2000Message(PGN=130576, id='smallCraftStatus', description='Small Craft Status', ttl=timedelta(milliseconds=200))
     running_bit_offset = 0
     # 1:port_trim_tab | Offset: 0, Length: 8, Signed: True Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -38752,7 +38752,7 @@ def is_fast_pgn_130577() -> bool:
     return True
 def decode_pgn_130577(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130577."""
-    nmea2000Message = NMEA2000Message(130577, 'directionData', 'Direction Data')
+    nmea2000Message = NMEA2000Message(PGN=130577, id='directionData', description='Direction Data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:data_mode | Offset: 0, Length: 4, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -38889,7 +38889,7 @@ def is_fast_pgn_130578() -> bool:
     return True
 def decode_pgn_130578(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130578."""
-    nmea2000Message = NMEA2000Message(130578, 'vesselSpeedComponents', 'Vessel Speed Components')
+    nmea2000Message = NMEA2000Message(PGN=130578, id='vesselSpeedComponents', description='Vessel Speed Components', ttl=timedelta(milliseconds=250))
     running_bit_offset = 0
     # 1:longitudinal_speed__water_referenced | Offset: 0, Length: 16, Signed: True Resolution: 0.001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -38976,7 +38976,7 @@ def is_fast_pgn_130579() -> bool:
     return False
 def decode_pgn_130579(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130579."""
-    nmea2000Message = NMEA2000Message(130579, 'systemConfiguration', 'System Configuration')
+    nmea2000Message = NMEA2000Message(PGN=130579, id='systemConfiguration', description='System Configuration')
     running_bit_offset = 0
     # 1:power | Offset: 0, Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -39067,7 +39067,7 @@ def is_fast_pgn_130580() -> bool:
     return True
 def decode_pgn_130580(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130580."""
-    nmea2000Message = NMEA2000Message(130580, 'systemConfigurationDeprecated', 'System Configuration (deprecated)')
+    nmea2000Message = NMEA2000Message(PGN=130580, id='systemConfigurationDeprecated', description='System Configuration (deprecated)')
     running_bit_offset = 0
     # 1:power | Offset: 0, Length: 2, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -39133,7 +39133,7 @@ def is_fast_pgn_130581() -> bool:
     return True
 def decode_pgn_130581(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130581."""
-    nmea2000Message = NMEA2000Message(130581, 'zoneConfigurationDeprecated', 'Zone Configuration (deprecated)')
+    nmea2000Message = NMEA2000Message(PGN=130581, id='zoneConfigurationDeprecated', description='Zone Configuration (deprecated)')
     running_bit_offset = 0
     # 1:first_zone_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -39206,7 +39206,7 @@ def is_fast_pgn_130582() -> bool:
     return False
 def decode_pgn_130582(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130582."""
-    nmea2000Message = NMEA2000Message(130582, 'zoneVolume', 'Zone Volume')
+    nmea2000Message = NMEA2000Message(PGN=130582, id='zoneVolume', description='Zone Volume')
     running_bit_offset = 0
     # 1:zone_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -39309,7 +39309,7 @@ def is_fast_pgn_130583() -> bool:
     return True
 def decode_pgn_130583(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130583."""
-    nmea2000Message = NMEA2000Message(130583, 'availableAudioEqPresets', 'Available Audio EQ presets')
+    nmea2000Message = NMEA2000Message(PGN=130583, id='availableAudioEqPresets', description='Available Audio EQ presets')
     running_bit_offset = 0
     # 1:first_preset | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -39382,7 +39382,7 @@ def is_fast_pgn_130584() -> bool:
     return True
 def decode_pgn_130584(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130584."""
-    nmea2000Message = NMEA2000Message(130584, 'availableBluetoothAddresses', 'Available Bluetooth addresses')
+    nmea2000Message = NMEA2000Message(PGN=130584, id='availableBluetoothAddresses', description='Available Bluetooth addresses')
     running_bit_offset = 0
     # 1:first_address | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -39473,7 +39473,7 @@ def is_fast_pgn_130585() -> bool:
     return False
 def decode_pgn_130585(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130585."""
-    nmea2000Message = NMEA2000Message(130585, 'bluetoothSourceStatus', 'Bluetooth source status')
+    nmea2000Message = NMEA2000Message(PGN=130585, id='bluetoothSourceStatus', description='Bluetooth source status')
     running_bit_offset = 0
     # 1:source_number | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -39551,7 +39551,7 @@ def is_fast_pgn_130586() -> bool:
     return True
 def decode_pgn_130586(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130586."""
-    nmea2000Message = NMEA2000Message(130586, 'zoneConfiguration', 'Zone Configuration')
+    nmea2000Message = NMEA2000Message(PGN=130586, id='zoneConfiguration', description='Zone Configuration')
     running_bit_offset = 0
     # 1:zone_id | Offset: 0, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -39882,7 +39882,7 @@ def decode_pgn_130816(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, '0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed', '0x1FF00-0x1FFFF: Manufacturer Specific fast-packet non-addressed')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed', description='0x1FF00-0x1FFFF: Manufacturer Specific fast-packet non-addressed')
     running_bit_offset = 0
     # 1:data | Offset: 0, Length: 1784, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -39905,7 +39905,7 @@ def encode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(n
 
 def decode_pgn_130816_sonichubInit2(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubInit2', 'SonicHub: Init #2')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubInit2', description='SonicHub: Init #2')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -40016,7 +40016,7 @@ def encode_pgn_130816_sonichubInit2(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130816_sonichubAmRadio(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubAmRadio', 'SonicHub: AM Radio')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubAmRadio', description='SonicHub: AM Radio')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -40176,7 +40176,7 @@ def encode_pgn_130816_sonichubAmRadio(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_130816_sonichubZoneInfo(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubZoneInfo', 'SonicHub: Zone info')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubZoneInfo', description='SonicHub: Zone info')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -40275,7 +40275,7 @@ def encode_pgn_130816_sonichubZoneInfo(nmea2000Message: NMEA2000Message) -> byte
 
 def decode_pgn_130816_sonichubSource(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubSource', 'SonicHub: Source')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubSource', description='SonicHub: Source')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -40375,7 +40375,7 @@ def encode_pgn_130816_sonichubSource(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130816_sonichubSourceList(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubSourceList', 'SonicHub: Source List')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubSourceList', description='SonicHub: Source List')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -40498,7 +40498,7 @@ def encode_pgn_130816_sonichubSourceList(nmea2000Message: NMEA2000Message) -> by
 
 def decode_pgn_130816_sonichubControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubControl', 'SonicHub: Control')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubControl', description='SonicHub: Control')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -40598,7 +40598,7 @@ def encode_pgn_130816_sonichubControl(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_130816_sonichubFmRadio(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubFmRadio', 'SonicHub: FM Radio')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubFmRadio', description='SonicHub: FM Radio')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -40758,7 +40758,7 @@ def encode_pgn_130816_sonichubFmRadio(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_130816_sonichubPlaylist(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubPlaylist', 'SonicHub: Playlist')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubPlaylist', description='SonicHub: Playlist')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -40918,7 +40918,7 @@ def encode_pgn_130816_sonichubPlaylist(nmea2000Message: NMEA2000Message) -> byte
 
 def decode_pgn_130816_sonichubTrack(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubTrack', 'SonicHub: Track')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubTrack', description='SonicHub: Track')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41029,7 +41029,7 @@ def encode_pgn_130816_sonichubTrack(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130816_sonichubArtist(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubArtist', 'SonicHub: Artist')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubArtist', description='SonicHub: Artist')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41140,7 +41140,7 @@ def encode_pgn_130816_sonichubArtist(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130816_sonichubAlbum(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubAlbum', 'SonicHub: Album')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubAlbum', description='SonicHub: Album')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41251,7 +41251,7 @@ def encode_pgn_130816_sonichubAlbum(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130816_sonichubMenuItem(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubMenuItem', 'SonicHub: Menu Item')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubMenuItem', description='SonicHub: Menu Item')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41398,7 +41398,7 @@ def encode_pgn_130816_sonichubMenuItem(nmea2000Message: NMEA2000Message) -> byte
 
 def decode_pgn_130816_sonichubZones(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubZones', 'SonicHub: Zones')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubZones', description='SonicHub: Zones')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41497,7 +41497,7 @@ def encode_pgn_130816_sonichubZones(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130816_sonichubMaxVolume(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubMaxVolume', 'SonicHub: Max Volume')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubMaxVolume', description='SonicHub: Max Volume')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41608,7 +41608,7 @@ def encode_pgn_130816_sonichubMaxVolume(nmea2000Message: NMEA2000Message) -> byt
 
 def decode_pgn_130816_sonichubVolume(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubVolume', 'SonicHub: Volume')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubVolume', description='SonicHub: Volume')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41719,7 +41719,7 @@ def encode_pgn_130816_sonichubVolume(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130816_sonichubInit1(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubInit1', 'SonicHub: Init #1')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubInit1', description='SonicHub: Init #1')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41806,7 +41806,7 @@ def encode_pgn_130816_sonichubInit1(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130816_sonichubPosition(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubPosition', 'SonicHub: Position')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubPosition', description='SonicHub: Position')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -41905,7 +41905,7 @@ def encode_pgn_130816_sonichubPosition(nmea2000Message: NMEA2000Message) -> byte
 
 def decode_pgn_130816_sonichubInit3(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'sonichubInit3', 'SonicHub: Init #3')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='sonichubInit3', description='SonicHub: Init #3')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -42016,7 +42016,7 @@ def encode_pgn_130816_sonichubInit3(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130816_simradTextMessage(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130816."""
-    nmea2000Message = NMEA2000Message(130816, 'simradTextMessage', 'Simrad: Text Message')
+    nmea2000Message = NMEA2000Message(PGN=130816, id='simradTextMessage', description='Simrad: Text Message')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -42185,7 +42185,7 @@ def decode_pgn_130817(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130817_navicoUnknown(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130817."""
-    nmea2000Message = NMEA2000Message(130817, 'navicoUnknown', 'Navico: Unknown')
+    nmea2000Message = NMEA2000Message(PGN=130817, id='navicoUnknown', description='Navico: Unknown')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -42294,7 +42294,7 @@ def encode_pgn_130817_navicoUnknown(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130817_lowranceProductInformation(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130817."""
-    nmea2000Message = NMEA2000Message(130817, 'lowranceProductInformation', 'Lowrance: Product Information')
+    nmea2000Message = NMEA2000Message(PGN=130817, id='lowranceProductInformation', description='Lowrance: Product Information')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 140, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -42443,7 +42443,7 @@ def is_fast_pgn_130818() -> bool:
     return True
 def decode_pgn_130818(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130818."""
-    nmea2000Message = NMEA2000Message(130818, 'simnetReprogramData', 'Simnet: Reprogram Data')
+    nmea2000Message = NMEA2000Message(PGN=130818, id='simnetReprogramData', description='Simnet: Reprogram Data')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -42532,7 +42532,7 @@ def is_fast_pgn_130819() -> bool:
     return True
 def decode_pgn_130819(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130819."""
-    nmea2000Message = NMEA2000Message(130819, 'simnetRequestReprogram', 'Simnet: Request Reprogram')
+    nmea2000Message = NMEA2000Message(PGN=130819, id='simnetRequestReprogram', description='Simnet: Request Reprogram')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -42901,7 +42901,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130820_simnetReprogramStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'simnetReprogramStatus', 'Simnet: Reprogram Status')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='simnetReprogramStatus', description='Simnet: Reprogram Status')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -42986,7 +42986,7 @@ def encode_pgn_130820_simnetReprogramStatus(nmea2000Message: NMEA2000Message) ->
 
 def decode_pgn_130820_furunoUnknown130820(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'furunoUnknown130820', 'Furuno: Unknown 130820')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='furunoUnknown130820', description='Furuno: Unknown 130820')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1855, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43095,7 +43095,7 @@ def encode_pgn_130820_furunoUnknown130820(nmea2000Message: NMEA2000Message) -> b
 
 def decode_pgn_130820_fusionVersions(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionVersions', 'Fusion: Versions')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionVersions', description='Fusion: Versions')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43217,7 +43217,7 @@ def encode_pgn_130820_fusionVersions(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionSource(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSource', 'Fusion: Source')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSource', description='Fusion: Source')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43335,7 +43335,7 @@ def encode_pgn_130820_fusionSource(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionSourceCount(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSourceCount', 'Fusion: Source Count')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSourceCount', description='Fusion: Source Count')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43409,7 +43409,7 @@ def encode_pgn_130820_fusionSourceCount(nmea2000Message: NMEA2000Message) -> byt
 
 def decode_pgn_130820_fusionMedia(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionMedia', 'Fusion: Media')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionMedia', description='Fusion: Media')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43544,7 +43544,7 @@ def encode_pgn_130820_fusionMedia(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionTrackName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionTrackName', 'Fusion: Track Name')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionTrackName', description='Fusion: Track Name')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43637,7 +43637,7 @@ def encode_pgn_130820_fusionTrackName(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_130820_fusionArtistName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionArtistName', 'Fusion: Artist Name')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionArtistName', description='Fusion: Artist Name')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43730,7 +43730,7 @@ def encode_pgn_130820_fusionArtistName(nmea2000Message: NMEA2000Message) -> byte
 
 def decode_pgn_130820_fusionAlbumName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionAlbumName', 'Fusion: Album Name')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionAlbumName', description='Fusion: Album Name')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43823,7 +43823,7 @@ def encode_pgn_130820_fusionAlbumName(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_130820_fusionDeviceName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionDeviceName', 'Fusion: Device Name')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionDeviceName', description='Fusion: Device Name')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43892,7 +43892,7 @@ def encode_pgn_130820_fusionDeviceName(nmea2000Message: NMEA2000Message) -> byte
 
 def decode_pgn_130820_fusionZoneName(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionZoneName', 'Fusion: Zone Name')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionZoneName', description='Fusion: Zone Name')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -43973,7 +43973,7 @@ def encode_pgn_130820_fusionZoneName(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionTrackPosition(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionTrackPosition', 'Fusion: Track Position')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionTrackPosition', description='Fusion: Track Position')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44059,7 +44059,7 @@ def encode_pgn_130820_fusionTrackPosition(nmea2000Message: NMEA2000Message) -> b
 
 def decode_pgn_130820_fusionTuner(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionTuner', 'Fusion: Tuner')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionTuner', description='Fusion: Tuner')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44177,7 +44177,7 @@ def encode_pgn_130820_fusionTuner(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionMarineTuner(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionMarineTuner', 'Fusion: MARINE_TUNER')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionMarineTuner', description='Fusion: MARINE_TUNER')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44282,7 +44282,7 @@ def encode_pgn_130820_fusionMarineTuner(nmea2000Message: NMEA2000Message) -> byt
 
 def decode_pgn_130820_fusionMarineSquelch(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionMarineSquelch', 'Fusion: Marine Squelch')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionMarineSquelch', description='Fusion: Marine Squelch')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44368,7 +44368,7 @@ def encode_pgn_130820_fusionMarineSquelch(nmea2000Message: NMEA2000Message) -> b
 
 def decode_pgn_130820_fusionMarineScanMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionMarineScanMode', 'Fusion: Marine Scan Mode')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionMarineScanMode', description='Fusion: Marine Scan Mode')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44455,7 +44455,7 @@ def encode_pgn_130820_fusionMarineScanMode(nmea2000Message: NMEA2000Message) -> 
 
 def decode_pgn_130820_fusionMenuItem(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionMenuItem', 'Fusion: Menu Item')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionMenuItem', description='Fusion: Menu Item')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44572,7 +44572,7 @@ def encode_pgn_130820_fusionMenuItem(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionAuxGain(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionAuxGain', 'Fusion: Aux Gain')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionAuxGain', description='Fusion: Aux Gain')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44658,7 +44658,7 @@ def encode_pgn_130820_fusionAuxGain(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionUsbRepeatStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionUsbRepeatStatus', 'Fusion: USB Repeat Status')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionUsbRepeatStatus', description='Fusion: USB Repeat Status')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44746,7 +44746,7 @@ def encode_pgn_130820_fusionUsbRepeatStatus(nmea2000Message: NMEA2000Message) ->
 
 def decode_pgn_130820_fusionSetting(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSetting', 'Fusion: Setting')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSetting', description='Fusion: Setting')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44833,7 +44833,7 @@ def encode_pgn_130820_fusionSetting(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionSettings(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSettings', 'Fusion: Settings')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSettings', description='Fusion: Settings')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -44932,7 +44932,7 @@ def encode_pgn_130820_fusionSettings(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionMute(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionMute', 'Fusion: Mute')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionMute', description='Fusion: Mute')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45007,7 +45007,7 @@ def encode_pgn_130820_fusionMute(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionBalance(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionBalance', 'Fusion: Balance')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionBalance', description='Fusion: Balance')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45093,7 +45093,7 @@ def encode_pgn_130820_fusionBalance(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionLowPassFilter(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionLowPassFilter', 'Fusion: Low Pass Filter')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionLowPassFilter', description='Fusion: Low Pass Filter')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45179,7 +45179,7 @@ def encode_pgn_130820_fusionLowPassFilter(nmea2000Message: NMEA2000Message) -> b
 
 def decode_pgn_130820_fusionSublevels(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSublevels', 'Fusion: Sublevels')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSublevels', description='Fusion: Sublevels')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45289,7 +45289,7 @@ def encode_pgn_130820_fusionSublevels(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_130820_fusionEq(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionEq', 'Fusion: EQ')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionEq', description='Fusion: EQ')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45399,7 +45399,7 @@ def encode_pgn_130820_fusionEq(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionVolumeLimits(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionVolumeLimits', 'Fusion: Volume Limits')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionVolumeLimits', description='Fusion: Volume Limits')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45509,7 +45509,7 @@ def encode_pgn_130820_fusionVolumeLimits(nmea2000Message: NMEA2000Message) -> by
 
 def decode_pgn_130820_fusionVolumes(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionVolumes', 'Fusion: Volumes')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionVolumes', description='Fusion: Volumes')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45619,7 +45619,7 @@ def encode_pgn_130820_fusionVolumes(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionCapabilities(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionCapabilities', 'Fusion: Capabilities')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionCapabilities', description='Fusion: Capabilities')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45741,7 +45741,7 @@ def encode_pgn_130820_fusionCapabilities(nmea2000Message: NMEA2000Message) -> by
 
 def decode_pgn_130820_fusionLineLevelControl(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionLineLevelControl', 'Fusion: Line Level Control')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionLineLevelControl', description='Fusion: Line Level Control')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45827,7 +45827,7 @@ def encode_pgn_130820_fusionLineLevelControl(nmea2000Message: NMEA2000Message) -
 
 def decode_pgn_130820_fusionPowerState(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionPowerState', 'Fusion: Power State')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionPowerState', description='Fusion: Power State')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -45902,7 +45902,7 @@ def encode_pgn_130820_fusionPowerState(nmea2000Message: NMEA2000Message) -> byte
 
 def decode_pgn_130820_fusionSiriusxm(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSiriusxm', 'Fusion: SiriusXM')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSiriusxm', description='Fusion: SiriusXM')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46027,7 +46027,7 @@ def encode_pgn_130820_fusionSiriusxm(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130820_fusionSiriusxmChannel(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSiriusxmChannel', 'Fusion: SiriusXM Channel')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSiriusxmChannel', description='Fusion: SiriusXM Channel')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46120,7 +46120,7 @@ def encode_pgn_130820_fusionSiriusxmChannel(nmea2000Message: NMEA2000Message) ->
 
 def decode_pgn_130820_fusionSiriusxmTitle(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSiriusxmTitle', 'Fusion: SiriusXM Title')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSiriusxmTitle', description='Fusion: SiriusXM Title')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46213,7 +46213,7 @@ def encode_pgn_130820_fusionSiriusxmTitle(nmea2000Message: NMEA2000Message) -> b
 
 def decode_pgn_130820_fusionSiriusxmArtist(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSiriusxmArtist', 'Fusion: SiriusXM Artist')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSiriusxmArtist', description='Fusion: SiriusXM Artist')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46306,7 +46306,7 @@ def encode_pgn_130820_fusionSiriusxmArtist(nmea2000Message: NMEA2000Message) -> 
 
 def decode_pgn_130820_fusionSiriusxmContentInfo(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSiriusxmContentInfo', 'Fusion: SiriusXM Content Info')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSiriusxmContentInfo', description='Fusion: SiriusXM Content Info')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46399,7 +46399,7 @@ def encode_pgn_130820_fusionSiriusxmContentInfo(nmea2000Message: NMEA2000Message
 
 def decode_pgn_130820_fusionSiriusxmCategory(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSiriusxmCategory', 'Fusion: SiriusXM Category')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSiriusxmCategory', description='Fusion: SiriusXM Category')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46492,7 +46492,7 @@ def encode_pgn_130820_fusionSiriusxmCategory(nmea2000Message: NMEA2000Message) -
 
 def decode_pgn_130820_fusionSiriusxmSignal(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSiriusxmSignal', 'Fusion: SiriusXM Signal')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSiriusxmSignal', description='Fusion: SiriusXM Signal')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46578,7 +46578,7 @@ def encode_pgn_130820_fusionSiriusxmSignal(nmea2000Message: NMEA2000Message) -> 
 
 def decode_pgn_130820_fusionSiriusxmPresets(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
-    nmea2000Message = NMEA2000Message(130820, 'fusionSiriusxmPresets', 'Fusion: SiriusXM Presets')
+    nmea2000Message = NMEA2000Message(PGN=130820, id='fusionSiriusxmPresets', description='Fusion: SiriusXM Presets')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46695,7 +46695,7 @@ def decode_pgn_130821(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130821_navicoAsciiData(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130821."""
-    nmea2000Message = NMEA2000Message(130821, 'navicoAsciiData', 'Navico: ASCII Data')
+    nmea2000Message = NMEA2000Message(PGN=130821, id='navicoAsciiData', description='Navico: ASCII Data')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46768,7 +46768,7 @@ def encode_pgn_130821_navicoAsciiData(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_130821_furunoUnknown130821(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130821."""
-    nmea2000Message = NMEA2000Message(130821, 'furunoUnknown130821', 'Furuno: Unknown 130821')
+    nmea2000Message = NMEA2000Message(PGN=130821, id='furunoUnknown130821', description='Furuno: Unknown 130821')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1855, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -46941,7 +46941,7 @@ def is_fast_pgn_130822() -> bool:
     return True
 def decode_pgn_130822(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130822."""
-    nmea2000Message = NMEA2000Message(130822, 'navicoUnknown1', 'Navico: Unknown 1')
+    nmea2000Message = NMEA2000Message(PGN=130822, id='navicoUnknown1', description='Navico: Unknown 1')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47006,7 +47006,7 @@ def is_fast_pgn_130823() -> bool:
     return True
 def decode_pgn_130823(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130823."""
-    nmea2000Message = NMEA2000Message(130823, 'maretronProprietaryTemperatureHighRange', 'Maretron: Proprietary Temperature High Range')
+    nmea2000Message = NMEA2000Message(PGN=130823, id='maretronProprietaryTemperatureHighRange', description='Maretron: Proprietary Temperature High Range')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47139,7 +47139,7 @@ def decode_pgn_130824(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130824_bGKeyValueData(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130824."""
-    nmea2000Message = NMEA2000Message(130824, 'bGKeyValueData', 'B&G: key-value data')
+    nmea2000Message = NMEA2000Message(PGN=130824, id='bGKeyValueData', description='B&G: key-value data', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 381, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47219,7 +47219,7 @@ def encode_pgn_130824_bGKeyValueData(nmea2000Message: NMEA2000Message) -> bytes:
 
 def decode_pgn_130824_maretronAnnunciator(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130824."""
-    nmea2000Message = NMEA2000Message(130824, 'maretronAnnunciator', 'Maretron: Annunciator')
+    nmea2000Message = NMEA2000Message(PGN=130824, id='maretronAnnunciator', description='Maretron: Annunciator')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47332,7 +47332,7 @@ def is_fast_pgn_130825() -> bool:
     return True
 def decode_pgn_130825(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130825."""
-    nmea2000Message = NMEA2000Message(130825, 'navicoUnknown2', 'Navico: Unknown 2')
+    nmea2000Message = NMEA2000Message(PGN=130825, id='navicoUnknown2', description='Navico: Unknown 2')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 275, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47397,7 +47397,7 @@ def is_fast_pgn_130827() -> bool:
     return True
 def decode_pgn_130827(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130827."""
-    nmea2000Message = NMEA2000Message(130827, 'lowranceUnknown', 'Lowrance: unknown')
+    nmea2000Message = NMEA2000Message(PGN=130827, id='lowranceUnknown', description='Lowrance: unknown')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 140, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47522,7 +47522,7 @@ def is_fast_pgn_130828() -> bool:
     return True
 def decode_pgn_130828(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130828."""
-    nmea2000Message = NMEA2000Message(130828, 'simnetSetSerialNumber', 'Simnet: Set Serial Number')
+    nmea2000Message = NMEA2000Message(PGN=130828, id='simnetSetSerialNumber', description='Simnet: Set Serial Number')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47575,7 +47575,7 @@ def is_fast_pgn_130831() -> bool:
     return True
 def decode_pgn_130831(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130831."""
-    nmea2000Message = NMEA2000Message(130831, 'suzukiEngineAndStorageDeviceConfig', 'Suzuki: Engine and Storage Device Config')
+    nmea2000Message = NMEA2000Message(PGN=130831, id='suzukiEngineAndStorageDeviceConfig', description='Suzuki: Engine and Storage Device Config')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 586, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47628,7 +47628,7 @@ def is_fast_pgn_130832() -> bool:
     return True
 def decode_pgn_130832(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130832."""
-    nmea2000Message = NMEA2000Message(130832, 'simnetFuelUsedHighResolution', 'Simnet: Fuel Used - High Resolution')
+    nmea2000Message = NMEA2000Message(PGN=130832, id='simnetFuelUsedHighResolution', description='Simnet: Fuel Used - High Resolution')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47681,7 +47681,7 @@ def is_fast_pgn_130833() -> bool:
     return True
 def decode_pgn_130833(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130833."""
-    nmea2000Message = NMEA2000Message(130833, 'bGUserAndRemoteRename', 'B&G: User and Remote rename')
+    nmea2000Message = NMEA2000Message(PGN=130833, id='bGUserAndRemoteRename', description='B&G: User and Remote rename')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 381, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47807,7 +47807,7 @@ def is_fast_pgn_130834() -> bool:
     return True
 def decode_pgn_130834(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130834."""
-    nmea2000Message = NMEA2000Message(130834, 'simnetEngineAndTankConfiguration', 'Simnet: Engine and Tank Configuration')
+    nmea2000Message = NMEA2000Message(PGN=130834, id='simnetEngineAndTankConfiguration', description='Simnet: Engine and Tank Configuration')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47860,7 +47860,7 @@ def is_fast_pgn_130835() -> bool:
     return True
 def decode_pgn_130835(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130835."""
-    nmea2000Message = NMEA2000Message(130835, 'simnetSetEngineAndTankConfiguration', 'Simnet: Set Engine and Tank Configuration')
+    nmea2000Message = NMEA2000Message(PGN=130835, id='simnetSetEngineAndTankConfiguration', description='Simnet: Set Engine and Tank Configuration')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -47932,7 +47932,7 @@ def decode_pgn_130836(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130836_simnetFluidLevelSensorConfiguration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130836."""
-    nmea2000Message = NMEA2000Message(130836, 'simnetFluidLevelSensorConfiguration', 'Simnet: Fluid Level Sensor Configuration')
+    nmea2000Message = NMEA2000Message(PGN=130836, id='simnetFluidLevelSensorConfiguration', description='Simnet: Fluid Level Sensor Configuration')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -48090,7 +48090,7 @@ def encode_pgn_130836_simnetFluidLevelSensorConfiguration(nmea2000Message: NMEA2
 
 def decode_pgn_130836_maretronSwitchStatusCounter(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130836."""
-    nmea2000Message = NMEA2000Message(130836, 'maretronSwitchStatusCounter', 'Maretron: Switch Status Counter')
+    nmea2000Message = NMEA2000Message(PGN=130836, id='maretronSwitchStatusCounter', description='Maretron: Switch Status Counter', ttl=timedelta(milliseconds=15000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -48273,7 +48273,7 @@ def decode_pgn_130837(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130837_simnetFuelFlowTurbineConfiguration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130837."""
-    nmea2000Message = NMEA2000Message(130837, 'simnetFuelFlowTurbineConfiguration', 'Simnet: Fuel Flow Turbine Configuration')
+    nmea2000Message = NMEA2000Message(PGN=130837, id='simnetFuelFlowTurbineConfiguration', description='Simnet: Fuel Flow Turbine Configuration')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -48322,7 +48322,7 @@ def encode_pgn_130837_simnetFuelFlowTurbineConfiguration(nmea2000Message: NMEA20
 
 def decode_pgn_130837_maretronSwitchStatusTimer(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130837."""
-    nmea2000Message = NMEA2000Message(130837, 'maretronSwitchStatusTimer', 'Maretron: Switch Status Timer')
+    nmea2000Message = NMEA2000Message(PGN=130837, id='maretronSwitchStatusTimer', description='Maretron: Switch Status Timer', ttl=timedelta(milliseconds=15000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -48486,7 +48486,7 @@ def is_fast_pgn_130838() -> bool:
     return True
 def decode_pgn_130838(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130838."""
-    nmea2000Message = NMEA2000Message(130838, 'simnetFluidLevelWarning', 'Simnet: Fluid Level Warning')
+    nmea2000Message = NMEA2000Message(PGN=130838, id='simnetFluidLevelWarning', description='Simnet: Fluid Level Warning')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -48539,7 +48539,7 @@ def is_fast_pgn_130839() -> bool:
     return True
 def decode_pgn_130839(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130839."""
-    nmea2000Message = NMEA2000Message(130839, 'simnetPressureSensorConfiguration', 'Simnet: Pressure Sensor Configuration')
+    nmea2000Message = NMEA2000Message(PGN=130839, id='simnetPressureSensorConfiguration', description='Simnet: Pressure Sensor Configuration')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -48592,7 +48592,7 @@ def is_fast_pgn_130840() -> bool:
     return True
 def decode_pgn_130840(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130840."""
-    nmea2000Message = NMEA2000Message(130840, 'simnetDataUserGroupConfiguration', 'Simnet: Data User Group Configuration')
+    nmea2000Message = NMEA2000Message(PGN=130840, id='simnetDataUserGroupConfiguration', description='Simnet: Data User Group Configuration')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -48673,7 +48673,7 @@ def decode_pgn_130842(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130842."""
-    nmea2000Message = NMEA2000Message(130842, 'simnetAisClassBStaticDataMsg24PartA', 'Simnet: AIS Class B static data (msg 24 Part A)')
+    nmea2000Message = NMEA2000Message(PGN=130842, id='simnetAisClassBStaticDataMsg24PartA', description='Simnet: AIS Class B static data (msg 24 Part A)')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -48795,7 +48795,7 @@ def encode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(nmea2000Message: NMEA2
 
 def decode_pgn_130842_furunoSixDegreesOfFreedomMovement(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130842."""
-    nmea2000Message = NMEA2000Message(130842, 'furunoSixDegreesOfFreedomMovement', 'Furuno: Six Degrees Of Freedom Movement')
+    nmea2000Message = NMEA2000Message(PGN=130842, id='furunoSixDegreesOfFreedomMovement', description='Furuno: Six Degrees Of Freedom Movement')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1855, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -48952,7 +48952,7 @@ def encode_pgn_130842_furunoSixDegreesOfFreedomMovement(nmea2000Message: NMEA200
 
 def decode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130842."""
-    nmea2000Message = NMEA2000Message(130842, 'simnetAisClassBStaticDataMsg24PartB', 'Simnet: AIS Class B static data (msg 24 Part B)')
+    nmea2000Message = NMEA2000Message(PGN=130842, id='simnetAisClassBStaticDataMsg24PartB', description='Simnet: AIS Class B static data (msg 24 Part B)')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -49206,7 +49206,7 @@ def decode_pgn_130843(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130843_furunoHeelAngleRollInformation(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130843."""
-    nmea2000Message = NMEA2000Message(130843, 'furunoHeelAngleRollInformation', 'Furuno: Heel Angle, Roll Information')
+    nmea2000Message = NMEA2000Message(PGN=130843, id='furunoHeelAngleRollInformation', description='Furuno: Heel Angle, Roll Information')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1855, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -49315,7 +49315,7 @@ def encode_pgn_130843_furunoHeelAngleRollInformation(nmea2000Message: NMEA2000Me
 
 def decode_pgn_130843_simnetSonarStatusFrequencyAndDspVoltage(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130843."""
-    nmea2000Message = NMEA2000Message(130843, 'simnetSonarStatusFrequencyAndDspVoltage', 'Simnet: Sonar Status, Frequency and DSP Voltage')
+    nmea2000Message = NMEA2000Message(PGN=130843, id='simnetSonarStatusFrequencyAndDspVoltage', description='Simnet: Sonar Status, Frequency and DSP Voltage')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -49387,7 +49387,7 @@ def decode_pgn_130845(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130845_furunoMultiSatsInViewExtended(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130845."""
-    nmea2000Message = NMEA2000Message(130845, 'furunoMultiSatsInViewExtended', 'Furuno: Multi Sats In View Extended')
+    nmea2000Message = NMEA2000Message(PGN=130845, id='furunoMultiSatsInViewExtended', description='Furuno: Multi Sats In View Extended')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1855, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -49436,7 +49436,7 @@ def encode_pgn_130845_furunoMultiSatsInViewExtended(nmea2000Message: NMEA2000Mes
 
 def decode_pgn_130845_simnetKeyValue(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130845."""
-    nmea2000Message = NMEA2000Message(130845, 'simnetKeyValue', 'Simnet: Key Value')
+    nmea2000Message = NMEA2000Message(PGN=130845, id='simnetKeyValue', description='Simnet: Key Value')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -49601,7 +49601,7 @@ def decode_pgn_130846(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130846_simnetParameterSet(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130846."""
-    nmea2000Message = NMEA2000Message(130846, 'simnetParameterSet', 'Simnet: Parameter Set')
+    nmea2000Message = NMEA2000Message(PGN=130846, id='simnetParameterSet', description='Simnet: Parameter Set')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -49742,7 +49742,7 @@ def encode_pgn_130846_simnetParameterSet(nmea2000Message: NMEA2000Message) -> by
 
 def decode_pgn_130846_furunoMotionSensorStatusExtended(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130846."""
-    nmea2000Message = NMEA2000Message(130846, 'furunoMotionSensorStatusExtended', 'Furuno: Motion Sensor Status Extended')
+    nmea2000Message = NMEA2000Message(PGN=130846, id='furunoMotionSensorStatusExtended', description='Furuno: Motion Sensor Status Extended')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1855, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -49795,7 +49795,7 @@ def is_fast_pgn_130847() -> bool:
     return True
 def decode_pgn_130847(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130847."""
-    nmea2000Message = NMEA2000Message(130847, 'seatalkNodeStatistics', 'SeaTalk: Node Statistics')
+    nmea2000Message = NMEA2000Message(PGN=130847, id='seatalkNodeStatistics', description='SeaTalk: Node Statistics')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -49908,7 +49908,7 @@ def is_fast_pgn_130848() -> bool:
     return True
 def decode_pgn_130848(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130848."""
-    nmea2000Message = NMEA2000Message(130848, 'seatalkWaypointInformation', 'SeaTalk: Waypoint Information')
+    nmea2000Message = NMEA2000Message(PGN=130848, id='seatalkWaypointInformation', description='SeaTalk: Waypoint Information', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -50062,7 +50062,7 @@ def decode_pgn_130850(data_raw: int) -> NMEA2000Message:
     
 def decode_pgn_130850_simnetApCommand(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130850."""
-    nmea2000Message = NMEA2000Message(130850, 'simnetApCommand', 'Simnet: AP Command')
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetApCommand', description='Simnet: AP Command')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -50211,7 +50211,7 @@ def encode_pgn_130850_simnetApCommand(nmea2000Message: NMEA2000Message) -> bytes
 
 def decode_pgn_130850_simnetEventCommandApCommand(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130850."""
-    nmea2000Message = NMEA2000Message(130850, 'simnetEventCommandApCommand', 'Simnet: Event Command: AP command')
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetEventCommandApCommand', description='Simnet: Event Command: AP command')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -50359,7 +50359,7 @@ def encode_pgn_130850_simnetEventCommandApCommand(nmea2000Message: NMEA2000Messa
 
 def decode_pgn_130850_simnetAlarm(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130850."""
-    nmea2000Message = NMEA2000Message(130850, 'simnetAlarm', 'Simnet: Alarm')
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetAlarm', description='Simnet: Alarm')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -50510,7 +50510,7 @@ def is_fast_pgn_130851() -> bool:
     return True
 def decode_pgn_130851(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130851."""
-    nmea2000Message = NMEA2000Message(130851, 'simnetEventReplyApCommand', 'Simnet: Event Reply: AP command')
+    nmea2000Message = NMEA2000Message(PGN=130851, id='simnetEventReplyApCommand', description='Simnet: Event Reply: AP command')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -50662,7 +50662,7 @@ def is_fast_pgn_130856() -> bool:
     return True
 def decode_pgn_130856(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130856."""
-    nmea2000Message = NMEA2000Message(130856, 'simnetAlarmMessage', 'Simnet: Alarm Message')
+    nmea2000Message = NMEA2000Message(PGN=130856, id='simnetAlarmMessage', description='Simnet: Alarm Message')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -50763,7 +50763,7 @@ def is_fast_pgn_130860() -> bool:
     return True
 def decode_pgn_130860(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130860."""
-    nmea2000Message = NMEA2000Message(130860, 'simnetApUnknown4', 'Simnet: AP Unknown 4')
+    nmea2000Message = NMEA2000Message(PGN=130860, id='simnetApUnknown4', description='Simnet: AP Unknown 4', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -50888,7 +50888,7 @@ def is_fast_pgn_130880() -> bool:
     return True
 def decode_pgn_130880(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130880."""
-    nmea2000Message = NMEA2000Message(130880, 'airmarAdditionalWeatherData', 'Airmar: Additional Weather Data')
+    nmea2000Message = NMEA2000Message(PGN=130880, id='airmarAdditionalWeatherData', description='Airmar: Additional Weather Data')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -50989,7 +50989,7 @@ def is_fast_pgn_130881() -> bool:
     return True
 def decode_pgn_130881(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130881."""
-    nmea2000Message = NMEA2000Message(130881, 'airmarHeaterControl', 'Airmar: Heater Control')
+    nmea2000Message = NMEA2000Message(PGN=130881, id='airmarHeaterControl', description='Airmar: Heater Control')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -51090,7 +51090,7 @@ def is_fast_pgn_130918() -> bool:
     return True
 def decode_pgn_130918(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130918."""
-    nmea2000Message = NMEA2000Message(130918, 'seatalkRouteInformation', 'SeaTalk: Route Information')
+    nmea2000Message = NMEA2000Message(PGN=130918, id='seatalkRouteInformation', description='SeaTalk: Route Information', ttl=timedelta(milliseconds=1000))
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1851, PartOfPrimaryKey: True,
     running_bit_offset = 0
@@ -51239,7 +51239,7 @@ def is_fast_pgn_130944() -> bool:
     return True
 def decode_pgn_130944(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130944."""
-    nmea2000Message = NMEA2000Message(130944, 'airmarPost', 'Airmar: POST')
+    nmea2000Message = NMEA2000Message(PGN=130944, id='airmarPost', description='Airmar: POST')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 135, PartOfPrimaryKey: True,
     running_bit_offset = 0

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import binascii
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from dataclasses import dataclass, field
 import hashlib
 import logging
@@ -24,6 +24,7 @@ class NMEA2000Message:
     PGN: int
     id: str = ''
     description: str = ''
+    ttl: timedelta | None = None
     fields: list[NMEA2000Field] = field(default_factory=list)
     source: int = 0
     destination: int = 0
@@ -31,7 +32,7 @@ class NMEA2000Message:
     timestamp: datetime = datetime.now()
     source_iso_name: IsoName | None = None
     hash: str | None = None
-
+    
     def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName, build_network_map: bool):
         self.source = src
         self.destination = dest

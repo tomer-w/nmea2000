@@ -1,3 +1,4 @@
+from datetime import timedelta
 import json
 import uuid
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
@@ -64,6 +65,7 @@ def test_yacht_devices_decode():
     assert msg.source == 16
     assert msg.destination == 255
     assert msg.description == "Actual Pressure"
+    assert msg.ttl == timedelta(milliseconds=2000)
     assert msg.fields[0].name == "SID"
     assert msg.fields[0].value == 0
     assert msg.fields[1].name == "Instance"

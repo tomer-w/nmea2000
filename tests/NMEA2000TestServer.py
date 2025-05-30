@@ -44,7 +44,7 @@ class NMEA2000TestServer:
             while self.running:
                 try:
                     # Read data from the client (if any)
-                    data = await asyncio.wait_for(reader.read(100), timeout=0.1)
+                    data = await asyncio.wait_for(reader.read(8), timeout=0.1)
                     if data:
                         logger.info(f"Received from {addr}: {data.hex()}")
                         # Echo back the received data
