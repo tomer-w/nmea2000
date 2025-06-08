@@ -12,9 +12,8 @@ from nmea2000.message import IsoName
 dump_to_file = None
 #dump_to_file = './dumps/pgn_dump.jsonl'
 
-def _get_decoder(exclude_pgns = [], include_pgns = [], preferred_units = {}, build_network_map = False):
-    return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, preferred_units = preferred_units, dump_to_file=dump_to_file, build_network_map = build_network_map)
-
+def _get_decoder(exclude_pgns = [], exclude_pgns_ids = [], include_pgns = [], preferred_units = {}, build_network_map = False, exclude_manufacturer_code = {}):
+    return NMEA2000Decoder(exclude_pgns = exclude_pgns, exclude_pgns_ids = exclude_pgns_ids, include_pgns = include_pgns, exclude_manufacturer_code = exclude_manufacturer_code, preferred_units = preferred_units, dump_to_file=dump_to_file, build_network_map = build_network_map)
 def _validate_65280_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 65280
@@ -356,6 +355,12 @@ def test_iso_address_parse_exclude():
     assert isinstance(msg_126998.source_iso_name, IsoName)
     assert msg_126998.source_iso_name.name == 13857746478299126779
 
+def test_exclude_manufacturer_code():
+    decoder = _get_decoder(exclude_pgns=[60928], exclude_manufacturer_code=["Navico"], build_network_map=True)
+    msg_60928 = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
+    assert msg_60928 is None
+    msg_126998 = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
+    assert msg_126998 is None
 
 def test_fast_parse():
     decoder = _get_decoder()

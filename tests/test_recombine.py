@@ -90,7 +90,7 @@ def test_decode_strings_from_file_2_exclude_id():
     with open("tests/recombine-frames-2.in", "r") as f:
         lines = f.read().splitlines()
 
-    decoder = _get_decoder(exclude_pgns=["0x1ef00ManufacturerProprietaryFastPacketAddressed"])
+    decoder = _get_decoder(exclude_pgns_ids=["0x1ef00ManufacturerProprietaryFastPacketAddressed"])
     counter = 0
     for line in lines:
         input_data = line.strip()
