@@ -1,4 +1,6 @@
 import logging
+
+import pytest
 from nmea2000.consts import PhysicalQuantities
 from nmea2000.ioclient import ActisenseNmea2000Gateway, EByteNmea2000Gateway, State, Type, YachtDevicesNmea2000Gateway
 from nmea2000.message import NMEA2000Message
@@ -41,6 +43,7 @@ def _create_server_client(type: Type):
 
     return server, client, receive_signal, receive_queue
 
+@pytest.mark.asyncio
 async def test_single_message_EBYTE():
     server,client, receive_signal, receive_queue = _create_server_client(Type.EBYTE)
     await server.start()
@@ -59,6 +62,7 @@ async def test_single_message_EBYTE():
     await client.close()
     await server.stop()
 
+@pytest.mark.asyncio
 async def test_single_message_ACTISENSE_1():
     server,client, receive_signal, receive_queue = _create_server_client(Type.ACTISENSE)
     await server.start()
@@ -76,6 +80,7 @@ async def test_single_message_ACTISENSE_1():
     await client.close()
     await server.stop()
 
+@pytest.mark.asyncio
 async def test_single_message_ACTISENSE_2():
     server,client, receive_signal, receive_queue = _create_server_client(Type.ACTISENSE)
     await server.start()
@@ -93,6 +98,7 @@ async def test_single_message_ACTISENSE_2():
     await client.close()
     await server.stop()
 
+@pytest.mark.asyncio
 async def test_single_message_YACHT_DEVICES():
     server,client, receive_signal, receive_queue = _create_server_client(Type.YACHT_DEVICES)
     await server.start()
@@ -131,6 +137,7 @@ async def test_single_message_YACHT_DEVICES():
     await client.close()
     await server.stop()
 
+# @pytest.mark.asyncio
 # async def test_server():
 #     server = NMEA2000TestServer("127.0.0.1", 8881, Type.YACHT_DEVICES)
 #     await server.start()
