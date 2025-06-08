@@ -24,10 +24,8 @@ ISO_CLAIM_PGN_ID = "isoAddressClaim"
 
 class NMEA2000Decoder():
     def __init__(self,
-                 exclude_pgns:list[int]=[],
-                 include_pgns:list[int]=[],
-                 exclude_pgns_ids:list[str]=[],
-                 include_pgns_ids:list[str]=[],
+                 exclude_pgns:list[int | str]=[],
+                 include_pgns:list[int | str]=[],
                  exclude_manufacturer_code:list[str]=[],
                  include_manufacturer_code:list[str]=[],
                  preferred_units:dict[PhysicalQuantities, str]={},
@@ -48,11 +46,9 @@ class NMEA2000Decoder():
             raise ValueError("include_pgns must be a list")
         if len(exclude_pgns) > 0 and len(include_pgns) > 0:
             raise ValueError("Only one of exclude_pgns or include_pgns can be used")
-        
-        self.exclude_pgns = exclude_pgns
-        self.exclude_pgns_ids = {k.lower() for k in exclude_pgns_ids}
-        self.include_pgns = include_pgns
-        self.include_pgns_ids = {k.lower() for k in include_pgns_ids}
+
+        self.exclude_pgns, self.exclude_pgns_ids = self.split_pgn_list(exclude_pgns)
+        self.include_pgns, self.include_pgns_ids = self.split_pgn_list(include_pgns)
         self.exclude_manufacturer_code = {k.lower() for k in exclude_manufacturer_code}
         self.include_manufacturer_code = {k.lower() for k in include_manufacturer_code}
         self.dump_include_pgns, self.dump_include_pgns_ids = self.split_pgn_list(dump_pgns)

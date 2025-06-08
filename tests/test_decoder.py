@@ -12,8 +12,8 @@ from nmea2000.message import IsoName
 dump_to_file = None
 #dump_to_file = './dumps/pgn_dump.jsonl'
 
-def _get_decoder(exclude_pgns = [], exclude_pgns_ids = [], include_pgns = [], preferred_units = {}, build_network_map = False, exclude_manufacturer_code = {}):
-    return NMEA2000Decoder(exclude_pgns = exclude_pgns, exclude_pgns_ids = exclude_pgns_ids, include_pgns = include_pgns, exclude_manufacturer_code = exclude_manufacturer_code, preferred_units = preferred_units, dump_to_file=dump_to_file, build_network_map = build_network_map)
+def _get_decoder(exclude_pgns = [], include_pgns = [], preferred_units = {}, build_network_map = False, exclude_manufacturer_code = {}):
+    return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, exclude_manufacturer_code = exclude_manufacturer_code, preferred_units = preferred_units, dump_to_file=dump_to_file, build_network_map = build_network_map)
 def _validate_65280_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 65280
