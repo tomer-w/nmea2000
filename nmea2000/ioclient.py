@@ -58,6 +58,8 @@ class AsyncIOClient(ABC):
     def __init__(self, 
                  exclude_pgns:list[int | str], 
                  include_pgns:list[int | str],
+                 exclude_manufacturer_code:list[str],
+                 include_manufacturer_code:list[str],
                  preferred_units:dict[PhysicalQuantities, str],
                  dump_to_file: str | None,
                  dump_pgns:list[int | str],
@@ -79,7 +81,15 @@ class AsyncIOClient(ABC):
         self.receive_callback = None
         self.status_callback = None
         self.queue = asyncio.Queue()
-        self.decoder = NMEA2000Decoder(exclude_pgns=exclude_pgns, include_pgns=include_pgns, preferred_units = preferred_units, dump_to_file=dump_to_file, dump_pgns = dump_pgns, build_network_map = build_network_map)
+        self.decoder = NMEA2000Decoder(
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code = exclude_manufacturer_code,
+            include_manufacturer_code = include_manufacturer_code,
+            preferred_units = preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns = dump_pgns,
+            build_network_map = build_network_map)
         self.encoder = NMEA2000Encoder()
         self.lock = asyncio.Lock()
         
@@ -308,6 +318,8 @@ class EByteNmea2000Gateway(AsyncIOClient):
                  port: int, 
                  exclude_pgns:list[int | str]=[], 
                  include_pgns:list[int | str]=[],
+                 exclude_manufacturer_code:list[str]=[],
+                 include_manufacturer_code:list[str]=[],
                  preferred_units:dict[PhysicalQuantities, str]={},
                  dump_to_file: str | None = None,
                  dump_pgns:list[int | str]=[],
@@ -320,7 +332,16 @@ class EByteNmea2000Gateway(AsyncIOClient):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
-        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map, True)
+        super().__init__(
+            exclude_pgns = exclude_pgns,
+            include_pgns = include_pgns,
+            exclude_manufacturer_code = exclude_manufacturer_code,
+            include_manufacturer_code = include_manufacturer_code,
+            preferred_units = preferred_units,
+            dump_to_file = dump_to_file,
+            dump_pgns = dump_pgns,
+            build_network_map = build_network_map,
+            seed_network_map = True)
         self.host = host
         self.port = port
         self.lock = asyncio.Lock()
@@ -388,6 +409,8 @@ class TextNmea2000Gateway(AsyncIOClient):
                  type: Type,
                  exclude_pgns:list[int | str], 
                  include_pgns:list[int | str],
+                 exclude_manufacturer_code:list[str],
+                 include_manufacturer_code:list[str],
                  preferred_units:dict[PhysicalQuantities, str],
                  dump_to_file: str | None,
                  dump_pgns:list[int | str],
@@ -404,7 +427,16 @@ class TextNmea2000Gateway(AsyncIOClient):
         if type != Type.ACTISENSE and type != Type.YACHT_DEVICES:
             raise ValueError(f"Invalid type: {type}. Must be either ACTISENSE or YACHT_DEVICES.")
         
-        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map, seed_netwrok_map)
+        super().__init__(
+            exclude_pgns = exclude_pgns,
+            include_pgns = include_pgns,
+            exclude_manufacturer_code = exclude_manufacturer_code,
+            include_manufacturer_code = include_manufacturer_code,
+            preferred_units = preferred_units,
+            dump_to_file = dump_to_file,
+            dump_pgns = dump_pgns,
+            build_network_map = build_network_map,
+            seed_network_map = seed_netwrok_map)
         self.host = host
         self.port = port
         self.type = type    
@@ -462,6 +494,8 @@ class ActisenseNmea2000Gateway(TextNmea2000Gateway):
                 port: int, 
                 exclude_pgns:list[int | str]=[], 
                 include_pgns:list[int | str]=[],
+                exclude_manufacturer_code:list[str]=[],
+                include_manufacturer_code:list[str]=[],
                 preferred_units:dict[PhysicalQuantities, str]={},
                 dump_to_file: str | None = None,
                 dump_pgns:list[int | str]=[],
@@ -474,7 +508,19 @@ class ActisenseNmea2000Gateway(TextNmea2000Gateway):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """        
-        super().__init__(host, port, Type.ACTISENSE, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map, False)
+        super().__init__(
+            host = host,
+            port = port,
+            type = Type.ACTISENSE,
+            exclude_pgns = exclude_pgns,
+            include_pgns = include_pgns,
+            exclude_manufacturer_code = exclude_manufacturer_code,
+            include_manufacturer_code = include_manufacturer_code,
+            preferred_units = preferred_units,
+            dump_to_file = dump_to_file,
+            dump_pgns = dump_pgns,
+            build_network_map = build_network_map,
+            seed_netwrok_map = False)
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         """Encode a NMEA2000 message over the TCP connection.
@@ -495,6 +541,8 @@ class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
                  port: int, 
                  exclude_pgns:list[int | str]=[], 
                  include_pgns:list[int | str]=[],
+                 exclude_manufacturer_code:list[str]=[],
+                 include_manufacturer_code:list[str]=[],
                  preferred_units:dict[PhysicalQuantities, str]={},
                  dump_to_file: str | None = None,
                  dump_pgns:list[int | str]=[],
@@ -507,7 +555,19 @@ class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """        
-        super().__init__(host, port, Type.YACHT_DEVICES, exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map, True)
+        super().__init__(
+            host = host,
+            port = port,
+            type = Type.YACHT_DEVICES,
+            exclude_pgns = exclude_pgns,
+            include_pgns = include_pgns,
+            exclude_manufacturer_code = exclude_manufacturer_code,
+            include_manufacturer_code = include_manufacturer_code,
+            preferred_units = preferred_units,
+            dump_to_file = dump_to_file,
+            dump_pgns = dump_pgns,
+            build_network_map = build_network_map,
+            seed_netwrok_map = True)
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         """Encode a NMEA2000 message over the TCP connection.
@@ -527,6 +587,8 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
                  port: str,
                  exclude_pgns:list[int | str]=[], 
                  include_pgns:list[int | str]=[],
+                 exclude_manufacturer_code:list[str]=[],
+                 include_manufacturer_code:list[str]=[],
                  preferred_units:dict[PhysicalQuantities, str]={},
                  dump_to_file: str | None = None,
                  dump_pgns:list[int | str]=[],
@@ -538,7 +600,16 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
-        super().__init__(exclude_pgns, include_pgns, preferred_units, dump_to_file, dump_pgns, build_network_map, True)
+        super().__init__(
+            exclude_pgns = exclude_pgns,
+            include_pgns = include_pgns,
+            exclude_manufacturer_code = exclude_manufacturer_code,
+            include_manufacturer_code = include_manufacturer_code,
+            preferred_units = preferred_units,
+            dump_to_file = dump_to_file,
+            dump_pgns = dump_pgns,
+            build_network_map = build_network_map,
+            seed_network_map = True)
         self.port = port
         self._buffer = None
 
