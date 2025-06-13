@@ -8,7 +8,7 @@ import logging
 from typing import Any
 import orjson
 from .consts import PhysicalQuantities, FieldTypes
-from .utils import kelvin_to_celsius, kelvin_to_fahrenheit, pascal_to_bar, pascal_to_PSI, radians_to_degrees
+from .utils import kelvin_to_celsius, kelvin_to_fahrenheit, mps_to_knots, pascal_to_bar, pascal_to_PSI, radians_to_degrees
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +76,11 @@ class NMEA2000Message:
                 if requested_unit == "deg":
                     f.unit_of_measurement = "Deg"
                     f.value = radians_to_degrees(f.value)
+            if f.physical_quantities == PhysicalQuantities.SPEED:
+                requested_unit = preferred_units.get(PhysicalQuantities.SPEED, None)
+                if requested_unit == "kts":
+                    f.unit_of_measurement = "kts"
+                    f.value = mps_to_knots(f.value)
 
     def __repr__(self):
         return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, source_iso_name={self.source_iso_name}, dest={self.destination}, description={self.description}, fields={self.fields})"

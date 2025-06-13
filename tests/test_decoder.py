@@ -421,3 +421,18 @@ def test_decode_yacht_devices_receive_2():
     decoder = _get_decoder()
     msg = decoder.decode_yacht_devices_string("21:31:42.520 T 01F119B3 57 00 00 8D 0B FA FE FF")
     assert isinstance(msg, NMEA2000Message)
+
+def test_decode_speed():
+    decoder = _get_decoder(preferred_units = {PhysicalQuantities.SPEED:"kts"})
+    msg = decoder.decode_actisense_string("A000057.067 22FF2 1FD02 075101744CFAFFFF")
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 130306
+    assert msg.priority == 2
+    assert msg.source == 34
+    assert msg.destination == 255
+    assert msg.description == 'Wind Data'
+    assert len(msg.fields) == 5
+    assert msg.fields[1].name == 'Wind Speed'
+    assert msg.fields[1].unit_of_measurement == 'kts'
+    assert msg.fields[1].raw_value == 3.37 #m/s
+    assert msg.fields[1].value == 6.6
