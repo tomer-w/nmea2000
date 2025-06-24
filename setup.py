@@ -12,7 +12,7 @@ setup(
     url="https://github.com/tomer-w/nmea2000",
     install_requires=['orjson >= 3.10,<4.0', 'pyserial-asyncio >= 0.6', 'tenacity >= 9.0.0'],
     setup_requires=['pytest-runner'],
-    tests_require=['pytest==8.3.5', 'pytest-asyncio'],
+    tests_require=['pytest==8.4.1', 'pytest-asyncio'],
     test_suite='tests',
     entry_points={
         "console_scripts": [
