@@ -317,7 +317,8 @@ class NMEA2000Decoder():
             raise Exception ("Packet does not have the right prefix and suffix")
         
         if len(packet) < 2 + 4 + 1: # 2 headers, 4 id, 1 data
-            raise Exception ("Packet is too short")    
+            logger.warning("Packet is too short: %s", packet.hex())
+            return None   
         
         # First byte has the data length in the lowest 4 bits
         type_byte = packet[1]
@@ -343,7 +344,7 @@ class NMEA2000Decoder():
         return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data))
 
     @staticmethod
-    def _isFastPGN(pgn_id: int) -> bool:
+    def _isFastPGN(pgn_id: int) -> bool | None:
         is_fast_func_name = f'is_fast_pgn_{pgn_id}'
         is_fast_func = globals().get(is_fast_func_name)
 
@@ -352,7 +353,8 @@ class NMEA2000Decoder():
             logger.info(f"Is fast PGN: {is_fast}")
             return is_fast
         else:
-            raise ValueError(f"No function found for PGN: {pgn_id}")
+            logger.warning("Not supporrted PGN: %d", pgn_id)
+            return None
 
     def _decode(self, pgn: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes, already_combined: bool = False) -> NMEA2000Message | None:
         """Decode a single PGN message."""
@@ -361,7 +363,7 @@ class NMEA2000Decoder():
         if pgn in self.exclude_pgns:
             logger.debug(f"Excluding PGN: {pgn}")
             return None
-        if len(self.include_pgns) > 0 and pgn not in self.include_pgns:
+        if len(self.include_pgns) > 0 and len(self.include_pgns_ids) == 0 and pgn not in self.include_pgns:
             logger.debug(f"Excluding (by include) PGN: {pgn}")
             return None
 
@@ -388,8 +390,10 @@ class NMEA2000Decoder():
         is_fast = False
         if not already_combined:
             is_fast = NMEA2000Decoder._isFastPGN(pgn)
-
-        if (is_fast):
+        if is_fast is None:
+            return None
+        
+        if is_fast:
             return self._decode_fast_message(pgn, priority, source_id, destination_id, timestamp, can_data, source_iso_name)
         else:
             return self._call_decode_function(pgn, priority, source_id, destination_id, timestamp, can_data, source_iso_name)
@@ -406,10 +410,10 @@ class NMEA2000Decoder():
         # Check if the PGN should be excluded or included by ID
         id = nmea2000Message.id.lower()
         if id in self.exclude_pgns_ids:
-            logger.debug(f"Excluding PGN by id: {nmea2000Message.id}")
+            logger.debug("Excluding PGN by id: %s", nmea2000Message.id)
             return None
-        if len(self.include_pgns_ids) > 0 and id not in self.include_pgns_ids:
-            logger.debug(f"Excluding (by include) PGN by id: {nmea2000Message.id}")
+        if len(self.include_pgns) > 0 and id not in self.include_pgns and len(self.include_pgns_ids) > 0 and id not in self.include_pgns_ids:
+            logger.debug("Excluding (by include) PGN %d by id: %s", pgn, nmea2000Message.id)
             return None
         
         # Handle dump to file
