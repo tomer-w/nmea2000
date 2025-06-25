@@ -118,8 +118,11 @@ class NMEA2000Message:
             raise ValueError(f"PGN: {self.id}: Field with id '{id}' is not an integer. It is {type(field.value).__name__}.")
         return field.value
 
-    def get_field_str_value_by_id(self, id: str) -> str:
+    def get_field_str_value_by_id(self, id: str) -> str | None:
         field = self.get_field_by_id(id)
+        if field.value is None:
+            logger.warning("PGN: %s: Field with id '%s' is None. Raw value is: %s", self.id, id, field.raw_value)
+            return None
         if not isinstance(field.value, str):
             raise ValueError(f"PGN: {self.id}: Field with id '{id}' is not a string. It is {type(field.value).__name__}.")
         return field.value
