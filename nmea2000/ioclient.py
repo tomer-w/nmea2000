@@ -372,7 +372,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
         by the _receive_loop() method.
         """
         data = await self.reader.readexactly(13)
-        self.logger.info(f"Received: {data.hex()}")
+        self.logger.debug(f"Received: {data.hex()}")
         if data == b'Sorry,Limited':  # cant handle more TCP connections
             self.logger.error("Sorry, Limited. sleeping for 30 seconds")
             self.connected = False
@@ -385,7 +385,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
             self.logger.warning(f"decoding failed. text: {data}, bytes: {data.hex()}. Error: {e}", exc_info=True)
             return
 
-        self.logger.info(f"Received message: {message}")
+        self.logger.debug(f"Received message: {message}")
         if message is not None:
             await self.queue.put(message)
 
