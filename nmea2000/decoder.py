@@ -55,7 +55,10 @@ class NMEA2000Decoder():
         self.preferred_units = {k: v.lower() for k, v in preferred_units.items()}
         self.source_to_iso_name: dict[int, IsoName] = {}
 
-        self.iso_claim_filter = (ISO_CLAIM_PGN in self.exclude_pgns) or ("isoAddressClaim" in self.exclude_pgns_ids)
+        self.iso_claim_filter = (ISO_CLAIM_PGN in self.exclude_pgns) or \
+            ("isoAddressClaim" in self.exclude_pgns_ids) or \
+            (len(self.include_pgns) and ISO_CLAIM_PGN not in self.include_pgns) or \
+            (len(self.include_pgns_ids) and ISO_CLAIM_PGN_ID not in self.include_pgns_ids)
         if self.iso_claim_filter:
             while ISO_CLAIM_PGN in self.exclude_pgns:
                 self.exclude_pgns.remove(ISO_CLAIM_PGN)    
@@ -359,16 +362,16 @@ class NMEA2000Decoder():
     def _decode(self, pgn: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes, already_combined: bool = False) -> NMEA2000Message | None:
         """Decode a single PGN message."""
 
-        # Check if the PGN should be excluded or included
-        if pgn in self.exclude_pgns:
-            logger.debug(f"Excluding PGN: {pgn}")
-            return None
-        if len(self.include_pgns) > 0 and len(self.include_pgns_ids) == 0 and pgn not in self.include_pgns:
-            logger.debug(f"Excluding (by include) PGN: {pgn}")
-            return None
-
         source_iso_name = None
+        # Check if the PGN should be excluded or included
         if pgn != ISO_CLAIM_PGN: # The ISO_CLAIM_PGN should bypass this check so we can build the map later
+            if pgn in self.exclude_pgns:
+                logger.debug(f"Excluding PGN: {pgn}")
+                return None
+            if len(self.include_pgns) > 0 and len(self.include_pgns_ids) == 0 and pgn not in self.include_pgns:
+                logger.debug(f"Excluding (by include) PGN: {pgn}")
+                return None
+
             source_iso_name = self.source_to_iso_name.get(source_id, None)
             if source_iso_name is None and self.build_network_map:
                 if self.started_at < datetime.now() - timedelta(minutes=10):
@@ -407,6 +410,14 @@ class NMEA2000Decoder():
 
         data_int = int.from_bytes(data, "big")
         nmea2000Message = decode_func(data_int)
+        # Handle ISO Address Claim messages and enrichment
+        if nmea2000Message.PGN == ISO_CLAIM_PGN:
+            # In this message the data is a 64 bit unique NAME which is stable between network restarts
+            source_iso_name = self.source_to_iso_name[src] = IsoName(nmea2000Message, data_int)
+            if self.iso_claim_filter:
+                logger.debug("Excluding ISO_CLAIM_PGN")
+                return None
+
         # Check if the PGN should be excluded or included by ID
         id = nmea2000Message.id.lower()
         if id in self.exclude_pgns_ids:
@@ -420,14 +431,7 @@ class NMEA2000Decoder():
         if (self.dump_TextIOWrapper is not None) and (len(self.dump_include_pgns)+len(self.dump_include_pgns_ids) == 0 or nmea2000Message.PGN in self.dump_include_pgns or nmea2000Message.id in self.dump_include_pgns_ids):
             str = nmea2000Message.to_json() + "\n"
             self.dump_TextIOWrapper.write(str)
-        
-        # Handle ISO Address Claim messages and enrichment
-        if nmea2000Message.PGN == ISO_CLAIM_PGN:
-            # In this message the data is a 64 bit unique NAME which is stable between network restarts
-            source_iso_name = self.source_to_iso_name[src] = IsoName(nmea2000Message, data_int)
-            if self.iso_claim_filter:
-                return None
-            
+                    
         nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name, self.build_network_map)
         nmea2000Message.apply_preferred_units(self.preferred_units)
 

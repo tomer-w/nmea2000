@@ -355,6 +355,16 @@ def test_iso_address_parse_exclude():
     assert isinstance(msg_126998.source_iso_name, IsoName)
     assert msg_126998.source_iso_name.name == 13857746478299126779
 
+def test_iso_address_parse_exclude_2():
+    decoder = _get_decoder(exclude_pgns=["isoAddressClaim"])
+    msg_60928 = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
+    assert msg_60928 is None
+    msg_126998 = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
+    assert isinstance(msg_126998, NMEA2000Message)
+    assert msg_126998.PGN == 126998
+    assert isinstance(msg_126998.source_iso_name, IsoName)
+    assert msg_126998.source_iso_name.name == 13857746478299126779
+
 def test_exclude_manufacturer_code():
     decoder = _get_decoder(exclude_pgns=[60928], exclude_manufacturer_code=["Navico"], build_network_map=True)
     msg_60928 = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
@@ -384,6 +394,13 @@ def test_include():
     decoder = _get_decoder(include_pgns=[65280])
     msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
+
+def test_include_with_network_map():
+    decoder = _get_decoder(include_pgns=[126998], build_network_map=True)
+    msg_60928 = decoder.decode_basic_string("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0", True)
+    assert msg_60928 is None
+    msg_126998 = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
+    assert isinstance(msg_126998, NMEA2000Message)
 
 def test_tcp_bytes():
     decoder = _get_decoder()
