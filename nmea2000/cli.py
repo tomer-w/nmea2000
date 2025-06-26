@@ -72,7 +72,7 @@ def parse(filename: str, decoder: NMEA2000Decoder, single_line: bool):
         sys.stdout.flush()
         pass
 
-def main():
+async def async_main():
     logging.basicConfig(filename='parser.log', level=logging.NOTSET)
     parser = argparse.ArgumentParser(description="NMEA 2000 CLI Tool")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose mode")
@@ -205,12 +205,19 @@ def main():
         elif args.type == Type.YACHT_DEVICES:
             logger.info("Using YachtDevicesNmea2000Gateway with server: %s, port: %d", args.server, args.port)
             client = YachtDevicesNmea2000Gateway(args.server, args.port)            
-        asyncio.run(interactive_client(client))
+        await interactive_client(client)
     elif args.command == "usb_client":
         # Create USB client passing callbacks in constructor
         logger.info("Using WaveShareNmea2000Gateway with port: %s", args.port)
         client = WaveShareNmea2000Gateway(args.port)
-        asyncio.run(interactive_client(client))
+        await interactive_client(client)
+
+def main():
+    try:
+        asyncio.run(async_main())
+    except KeyboardInterrupt:
+        print("Interrupted by user")
 
 if __name__ == "__main__":
     main()
+

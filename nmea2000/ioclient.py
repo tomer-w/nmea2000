@@ -183,12 +183,18 @@ class AsyncIOClient(ABC):
                     
                     await self._connect_impl()            
                     await self._update_state(State.CONNECTED)
+                    self.logger.info("Connected to the gateway.")
     
                     # Cancel any existing receive loop task
                     if self._receive_task and not self._receive_task.done():
+                        self.logger.info("Going to cancel existing receive task")
                         self._receive_task.cancel()
-                        await asyncio.sleep(0)  # Allow cancellation to propagate
+                        try:
+                            await asyncio.sleep(0.01)  # Allow cancellation to propagate
+                        except asyncio.CancelledError:
+                            raise AssertionError("Super strange. not expected at all")
     
+                    self.logger.info("Starting receive loop task")
                     # Start a new receive loop task
                     self._receive_task = asyncio.create_task(self._receive_loop())
                     if self.seed_network_map:
@@ -221,7 +227,7 @@ class AsyncIOClient(ABC):
             if self._state != State.CLOSED:
                 self.logger.error(f"Connection lost while reading. Error: {ex}. Reconnecting...", exc_info=True)
                 await self._update_state(State.DISCONNECTED)
-                await self.connect()
+                asyncio.create_task(self.connect())
         self.logger.info("Received loop terminated")
         
     async def send(self, nmea2000Message: NMEA2000Message):
@@ -247,7 +253,7 @@ class AsyncIOClient(ABC):
             if self._state != State.CLOSED:
                 self.logger.error(f"Connection lost while sending. Error {ex}. Reconnecting...", exc_info=True)
                 await self._update_state(State.DISCONNECTED)
-                await self.connect()
+                asyncio.create_task(self.connect())
 
     async def close(self):
         """Close the connection and terminate the client.
@@ -261,11 +267,11 @@ class AsyncIOClient(ABC):
         # Cancel the receive loop task if it exists
         if self._receive_task and not self._receive_task.done():
             self._receive_task.cancel()
-            await asyncio.sleep(0)  # Allow cancellation to propagate
+            await asyncio.sleep(0.01)  # Allow cancellation to propagate
         # Cancel the process queue task if it exists
         if self._process_queue_task and not self._process_queue_task.done():
             self._process_queue_task.cancel()
-            await asyncio.sleep(0)  # Allow cancellation to propagate
+            await asyncio.sleep(0.01)  # Allow cancellation to propagate
         self.logger.info("Connection closed.")
 
     async def _process_queue(self):
@@ -377,8 +383,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
             self.logger.error("Sorry, Limited. sleeping for 30 seconds")
             self.connected = False
             await asyncio.sleep(30)
-            await self.connect()
-            return
+            raise Exception("Gateway busy. reconnecting.")
         try:
             message = self.decoder.decode_tcp(data)
         except Exception as e:
