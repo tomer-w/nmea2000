@@ -1537,6 +1537,7 @@ master_dict = {
         1: "Green",
         2: "Blue",
         3: "White",
+        4: "Magenta",
     },
     'SIMNET_DISPLAY_GROUP': {
         1: "Default",
@@ -1600,30 +1601,54 @@ master_dict = {
     },
     'FUSION_MESSAGE_ID': {
         1: "Request Status",
-        2: "Source",
-        4: "Track Info",
-        5: "Track Title",
-        6: "Track Artist",
-        7: "Track Album",
-        9: "Track Progress",
-        11: "AM/FM Station",
-        12: "VHF",
-        13: "Squelch",
-        14: "Scan",
-        17: "Mute",
-        20: "Replay",
+        2: "Set Source",
+        3: "Media Command",
+        5: "Tuner Command",
+        6: "Marine Tuner Command",
+        7: "Set Marine Tuner Squelch",
+        8: "Set Marine Tuner Scan Mode",
+        9: "Menu Action",
+        10: "Request Menu Count",
+        11: "Request Menu Item",
+        12: "Request Menu Lock ID",
+        13: "Set Aux Gain",
+        15: "Set Settings",
+        16: "DAB Updtate Command",
+        17: "Set Mute",
+        18: "Set Balance",
+        19: "Set Low Pass Filer",
+        20: "Set Sublevel",
+        22: "Set Equalizer",
+        23: "Set Volume Limit",
         24: "Set Zone Volume",
         25: "Set All Volumes",
-        26: "Sub Volume",
-        27: "Tone",
-        29: "Volume",
-        32: "Power",
-        33: "Unit Name",
-        36: "SiriusXM Channel",
-        37: "SiriusXM Title",
-        38: "SiriusXM Artist",
-        40: "SiriusXM Genre",
-        45: "Zone Name",
+        27: "Set Line Level Control",
+        28: "Power",
+        29: "Set Device Name",
+        30: "Send Sirius Command",
+        31: "Set Sirius Parental",
+        33: "Send Factory Reset Command",
+        34: "Set Zone Name",
+        35: "Send Dvd Command",
+        36: "Dvd Press Ir Key",
+        39: "Send Select Sirius Team",
+        40: "Send Select Sirius Artist",
+        41: "Send Sirius Sport Alert User Action",
+        45: "Send Sirius Artist Song User Action",
+        50: "Send Multiroom Command",
+        51: "Get Multiroom Device Record",
+        52: "Scan Multirooom Devices",
+        53: "Send File Transfer",
+        54: "Set Loud",
+        56: "Fapi Set Source Multiroom Enabled",
+        57: "Request Head Unit Dsp Settings",
+        64: "Send Transfer Status",
+        65: "Fapi Get Server Info",
+        69: "Fapi Set Source Enabled",
+        70: "Fapi Set Source Name",
+        73: "Send External Amp Gain",
+        74: "Send Internal Amp Gain",
+        75: "Send Mono",
     },
     'FUSION_PLAY_STATUS': {
         0: "Invalid",
@@ -4834,6 +4859,7 @@ lookup_dict_encode_SIMNET_NIGHT_MODE_COLOR = {
     "Green" : 1,
     "Blue" : 2,
     "White" : 3,
+    "Magenta" : 4,
 }
 def lookup_encode_SIMNET_NIGHT_MODE_COLOR(value):
     result = lookup_dict_encode_SIMNET_NIGHT_MODE_COLOR.get(value, None)
@@ -4945,30 +4971,54 @@ def lookup_encode_SIMNET_ALARM(value):
 
 lookup_dict_encode_FUSION_MESSAGE_ID = {
     "Request Status" : 1,
-    "Source" : 2,
-    "Track Info" : 4,
-    "Track Title" : 5,
-    "Track Artist" : 6,
-    "Track Album" : 7,
-    "Track Progress" : 9,
-    "AM/FM Station" : 11,
-    "VHF" : 12,
-    "Squelch" : 13,
-    "Scan" : 14,
-    "Mute" : 17,
-    "Replay" : 20,
+    "Set Source" : 2,
+    "Media Command" : 3,
+    "Tuner Command" : 5,
+    "Marine Tuner Command" : 6,
+    "Set Marine Tuner Squelch" : 7,
+    "Set Marine Tuner Scan Mode" : 8,
+    "Menu Action" : 9,
+    "Request Menu Count" : 10,
+    "Request Menu Item" : 11,
+    "Request Menu Lock ID" : 12,
+    "Set Aux Gain" : 13,
+    "Set Settings" : 15,
+    "DAB Updtate Command" : 16,
+    "Set Mute" : 17,
+    "Set Balance" : 18,
+    "Set Low Pass Filer" : 19,
+    "Set Sublevel" : 20,
+    "Set Equalizer" : 22,
+    "Set Volume Limit" : 23,
     "Set Zone Volume" : 24,
     "Set All Volumes" : 25,
-    "Sub Volume" : 26,
-    "Tone" : 27,
-    "Volume" : 29,
-    "Power" : 32,
-    "Unit Name" : 33,
-    "SiriusXM Channel" : 36,
-    "SiriusXM Title" : 37,
-    "SiriusXM Artist" : 38,
-    "SiriusXM Genre" : 40,
-    "Zone Name" : 45,
+    "Set Line Level Control" : 27,
+    "Power" : 28,
+    "Set Device Name" : 29,
+    "Send Sirius Command" : 30,
+    "Set Sirius Parental" : 31,
+    "Send Factory Reset Command" : 33,
+    "Set Zone Name" : 34,
+    "Send Dvd Command" : 35,
+    "Dvd Press Ir Key" : 36,
+    "Send Select Sirius Team" : 39,
+    "Send Select Sirius Artist" : 40,
+    "Send Sirius Sport Alert User Action" : 41,
+    "Send Sirius Artist Song User Action" : 45,
+    "Send Multiroom Command" : 50,
+    "Get Multiroom Device Record" : 51,
+    "Scan Multirooom Devices" : 52,
+    "Send File Transfer" : 53,
+    "Set Loud" : 54,
+    "Fapi Set Source Multiroom Enabled" : 56,
+    "Request Head Unit Dsp Settings" : 57,
+    "Send Transfer Status" : 64,
+    "Fapi Get Server Info" : 65,
+    "Fapi Set Source Enabled" : 69,
+    "Fapi Set Source Name" : 70,
+    "Send External Amp Gain" : 73,
+    "Send Internal Amp Gain" : 74,
+    "Send Mono" : 75,
 }
 def lookup_encode_FUSION_MESSAGE_ID(value):
     result = lookup_dict_encode_FUSION_MESSAGE_ID.get(value, None)
@@ -13395,7 +13445,7 @@ def encode_pgn_126464(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_126720() -> bool:
     """Return True if PGN 126720 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 30
+# Complex PGN. number of matches: 31
 def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
     # seatalk1PilotMode | Description: Seatalk1: Pilot Mode
     if (
@@ -13410,7 +13460,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
-        (((data_raw >> 16) & 0xFF) == 3)
+        (((data_raw >> 16) & 0xFFFF) == 3)
         ):
         return decode_pgn_126720_fusionMediaControl(data_raw)
     
@@ -13418,7 +13468,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
-        (((data_raw >> 16) & 0xFF) == 30)
+        (((data_raw >> 16) & 0xFFFF) == 30)
         ):
         return decode_pgn_126720_fusionSiriusControl(data_raw)
     
@@ -13426,7 +13476,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
-        (((data_raw >> 16) & 0xFF) == 1)
+        (((data_raw >> 16) & 0xFFFF) == 1)
         ):
         return decode_pgn_126720_fusionRequestStatus(data_raw)
     
@@ -13434,7 +13484,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
-        (((data_raw >> 16) & 0xFF) == 2)
+        (((data_raw >> 16) & 0xFFFF) == 2)
         ):
         return decode_pgn_126720_fusionSetSource(data_raw)
     
@@ -13442,7 +13492,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
-        (((data_raw >> 16) & 0xFF) == 23)
+        (((data_raw >> 16) & 0xFFFF) == 17)
         ):
         return decode_pgn_126720_fusionSetMute(data_raw)
     
@@ -13450,7 +13500,7 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
-        (((data_raw >> 16) & 0xFF) == 24)
+        (((data_raw >> 16) & 0xFFFF) == 24)
         ):
         return decode_pgn_126720_fusionSetZoneVolume(data_raw)
     
@@ -13458,9 +13508,17 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message:
     if (
         (((data_raw >> 0) & 0x7FF) == 419) and
         (((data_raw >> 13) & 0x7) == 4) and
-        (((data_raw >> 16) & 0xFF) == 25)
+        (((data_raw >> 16) & 0xFFFF) == 25)
         ):
         return decode_pgn_126720_fusionSetAllVolumes(data_raw)
+    
+    # fusionSetPower | Description: Fusion: Set Power 
+    if (
+        (((data_raw >> 0) & 0x7FF) == 419) and
+        (((data_raw >> 13) & 0x7) == 4) and
+        (((data_raw >> 16) & 0xFF) == 28)
+        ):
+        return decode_pgn_126720_fusionSetPower(data_raw)
     
     # seatalk1Keystroke | Description: Seatalk1: Keystroke
     if (
@@ -13869,25 +13927,20 @@ def decode_pgn_126720_fusionMediaControl(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 3
 
-    # 4:proprietary_id | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: 3, PartOfPrimaryKey: True,
+    # 4:proprietary_id | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 3, PartOfPrimaryKey: True,
     running_bit_offset = 16
-    proprietary_id = proprietary_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Media Control", None, proprietary_id, proprietary_id_raw, None, FieldTypes.NUMBER, True))
-    running_bit_offset += 8
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
+    proprietary_id = master_dict['FUSION_MESSAGE_ID'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Media Command", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 16
 
-    # 5:unknown | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
     source_id = source_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 7:command | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 6:command | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
     command_raw = decode_int(_data_raw_, running_bit_offset, 8)
     command = master_dict['FUSION_COMMAND'].get(command_raw, None)
@@ -13917,18 +13970,12 @@ def encode_pgn_126720_fusionMediaControl(nmea2000Message: NMEA2000Message) -> by
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    # proprietaryId | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    # proprietaryId | Offset: 16, Length: 16, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("proprietaryId")
     if field is None:
         raise Exception("Cant encode this message, missing 'Proprietary ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 16
-    # unknown | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("unknown")
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Unknown'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MESSAGE_ID(field.value)
+    data_raw |= (field_value & 0xFFFF) << 16
     # sourceId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
     field = nmea2000Message.get_field_by_id("sourceId")
     if field is None:
@@ -13967,30 +14014,31 @@ def decode_pgn_126720_fusionSiriusControl(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 3
 
-    # 4:proprietary_id | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: 30, PartOfPrimaryKey: True,
+    # 4:proprietary_id | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 30, PartOfPrimaryKey: True,
     running_bit_offset = 16
-    proprietary_id = proprietary_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Sirius Control", None, proprietary_id, proprietary_id_raw, None, FieldTypes.NUMBER, True))
-    running_bit_offset += 8
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
+    proprietary_id = master_dict['FUSION_MESSAGE_ID'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Send Sirius Command", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 16
 
-    # 5:unknown | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
     source_id = source_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 7:command | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 6:command | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
     command_raw = decode_int(_data_raw_, running_bit_offset, 8)
     command = master_dict['FUSION_SIRIUS_COMMAND'].get(command_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('command', 'Command', None, None, command, command_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 8
+
+    # 7:data | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    data = data_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
 
     return nmea2000Message
 
@@ -14015,18 +14063,12 @@ def encode_pgn_126720_fusionSiriusControl(nmea2000Message: NMEA2000Message) -> b
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    # proprietaryId | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    # proprietaryId | Offset: 16, Length: 16, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("proprietaryId")
     if field is None:
         raise Exception("Cant encode this message, missing 'Proprietary ID'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 16
-    # unknown | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("unknown")
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Unknown'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MESSAGE_ID(field.value)
+    data_raw |= (field_value & 0xFFFF) << 16
     # sourceId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
     field = nmea2000Message.get_field_by_id("sourceId")
     if field is None:
@@ -14039,7 +14081,13 @@ def encode_pgn_126720_fusionSiriusControl(nmea2000Message: NMEA2000Message) -> b
         raise Exception("Cant encode this message, missing 'Command'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_SIRIUS_COMMAND(field.value)
     data_raw |= (field_value & 0xFF) << 40
-    return data_raw.to_bytes(6, byteorder="little")
+    # data | Offset: 48, Length: 16, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Data'")
+    field_value = encode_number(field.value, 16, False, 1)
+    data_raw |= (field_value & 0xFFFF) << 48
+    return data_raw.to_bytes(8, byteorder="little")
 
 def decode_pgn_126720_fusionRequestStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14065,18 +14113,12 @@ def decode_pgn_126720_fusionRequestStatus(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 3
 
-    # 4:proprietary_id | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1, PartOfPrimaryKey: True,
+    # 4:proprietary_id | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1, PartOfPrimaryKey: True,
     running_bit_offset = 16
-    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     proprietary_id = master_dict['FUSION_MESSAGE_ID'].get(proprietary_id_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Request Status", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
-    running_bit_offset += 8
-
-    # 5:unknown | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
     return nmea2000Message
 
@@ -14101,18 +14143,12 @@ def encode_pgn_126720_fusionRequestStatus(nmea2000Message: NMEA2000Message) -> b
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    # proprietaryId | Offset: 16, Length: 8, Resolution: 1, Field Type: LOOKUP
+    # proprietaryId | Offset: 16, Length: 16, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("proprietaryId")
     if field is None:
         raise Exception("Cant encode this message, missing 'Proprietary ID'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MESSAGE_ID(field.value)
-    data_raw |= (field_value & 0xFF) << 16
-    # unknown | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("unknown")
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Unknown'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
+    data_raw |= (field_value & 0xFFFF) << 16
     return data_raw.to_bytes(4, byteorder="little")
 
 def decode_pgn_126720_fusionSetSource(_data_raw_: int) -> NMEA2000Message:
@@ -14139,20 +14175,14 @@ def decode_pgn_126720_fusionSetSource(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 3
 
-    # 4:proprietary_id | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 2, PartOfPrimaryKey: True,
+    # 4:proprietary_id | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 2, PartOfPrimaryKey: True,
     running_bit_offset = 16
-    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     proprietary_id = master_dict['FUSION_MESSAGE_ID'].get(proprietary_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Source", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
-    running_bit_offset += 8
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Set Source", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 16
 
-    # 5:unknown | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:source_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
     source_id = source_id_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('sourceId', 'Source ID', None, None, source_id, source_id_raw, None, FieldTypes.NUMBER, False))
@@ -14181,18 +14211,12 @@ def encode_pgn_126720_fusionSetSource(nmea2000Message: NMEA2000Message) -> bytes
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    # proprietaryId | Offset: 16, Length: 8, Resolution: 1, Field Type: LOOKUP
+    # proprietaryId | Offset: 16, Length: 16, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("proprietaryId")
     if field is None:
         raise Exception("Cant encode this message, missing 'Proprietary ID'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MESSAGE_ID(field.value)
-    data_raw |= (field_value & 0xFF) << 16
-    # unknown | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("unknown")
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Unknown'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
+    data_raw |= (field_value & 0xFFFF) << 16
     # sourceId | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
     field = nmea2000Message.get_field_by_id("sourceId")
     if field is None:
@@ -14225,15 +14249,15 @@ def decode_pgn_126720_fusionSetMute(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 3
 
-    # 4:proprietary_id | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 23, PartOfPrimaryKey: True,
+    # 4:proprietary_id | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 17, PartOfPrimaryKey: True,
     running_bit_offset = 16
-    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     proprietary_id = master_dict['FUSION_MESSAGE_ID'].get(proprietary_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "None", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
-    running_bit_offset += 8
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Set Mute", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 16
 
-    # 5:command | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
+    # 5:command | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
     command_raw = decode_int(_data_raw_, running_bit_offset, 8)
     command = master_dict['FUSION_MUTE_COMMAND'].get(command_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('command', 'Command', None, None, command, command_raw, None, FieldTypes.LOOKUP, False))
@@ -14262,19 +14286,19 @@ def encode_pgn_126720_fusionSetMute(nmea2000Message: NMEA2000Message) -> bytes:
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    # proprietaryId | Offset: 16, Length: 8, Resolution: 1, Field Type: LOOKUP
+    # proprietaryId | Offset: 16, Length: 16, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("proprietaryId")
     if field is None:
         raise Exception("Cant encode this message, missing 'Proprietary ID'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MESSAGE_ID(field.value)
-    data_raw |= (field_value & 0xFF) << 16
-    # command | Offset: 24, Length: 8, Resolution: 1, Field Type: LOOKUP
+    data_raw |= (field_value & 0xFFFF) << 16
+    # command | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("command")
     if field is None:
         raise Exception("Cant encode this message, missing 'Command'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MUTE_COMMAND(field.value)
-    data_raw |= (field_value & 0xFF) << 24
-    return data_raw.to_bytes(4, byteorder="little")
+    data_raw |= (field_value & 0xFF) << 32
+    return data_raw.to_bytes(5, byteorder="little")
 
 def decode_pgn_126720_fusionSetZoneVolume(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -14300,26 +14324,20 @@ def decode_pgn_126720_fusionSetZoneVolume(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 3
 
-    # 4:proprietary_id | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 24, PartOfPrimaryKey: True,
+    # 4:proprietary_id | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 24, PartOfPrimaryKey: True,
     running_bit_offset = 16
-    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     proprietary_id = master_dict['FUSION_MESSAGE_ID'].get(proprietary_id_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Set Zone Volume", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 5:unknown | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:zone | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:zone | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
     zone = zone_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('zone', 'Zone', None, None, zone, zone_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 7:volume | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:volume | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
     volume = volume_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('volume', 'Volume', None, None, volume, volume_raw, None, FieldTypes.NUMBER, False))
@@ -14348,18 +14366,12 @@ def encode_pgn_126720_fusionSetZoneVolume(nmea2000Message: NMEA2000Message) -> b
         raise Exception("Cant encode this message, missing 'Industry Code'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     data_raw |= (field_value & 0x7) << 13
-    # proprietaryId | Offset: 16, Length: 8, Resolution: 1, Field Type: LOOKUP
+    # proprietaryId | Offset: 16, Length: 16, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("proprietaryId")
     if field is None:
         raise Exception("Cant encode this message, missing 'Proprietary ID'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MESSAGE_ID(field.value)
-    data_raw |= (field_value & 0xFF) << 16
-    # unknown | Offset: 24, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("unknown")
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Unknown'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 24
+    data_raw |= (field_value & 0xFFFF) << 16
     # zone | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
     field = nmea2000Message.get_field_by_id("zone")
     if field is None:
@@ -14398,38 +14410,32 @@ def decode_pgn_126720_fusionSetAllVolumes(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 3
 
-    # 4:proprietary_id | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 25, PartOfPrimaryKey: True,
+    # 4:proprietary_id | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 25, PartOfPrimaryKey: True,
     running_bit_offset = 16
-    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 16)
     proprietary_id = master_dict['FUSION_MESSAGE_ID'].get(proprietary_id_raw, None)
     nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Set All Volumes", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
-    running_bit_offset += 8
+    running_bit_offset += 16
 
-    # 5:unknown | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
-    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 8
-
-    # 6:zone1 | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 5:zone1 | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
     zone1 = zone1_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('zone1', 'Zone1', None, None, zone1, zone1_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 7:zone2 | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 6:zone2 | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
     zone2 = zone2_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('zone2', 'Zone2', None, None, zone2, zone2_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 8:zone3 | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:zone3 | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
     zone3 = zone3_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('zone3', 'Zone3', None, None, zone3, zone3_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 9:zone4 | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 8:zone4 | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
     zone4 = zone4_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
     nmea2000Message.fields.append(NMEA2000Field('zone4', 'Zone4', None, None, zone4, zone4_raw, None, FieldTypes.NUMBER, False))
@@ -14438,6 +14444,105 @@ def decode_pgn_126720_fusionSetAllVolumes(_data_raw_: int) -> NMEA2000Message:
     return nmea2000Message
 
 def encode_pgn_126720_fusionSetAllVolumes(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 126720."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    data_raw |= (field_value & 0x7) << 13
+    # proprietaryId | Offset: 16, Length: 16, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("proprietaryId")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Proprietary ID'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_FUSION_MESSAGE_ID(field.value)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # zone1 | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("zone1")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Zone1'")
+    field_value = encode_number(field.value, 8, False, 1)
+    data_raw |= (field_value & 0xFF) << 32
+    # zone2 | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("zone2")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Zone2'")
+    field_value = encode_number(field.value, 8, False, 1)
+    data_raw |= (field_value & 0xFF) << 40
+    # zone3 | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("zone3")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Zone3'")
+    field_value = encode_number(field.value, 8, False, 1)
+    data_raw |= (field_value & 0xFF) << 48
+    # zone4 | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("zone4")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Zone4'")
+    field_value = encode_number(field.value, 8, False, 1)
+    data_raw |= (field_value & 0xFF) << 56
+    return data_raw.to_bytes(8, byteorder="little")
+
+def decode_pgn_126720_fusionSetPower(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 126720."""
+    nmea2000Message = NMEA2000Message(PGN=126720, id='fusionSetPower', description='Fusion: Set Power ')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 419, PartOfPrimaryKey: True,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Fusion Electronics", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: True,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 3
+
+    # 4:proprietary_id | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 28, PartOfPrimaryKey: True,
+    running_bit_offset = 16
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id = master_dict['FUSION_MESSAGE_ID'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Power", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 8
+
+    # 5:unknown | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1)
+    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 6:power | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
+    power_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    power = master_dict['OFF_ON'].get(power_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('power', 'Power', None, None, power, power_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    return nmea2000Message
+
+def encode_pgn_126720_fusionSetPower(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 126720."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -14470,31 +14575,13 @@ def encode_pgn_126720_fusionSetAllVolumes(nmea2000Message: NMEA2000Message) -> b
         raise Exception("Cant encode this message, missing 'Unknown'")
     field_value = encode_number(field.value, 8, False, 1)
     data_raw |= (field_value & 0xFF) << 24
-    # zone1 | Offset: 32, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("zone1")
+    # power | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("power")
     if field is None:
-        raise Exception("Cant encode this message, missing 'Zone1'")
-    field_value = encode_number(field.value, 8, False, 1)
+        raise Exception("Cant encode this message, missing 'Power'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_OFF_ON(field.value)
     data_raw |= (field_value & 0xFF) << 32
-    # zone2 | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("zone2")
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Zone2'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 40
-    # zone3 | Offset: 48, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("zone3")
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Zone3'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 48
-    # zone4 | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("zone4")
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Zone4'")
-    field_value = encode_number(field.value, 8, False, 1)
-    data_raw |= (field_value & 0xFF) << 56
-    return data_raw.to_bytes(8, byteorder="little")
+    return data_raw.to_bytes(5, byteorder="little")
 
 def decode_pgn_126720_seatalk1Keystroke(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
