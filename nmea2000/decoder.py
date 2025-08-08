@@ -379,7 +379,7 @@ class NMEA2000Decoder():
             source_iso_name = self.source_to_iso_name.get(source_id, None)
             if source_iso_name is None and self.build_network_map:
                 if self.started_at > datetime.now() - timedelta(minutes=10):
-                    logger.info("No ISO name found for source %s in PGN id %s. Skipping the message for now.", source_id, pgn)
+                    logger.debug("No ISO name found for source %s in PGN id %s. Skipping the message for now.", source_id, pgn)
                     return None
                 logger.warning("No ISO name found for source %s in PGN id %s for too long. Will process it anyhow.", source_id, pgn)
         
