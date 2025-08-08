@@ -6276,7 +6276,7 @@ def decode_pgn_60416(data_raw: int) -> NMEA2000Message:
         return decode_pgn_60416_isoTransportProtocolConnectionManagementAbort(data_raw)
     
     
-    raise Exception("PGN 60416 No matching sub-PGN found")
+    return None
     
 def decode_pgn_60416_isoTransportProtocolConnectionManagementRequestToSend(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 60416."""
@@ -9288,7 +9288,7 @@ def decode_pgn_65285(data_raw: int) -> NMEA2000Message:
         return decode_pgn_65285_lowranceTemperature(data_raw)
     
     
-    raise Exception("PGN 65285 No matching sub-PGN found")
+    return None
     
 def decode_pgn_65285_airmarBootStateAcknowledgment(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65285."""
@@ -9471,7 +9471,7 @@ def decode_pgn_65286(data_raw: int) -> NMEA2000Message:
         return decode_pgn_65286_airmarBootStateRequest(data_raw)
     
     
-    raise Exception("PGN 65286 No matching sub-PGN found")
+    return None
     
 def decode_pgn_65286_chetcoDimmer(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65286."""
@@ -9676,7 +9676,7 @@ def decode_pgn_65287(data_raw: int) -> NMEA2000Message:
         return decode_pgn_65287_simnetConfigureTemperatureSensor(data_raw)
     
     
-    raise Exception("PGN 65287 No matching sub-PGN found")
+    return None
     
 def decode_pgn_65287_airmarAccessLevel(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65287."""
@@ -10169,7 +10169,7 @@ def decode_pgn_65293(data_raw: int) -> NMEA2000Message:
         return decode_pgn_65293_diverseYachtServicesLoadCell(data_raw)
     
     
-    raise Exception("PGN 65293 No matching sub-PGN found")
+    return None
     
 def decode_pgn_65293_simnetLgc2000Configuration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65293."""
@@ -10477,7 +10477,7 @@ def decode_pgn_65305(data_raw: int) -> NMEA2000Message:
         return decode_pgn_65305_simnetSailingProcessorStatus(data_raw)
     
     
-    raise Exception("PGN 65305 No matching sub-PGN found")
+    return None
     
 def decode_pgn_65305_simnetDeviceStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65305."""
@@ -32744,7 +32744,7 @@ def decode_pgn_129808(data_raw: int) -> NMEA2000Message:
         return decode_pgn_129808_dscCallInformation(data_raw)
     
     
-    raise Exception("PGN 129808 No matching sub-PGN found")
+    return None
     
 def decode_pgn_129808_dscDistressCallInformation(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 129808."""
@@ -42268,7 +42268,7 @@ def decode_pgn_130817(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130817_lowranceProductInformation(data_raw)
     
     
-    raise Exception("PGN 130817 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130817_navicoUnknown(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130817."""
@@ -42984,7 +42984,7 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130820_fusionSiriusxmPresets(data_raw)
     
     
-    raise Exception("PGN 130820 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130820_simnetReprogramStatus(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130820."""
@@ -46778,7 +46778,7 @@ def decode_pgn_130821(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130821_furunoUnknown130821(data_raw)
     
     
-    raise Exception("PGN 130821 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130821_navicoAsciiData(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130821."""
@@ -47222,7 +47222,7 @@ def decode_pgn_130824(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130824_maretronAnnunciator(data_raw)
     
     
-    raise Exception("PGN 130824 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130824_bGKeyValueData(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130824."""
@@ -48015,7 +48015,7 @@ def decode_pgn_130836(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130836_maretronSwitchStatusCounter(data_raw)
     
     
-    raise Exception("PGN 130836 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130836_simnetFluidLevelSensorConfiguration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130836."""
@@ -48356,7 +48356,7 @@ def decode_pgn_130837(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130837_maretronSwitchStatusTimer(data_raw)
     
     
-    raise Exception("PGN 130837 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130837_simnetFuelFlowTurbineConfiguration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130837."""
@@ -48756,7 +48756,7 @@ def decode_pgn_130842(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(data_raw)
     
     
-    raise Exception("PGN 130842 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130842_simnetAisClassBStaticDataMsg24PartA(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130842."""
@@ -49289,7 +49289,7 @@ def decode_pgn_130843(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130843_simnetSonarStatusFrequencyAndDspVoltage(data_raw)
     
     
-    raise Exception("PGN 130843 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130843_furunoHeelAngleRollInformation(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130843."""
@@ -49470,7 +49470,7 @@ def decode_pgn_130845(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130845_simnetKeyValue(data_raw)
     
     
-    raise Exception("PGN 130845 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130845_furunoMultiSatsInViewExtended(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130845."""
@@ -49684,7 +49684,7 @@ def decode_pgn_130846(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130846_furunoMotionSensorStatusExtended(data_raw)
     
     
-    raise Exception("PGN 130846 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130846_simnetParameterSet(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130846."""
@@ -50145,7 +50145,7 @@ def decode_pgn_130850(data_raw: int) -> NMEA2000Message:
         return decode_pgn_130850_simnetAlarm(data_raw)
     
     
-    raise Exception("PGN 130850 No matching sub-PGN found")
+    return None
     
 def decode_pgn_130850_simnetApCommand(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130850."""

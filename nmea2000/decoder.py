@@ -409,10 +409,15 @@ class NMEA2000Decoder():
         decode_func = globals().get(decode_func_name)
 
         if not decode_func:
-            raise ValueError(f"No decoding function found for PGN: {pgn}")
+            logger.debug("No decoding function found for PGN: %s", pgn)
+            return None
 
         data_int = int.from_bytes(data, "big")
-        nmea2000Message: NMEA2000Message = decode_func(data_int)
+        nmea2000Message: NMEA2000Message | None = decode_func(data_int)
+        if nmea2000Message is None:
+            logger.debug("No sub-decoding function found for PGN: %s", pgn)
+            return None
+        
         # Handle ISO Address Claim messages and enrichment
         if nmea2000Message.PGN == ISO_CLAIM_PGN:
             # In this message the data is a 64 bit unique NAME which is stable between network restarts
