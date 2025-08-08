@@ -56,6 +56,7 @@ class NMEA2000Decoder():
         self.dump_include_pgns, self.dump_include_pgns_ids = self.split_pgn_list(dump_pgns)
         self.preferred_units = {k: v.lower() for k, v in preferred_units.items()}
         self.source_to_iso_name: dict[int, IsoName] = {}
+        self.logged_unsupported_pgns: set[int] = set()
 
         self.iso_claim_filter = (ISO_CLAIM_PGN in self.exclude_pgns) or \
             ("isoAddressClaim" in self.exclude_pgns_ids) or \
@@ -360,8 +361,13 @@ class NMEA2000Decoder():
             logger.debug(f"Is fast PGN: {is_fast}")
             return is_fast
         else:
-            logger.warning("Not supporrted PGN: %d", pgn_id)
             return None
+
+    def _log_unsupported_pgn_once(self, pgn_id: int) -> None:
+        """Log unsupported PGN message only once per PGN."""
+        if pgn_id not in self.logged_unsupported_pgns:
+            logger.warning("Not supporrted PGN: %d", pgn_id)
+            self.logged_unsupported_pgns.add(pgn_id)
 
     def _decode(self, pgn: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes, already_combined: bool = False) -> NMEA2000Message | None:
         """Decode a single PGN message."""
@@ -397,6 +403,7 @@ class NMEA2000Decoder():
         if not already_combined:
             is_fast = NMEA2000Decoder._isFastPGN(pgn)
         if is_fast is None:
+            self._log_unsupported_pgn_once(pgn)
             return None
         
         if is_fast:
@@ -409,7 +416,7 @@ class NMEA2000Decoder():
         decode_func = globals().get(decode_func_name)
 
         if not decode_func:
-            logger.debug("No decoding function found for PGN: %s", pgn)
+            logger.error("No decoding function found for PGN: %s. It should be there as we found the is_fast func", pgn)
             return None
 
         data_int = int.from_bytes(data, "big")
