@@ -282,7 +282,12 @@ class AsyncIOClient(ABC):
         """
         self.logger.info("process queue loop started")
         while self._state != State.CLOSED:
-            data = await self.queue.get()
+            try:
+                data = await self.queue.get()
+            except asyncio.CancelledError:
+                self.logger.info("Process queue task cancelled")
+                raise
+
             receive_callback = self.receive_callback
             if receive_callback:
                 try:

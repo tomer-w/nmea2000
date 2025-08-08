@@ -335,7 +335,9 @@ def test_iso_address_parse():
     assert msg_126998.PGN == 126998
     assert msg_126998.source_iso_name is not None
     assert msg_126998.source_iso_name == msg_60928.source_iso_name
-    assert msg_126998.hash == "027d58d31145159c43becc14347a9c7d"
+    # hash with ISO name is commented out for now
+    #assert msg_126998.hash == "027d58d31145159c43becc14347a9c7d"
+    assert msg_126998.hash == "4dbb7cdd4fdd29c2e269665a1faaff00"
     msg_126998_2 = decoder.decode_basic_string("2021-01-30-20:43:21.684,6,126998,4,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00", True)
     assert msg_126998_2 is None
 
