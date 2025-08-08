@@ -245,7 +245,7 @@ class AsyncIOClient(ABC):
             for msg in msgs:
                 self.writer.write(msg)
                 await self.writer.drain()
-                self.logger.info(f"Sent: {msg.hex()}")
+                self.logger.debug(f"Sent: {msg.hex()}")
 
         except ValueError as ve:
                 self.logger.error(f"Failed to encode message. Error {ve}")
@@ -473,7 +473,7 @@ class TextNmea2000Gateway(AsyncIOClient):
         by the _receive_loop() method.
         """
         data = await self.reader.readline()
-        self.logger.info(f"Received: {data.hex()}")
+        self.logger.debug(f"Received: {data.hex()}")
         line = data.decode('utf-8', errors='ignore').strip()
         try:
             if self.type == Type.ACTISENSE:
@@ -484,7 +484,7 @@ class TextNmea2000Gateway(AsyncIOClient):
             self.logger.warning(f"decoding failed. text: {line}, bytes: {data.hex()}. Error: {e}", exc_info=True)
             return
 
-        self.logger.info(f"Received message: {message}")
+        self.logger.debug(f"Received message: {message}")
         if message is not None:
             await self.queue.put(message)
 
@@ -647,7 +647,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
         delimiters. It's called repeatedly by the _receive_loop() method.
         """
         data = await self.reader.read(100)
-        self.logger.info(f"Received: {data.hex()}")
+        self.logger.debug(f"Received: {data.hex()}")
         assert self._buffer is not None
         self._buffer.extend(data)
 
@@ -663,7 +663,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
 
             # Extract the complete packet, including the end delimiter
             packet = self._buffer[start : end + 1]
-            self.logger.info(f"Received: {packet.hex()}")
+            self.logger.debug(f"Received: {packet.hex()}")
 
             # Process the packet
             message = None
@@ -672,7 +672,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             except Exception as e:
                 self.logger.warning(f"decoding failed. bytes: {packet.hex()}. Error: {e}", exc_info=True)
 
-            self.logger.info(f"Received message: {message}")
+            self.logger.debug(f"Received message: {message}")
             if message is not None:
                 await self.queue.put(message)
 

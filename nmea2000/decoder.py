@@ -357,7 +357,7 @@ class NMEA2000Decoder():
 
         if is_fast_func:
             is_fast = is_fast_func()
-            logger.info(f"Is fast PGN: {is_fast}")
+            logger.debug(f"Is fast PGN: {is_fast}")
             return is_fast
         else:
             logger.warning("Not supporrted PGN: %d", pgn_id)
@@ -412,11 +412,18 @@ class NMEA2000Decoder():
             raise ValueError(f"No decoding function found for PGN: {pgn}")
 
         data_int = int.from_bytes(data, "big")
-        nmea2000Message = decode_func(data_int)
+        nmea2000Message: NMEA2000Message = decode_func(data_int)
         # Handle ISO Address Claim messages and enrichment
         if nmea2000Message.PGN == ISO_CLAIM_PGN:
             # In this message the data is a 64 bit unique NAME which is stable between network restarts
-            source_iso_name = self.source_to_iso_name[src] = IsoName(nmea2000Message, data_int)
+            old_source = self.source_to_iso_name.get(src, None)
+            if old_source is not None and old_source.name == data_int:
+                logger.debug("Using existing ISO_CLAIM_PGN for source %s", src)
+                source_iso_name = old_source
+            else:
+                new_source = IsoName(nmea2000Message, data_int)
+                logger.info("Using new ISO_CLAIM_PGN for source %s: %s", src, new_source)
+                source_iso_name = self.source_to_iso_name[src] = new_source
             if self.iso_claim_filter:
                 logger.debug("Excluding ISO_CLAIM_PGN")
                 return None

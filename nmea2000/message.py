@@ -33,7 +33,7 @@ class NMEA2000Message:
     source_iso_name: IsoName | None = None
     hash: str | None = None
     
-    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName, build_network_map: bool):
+    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName | None, build_network_map: bool):
         self.source = src
         self.destination = dest
         self.priority = priority
@@ -43,7 +43,9 @@ class NMEA2000Message:
 
         if build_network_map:
             # Using MD5 as we don't need secure hashing and speed matters
-            primary_key = f"{self.id}_{self.source_iso_name.name}"
+            # For now, we will NOT include the ISO name in the primary key
+            #primary_key = f"{self.id}_{self.source_iso_name.name if self.source_iso_name else '#'}"
+            primary_key = f"{self.id}"
             for nmea_field in self.fields:
                 if nmea_field.part_of_primary_key:
                     primary_key += "_" + str(nmea_field.raw_value)
