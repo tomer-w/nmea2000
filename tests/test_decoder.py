@@ -453,3 +453,9 @@ def test_decode_speed():
     assert msg.fields[1].unit_of_measurement == 'kts'
     assert msg.fields[1].raw_value == 3.37 #m/s
     assert msg.fields[1].value == 6.6
+
+def test_fusion():
+    decoder = _get_decoder()
+    msg = decoder.decode_basic_string("2025-06-20T19:33:12.240Z,7,126720,0,255,11,a3,99,09,00,0b,07,00,00,00,02,02", True)
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 126720

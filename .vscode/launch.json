@@ -48,7 +48,7 @@
             "request": "launch",
             "module": "nmea2000.cli",
             "console": "externalTerminal",
-            "args": ["--verbose", "usb_client", "--port", "COM7"]
+            "args": ["--verbose", "usb_client", "--port", "COM7", "--dump_file", "dump_file.json"]
         }
     ]
 }

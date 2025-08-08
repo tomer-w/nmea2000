@@ -38,7 +38,9 @@ class NMEA2000Decoder():
         self.build_network_map = build_network_map
         self.started_at = datetime.now()
         if dump_to_file:
-            os.makedirs(os.path.dirname(dump_to_file), exist_ok=True)
+            dir_name = os.path.dirname(dump_to_file)
+            if dir_name is not None and dir_name != "":
+                os.makedirs(dir_name, exist_ok=True)
             self.dump_TextIOWrapper = open(dump_to_file, 'a')
         if not isinstance(exclude_pgns, list):
             raise ValueError("exclude_pgns must be a list")
@@ -76,6 +78,8 @@ class NMEA2000Decoder():
         """Split a list of PGNs into two lists: one for integers and one for strings."""
         int_list = []
         str_list = []
+        if pgn_list is None:
+            return int_list, str_list
         for pgn in pgn_list:
             if isinstance(pgn, int):
                 int_list.append(pgn)

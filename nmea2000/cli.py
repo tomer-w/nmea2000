@@ -127,6 +127,17 @@ async def async_main():
         required=True, 
         help="Server port number"
     )
+    tcp_client_parser.add_argument(
+        "--dump_file", 
+        type=str, 
+        help="Record frames to a given file"
+    )
+    tcp_client_parser.add_argument(
+        "--dump_pgns", 
+        type=str, 
+        help="Record only specific pgns, comma seperated"
+    )
+
     def parse_type(value):
         try:
             return Type[value.upper()]
@@ -149,7 +160,16 @@ async def async_main():
         required=True, 
         help="Serial port"
     )
-
+    usb_client_parser.add_argument(
+        "--dump_file", 
+        type=str, 
+        help="Record frames to a given file"
+    )
+    usb_client_parser.add_argument(
+        "--dump_pgns", 
+        type=str, 
+        help="Record only specific pgns, comma seperated"
+    )
     # Parse arguments
     args = parser.parse_args()
 
@@ -209,7 +229,7 @@ async def async_main():
     elif args.command == "usb_client":
         # Create USB client passing callbacks in constructor
         logger.info("Using WaveShareNmea2000Gateway with port: %s", args.port)
-        client = WaveShareNmea2000Gateway(args.port)
+        client = WaveShareNmea2000Gateway(port=args.port, dump_to_file=args.dump_file, dump_pgns=args.dump_pgns)
         await interactive_client(client)
 
 def main():
