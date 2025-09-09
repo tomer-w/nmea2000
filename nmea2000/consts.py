@@ -160,6 +160,7 @@ ManufacturerCodes: List[str] = [
     "Naviop S.R.L.",
     "Vesper Marine Ltd",
     "Marinesoft Co. LTD",
+    "Simarine",
     "NoLand Engineering",
     "Transas USA",
     "National Instruments Korea",
