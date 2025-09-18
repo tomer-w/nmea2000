@@ -8,6 +8,7 @@ A Python library for encoding and decoding NMEA 2000 frames. The encoding and de
 - **Decode NMEA 2000 frames**: Parse and interpret raw NMEA 2000 data.
 - **Encode NMEA 2000 frames**: Convert structured data back into the NMEA 2000 frame format.
 - **USB client**: Send and receive NMEA 2000 data over CANBUS USB devices like [Waveshare USB-CAN-A](https://www.waveshare.com/wiki/USB-CAN-A)
+- **python-can client**: Send and receive NMEA 2000 data over any generic USB or SocketCAN device supported by python-can
 - **TCP client**: Send and receive NMEA 2000 data over CANBUS TCP devices like:
      - [EBYTE ECAN-W01S](https://www.cdebyte.com/products/ECAN-W01S)
      - [EBYTE ECAN-E01](https://www.cdebyte.com/products/ECAN-E01)
@@ -64,6 +65,27 @@ decoded_frame = decoder.decode_actisense_string(frame_str)
 
 # Print decoded frame
 print(decoded_frame)
+```
+
+### Example reading packets using python-can
+
+```python
+import can
+from nmea2000.decoder import NMEA2000Decoder
+
+# Initialize decoder
+decoder = NMEA2000Decoder()
+
+# Connect to CAN bus (e.g. slcan device on /dev/ttyUSB0)
+bus = can.interface.Bus(interface='slcan', channel="/dev/ttyUSB0", bitrate=250000)
+
+# Decode frames
+for msg in bus:
+    decoded_frame = decoder.decode_python_can(msg)
+
+    # Print decoded frame when ready (fast data intermediate frames return None)
+    if decoded_frame != None:
+        print(decoded_frame)
 ```
 
 ### TCP Client CLI

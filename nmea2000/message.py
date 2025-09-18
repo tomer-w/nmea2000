@@ -96,7 +96,11 @@ class NMEA2000Message:
             type_obj = type(obj)
             if type_obj is bytes:
                 return obj.hex()
-            raise TypeError
+            else:
+                try:
+                    return str(obj)
+                except Exception:
+                    raise TypeError
         return orjson.dumps(self.__dict__,   default=default).decode()
 
     @staticmethod

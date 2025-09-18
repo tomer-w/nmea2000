@@ -1,8 +1,16 @@
+from __future__ import annotations
+
 import logging
 
 from .decoder import NMEA2000Decoder
 from .message import NMEA2000Message
 from .pgns import *  # noqa: F403
+
+try:
+    import can.message
+    USING_PYTHON_CAN = True
+except ImportError:
+    USING_PYTHON_CAN = False
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +33,7 @@ class NMEA2000Encoder:
         try:
             can_data_bytes = encode_func(nmea2000Message)
         except Exception as e:
-            raise ValueError(e)
+            raise e
         return can_data_bytes
 
     def _encode_fast_message(self, pgn: int, priority: int, src: int, dest: int, payload_bytes: bytes) -> list[bytes]:
@@ -128,6 +136,27 @@ class NMEA2000Encoder:
             type_byte |= len(message) & 0x0F
             # Construct and return the full packet
             result.append(bytes([0xaa, type_byte]) + frame_id_bytes + message + bytes([0x55]))
+        return result
+
+    def encode_python_can(self, nmea2000Message: NMEA2000Message) -> list[can.message.Message]:
+        """Construct a single NMEA 2000 packet for python-can from PGN, source ID, priority, and CAN data."""
+
+        if not USING_PYTHON_CAN:
+            raise RuntimeError("python-can dependency is not available.  Try 'pip install python-can'.")
+
+        encoded_messages = self._encode(nmea2000Message)                
+        arbitration_id = NMEA2000Encoder._build_header(nmea2000Message.PGN, nmea2000Message.source, nmea2000Message.destination, nmea2000Message.priority)
+        result = []
+        for message in encoded_messages:        
+            result.append(can.message.Message(
+                    timestamp=nmea2000Message.timestamp,
+                    arbitration_id=arbitration_id,
+                    is_extended_id=True,
+                    is_remote_frame=False,
+                    is_error_frame=False,
+                    is_rx=False,
+                    data=message
+                ))
         return result
     
     def encode_actisense(self, nmea2000Message: NMEA2000Message) -> str:
