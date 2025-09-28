@@ -1,7 +1,7 @@
 
 # NMEA 2000 Python Library
 
-A Python library for encoding and decoding NMEA 2000 frames. The encoding and decoding is based on the extensive [canboat](https://canboat.github.io/canboat/canboat.html) database. It also supports inexpensive CANBUS USB and TCP devices as gateways between your NMEA 2000 boat network and any Python code that wants to receive or send these messages.
+A Python library for encoding and decoding NMEA 2000 frames. The encoding and decoding is based on the extensive [canboat](https://canboat.github.io/canboat/canboat.html) database. It also supports inexpensive CANBUS USB and TCP devices as gateways between your NMEA 2000 boat network and any Python code that wants to receive or send these messages.  
 This package is the backend for the Home Assistant [NMEA 2000 Integration](https://github.com/tomer-w/ha-nmea2000).
 
 ## Features
