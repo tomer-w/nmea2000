@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import binascii
 import os
@@ -6,6 +8,12 @@ from typing import Tuple
 from .message import IsoName, NMEA2000Message
 from .pgns import *  # noqa: F403
 from .consts import PhysicalQuantities
+
+try:
+    import can.message
+    USING_PYTHON_CAN = True
+except ImportError:
+    USING_PYTHON_CAN = False
 
 logger = logging.getLogger(__name__)
 
@@ -350,6 +358,33 @@ class NMEA2000Decoder():
             source_id)
         
         return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data))
+
+    def decode_python_can(self, msg: can.message.Message) -> NMEA2000Message | None:
+        """
+        Tested with generic python-can (e.g. slcan, seeedstudio, etc).  Process a single packet and extract the PGN, source ID, and CAN data.
+        
+        python-can already parses the message into a Message object with arbitration_id and data fields.  The only
+        things left to do are decode the 29-bit arbitration ID into PGN, source ID, destination ID, and priority, and stitch
+        together fast data messages
+        """
+
+        if not USING_PYTHON_CAN:
+            raise RuntimeError("python-can dependency is not available.  Try 'pip install python-can'.")
+        
+        # Fetch data length from message
+        data_length = len(msg.data)
+        
+        # Extract the frame ID
+        pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(msg.arbitration_id)
+               
+        # Log the extracted information including the combined string
+        logger.debug("PGN ID: %s, Frame ID: %s, CAN Data: %s, Source ID: %s",
+            pgn_id,
+            hex(msg.arbitration_id),
+            binascii.hexlify(msg.data, " ").decode('ascii'),
+            source_id)
+        
+        return self._decode(pgn_id, priority, source_id, dest, msg.timestamp, msg.data)
 
     @staticmethod
     def _isFastPGN(pgn_id: int) -> bool | None:
