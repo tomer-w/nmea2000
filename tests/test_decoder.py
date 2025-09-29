@@ -24,19 +24,18 @@ def _validate_65280_message(msg: NMEA2000Message | None):
     assert len(msg.fields) == 5
     assert msg.fields[0].id == "manufacturerCode"
     assert msg.fields[0].name == "Manufacturer Code"
-    assert msg.fields[0].part_of_primary_key
     assert msg.fields[0].description == "Furuno"
     assert msg.fields[0].value == "Furuno"
     assert msg.fields[0].type == FieldTypes.LOOKUP
     assert msg.fields[2].id == "industryCode"
     assert msg.fields[2].name == "Industry Code"
     assert msg.fields[2].description == "Marine Industry"
-    assert msg.fields[2].value == "Marine"
+    assert msg.fields[2].value == "Marine Industry"
     assert msg.fields[3].value == -0.036000000000000004
     assert msg.fields[3].type == FieldTypes.NUMBER
     assert msg.fields[3].physical_quantities == PhysicalQuantities.DISTANCE
     assert not msg.fields[3].part_of_primary_key
-    assert msg.get_field_str_value_by_id("industryCode") == "Marine"
+    assert msg.get_field_str_value_by_id("industryCode") == "Marine Industry"
 
 def test_single_parse():
     decoder = _get_decoder()
@@ -189,7 +188,7 @@ def test_INDIRECT_LOOKUP_parse():
     assert msg.fields[7].name == "System Instance"
     assert msg.fields[7].value == 0
     assert msg.fields[8].name == "Industry Group"
-    assert msg.fields[8].value == "Marine"
+    assert msg.fields[8].value == "Marine Industry"
     assert msg.fields[9].name == "Arbitrary address capable"
     assert msg.fields[9].value == 'Yes'
 

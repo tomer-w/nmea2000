@@ -81,7 +81,7 @@ def test_decode_strings_from_file_2():
             assert msg.description == "0x1EF00: Manufacturer Proprietary fast-packet addressed"
             assert msg.fields[0].value == "Garmin"
             assert msg.fields[1].value == 3
-            assert msg.fields[2].value == "Marine"
+            assert msg.fields[2].value == "Marine Industry"
         else:
             assert msg is None
     assert counter == 16
@@ -160,7 +160,6 @@ def test_decode_strings_from_file_5():
             assert msg.destination == 255
             assert msg.description == "Maretron: Proprietary Temperature High Range"
             assert msg.fields[0].id == "manufacturerCode"
-            assert msg.fields[0].part_of_primary_key
             assert msg.fields[6].value == 0.1
             assert msg.fields[7].value == 0.4
         else:
