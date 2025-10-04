@@ -93,11 +93,13 @@ class NMEA2000Message:
 
     def to_json(self):
         def default(obj: Any) -> Any:
-            type_obj = type(obj)
-            if type_obj is bytes:
+            if isinstance(obj, bytes):
                 return obj.hex()
+            if isinstance(obj, timedelta):
+                return obj.total_seconds()
+            # ...existing code...
             raise TypeError
-        return orjson.dumps(self.__dict__,   default=default).decode()
+        return orjson.dumps(self.__dict__, default=default).decode()
 
     @staticmethod
     def from_json(json_str):
