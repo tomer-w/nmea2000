@@ -32,9 +32,9 @@ class NMEA2000Message:
     timestamp: datetime = datetime.now()
     source_iso_name: IsoName | None = None
     hash: str | None = None
-    raw_can_data: bytes | None = None
+    raw_can_data: bytes | str | None = None
 
-    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName | None, build_network_map: bool, raw_can_data: bytes | None):
+    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName | None, build_network_map: bool, raw_can_data: bytes | str):
         self.source = src
         self.destination = dest
         self.priority = priority
