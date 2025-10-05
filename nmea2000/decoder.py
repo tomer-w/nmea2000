@@ -449,14 +449,14 @@ class NMEA2000Decoder():
             logger.debug("Excluding (by include) PGN %d by id: %s", pgn, nmea2000Message.id)
             return None
         
+        nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name, self.build_network_map, data)
+        nmea2000Message.apply_preferred_units(self.preferred_units)
+
         # Handle dump to file
         if (self.dump_TextIOWrapper is not None) and (len(self.dump_include_pgns)+len(self.dump_include_pgns_ids) == 0 or nmea2000Message.PGN in self.dump_include_pgns or nmea2000Message.id in self.dump_include_pgns_ids):
             str = nmea2000Message.to_json() + "\n"
             self.dump_TextIOWrapper.write(str)
                     
-        nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name, self.build_network_map)
-        nmea2000Message.apply_preferred_units(self.preferred_units)
-
         return nmea2000Message
 
     def close(self):

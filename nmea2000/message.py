@@ -32,15 +32,17 @@ class NMEA2000Message:
     timestamp: datetime = datetime.now()
     source_iso_name: IsoName | None = None
     hash: str | None = None
-    
-    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName | None, build_network_map: bool):
+    raw_can_data: bytes | None = None
+
+    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName | None, build_network_map: bool, raw_can_data: bytes | None):
         self.source = src
         self.destination = dest
         self.priority = priority
         self.timestamp = timestamp
         self.source_iso_name = source_iso_name
         self.hash = None
-
+        self.raw_can_data = raw_can_data
+        
         if build_network_map:
             # Using MD5 as we don't need secure hashing and speed matters
             # For now, we will NOT include the ISO name in the primary key
