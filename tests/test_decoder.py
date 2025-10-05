@@ -413,6 +413,11 @@ def test_usb_bytes():
     msg = decoder.decode_usb(bytes.fromhex("aae80900ff1c3f9fdcffffffffff55"))
     _validate_65280_message(msg)
 
+def test_usb_bytes_corrupted():
+    decoder = _get_decoder()
+    msg = decoder.decode_usb(bytes.fromhex("aae80a01f80955"))
+    assert msg is None
+
 def test_iso_request_decode():
     decoder = _get_decoder()
     msg = decoder.decode_basic_string("2012-06-17-15:02:11.000,6,59904,0,255,3,14,f0,01")

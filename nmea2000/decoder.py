@@ -341,13 +341,22 @@ class NMEA2000Decoder():
 
         # Extract and reverse the CAN data
         can_data = packet[6:6 + data_length][::-1]
+        if len(can_data) < data_length:
+            logger.warning("Got corrupted packet (too short for its payload). PGN ID: %s, source: %s, dest: %s, priority: %s, full packet: %s",
+            pgn_id,
+            source_id,
+            dest,
+            priority,
+            packet.hex())
+            return None
                
         # Log the extracted information including the combined string
-        logger.debug("PGN ID: %s, Frame ID: %s, CAN Data: %s, Source ID: %s",
+        logger.debug("Got valid packet. PGN ID: %s, source: %s, dest: %s, priority: %s, CAN Data: %s",
             pgn_id,
-            binascii.hexlify(frame_id).decode('ascii'),
-            can_data,
-            source_id)
+            source_id,
+            dest,
+            priority,
+            can_data.hex())
         
         return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data), packet)
 

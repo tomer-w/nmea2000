@@ -16,4 +16,9 @@ def configure_pytest_logging():
     for name, logger in logging.root.manager.loggerDict.items():
         if name.startswith('nmea2000.') and isinstance(logger, logging.Logger):
             logger.setLevel(logging.DEBUG)
+            # Ensure each logger has a StreamHandler to sys.stdout
+            if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+                handler = logging.StreamHandler(sys.stdout)
+                handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+                logger.addHandler(handler)
     return None
