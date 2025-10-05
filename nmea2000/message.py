@@ -42,7 +42,7 @@ class NMEA2000Message:
         self.source_iso_name = source_iso_name
         self.hash = None
         self.raw_can_data = raw_can_data
-        
+
         if build_network_map:
             # Using MD5 as we don't need secure hashing and speed matters
             # For now, we will NOT include the ISO name in the primary key
@@ -95,7 +95,7 @@ class NMEA2000Message:
 
     def to_json(self):
         def default(obj: Any) -> Any:
-            if isinstance(obj, bytes):
+            if isinstance(obj, (bytes, bytearray)):
                 return obj.hex()
             if isinstance(obj, timedelta):
                 return obj.total_seconds()
