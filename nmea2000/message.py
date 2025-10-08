@@ -86,8 +86,11 @@ class NMEA2000Message:
                     f.unit_of_measurement = "kts"
                     f.value = mps_to_knots(f.value)
 
-    def __repr__(self):
+    def __str__(self):
         return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, source_iso_name={self.source_iso_name}, dest={self.destination}, description={self.description}, fields={self.fields})"
+
+    def __repr__(self):
+        return self.__str__()
 
     def to_string_test_style(self):
         fields_str = ', '.join([field.to_string_test_style() for field in self.fields])
@@ -146,9 +149,12 @@ class NMEA2000Field:
     type: FieldTypes = FieldTypes.NUMBER
     part_of_primary_key: bool | None = None
 
-    def __repr__(self):
+    def __str__(self):
         return f"NMEA2000Field(id={self.id}, name={self.name}, description={self.description}, unit_of_measurement={self.unit_of_measurement}, value={self.value}, raw_value={self.raw_value}, physical_quantities={self.physical_quantities}, type={self.type}, part_of_primary_key = {self.part_of_primary_key})"
 
+    def __repr__(self):
+        return self.__str__()
+    
     def to_string_test_style(self):
         if isinstance(self.raw_value, int):
             # Convert integer to bytes (big-endian)

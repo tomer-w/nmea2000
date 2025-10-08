@@ -341,12 +341,15 @@ class NMEA2000Decoder():
 
         # Extract and reverse the CAN data
         can_data = packet[6:6 + data_length][::-1]
-        if len(can_data) < data_length:
-            logger.warning("Got corrupted packet (too short for its payload). PGN ID: %s, source: %s, dest: %s, priority: %s, full packet: %s",
+        can_data_actual_len = len(can_data)
+        if can_data_actual_len < data_length:
+            logger.warning("Got corrupted packet (too short for its payload). PGN ID: %s, source: %s, dest: %s, priority: %s, data_len: %s, actual len: %s, full packet: %s",
             pgn_id,
             source_id,
             dest,
             priority,
+            data_length,
+            can_data_actual_len,
             packet.hex())
             return None
                
