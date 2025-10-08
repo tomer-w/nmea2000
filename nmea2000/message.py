@@ -213,7 +213,7 @@ class IsoName:
         self.industry_group = message.get_field_str_value_by_id('industryGroup')
         self.arbitrary_address_capable = message.get_field_str_value_by_id('arbitraryAddressCapable') == "Yes"
 
-    def __repr__(self):
+    def __str__(self) -> str:
         return (
             f"IsoName(unique_number={self.unique_number}, "
             f"manufacturer_code='{self.manufacturer_code}', "
@@ -225,3 +225,6 @@ class IsoName:
             f"arbitrary_address_capable={self.arbitrary_address_capable}, "
             f"name={self.name})"
         )
+    
+    def __repr__(self):
+        return self.__str__()
