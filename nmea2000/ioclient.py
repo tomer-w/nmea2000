@@ -693,7 +693,10 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             start = self._buffer.find(b"\xaa\x55")
 
             if start == -1:
-                # If start or end not found, wait for more data
+                # If start marker not found, wait for more data
+                break
+            if start + 20 > len(self._buffer):
+                # Not enough data for a full packet yet
                 break
 
             # Extract the complete packet, including the end delimiter
