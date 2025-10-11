@@ -331,7 +331,7 @@ class NMEA2000Decoder():
         
         checksum = calculate_canbus_checksum(packet)
         if checksum != packet[19]:
-            logger.warning("Invalid checksum: %s (expected: %s)", checksum, packet[19])
+            logger.warning("Invalid checksum: %s (expected: %s), packet: %s", checksum, packet[19], packet.hex())
             return None
 
         # Extract the frame ID
