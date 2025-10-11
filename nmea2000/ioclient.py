@@ -8,8 +8,8 @@ from tenacity import stop_never, wait_exponential, retry_if_exception_type
 from tenacity.asyncio import AsyncRetrying
 from abc import ABC, abstractmethod
 
-from nmea2000.consts import PhysicalQuantities
-
+from .consts import PhysicalQuantities
+from .utils import calculate_canbus_checksum
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 from .message import NMEA2000Message
@@ -643,13 +643,44 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
         )
         self.logger.info(f"Connected to serial port {self.port}")
         self._buffer = bytearray()
-                
+
+        config_packet = [
+            0xaa,     #  0  Packet header
+            0x55,     #  1  Packet header
+            0x02,     #  3 Type: use fixed 20 bytes protocol to send and receive data ##  0x02- Setting (using fixed 20 byte protocol to send and receive data),   0x12- Setting (using variable protocol to send and receive data)##
+            0x05,     #  3 CAN Baud Rate:  500kbps  ##  0x01(1Mbps),  0x02(800kbps),  0x03(500kbps),  0x04(400kbps),  0x05(250kbps),  0x06(200kbps),  0x07(125kbps),  0x08(100kbps),  0x09(50kbps),  0x0a(20kbps),  0x0b(10kbps),   0x0c(5kbps)##
+            0x02,     #  4  Frame Type: Extended Frame  ##   0x01 standard frame,   0x02 extended frame ##
+            0x00,     #  5  Filter ID1
+            0x00,     #  6  Filter ID2
+            0x00,     #  7  Filter ID3
+            0x00,     #  8  Filter ID4
+            0x00,     #  9  Mask ID1
+            0x00,     #  10 Mask ID2
+            0x00,     #  11 Mask ID3
+            0x00,     #  12 Mask ID4
+            0x00,     #  13 CAN mode:  normal mode  ##   0x00 normal mode,   0x01 silent mode,   0x02 loopback mode,   0x03 loopback silent mode ##
+            0x00,     #  14 automatic resend:  automatic retransmission
+            0x00,     #  15 Spare
+            0x00,     #  16 Spare
+            0x00,     #  17 Spare
+            0x00,     #  18 Spare
+        ]
+
+        checksum = calculate_canbus_checksum(config_packet)
+        config_packet.append(checksum)
+        config_packet_bytes = bytes(config_packet)
+        self.writer.write(config_packet_bytes)
+        await self.writer.drain()
+        self.logger.info(f"Sent config packet: {config_packet_bytes.hex()}")
+
     async def _receive_impl(self):
         """Receive data from the USB/Serial connection.
-        
+        Based on: https://www.waveshare.com/wiki/Secondary_Development_Serial_Conversion_Definition_of_CAN_Protocol
         This method reads up to 100 bytes from the serial connection and
-        processes complete packets found between 0xAA (start) and 0x55 (end)
-        delimiters. It's called repeatedly by the _receive_loop() method.
+        processes complete 20 bytes packets found after the 0xAA 0x55 header.
+        We are using the _buffer as I saw from time to time bytes getting lost and we cant count on
+        the fact that the header will always be after 20 bytes.
+        It's called repeatedly by the _receive_loop() method.
         """
         data = await self.reader.read(100)
         self.logger.debug(f"Received: {data.hex()}")
@@ -659,16 +690,15 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
         # Continue processing as long as there's data in the buffer
         while True:
             # Find the packet start and end delimiters
-            start = self._buffer.find(b"\xaa")
-            end = self._buffer.find(b"\x55", start)
+            start = self._buffer.find(b"\xaa\x55")
 
-            if start == -1 or end == -1:
+            if start == -1:
                 # If start or end not found, wait for more data
                 break
 
             # Extract the complete packet, including the end delimiter
-            packet = self._buffer[start : end + 1]
-            self.logger.debug(f"Received: {packet.hex()}")
+            packet = self._buffer[start : start + 20]
+            self.logger.debug(f"single packet: {packet.hex()}")
 
             # Process the packet
             message = None
@@ -682,7 +712,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
                 await self.queue.put(message)
 
             # Remove the processed packet from the buffer
-            self._buffer = self._buffer[end + 1 :]
+            self._buffer = self._buffer[start + 20:]
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         """Encode a NMEA2000 message for USB/Serial device.

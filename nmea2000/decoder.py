@@ -6,6 +6,7 @@ from typing import Tuple
 from .message import IsoName, NMEA2000Message
 from .pgns import *  # noqa: F403
 from .consts import PhysicalQuantities
+from .utils import calculate_canbus_checksum
 
 logger = logging.getLogger(__name__)
 
@@ -321,37 +322,28 @@ class NMEA2000Decoder():
 
     def decode_usb(self, packet: bytes) -> NMEA2000Message | None:
         """Tested with Waveshare-usb-a device. Process a single packet and extract the PGN, source ID, and CAN data."""
-        if packet[0] != 0xaa or packet[-1 ] != 0x55:
+        if packet[0] != 0xaa or packet[1] != 0x55:
             raise Exception ("Packet does not have the right prefix and suffix")
         
-        if len(packet) < 2 + 4 + 1: # 2 headers, 4 id, 1 data
-            logger.warning("Packet is too short: %s", packet.hex())
-            return None   
+        if len(packet) != 20:
+            logger.warning("Packet is not 20 bytes long: %s", packet.hex())
+            return None
         
-        # First byte has the data length in the lowest 4 bits
-        type_byte = packet[1]
-        data_length = type_byte & 0x0F  # last 4 bits represent the data length
-        
+        checksum = calculate_canbus_checksum(packet)
+        if checksum != packet[19]:
+            logger.warning("Invalid checksum: %s (expected: %s)", checksum, packet[19])
+            return None
+
         # Extract the frame ID
-        frame_id = packet[2:6]        
+        frame_id = packet[5:9]        
         # Convert frame_id bytes to an integer
         frame_id_int = int.from_bytes(frame_id, byteorder='little')
         # Parse it
         pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(frame_id_int)
 
         # Extract and reverse the CAN data
-        can_data = packet[6:6 + data_length][::-1]
-        can_data_actual_len = len(can_data)
-        if can_data_actual_len < data_length:
-            logger.warning("Got corrupted packet (too short for its payload). PGN ID: %s, source: %s, dest: %s, priority: %s, data_len: %s, actual len: %s, full packet: %s",
-            pgn_id,
-            source_id,
-            dest,
-            priority,
-            data_length,
-            can_data_actual_len,
-            packet.hex())
-            return None
+        data_length = packet[9]
+        can_data = packet[10:10 + data_length][::-1]
                
         # Log the extracted information including the combined string
         logger.debug("Got valid packet. PGN ID: %s, source: %s, dest: %s, priority: %s, CAN Data: %s",

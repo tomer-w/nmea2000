@@ -347,3 +347,8 @@ def decode_string_lau(data_raw: int, bit_offset: int) -> Tuple[str | None, int]:
         decoded_str = byte_arr_str.decode('utf-16', errors='ignore')
     return decoded_str, str_len*8
     
+
+def calculate_canbus_checksum(data):
+    checksum = sum(data[2:])
+    return checksum & 0xff
+
