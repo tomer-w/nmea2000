@@ -248,7 +248,7 @@ class AsyncIOClient(ABC):
                 self.logger.debug(f"Sent: {msg.hex()}")
 
         except ValueError as ve:
-                self.logger.error(f"Failed to encode message. Error {ve}")
+                self.logger.warning(f"Failed to encode message. Error {ve}")
         except Exception as ex:
             if self._state != State.CLOSED:
                 self.logger.error(f"Connection lost while sending. Error {ex}. Reconnecting...", exc_info=True)

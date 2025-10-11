@@ -203,14 +203,14 @@ class IsoName:
         """
         self.name = name
         self.unique_number = message.get_field_int_value_by_id('uniqueNumber', 0)
-        self.manufacturer_code = message.get_field_str_value_by_id('manufacturerCode')
+        self.manufacturer_code = message.get_field_str_value_by_id('manufacturerCode')  # type: ignore
         self.device_instance = (
             message.get_field_int_value_by_id('deviceInstanceUpper', 0) << 3
         ) | message.get_field_int_value_by_id('deviceInstanceLower', 0)
-        self.device_function = message.get_field_str_value_by_id('deviceFunction')
-        self.device_class = message.get_field_str_value_by_id('deviceClass')
+        self.device_function = message.get_field_str_value_by_id('deviceFunction')  # type: ignore
+        self.device_class = message.get_field_str_value_by_id('deviceClass')  # type: ignore
         self.system_instance = message.get_field_int_value_by_id('systemInstance', 0)
-        self.industry_group = message.get_field_str_value_by_id('industryGroup')
+        self.industry_group = message.get_field_str_value_by_id('industryGroup')  # type: ignore
         self.arbitrary_address_capable = message.get_field_str_value_by_id('arbitraryAddressCapable') == "Yes"
 
     def __str__(self) -> str:
