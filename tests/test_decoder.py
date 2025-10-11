@@ -410,13 +410,8 @@ def test_tcp_bytes():
 
 def test_usb_bytes():
     decoder = _get_decoder()
-    msg = decoder.decode_usb(bytes.fromhex("aae80900ff1c3f9fdcffffffffff55"))
+    msg = decoder.decode_usb(bytes.fromhex("aa550102010900ff1c083f9fdcffffffffff00e5"))
     _validate_65280_message(msg)
-
-def test_usb_bytes_corrupted():
-    decoder = _get_decoder()
-    msg = decoder.decode_usb(bytes.fromhex("aae80a01f80955"))
-    assert msg is None
 
 def test_iso_request_decode():
     decoder = _get_decoder()

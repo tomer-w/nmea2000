@@ -3,6 +3,7 @@ import logging
 from .decoder import NMEA2000Decoder
 from .message import NMEA2000Message
 from .pgns import *  # noqa: F403
+from .utils import calculate_canbus_checksum
 
 logger = logging.getLogger(__name__)
 
@@ -123,11 +124,21 @@ class NMEA2000Encoder:
         frame_id_bytes = frame_id_int.to_bytes(4, byteorder='little')
         result = []
         for message in encoded_messages:        
-            # Construct type byte: data length in bottom 4 bits
-            type_byte = 0xE << 4 # header
-            type_byte |= len(message) & 0x0F
+            # https://www.waveshare.com/wiki/Secondary_Development_Serial_Conversion_Definition_of_CAN_Protocol
+            frame_type_byte = 0x1 # 0x0 standard frame (frame ID 2 bytes), 0x1 - extended frame (frame ID 4 bytes)
+            format_type_byte = 0x02 # 0x02-Setting (for sending and receiving data with a fixed 20-byte protocol); 0x12-Setting (for sending and receiving data with a variable protocol)
+            framework_format_byte = 0x01 # No idea what is it
             # Construct and return the full packet
-            result.append(bytes([0xaa, type_byte]) + frame_id_bytes + message + bytes([0x55]))
+            msg_bytes = bytes([0xaa, 0x55, frame_type_byte, format_type_byte, framework_format_byte])
+            msg_bytes += frame_id_bytes
+            msg_bytes += bytes([len(message)])
+            msg_bytes += message
+            for i in range(8-len(message)):
+                msg_bytes += bytes([0x00])
+            msg_bytes += bytes([0x00]) # byte[18] reserved
+            checksum = calculate_canbus_checksum(msg_bytes)
+            msg_bytes += bytes([checksum])
+            result.append(msg_bytes)
         return result
     
     def encode_actisense(self, nmea2000Message: NMEA2000Message) -> str:

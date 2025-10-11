@@ -348,7 +348,7 @@ def decode_string_lau(data_raw: int, bit_offset: int) -> Tuple[str | None, int]:
     return decoded_str, str_len*8
     
 
-def calculate_canbus_checksum(data):
+def calculate_canbus_checksum(data) -> int:
     checksum = sum(data[2:19])
     return checksum & 0xff
 

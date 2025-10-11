@@ -53,16 +53,16 @@ def test_tcp_encode_2():
     encoder = NMEA2000Encoder()
     msg = decoder.decode_tcp(bytes.fromhex("8800ff00093f9fdcffffffffff"))
     assert isinstance(msg, NMEA2000Message)
-    msg_bytes = encoder.encode_ebyte(msg)[0]
-    assert  msg_bytes == bytes.fromhex("8800ff00093f9fdcffffffffff")
+    msg_bytes_hex = encoder.encode_ebyte(msg)[0].hex()
+    assert msg_bytes_hex == "8800ff00093f9fdcffffffffff"
 
 def test_usb_encode():
     decoder = _get_decoder()
     encoder = NMEA2000Encoder()
-    msg = decoder.decode_usb(bytes.fromhex("aae80900ff003f9fdcffffffffff55"))
+    msg = decoder.decode_usb(bytes.fromhex("aa550102010113f10908fffac2ffffffffff00d0"))
     assert isinstance(msg, NMEA2000Message)
-    msg_bytes = encoder.encode_usb(msg)[0]
-    assert  msg_bytes == bytes.fromhex("aae80900ff003f9fdcffffffffff55")
+    msg_bytes_hex = encoder.encode_usb(msg)[0].hex()
+    assert msg_bytes_hex == "aa550102010113f10908fffac2ffffffffff00d0"
 
 def test_yacht_devices_encode():
     decoder = _get_decoder()
