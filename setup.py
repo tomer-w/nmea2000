@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name='nmea2000',
     packages=find_packages(),
-    version='2025.10.8',
+    version='9',
     description='NMEA 2000 encoder and decoder',
     long_description=open('README.md').read(),  # Readme file for long description
     long_description_content_type="text/markdown",

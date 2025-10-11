@@ -349,6 +349,6 @@ def decode_string_lau(data_raw: int, bit_offset: int) -> Tuple[str | None, int]:
     
 
 def calculate_canbus_checksum(data):
-    checksum = sum(data[2:])
+    checksum = sum(data[2:19])
     return checksum & 0xff
 
