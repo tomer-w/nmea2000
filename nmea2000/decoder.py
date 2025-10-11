@@ -329,17 +329,24 @@ class NMEA2000Decoder():
             logger.warning("Packet is not 20 bytes long: %s", packet.hex())
             return None
         
-        checksum = calculate_canbus_checksum(packet)
-        if checksum != packet[19]:
-            logger.warning("Invalid checksum: %s (expected: %s), packet: %s", checksum, packet[19], packet.hex())
-            return None
-
         # Extract the frame ID
         frame_id = packet[5:9]        
         # Convert frame_id bytes to an integer
         frame_id_int = int.from_bytes(frame_id, byteorder='little')
         # Parse it
         pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(frame_id_int)
+
+        checksum = calculate_canbus_checksum(packet)
+        if checksum != packet[19]:
+            logger.warning("Invalid checksum: %s (expected: %s), PGN ID: %s, source: %s, dest: %s, priority: %s, packet: %s",
+                checksum,
+                packet[19],                         
+                pgn_id,
+                source_id,
+                dest,
+                priority,
+                packet.hex())
+            return None
 
         # Extract and reverse the CAN data
         data_length = packet[9]
