@@ -1659,12 +1659,15 @@ master_dict = {
         99: "100% (Max)",
     },
     'SIMNET_AP_EVENTS': {
+        2: "Follow/Non Follow",
         6: "Standby",
-        9: "Auto mode",
+        9: "Heading mode",
         10: "Nav mode",
+        12: "No Drift mode",
         13: "Non Follow Up mode",
         14: "Follow Up mode",
         15: "Wind mode",
+        17: "Tack",
         18: "Square (Turn)",
         19: "C-Turn",
         20: "U-Turn",
@@ -1683,9 +1686,14 @@ master_dict = {
         4: "Left rudder (port)",
         5: "Right rudder (starboard)",
     },
+    'SIMNET_AP_COMMAND_TYPE': {
+        2: "Follow Up",
+        10: "AP Command",
+    },
     'SIMNET_ALARM': {
         57: "Low boat speed",
-        58: "Wind data missing",
+        56: "No autopilot computer",
+        58: "Nav data missing",
     },
     'FUSION_MESSAGE_ID': {
         1: "Request Status",
@@ -5220,12 +5228,15 @@ def lookup_encode_SIMNET_BACKLIGHT_LEVEL(value):
     return result
 
 lookup_dict_encode_SIMNET_AP_EVENTS = {
+    "Follow/Non Follow" : 2,
     "Standby" : 6,
-    "Auto mode" : 9,
+    "Heading mode" : 9,
     "Nav mode" : 10,
+    "No Drift mode" : 12,
     "Non Follow Up mode" : 13,
     "Follow Up mode" : 14,
     "Wind mode" : 15,
+    "Tack" : 17,
     "Square (Turn)" : 18,
     "C-Turn" : 19,
     "U-Turn" : 20,
@@ -5256,9 +5267,20 @@ def lookup_encode_SIMNET_DIRECTION(value):
         raise Exception(f"Cant encode this message, {value} is missing from SIMNET_DIRECTION")
     return result
 
+lookup_dict_encode_SIMNET_AP_COMMAND_TYPE = {
+    "Follow Up" : 2,
+    "AP Command" : 10,
+}
+def lookup_encode_SIMNET_AP_COMMAND_TYPE(value):
+    result = lookup_dict_encode_SIMNET_AP_COMMAND_TYPE.get(value, None)
+    if result is None:
+        raise Exception(f"Cant encode this message, {value} is missing from SIMNET_AP_COMMAND_TYPE")
+    return result
+
 lookup_dict_encode_SIMNET_ALARM = {
     "Low boat speed" : 57,
-    "Wind data missing" : 58,
+    "No autopilot computer" : 56,
+    "Nav data missing" : 58,
 }
 def lookup_encode_SIMNET_ALARM(value):
     result = lookup_dict_encode_SIMNET_ALARM.get(value, None)
@@ -56160,23 +56182,86 @@ def encode_pgn_130848(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_130850() -> bool:
     """Return True if PGN 130850 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 3
+# Complex PGN. number of matches: 11
 def decode_pgn_130850(data_raw: int) -> NMEA2000Message | None:
-    # simnetApCommand | Description: Simnet: AP Command
+    # simnetCommandApStandby | Description: Simnet: Command AP Standby
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
-        (((data_raw >> 32) & 0xFF) == 255)
+        (((data_raw >> 32) & 0xFF) == 255) and
+        (((data_raw >> 40) & 0xFF) == 10) and
+        (((data_raw >> 48) & 0xFF) == 6)
         ):
-        return decode_pgn_130850_simnetApCommand(data_raw)
+        return decode_pgn_130850_simnetCommandApStandby(data_raw)
     
-    # simnetEventCommandApCommand | Description: Simnet: Event Command: AP command
+    # simnetCommandApNodrift | Description: Simnet: Command AP NoDrift
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
         (((data_raw >> 13) & 0x7) == 4) and
-        (((data_raw >> 16) & 0xFF) == 2)
+        (((data_raw >> 32) & 0xFF) == 255) and
+        (((data_raw >> 40) & 0xFF) == 10) and
+        (((data_raw >> 48) & 0xFF) == 12)
         ):
-        return decode_pgn_130850_simnetEventCommandApCommand(data_raw)
+        return decode_pgn_130850_simnetCommandApNodrift(data_raw)
+    
+    # simnetCommandApWind | Description: Simnet: Command AP Wind
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4) and
+        (((data_raw >> 32) & 0xFF) == 255) and
+        (((data_raw >> 40) & 0xFF) == 10) and
+        (((data_raw >> 48) & 0xFF) == 15)
+        ):
+        return decode_pgn_130850_simnetCommandApWind(data_raw)
+    
+    # simnetCommandApNav | Description: Simnet: Command AP Nav
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4) and
+        (((data_raw >> 32) & 0xFF) == 255) and
+        (((data_raw >> 40) & 0xFF) == 10) and
+        (((data_raw >> 48) & 0xFF) == 10)
+        ):
+        return decode_pgn_130850_simnetCommandApNav(data_raw)
+    
+    # simnetCommandApHeading | Description: Simnet: Command AP Heading
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4) and
+        (((data_raw >> 32) & 0xFF) == 255) and
+        (((data_raw >> 40) & 0xFF) == 10) and
+        (((data_raw >> 48) & 0xFF) == 9)
+        ):
+        return decode_pgn_130850_simnetCommandApHeading(data_raw)
+    
+    # simnetCommandApTack | Description: Simnet: Command AP Tack
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4) and
+        (((data_raw >> 32) & 0xFF) == 255) and
+        (((data_raw >> 40) & 0xFF) == 10) and
+        (((data_raw >> 48) & 0xFF) == 17)
+        ):
+        return decode_pgn_130850_simnetCommandApTack(data_raw)
+    
+    # simnetCommandApFollowUp | Description: Simnet: Command AP Follow Up
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4) and
+        (((data_raw >> 32) & 0xFF) == 255) and
+        (((data_raw >> 40) & 0xFF) == 2) and
+        (((data_raw >> 48) & 0xFF) == 14)
+        ):
+        return decode_pgn_130850_simnetCommandApFollowUp(data_raw)
+    
+    # simnetCommandApChangeCourse | Description: Simnet: Command AP Change Course
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4) and
+        (((data_raw >> 32) & 0xFF) == 255) and
+        (((data_raw >> 48) & 0xFF) == 26)
+        ):
+        return decode_pgn_130850_simnetCommandApChangeCourse(data_raw)
     
     # simnetAlarm | Description: Simnet: Alarm
     if (
@@ -56186,12 +56271,27 @@ def decode_pgn_130850(data_raw: int) -> NMEA2000Message | None:
         ):
         return decode_pgn_130850_simnetAlarm(data_raw)
     
+    # simnetApCommand | Description: Simnet: AP command
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4) and
+        (((data_raw >> 32) & 0xFF) == 255)
+        ):
+        return decode_pgn_130850_simnetApCommand(data_raw)
+    
+    # simnetEvent | Description: Simnet: Event
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130850_simnetEvent(data_raw)
+    
     
     return None
     
-def decode_pgn_130850_simnetApCommand(_data_raw_: int) -> NMEA2000Message:
+def decode_pgn_130850_simnetCommandApStandby(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130850."""
-    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetApCommand', description='Simnet: AP Command')
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetCommandApStandby', description='Simnet: Command AP Standby')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -56232,42 +56332,47 @@ def decode_pgn_130850_simnetApCommand(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Autopilot", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 8
 
-    # 7:ap_status | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 7:command_type | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 10, PartOfPrimaryKey: ,
     running_bit_offset = 40
-    ap_status_raw = decode_int(_data_raw_, running_bit_offset, 8)
-    ap_status = master_dict['SIMNET_AP_STATUS'].get(ap_status_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('apStatus', 'AP status', None, None, ap_status, ap_status_raw, None, FieldTypes.LOOKUP, False))
+    command_type_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    command_type = master_dict['SIMNET_AP_COMMAND_TYPE'].get(command_type_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('commandType', 'Command Type', "AP Command", None, command_type, command_type_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 8
 
-    # 8:ap_command | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 8:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 6, PartOfPrimaryKey: ,
     running_bit_offset = 48
-    ap_command_raw = decode_int(_data_raw_, running_bit_offset, 8)
-    ap_command = master_dict['SIMNET_AP_EVENTS'].get(ap_command_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('apCommand', 'AP Command', None, None, ap_command, ap_command_raw, None, FieldTypes.LOOKUP, False))
+    event_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    event = master_dict['SIMNET_AP_EVENTS'].get(event_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', "Standby", None, event, event_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 8
 
-    # 9:spare | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: SPARE, Match: , PartOfPrimaryKey: ,
+    # 9:unknown | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    spare = spare_raw = decode_int(_data_raw_, running_bit_offset, 8)
-    nmea2000Message.fields.append(NMEA2000Field('spare9', 'Spare', None, None, spare, spare_raw, None, FieldTypes.SPARE, False))
+    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 10:direction | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 10:reserved_64 | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    direction_raw = decode_int(_data_raw_, running_bit_offset, 8)
-    direction = master_dict['SIMNET_DIRECTION'].get(direction_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('direction', 'Direction', None, None, direction, direction_raw, None, FieldTypes.LOOKUP, False))
+    reserved_64 = reserved_64_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_64', 'Reserved', None, None, reserved_64, reserved_64_raw, None, FieldTypes.RESERVED, False))
     running_bit_offset += 8
 
-    # 11:angle | Offset: 72, Length: 16, Signed: False Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 11:reserved_72 | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    angle = angle_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.0001, 0, 6.2831852)
-    nmea2000Message.fields.append(NMEA2000Field('angle', 'Angle', "Commanded angle change", 'rad', angle, angle_raw, PhysicalQuantities.ANGLE, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
+    reserved_72 = reserved_72_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_72', 'Reserved', None, None, reserved_72, reserved_72_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 12:reserved_80 | Offset: 80, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
 
     return nmea2000Message
 
-def encode_pgn_130850_simnetApCommand(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130850_simnetCommandApStandby(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130850."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -56313,47 +56418,54 @@ def encode_pgn_130850_simnetApCommand(nmea2000Message: NMEA2000Message) -> bytes
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 32
-    # apStatus | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
-    field = nmea2000Message.get_field_by_id("apStatus")
+    # commandType | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("commandType")
     if field is None:
-        raise Exception("Cant encode this message, missing 'AP status'")
-    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_STATUS(field.value)
+        raise Exception("Cant encode this message, missing 'Command Type'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_COMMAND_TYPE(field.value)
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 40
-    # apCommand | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
-    field = nmea2000Message.get_field_by_id("apCommand")
+    # event | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("event")
     if field is None:
-        raise Exception("Cant encode this message, missing 'AP Command'")
+        raise Exception("Cant encode this message, missing 'Event'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_EVENTS(field.value)
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 48
-    # spare9 | Offset: 56, Length: 8, Resolution: 1, Field Type: SPARE
-    field = nmea2000Message.get_field_by_id("spare9")
+    # unknown | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("unknown")
     if field is None:
-        raise Exception("Cant encode this message, missing 'Spare'")
-    raise Exception("Encoding 'SPARE' not supported")
+        raise Exception("Cant encode this message, missing 'Unknown'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 56
-    # direction | Offset: 64, Length: 8, Resolution: 1, Field Type: LOOKUP
-    field = nmea2000Message.get_field_by_id("direction")
+    # reserved_64 | Offset: 64, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_64")
     if field is None:
-        raise Exception("Cant encode this message, missing 'Direction'")
-    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_DIRECTION(field.value)
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 64
-    # angle | Offset: 72, Length: 16, Resolution: 0.0001, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("angle")
+    # reserved_72 | Offset: 72, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_72")
     if field is None:
-        raise Exception("Cant encode this message, missing 'Angle'")
-    assert field.value is None or isinstance(field.value, (int, float))
-    field_value = encode_number(field.value, 16, False, 0.0001)
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
     assert isinstance(field_value, int)
-    data_raw |= (field_value & 0xFFFF) << 72
+    data_raw |= (field_value & 0xFF) << 72
+    # reserved_80 | Offset: 80, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_80")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 80
     return data_raw.to_bytes(11, byteorder="little")
 
-def decode_pgn_130850_simnetEventCommandApCommand(_data_raw_: int) -> NMEA2000Message:
+def decode_pgn_130850_simnetCommandApNodrift(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130850."""
-    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetEventCommandApCommand', description='Simnet: Event Command: AP command')
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetCommandApNodrift', description='Simnet: Command AP NoDrift')
     running_bit_offset = 0
     # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
     running_bit_offset = 0
@@ -56375,60 +56487,66 @@ def decode_pgn_130850_simnetEventCommandApCommand(_data_raw_: int) -> NMEA2000Me
     nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 3
 
-    # 4:proprietary_id | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 2, PartOfPrimaryKey: True,
+    # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
+    address = address_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('address', 'Address', "NMEA 2000 address of commanded device", None, address, address_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 5:reserved_24 | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 6:proprietary_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 255, PartOfPrimaryKey: True,
+    running_bit_offset = 32
     proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
     proprietary_id = master_dict['SIMNET_EVENT_COMMAND'].get(proprietary_id_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "AP command", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Autopilot", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
     running_bit_offset += 8
 
-    # 5:unused_a | Offset: 24, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 24
-    unused_a = unused_a_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1, 0, 65532)
-    nmea2000Message.fields.append(NMEA2000Field('unusedA', 'Unused A', None, None, unused_a, unused_a_raw, None, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
-
-    # 6:controlling_device | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 7:command_type | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 10, PartOfPrimaryKey: ,
     running_bit_offset = 40
-    controlling_device = controlling_device_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
-    nmea2000Message.fields.append(NMEA2000Field('controllingDevice', 'Controlling Device', None, None, controlling_device, controlling_device_raw, None, FieldTypes.NUMBER, False))
+    command_type_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    command_type = master_dict['SIMNET_AP_COMMAND_TYPE'].get(command_type_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('commandType', 'Command Type', "AP Command", None, command_type, command_type_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 8
 
-    # 7:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 8:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 12, PartOfPrimaryKey: ,
     running_bit_offset = 48
     event_raw = decode_int(_data_raw_, running_bit_offset, 8)
     event = master_dict['SIMNET_AP_EVENTS'].get(event_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', None, None, event, event_raw, None, FieldTypes.LOOKUP, False))
+    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', "No Drift mode", None, event, event_raw, None, FieldTypes.LOOKUP, False))
     running_bit_offset += 8
 
-    # 8:unused_b | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 9:unknown | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    unused_b = unused_b_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
-    nmea2000Message.fields.append(NMEA2000Field('unusedB', 'Unused B', None, None, unused_b, unused_b_raw, None, FieldTypes.NUMBER, False))
+    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 8
 
-    # 9:direction | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    # 10:reserved_64 | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    direction_raw = decode_int(_data_raw_, running_bit_offset, 8)
-    direction = master_dict['SIMNET_DIRECTION'].get(direction_raw, None)
-    nmea2000Message.fields.append(NMEA2000Field('direction', 'Direction', None, None, direction, direction_raw, None, FieldTypes.LOOKUP, False))
+    reserved_64 = reserved_64_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_64', 'Reserved', None, None, reserved_64, reserved_64_raw, None, FieldTypes.RESERVED, False))
     running_bit_offset += 8
 
-    # 10:angle | Offset: 72, Length: 16, Signed: False Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    # 11:reserved_72 | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 72
-    angle = angle_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.0001, 0, 6.2831852)
-    nmea2000Message.fields.append(NMEA2000Field('angle', 'Angle', None, 'rad', angle, angle_raw, PhysicalQuantities.ANGLE, FieldTypes.NUMBER, False))
-    running_bit_offset += 16
+    reserved_72 = reserved_72_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_72', 'Reserved', None, None, reserved_72, reserved_72_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
 
-    # 11:unused_c | Offset: 88, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
-    running_bit_offset = 88
-    unused_c = unused_c_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
-    nmea2000Message.fields.append(NMEA2000Field('unusedC', 'Unused C', None, None, unused_c, unused_c_raw, None, FieldTypes.NUMBER, False))
+    # 12:reserved_80 | Offset: 80, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
     running_bit_offset += 8
 
     return nmea2000Message
 
-def encode_pgn_130850_simnetEventCommandApCommand(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130850_simnetCommandApNodrift(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130850."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -56452,27 +56570,33 @@ def encode_pgn_130850_simnetEventCommandApCommand(nmea2000Message: NMEA2000Messa
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0x7) << 13
-    # proprietaryId | Offset: 16, Length: 8, Resolution: 1, Field Type: LOOKUP
+    # address | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("address")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Address'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 16
+    # reserved_24 | Offset: 24, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_24")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 24
+    # proprietaryId | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
     field = nmea2000Message.get_field_by_id("proprietaryId")
     if field is None:
         raise Exception("Cant encode this message, missing 'Proprietary ID'")
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
     assert isinstance(field_value, int)
-    data_raw |= (field_value & 0xFF) << 16
-    # unusedA | Offset: 24, Length: 16, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("unusedA")
+    data_raw |= (field_value & 0xFF) << 32
+    # commandType | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("commandType")
     if field is None:
-        raise Exception("Cant encode this message, missing 'Unused A'")
-    assert field.value is None or isinstance(field.value, (int, float))
-    field_value = encode_number(field.value, 16, False, 1)
-    assert isinstance(field_value, int)
-    data_raw |= (field_value & 0xFFFF) << 24
-    # controllingDevice | Offset: 40, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("controllingDevice")
-    if field is None:
-        raise Exception("Cant encode this message, missing 'Controlling Device'")
-    assert field.value is None or isinstance(field.value, (int, float))
-    field_value = encode_number(field.value, 8, False, 1)
+        raise Exception("Cant encode this message, missing 'Command Type'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_COMMAND_TYPE(field.value)
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 40
     # event | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
@@ -56482,10 +56606,1082 @@ def encode_pgn_130850_simnetEventCommandApCommand(nmea2000Message: NMEA2000Messa
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_EVENTS(field.value)
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 48
-    # unusedB | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("unusedB")
+    # unknown | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("unknown")
     if field is None:
-        raise Exception("Cant encode this message, missing 'Unused B'")
+        raise Exception("Cant encode this message, missing 'Unknown'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 56
+    # reserved_64 | Offset: 64, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_64")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 64
+    # reserved_72 | Offset: 72, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_72")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 72
+    # reserved_80 | Offset: 80, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_80")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 80
+    return data_raw.to_bytes(11, byteorder="little")
+
+def decode_pgn_130850_simnetCommandApWind(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130850."""
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetCommandApWind', description='Simnet: Command AP Wind')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Simrad", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    address = address_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('address', 'Address', "NMEA 2000 address of commanded device", None, address, address_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 5:reserved_24 | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 6:proprietary_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 255, PartOfPrimaryKey: True,
+    running_bit_offset = 32
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id = master_dict['SIMNET_EVENT_COMMAND'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Autopilot", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 8
+
+    # 7:command_type | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 10, PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    command_type_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    command_type = master_dict['SIMNET_AP_COMMAND_TYPE'].get(command_type_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('commandType', 'Command Type', "AP Command", None, command_type, command_type_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 8:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 15, PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    event_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    event = master_dict['SIMNET_AP_EVENTS'].get(event_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', "Wind mode", None, event, event_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 9:unknown | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 10:reserved_64 | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    reserved_64 = reserved_64_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_64', 'Reserved', None, None, reserved_64, reserved_64_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 11:reserved_72 | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    reserved_72 = reserved_72_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_72', 'Reserved', None, None, reserved_72, reserved_72_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 12:reserved_80 | Offset: 80, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    return nmea2000Message
+
+def encode_pgn_130850_simnetCommandApWind(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130850."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # address | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("address")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Address'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 16
+    # reserved_24 | Offset: 24, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_24")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 24
+    # proprietaryId | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("proprietaryId")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Proprietary ID'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 32
+    # commandType | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("commandType")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Command Type'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_COMMAND_TYPE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 40
+    # event | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("event")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Event'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_EVENTS(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 48
+    # unknown | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("unknown")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Unknown'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 56
+    # reserved_64 | Offset: 64, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_64")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 64
+    # reserved_72 | Offset: 72, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_72")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 72
+    # reserved_80 | Offset: 80, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_80")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 80
+    return data_raw.to_bytes(11, byteorder="little")
+
+def decode_pgn_130850_simnetCommandApNav(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130850."""
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetCommandApNav', description='Simnet: Command AP Nav')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Simrad", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    address = address_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('address', 'Address', "NMEA 2000 address of commanded device", None, address, address_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 5:reserved_24 | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 6:proprietary_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 255, PartOfPrimaryKey: True,
+    running_bit_offset = 32
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id = master_dict['SIMNET_EVENT_COMMAND'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Autopilot", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 8
+
+    # 7:command_type | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 10, PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    command_type_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    command_type = master_dict['SIMNET_AP_COMMAND_TYPE'].get(command_type_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('commandType', 'Command Type', "AP Command", None, command_type, command_type_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 8:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 10, PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    event_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    event = master_dict['SIMNET_AP_EVENTS'].get(event_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', "Nav mode", None, event, event_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 9:unknown | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 10:reserved_64 | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    reserved_64 = reserved_64_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_64', 'Reserved', None, None, reserved_64, reserved_64_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 11:reserved_72 | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    reserved_72 = reserved_72_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_72', 'Reserved', None, None, reserved_72, reserved_72_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 12:reserved_80 | Offset: 80, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    return nmea2000Message
+
+def encode_pgn_130850_simnetCommandApNav(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130850."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # address | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("address")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Address'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 16
+    # reserved_24 | Offset: 24, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_24")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 24
+    # proprietaryId | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("proprietaryId")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Proprietary ID'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 32
+    # commandType | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("commandType")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Command Type'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_COMMAND_TYPE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 40
+    # event | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("event")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Event'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_EVENTS(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 48
+    # unknown | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("unknown")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Unknown'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 56
+    # reserved_64 | Offset: 64, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_64")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 64
+    # reserved_72 | Offset: 72, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_72")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 72
+    # reserved_80 | Offset: 80, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_80")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 80
+    return data_raw.to_bytes(11, byteorder="little")
+
+def decode_pgn_130850_simnetCommandApHeading(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130850."""
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetCommandApHeading', description='Simnet: Command AP Heading')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Simrad", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    address = address_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('address', 'Address', "NMEA 2000 address of commanded device", None, address, address_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 5:reserved_24 | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 6:proprietary_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 255, PartOfPrimaryKey: True,
+    running_bit_offset = 32
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id = master_dict['SIMNET_EVENT_COMMAND'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Autopilot", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 8
+
+    # 7:command_type | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 10, PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    command_type_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    command_type = master_dict['SIMNET_AP_COMMAND_TYPE'].get(command_type_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('commandType', 'Command Type', "AP Command", None, command_type, command_type_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 8:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 9, PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    event_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    event = master_dict['SIMNET_AP_EVENTS'].get(event_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', "Heading mode", None, event, event_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 9:unknown | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 10:reserved_64 | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    reserved_64 = reserved_64_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_64', 'Reserved', None, None, reserved_64, reserved_64_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 11:reserved_72 | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    reserved_72 = reserved_72_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_72', 'Reserved', None, None, reserved_72, reserved_72_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 12:reserved_80 | Offset: 80, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    return nmea2000Message
+
+def encode_pgn_130850_simnetCommandApHeading(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130850."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # address | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("address")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Address'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 16
+    # reserved_24 | Offset: 24, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_24")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 24
+    # proprietaryId | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("proprietaryId")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Proprietary ID'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 32
+    # commandType | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("commandType")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Command Type'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_COMMAND_TYPE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 40
+    # event | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("event")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Event'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_EVENTS(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 48
+    # unknown | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("unknown")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Unknown'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 56
+    # reserved_64 | Offset: 64, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_64")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 64
+    # reserved_72 | Offset: 72, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_72")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 72
+    # reserved_80 | Offset: 80, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_80")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 80
+    return data_raw.to_bytes(11, byteorder="little")
+
+def decode_pgn_130850_simnetCommandApTack(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130850."""
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetCommandApTack', description='Simnet: Command AP Tack')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Simrad", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    address = address_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('address', 'Address', "NMEA 2000 address of commanded device", None, address, address_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 5:reserved_24 | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 6:proprietary_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 255, PartOfPrimaryKey: True,
+    running_bit_offset = 32
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id = master_dict['SIMNET_EVENT_COMMAND'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Autopilot", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 8
+
+    # 7:command_type | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 10, PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    command_type_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    command_type = master_dict['SIMNET_AP_COMMAND_TYPE'].get(command_type_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('commandType', 'Command Type', "AP Command", None, command_type, command_type_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 8:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 17, PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    event_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    event = master_dict['SIMNET_AP_EVENTS'].get(event_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', "Tack", None, event, event_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 9:unknown_a | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    unknown_a = unknown_a_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('unknownA', 'Unknown A', None, None, unknown_a, unknown_a_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 10:unknown_b | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    unknown_b = unknown_b_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('unknownB', 'Unknown B', None, None, unknown_b, unknown_b_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 11:reserved_72 | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    reserved_72 = reserved_72_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_72', 'Reserved', None, None, reserved_72, reserved_72_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 12:reserved_80 | Offset: 80, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 13:reserved_88 | Offset: 88, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 88
+    reserved_88 = reserved_88_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_88', 'Reserved', None, None, reserved_88, reserved_88_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    return nmea2000Message
+
+def encode_pgn_130850_simnetCommandApTack(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130850."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # address | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("address")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Address'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 16
+    # reserved_24 | Offset: 24, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_24")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 24
+    # proprietaryId | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("proprietaryId")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Proprietary ID'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 32
+    # commandType | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("commandType")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Command Type'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_COMMAND_TYPE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 40
+    # event | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("event")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Event'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_EVENTS(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 48
+    # unknownA | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("unknownA")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Unknown A'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 56
+    # unknownB | Offset: 64, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("unknownB")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Unknown B'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 64
+    # reserved_72 | Offset: 72, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_72")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 72
+    # reserved_80 | Offset: 80, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_80")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 80
+    # reserved_88 | Offset: 88, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_88")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 88
+    return data_raw.to_bytes(12, byteorder="little")
+
+def decode_pgn_130850_simnetCommandApFollowUp(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130850."""
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetCommandApFollowUp', description='Simnet: Command AP Follow Up')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Simrad", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    address = address_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('address', 'Address', "NMEA 2000 address of commanded device", None, address, address_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 5:reserved_24 | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 6:proprietary_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 255, PartOfPrimaryKey: True,
+    running_bit_offset = 32
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id = master_dict['SIMNET_EVENT_COMMAND'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Autopilot", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 8
+
+    # 7:command_type | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 2, PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    command_type_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    command_type = master_dict['SIMNET_AP_COMMAND_TYPE'].get(command_type_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('commandType', 'Command Type', "Follow Up", None, command_type, command_type_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 8:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 14, PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    event_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    event = master_dict['SIMNET_AP_EVENTS'].get(event_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', "Follow Up mode", None, event, event_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 9:unknown | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 10:reserved_64 | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    reserved_64 = reserved_64_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_64', 'Reserved', None, None, reserved_64, reserved_64_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 11:reserved_72 | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    reserved_72 = reserved_72_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_72', 'Reserved', None, None, reserved_72, reserved_72_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 12:reserved_80 | Offset: 80, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 13:reserved_88 | Offset: 88, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 88
+    reserved_88 = reserved_88_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_88', 'Reserved', None, None, reserved_88, reserved_88_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    return nmea2000Message
+
+def encode_pgn_130850_simnetCommandApFollowUp(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130850."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # address | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("address")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Address'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 16
+    # reserved_24 | Offset: 24, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_24")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 24
+    # proprietaryId | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("proprietaryId")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Proprietary ID'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 32
+    # commandType | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("commandType")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Command Type'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_COMMAND_TYPE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 40
+    # event | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("event")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Event'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_EVENTS(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 48
+    # unknown | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("unknown")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Unknown'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 56
+    # reserved_64 | Offset: 64, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_64")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 64
+    # reserved_72 | Offset: 72, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_72")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 72
+    # reserved_80 | Offset: 80, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_80")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 80
+    # reserved_88 | Offset: 88, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_88")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 88
+    return data_raw.to_bytes(12, byteorder="little")
+
+def decode_pgn_130850_simnetCommandApChangeCourse(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130850."""
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetCommandApChangeCourse', description='Simnet: Command AP Change Course')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Simrad", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    address = address_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('address', 'Address', "NMEA 2000 address of commanded device", None, address, address_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 5:reserved_24 | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 6:proprietary_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 255, PartOfPrimaryKey: True,
+    running_bit_offset = 32
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id = master_dict['SIMNET_EVENT_COMMAND'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Autopilot", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 8
+
+    # 7:command_type | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    command_type_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    command_type = master_dict['SIMNET_AP_COMMAND_TYPE'].get(command_type_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('commandType', 'Command Type', None, None, command_type, command_type_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 8:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 26, PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    event_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    event = master_dict['SIMNET_AP_EVENTS'].get(event_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', "Change course", None, event, event_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 9:unknown | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    unknown = unknown_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('unknown', 'Unknown', None, None, unknown, unknown_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 10:direction | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    direction_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    direction = master_dict['SIMNET_DIRECTION'].get(direction_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('direction', 'Direction', None, None, direction, direction_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 11:angle | Offset: 72, Length: 16, Signed: False Resolution: 0.0001, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    angle = angle_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 0.0001, 0, 6.2831852)
+    nmea2000Message.fields.append(NMEA2000Field('angle', 'Angle', "Absolute change in desired attitude, generally 1 or 10 degrees", 'rad', angle, angle_raw, PhysicalQuantities.ANGLE, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 12:reserved_88 | Offset: 88, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 88
+    reserved_88 = reserved_88_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_88', 'Reserved', None, None, reserved_88, reserved_88_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    return nmea2000Message
+
+def encode_pgn_130850_simnetCommandApChangeCourse(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130850."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # address | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("address")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Address'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 16
+    # reserved_24 | Offset: 24, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_24")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 24
+    # proprietaryId | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("proprietaryId")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Proprietary ID'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 32
+    # commandType | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("commandType")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Command Type'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_COMMAND_TYPE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 40
+    # event | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("event")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Event'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_EVENTS(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 48
+    # unknown | Offset: 56, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("unknown")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Unknown'")
     assert field.value is None or isinstance(field.value, (int, float))
     field_value = encode_number(field.value, 8, False, 1)
     assert isinstance(field_value, int)
@@ -56505,12 +57701,11 @@ def encode_pgn_130850_simnetEventCommandApCommand(nmea2000Message: NMEA2000Messa
     field_value = encode_number(field.value, 16, False, 0.0001)
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFFFF) << 72
-    # unusedC | Offset: 88, Length: 8, Resolution: 1, Field Type: NUMBER
-    field = nmea2000Message.get_field_by_id("unusedC")
+    # reserved_88 | Offset: 88, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_88")
     if field is None:
-        raise Exception("Cant encode this message, missing 'Unused C'")
-    assert field.value is None or isinstance(field.value, (int, float))
-    field_value = encode_number(field.value, 8, False, 1)
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 88
     return data_raw.to_bytes(12, byteorder="little")
@@ -56673,6 +57868,402 @@ def encode_pgn_130850_simnetAlarm(nmea2000Message: NMEA2000Message) -> bytes:
         raise Exception("Cant encode this message, missing 'G'")
     assert field.value is None or isinstance(field.value, (int, float))
     field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 88
+    return data_raw.to_bytes(12, byteorder="little")
+
+def decode_pgn_130850_simnetApCommand(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130850."""
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetApCommand', description='Simnet: AP command')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Simrad", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    address = address_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('address', 'Address', "NMEA 2000 address of commanded device", None, address, address_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 5:reserved_24 | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 6:proprietary_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 255, PartOfPrimaryKey: True,
+    running_bit_offset = 32
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id = master_dict['SIMNET_EVENT_COMMAND'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', "Autopilot", None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 8
+
+    # 7:command_type | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    command_type_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    command_type = master_dict['SIMNET_AP_COMMAND_TYPE'].get(command_type_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('commandType', 'Command Type', None, None, command_type, command_type_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 8:event | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    event_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    event = master_dict['SIMNET_AP_EVENTS'].get(event_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('event', 'Event', None, None, event, event_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 9:reserved_56 | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    reserved_56 = reserved_56_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_56', 'Reserved', None, None, reserved_56, reserved_56_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 10:reserved_64 | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    reserved_64 = reserved_64_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_64', 'Reserved', None, None, reserved_64, reserved_64_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 11:reserved_72 | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    reserved_72 = reserved_72_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_72', 'Reserved', None, None, reserved_72, reserved_72_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 12:reserved_80 | Offset: 80, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 13:reserved_88 | Offset: 88, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 88
+    reserved_88 = reserved_88_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_88', 'Reserved', None, None, reserved_88, reserved_88_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 14:reserved_96 | Offset: 96, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 96
+    reserved_96 = reserved_96_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_96', 'Reserved', None, None, reserved_96, reserved_96_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 15:reserved_104 | Offset: 104, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 104
+    reserved_104 = reserved_104_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_104', 'Reserved', None, None, reserved_104, reserved_104_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    return nmea2000Message
+
+def encode_pgn_130850_simnetApCommand(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130850."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # address | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("address")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Address'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 16
+    # reserved_24 | Offset: 24, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_24")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 24
+    # proprietaryId | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("proprietaryId")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Proprietary ID'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 32
+    # commandType | Offset: 40, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("commandType")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Command Type'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_COMMAND_TYPE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 40
+    # event | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("event")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Event'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_AP_EVENTS(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 48
+    # reserved_56 | Offset: 56, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_56")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 56
+    # reserved_64 | Offset: 64, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_64")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 64
+    # reserved_72 | Offset: 72, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_72")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 72
+    # reserved_80 | Offset: 80, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_80")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 80
+    # reserved_88 | Offset: 88, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_88")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 88
+    # reserved_96 | Offset: 96, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_96")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 96
+    # reserved_104 | Offset: 104, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_104")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 104
+    return data_raw.to_bytes(14, byteorder="little")
+
+def decode_pgn_130850_simnetEvent(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130850."""
+    nmea2000Message = NMEA2000Message(PGN=130850, id='simnetEvent', description='Simnet: Event')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 1857, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Simrad", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    address = address_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
+    nmea2000Message.fields.append(NMEA2000Field('address', 'Address', "NMEA 2000 address of commanded device", None, address, address_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 8
+
+    # 5:reserved_24 | Offset: 24, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 24
+    reserved_24 = reserved_24_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_24', 'Reserved', None, None, reserved_24, reserved_24_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 6:proprietary_id | Offset: 32, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: True,
+    running_bit_offset = 32
+    proprietary_id_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    proprietary_id = master_dict['SIMNET_EVENT_COMMAND'].get(proprietary_id_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('proprietaryId', 'Proprietary ID', None, None, proprietary_id, proprietary_id_raw, None, FieldTypes.LOOKUP, True))
+    running_bit_offset += 8
+
+    # 7:reserved_40 | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 40
+    reserved_40 = reserved_40_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_40', 'Reserved', None, None, reserved_40, reserved_40_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 8:reserved_48 | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    reserved_48 = reserved_48_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_48', 'Reserved', None, None, reserved_48, reserved_48_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 9:reserved_56 | Offset: 56, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    reserved_56 = reserved_56_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_56', 'Reserved', None, None, reserved_56, reserved_56_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 10:reserved_64 | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 64
+    reserved_64 = reserved_64_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_64', 'Reserved', None, None, reserved_64, reserved_64_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 11:reserved_72 | Offset: 72, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 72
+    reserved_72 = reserved_72_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_72', 'Reserved', None, None, reserved_72, reserved_72_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 12:reserved_80 | Offset: 80, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 80
+    reserved_80 = reserved_80_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_80', 'Reserved', None, None, reserved_80, reserved_80_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    # 13:reserved_88 | Offset: 88, Length: 8, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 88
+    reserved_88 = reserved_88_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_88', 'Reserved', None, None, reserved_88, reserved_88_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 8
+
+    return nmea2000Message
+
+def encode_pgn_130850_simnetEvent(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130850."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # address | Offset: 16, Length: 8, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("address")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Address'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 8, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 16
+    # reserved_24 | Offset: 24, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_24")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 24
+    # proprietaryId | Offset: 32, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("proprietaryId")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Proprietary ID'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_SIMNET_EVENT_COMMAND(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 32
+    # reserved_40 | Offset: 40, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_40")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 40
+    # reserved_48 | Offset: 48, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_48")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 48
+    # reserved_56 | Offset: 56, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_56")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 56
+    # reserved_64 | Offset: 64, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_64")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 64
+    # reserved_72 | Offset: 72, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_72")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 72
+    # reserved_80 | Offset: 80, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_80")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 80
+    # reserved_88 | Offset: 88, Length: 8, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_88")
+    if field is None:
+        raise Exception("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 88
     return data_raw.to_bytes(12, byteorder="little")
