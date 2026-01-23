@@ -10,6 +10,12 @@ from tenacity import stop_never, wait_exponential, retry_if_exception_type
 from tenacity.asyncio import AsyncRetrying
 from abc import ABC, abstractmethod
 
+try:
+    import can.cli
+    USING_PYTHON_CAN = True
+except ImportError:
+    USING_PYTHON_CAN = False
+
 from nmea2000.consts import PhysicalQuantities
 
 from .decoder import NMEA2000Decoder
@@ -32,6 +38,7 @@ class Type(Enum):
     EBYTE = 0
     ACTISENSE = 1
     YACHT_DEVICES = 2
+    PYTHON_CAN = 3
 
 class AsyncIOClient(ABC):
     """Base class for asynchronous NMEA2000 clients.
@@ -693,3 +700,93 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             nmea2000Message: The NMEA2000Message object to encode.
         """
         return self.encoder.encode_usb(nmea2000Message)
+
+class PythonCanAsyncIOClient(AsyncIOClient):
+    """Serial implementation of AsyncIOClient for NMEA2000 gateways.
+    
+    This class implements a USB/Serial client for connecting to NMEA2000 networks
+    through serial-based gateways like ECAN-E01 or ECAN-W01.
+    """
+    def __init__(self,
+                 interface: str,
+                 channel: str,
+                 exclude_pgns:list[int | str]=[], 
+                 include_pgns:list[int | str]=[],
+                 exclude_manufacturer_code:list[str]=[],
+                 include_manufacturer_code:list[str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={},
+                 dump_to_file: str | None = None,
+                 dump_pgns:list[int | str]=[],
+                 build_network_map: bool = False,
+                 **kwargs):
+        """Initialize a USB/Serial NMEA2000 gateway client.
+        
+        Args:
+            port: Serial port name (e.g., "/dev/ttyUSB0" on Linux or "COM3" on Windows).
+            exclude_pgns: List of PGNs to exclude from processing.
+            include_pgns: List of PGNs to include for processing.
+        """
+        if not USING_PYTHON_CAN:
+            raise ImportError("Cannot create PythonCanAsyncIOClient because python-can could not be imported.  Try running 'pip install python-can'.")
+
+        super().__init__(
+            exclude_pgns = exclude_pgns,
+            include_pgns = include_pgns,
+            exclude_manufacturer_code = exclude_manufacturer_code,
+            include_manufacturer_code = include_manufacturer_code,
+            preferred_units = preferred_units,
+            dump_to_file = dump_to_file,
+            dump_pgns = dump_pgns,
+            build_network_map = build_network_map,
+            seed_network_map = True)
+        self.interface = interface
+        self.channel = channel
+        self.canOptions = kwargs
+
+    async def _connect_impl(self):
+        """Connect to the CAN device.
+        
+        This method establishes a connection to the device with the
+        appropriate parameters for NMEA2000 communication. It's called by the
+        connect() method.
+        """
+        self.logger.info(f"Connecting to {self.interface} on {self.channel}")
+
+        self.bus = can.interface.Bus(interface=self.interface, channel=self.channel, **self.canOptions)
+        
+        self.logger.info(f"Connected to {self.interface} on {self.channel}")
+        self._buffer = bytearray()
+                
+    async def _receive_impl(self):
+        """Receive data from the CAN device.
+        
+        This method reads up to 100 bytes from the serial connection and
+        processes complete packets found between 0xAA (start) and 0x55 (end)
+        delimiters. It's called repeatedly by the _receive_loop() method.
+        """
+        while True:
+            # Non-blocking poll for message
+            # TODO: Blocking receive using asyncio
+            msg = self.bus.recv(timeout=0)
+
+            if msg is not None:
+                self.logger.debug(f"Received: {msg}")
+                decoded_frame = None
+                try:
+                    decoded_frame = self.decoder.decode_python_can(msg)
+                except Exception as e:
+                    self.logger.warning(f"decoding failed. message: {msg}. Error: {e}", exc_info=True)
+                
+                self.logger.debug(f"Received message: {decoded_frame}")
+                if decoded_frame is not None:
+                    await self.queue.put(decoded_frame)
+            else:
+                break
+
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[can.message.Message]:
+        """Encode a NMEA2000 message for python-can device.
+        
+        Args:
+            nmea2000Message: The NMEA2000Message object to encode.
+        """
+        return self.encoder.encode_python_can(nmea2000Message)

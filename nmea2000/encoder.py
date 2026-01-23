@@ -33,7 +33,7 @@ class NMEA2000Encoder:
         try:
             can_data_bytes = encode_func(nmea2000Message)
         except Exception as e:
-            raise e
+            raise ValueError(e)
         return can_data_bytes
 
     def _encode_fast_message(self, pgn: int, priority: int, src: int, dest: int, payload_bytes: bytes) -> list[bytes]:

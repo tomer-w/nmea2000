@@ -3,8 +3,14 @@ import asyncio
 import sys
 import logging
 
+try:
+    import can.cli
+    USING_PYTHON_CAN = True
+except ImportError:
+    USING_PYTHON_CAN = False
+
 from .message import NMEA2000Message
-from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, Type, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway
+from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, Type, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway, PythonCanAsyncIOClient
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 
@@ -170,6 +176,23 @@ async def async_main():
         type=str, 
         help="Record only specific pgns, comma seperated"
     )
+
+
+    if USING_PYTHON_CAN:
+        # Parse arguments for connecting to interfaces using python-can
+        python_can_client_parser = subparsers.add_parser("can_client", help="Connect generic CAN adapter using the python-can library")
+        python_can_client_parser.add_argument(
+            "--dump_file", 
+            type=str, 
+            help="Record frames to a given file"
+        )
+        python_can_client_parser.add_argument(
+            "--dump_pgns", 
+            type=str, 
+            help="Record only specific pgns, comma seperated"
+        )
+        can.cli.add_bus_arguments(python_can_client_parser)
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -230,6 +253,15 @@ async def async_main():
         # Create USB client passing callbacks in constructor
         logger.info("Using WaveShareNmea2000Gateway with port: %s", args.port)
         client = WaveShareNmea2000Gateway(port=args.port, dump_to_file=args.dump_file, dump_pgns=args.dump_pgns)
+        await interactive_client(client)
+    elif args.command == "can_client":
+        # Create generic interface using python-can library
+        logger.info("Using PythonCanAsyncIOClient with interface: %s", args.interface)
+        
+        # Strip already-consumed arguments and pass everything else to the driver
+        consumed = ["command"]
+        kwargs = {k:v for (k,v) in args.__dict__.items() if not k in consumed}
+        client = PythonCanAsyncIOClient(**kwargs)
         await interactive_client(client)
 
 def main():
