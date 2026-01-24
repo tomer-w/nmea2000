@@ -379,7 +379,10 @@ class EByteNmea2000Gateway(AsyncIOClient):
         sock = self.writer.get_extra_info("socket")
         if sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 30)  # Idle time before keepalive probes (Linux/macOS)
+            try:
+                sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 30)  # Idle time before keepalive probes (Linux)
+            except AttributeError:
+                sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPALIVE, 30)  # Idle time before keepalive (macOS)
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
         self.logger.info(f"Connected to {self.host}:{self.port}")

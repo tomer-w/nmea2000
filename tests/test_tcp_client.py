@@ -45,9 +45,18 @@ def _create_server_client(type: Type):
 
 @pytest.mark.asyncio
 async def test_single_message_EBYTE():
-    server,client, receive_signal, receive_queue = _create_server_client(Type.EBYTE)
-    await server.start()
-    await client.connect()
+    try:
+        async with asyncio.timeout(10):
+            server,client, receive_signal, receive_queue = _create_server_client(Type.EBYTE)
+            await server.start()
+    except asyncio.TimeoutError:
+        raise AssertionError("Timed out creating mock server")
+
+    try:
+        async with asyncio.timeout(10):
+            await client.connect()
+    except asyncio.TimeoutError:
+        raise AssertionError("Timed out connecting to mock server")
     
     # Wait for the signal that a message was received
     try:
@@ -55,7 +64,13 @@ async def test_single_message_EBYTE():
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
     except asyncio.TimeoutError:
         raise AssertionError("Timed out waiting for receive signal")
-    received_msg = await receive_queue.get()
+
+    try:
+        async with asyncio.timeout(10):
+            received_msg = await receive_queue.get()
+    except asyncio.TimeoutError:
+        raise AssertionError("Timed out waiting for receive queue")
+    
     assert isinstance(received_msg, NMEA2000Message)
     assert received_msg.PGN == 127250
 
@@ -100,9 +115,13 @@ async def test_single_message_ACTISENSE_2():
 
 @pytest.mark.asyncio
 async def test_single_message_YACHT_DEVICES():
-    server,client, receive_signal, receive_queue = _create_server_client(Type.YACHT_DEVICES)
-    await server.start()
-    await client.connect()
+    try:
+        async with asyncio.timeout(10):
+            server,client, receive_signal, receive_queue = _create_server_client(Type.YACHT_DEVICES)
+            await server.start()
+            await client.connect()
+    except asyncio.TimeoutError:
+        raise AssertionError("Timed out creating connection")
     
     # Wait for the signal that a message was received
     try:
@@ -110,7 +129,13 @@ async def test_single_message_YACHT_DEVICES():
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
     except asyncio.TimeoutError:
         raise AssertionError("Timed out waiting for receive signal")
-    msg = await receive_queue.get()
+
+    try:
+        async with asyncio.timeout(10):
+            msg = await receive_queue.get()
+    except asyncio.TimeoutError:
+        raise AssertionError("Timed out waiting for receive queue")
+
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 127257
     assert msg.priority == 5
