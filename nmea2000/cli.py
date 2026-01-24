@@ -260,7 +260,7 @@ async def async_main():
         
         # Strip already-consumed arguments and pass everything else to the driver
         consumed = ["command"]
-        kwargs = {k:v for (k,v) in args.__dict__.items() if not k in consumed}
+        kwargs = {k:v for (k,v) in args.__dict__.items() if k not in consumed}
         client = PythonCanAsyncIOClient(**kwargs)
         await interactive_client(client)
 

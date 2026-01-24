@@ -382,9 +382,6 @@ class NMEA2000Decoder():
         if not USING_PYTHON_CAN:
             raise RuntimeError("python-can dependency is not available.  Try 'pip install python-can'.")
         
-        # Fetch data length from message
-        data_length = len(msg.data)
-        
         # Extract the frame ID
         pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(msg.arbitration_id)
                
