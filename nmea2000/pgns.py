@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .utils import *
 from .message import NMEA2000Message, NMEA2000Field, LookupFieldTypeEnumeration, int_to_bytes
 from .consts import PhysicalQuantities, FieldTypes

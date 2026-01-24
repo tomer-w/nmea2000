@@ -265,9 +265,9 @@ def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool,
     number_int *= resolution
 
     if number_int < min_value:
-        raise ValueError("Value below minimum allowed")
+        raise ValueError("Value ({}) below minimum allowed ({})".format(number_int, min_value))
     if number_int > max_value:
-        raise ValueError("Value above maximum allowed")
+        raise ValueError("Value ({}) above maximum allowed ({})".format(number_int, max_value))
 
     return number_int
 

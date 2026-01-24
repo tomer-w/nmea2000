@@ -395,7 +395,7 @@ class NMEA2000Decoder():
             binascii.hexlify(msg.data, " ").decode('ascii'),
             source_id)
         
-        return self._decode(pgn_id, priority, source_id, dest, msg.timestamp, msg.data)
+        return self._decode(pgn_id, priority, source_id, dest, msg.timestamp, msg.data, msg)
 
     @staticmethod
     def _isFastPGN(pgn_id: int) -> bool | None:
