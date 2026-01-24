@@ -465,7 +465,7 @@ class NMEA2000Decoder():
             logger.error("No decoding function found for PGN: %s. It should be there as we found the is_fast func", pgn)
             return None
 
-        data_int = int.from_bytes(data, "big")
+        data_int = int.from_bytes(data, "little")
         nmea2000Message: NMEA2000Message | None = decode_func(data_int)
         if nmea2000Message is None:
             logger.debug("No sub-decoding function found for PGN: %s", pgn)
