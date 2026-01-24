@@ -8,6 +8,7 @@ from typing import Tuple
 from .message import IsoName, NMEA2000Message
 from .pgns import *  # noqa: F403
 from .consts import PhysicalQuantities
+from .utils import calculate_canbus_checksum
 
 try:
     import can.message
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class fast_pgn_metadata():
     def __init__(self) -> None:
-        self.frames = {}
+        self.frames: dict[int, bytes] = {}
         self.payload_length = 0
         self.bytes_stored = 0
         self.sequence_counter = -1
@@ -41,7 +42,7 @@ class NMEA2000Decoder():
                  dump_pgns:list[int | str]=[],
                  build_network_map: bool = False,
                  ) -> None:
-        self.data = {}
+        self.data: dict[str, fast_pgn_metadata] = {}
         self.dump_TextIOWrapper = None
         self.build_network_map = build_network_map
         self.started_at = datetime.now()
@@ -98,7 +99,7 @@ class NMEA2000Decoder():
                 raise ValueError(f"Invalid PGN type: {type(pgn)}. Must be int or str.")
         return int_list, str_list
 
-    def _decode_fast_message(self, pgn, priority, src, dest, timestamp, can_data, source_iso_name: IsoName | None) -> NMEA2000Message | None:
+    def _decode_fast_message(self, pgn, priority, src, dest, timestamp, can_data: bytes, source_iso_name: IsoName | None, raw_can_data: bytes | str) -> NMEA2000Message | None:
         """Parse a fast packet message and store the data until all frames are received."""
         fast_packet_key = f"{pgn}_{src}_{dest}"
         
@@ -175,7 +176,7 @@ class NMEA2000Decoder():
             nmea = None
             if combined_payload is not None:
                 logger.debug(f"Combined Payload (hex): {combined_payload})")
-                nmea = self._call_decode_function(pgn, priority, src, dest, timestamp, combined_payload, source_iso_name)
+                nmea = self._call_decode_function(pgn, priority, src, dest, timestamp, combined_payload, source_iso_name, raw_can_data)
 
             # Reset the structure for this PGN
             del self.data[fast_packet_key]
@@ -219,7 +220,7 @@ class NMEA2000Decoder():
         # Log the extracted information
         logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {src}, PGN: {pgn}, CAN Data: {reversed_bytes}")
         
-        return self._decode(pgn, priority, src, dest, timestamp, bytes(reversed_bytes), True)
+        return self._decode(pgn, priority, src, dest, timestamp, bytes(reversed_bytes), bytes_data, True)
 
     def decode_yacht_devices_string(self, yd_string: str) -> NMEA2000Message | None:
         """Process an Yacht Devices string and extract the PGN, source ID, and CAN data. Based on: https://www.yachtd.com/downloads/ydwg02.pdf page 62-63"""
@@ -246,7 +247,7 @@ class NMEA2000Decoder():
         # Log the extracted information
         logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {source_id}, PGN: {pgn_id}, CAN Data: {can_data_bytes}")
         
-        return self._decode(pgn_id, priority, source_id, dest, timestamp, bytes(can_data_bytes))
+        return self._decode(pgn_id, priority, source_id, dest, timestamp, bytes(can_data_bytes), yd_string)
 
     def decode_basic_string(self, basic_string: str, already_combined: bool = False) -> NMEA2000Message | None:
         """Process an Actisense packet string and extract the PGN, source ID, and CAN data."""
@@ -273,7 +274,7 @@ class NMEA2000Decoder():
         logger.debug(f"Priority: {priority}, Destination: {dest}, Source: {src}, PGN: {pgn_id}, CAN Data: {can_data_bytes}")
         
         # not calling _decode as in this format the fast frames are already combined
-        return self._decode(pgn_id, priority, src, dest, timestamp, bytes(can_data_bytes), already_combined)
+        return self._decode(pgn_id, priority, src, dest, timestamp, bytes(can_data_bytes), basic_string,already_combined)
 
     @staticmethod
     def _extract_header(frame_id_int: int) -> Tuple[int, int, int, int]:
@@ -325,39 +326,49 @@ class NMEA2000Decoder():
             can_data,
             source_id)
         
-        return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data))
+        return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data), packet)
 
     def decode_usb(self, packet: bytes) -> NMEA2000Message | None:
         """Tested with Waveshare-usb-a device. Process a single packet and extract the PGN, source ID, and CAN data."""
-        if packet[0] != 0xaa or packet[-1 ] != 0x55:
+        if packet[0] != 0xaa or packet[1] != 0x55:
             raise Exception ("Packet does not have the right prefix and suffix")
         
-        if len(packet) < 2 + 4 + 1: # 2 headers, 4 id, 1 data
-            logger.warning("Packet is too short: %s", packet.hex())
-            return None   
-        
-        # First byte has the data length in the lowest 4 bits
-        type_byte = packet[1]
-        data_length = type_byte & 0x0F  # last 4 bits represent the data length
+        if len(packet) != 20:
+            logger.warning("Packet is not 20 bytes long: %s", packet.hex())
+            return None
         
         # Extract the frame ID
-        frame_id = packet[2:6]        
+        frame_id = packet[5:9]        
         # Convert frame_id bytes to an integer
         frame_id_int = int.from_bytes(frame_id, byteorder='little')
         # Parse it
         pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(frame_id_int)
 
+        checksum = calculate_canbus_checksum(packet)
+        if checksum != packet[19]:
+            logger.warning("Invalid checksum: %s (expected: %s), PGN ID: %s, source: %s, dest: %s, priority: %s, packet: %s",
+                checksum,
+                packet[19],                         
+                pgn_id,
+                source_id,
+                dest,
+                priority,
+                packet.hex())
+            return None
+
         # Extract and reverse the CAN data
-        can_data = packet[6:6 + data_length][::-1]
+        data_length = packet[9]
+        can_data = packet[10:10 + data_length][::-1]
                
         # Log the extracted information including the combined string
-        logger.debug("PGN ID: %s, Frame ID: %s, CAN Data: %s, Source ID: %s",
+        logger.debug("Got valid packet. PGN ID: %s, source: %s, dest: %s, priority: %s, CAN Data: %s",
             pgn_id,
-            binascii.hexlify(frame_id).decode('ascii'),
-            can_data,
-            source_id)
+            source_id,
+            dest,
+            priority,
+            can_data.hex())
         
-        return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data))
+        return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data), packet)
 
     def decode_python_can(self, msg: can.message.Message) -> NMEA2000Message | None:
         """
@@ -404,7 +415,7 @@ class NMEA2000Decoder():
             logger.warning("Not supporrted PGN: %d", pgn_id)
             self.logged_unsupported_pgns.add(pgn_id)
 
-    def _decode(self, pgn: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes, already_combined: bool = False) -> NMEA2000Message | None:
+    def _decode(self, pgn: int, priority: int, source_id: int, destination_id: int, timestamp: datetime, can_data: bytes, raw_can_data: bytes | str, already_combined: bool = False) -> NMEA2000Message | None:
         """Decode a single PGN message."""
 
         source_iso_name = None
@@ -442,11 +453,11 @@ class NMEA2000Decoder():
             return None
         
         if is_fast:
-            return self._decode_fast_message(pgn, priority, source_id, destination_id, timestamp, can_data, source_iso_name)
+            return self._decode_fast_message(pgn, priority, source_id, destination_id, timestamp, can_data, source_iso_name, raw_can_data)
         else:
-            return self._call_decode_function(pgn, priority, source_id, destination_id, timestamp, can_data, source_iso_name)
+            return self._call_decode_function(pgn, priority, source_id, destination_id, timestamp, can_data, source_iso_name, raw_can_data)
 
-    def _call_decode_function(self, pgn:int, priority: int, src: int, dest: int, timestamp: datetime, data:bytes, source_iso_name: IsoName | None) -> NMEA2000Message | None:
+    def _call_decode_function(self, pgn:int, priority: int, src: int, dest: int, timestamp: datetime, data:bytes, source_iso_name: IsoName | None, raw_can_data: bytes | str) -> NMEA2000Message | None:
         decode_func_name = f'decode_pgn_{pgn}'
         decode_func = globals().get(decode_func_name)
 
@@ -484,14 +495,14 @@ class NMEA2000Decoder():
             logger.debug("Excluding (by include) PGN %d by id: %s", pgn, nmea2000Message.id)
             return None
         
+        nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name, self.build_network_map, raw_can_data)
+        nmea2000Message.apply_preferred_units(self.preferred_units)
+
         # Handle dump to file
         if (self.dump_TextIOWrapper is not None) and (len(self.dump_include_pgns)+len(self.dump_include_pgns_ids) == 0 or nmea2000Message.PGN in self.dump_include_pgns or nmea2000Message.id in self.dump_include_pgns_ids):
             str = nmea2000Message.to_json() + "\n"
             self.dump_TextIOWrapper.write(str)
                     
-        nmea2000Message.add_data(src, dest, priority, timestamp, source_iso_name, self.build_network_map)
-        nmea2000Message.apply_preferred_units(self.preferred_units)
-
         return nmea2000Message
 
     def close(self):

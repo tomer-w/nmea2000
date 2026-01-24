@@ -51,6 +51,8 @@ class NMEA2000TestServer:
                         writer.write(data)
                         await writer.drain()
                         logger.info(f"Echoed back: {data.hex()}")
+                    else:
+                        await asyncio.sleep(0.01)
                 except asyncio.TimeoutError:
                     # Timeout is expected when no data is received
                     pass

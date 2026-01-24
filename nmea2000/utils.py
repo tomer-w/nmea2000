@@ -147,7 +147,7 @@ def decode_time(seconds_since_midnight: int | float | None) -> time | None:
 
     return time(hour=hours, minute=minutes, second=seconds)
 
-def encode_time(time: time, bit_length: int) -> int:
+def encode_time(time: time | None, bit_length: int) -> int:
     """
     Encodes a time object into an integer representing the number of seconds since midnight.
     Returns:
@@ -164,7 +164,7 @@ def encode_time(time: time, bit_length: int) -> int:
 
 
 
-def decode_decimal(number_int):
+def decode_decimal(number_int: int):
     """
     Decodes a numeric value where each byte represents 2 decimal digits in BCD format.
     """
@@ -182,7 +182,7 @@ def decode_decimal(number_int):
 
     return decimal_value
 
-def encode_decimal(decimal_value):
+def encode_decimal(decimal_value: int | float | None):
     """
     Encodes a numeric value into BCD format where each byte represents 2 decimal digits.
     """
@@ -193,7 +193,7 @@ def encode_decimal(decimal_value):
     shift = 0
 
     while decimal_value > 0:
-        two_digits = decimal_value % 100
+        two_digits = int(decimal_value % 100)
         bcd_byte = ((two_digits // 10) << 4) | (two_digits % 10)
         number_int |= (bcd_byte << shift)
         decimal_value //= 100
@@ -201,7 +201,7 @@ def encode_decimal(decimal_value):
 
     return number_int
 
-def decode_float(data_raw: int, bit_offset: int, bit_length: int):
+def decode_float(data_raw: int, bit_offset: int, bit_length: int, min_value: float, max_value: float):
     """
     Decodes a 32-bit integer representing an IEEE-754 floating-point number in little endian format into a Python float.
     """
@@ -215,10 +215,15 @@ def decode_float(data_raw: int, bit_offset: int, bit_length: int):
 
     # Unpack the bytes to a float using the '<f' format which specifies little-endian 32-bit floating point.
     decoded_float, = struct.unpack('<f', bytes_data)
-    
+
+    if decoded_float < min_value:
+        raise ValueError("Value below minimum allowed")
+    if decoded_float > max_value:
+        raise ValueError("Value above maximum allowed")
+
     return decoded_float
 
-def encode_float(float_number) -> int:
+def encode_float(float_number: float | None) -> int:
     """
     Encodes a Python float into a 32-bit integer representing an IEEE-754 floating-point number in little endian format.
     """
@@ -234,7 +239,7 @@ def encode_float(float_number) -> int:
     return encoded_int
 
 
-def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: float) -> Optional[float]:
+def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: float, min_value: float, max_value: float) -> Optional[float]:
     """
     The function follows specific decoding rules based on the bit length of the number:
     - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (None is returned).
@@ -259,10 +264,15 @@ def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool,
     # adjust resolution
     number_int *= resolution
 
+    if number_int < min_value:
+        raise ValueError("Value below minimum allowed")
+    if number_int > max_value:
+        raise ValueError("Value above maximum allowed")
+
     return number_int
 
 def encode_number(
-    value: Optional[float],
+    value: float | None,
     bit_length: int,
     signed: bool,
     resolution: float
@@ -348,3 +358,8 @@ def decode_string_lau(data_raw: int, bit_offset: int) -> Tuple[str | None, int]:
         decoded_str = byte_arr_str.decode('utf-16', errors='ignore')
     return decoded_str, str_len*8
     
+
+def calculate_canbus_checksum(data) -> int:
+    checksum = sum(data[2:19])
+    return checksum & 0xff
+

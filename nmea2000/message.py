@@ -32,14 +32,16 @@ class NMEA2000Message:
     timestamp: datetime = datetime.now()
     source_iso_name: IsoName | None = None
     hash: str | None = None
-    
-    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName | None, build_network_map: bool):
+    raw_can_data: bytes | str | None = None
+
+    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName | None, build_network_map: bool, raw_can_data: bytes | str):
         self.source = src
         self.destination = dest
         self.priority = priority
         self.timestamp = timestamp
         self.source_iso_name = source_iso_name
         self.hash = None
+        self.raw_can_data = raw_can_data
 
         if build_network_map:
             # Using MD5 as we don't need secure hashing and speed matters
@@ -84,8 +86,11 @@ class NMEA2000Message:
                     f.unit_of_measurement = "kts"
                     f.value = mps_to_knots(f.value)
 
-    def __repr__(self):
+    def __str__(self):
         return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, source_iso_name={self.source_iso_name}, dest={self.destination}, description={self.description}, fields={self.fields})"
+
+    def __repr__(self):
+        return self.__str__()
 
     def to_string_test_style(self):
         fields_str = ', '.join([field.to_string_test_style() for field in self.fields])
@@ -93,15 +98,13 @@ class NMEA2000Message:
 
     def to_json(self):
         def default(obj: Any) -> Any:
-            type_obj = type(obj)
-            if type_obj is bytes:
+            if isinstance(obj, (bytes, bytearray)):
                 return obj.hex()
-            else:
-                try:
-                    return str(obj)
-                except Exception:
-                    raise TypeError
-        return orjson.dumps(self.__dict__,   default=default).decode()
+            if isinstance(obj, timedelta):
+                return obj.total_seconds()
+            # ...existing code...
+            raise TypeError
+        return orjson.dumps(self.__dict__, default=default).decode()
 
     @staticmethod
     def from_json(json_str):
@@ -146,9 +149,12 @@ class NMEA2000Field:
     type: FieldTypes = FieldTypes.NUMBER
     part_of_primary_key: bool | None = None
 
-    def __repr__(self):
+    def __str__(self):
         return f"NMEA2000Field(id={self.id}, name={self.name}, description={self.description}, unit_of_measurement={self.unit_of_measurement}, value={self.value}, raw_value={self.raw_value}, physical_quantities={self.physical_quantities}, type={self.type}, part_of_primary_key = {self.part_of_primary_key})"
 
+    def __repr__(self):
+        return self.__str__()
+    
     def to_string_test_style(self):
         if isinstance(self.raw_value, int):
             # Convert integer to bytes (big-endian)
@@ -197,17 +203,17 @@ class IsoName:
         """
         self.name = name
         self.unique_number = message.get_field_int_value_by_id('uniqueNumber', 0)
-        self.manufacturer_code = message.get_field_str_value_by_id('manufacturerCode')
+        self.manufacturer_code = message.get_field_str_value_by_id('manufacturerCode')  # type: ignore
         self.device_instance = (
             message.get_field_int_value_by_id('deviceInstanceUpper', 0) << 3
         ) | message.get_field_int_value_by_id('deviceInstanceLower', 0)
-        self.device_function = message.get_field_str_value_by_id('deviceFunction')
-        self.device_class = message.get_field_str_value_by_id('deviceClass')
+        self.device_function = message.get_field_str_value_by_id('deviceFunction')  # type: ignore
+        self.device_class = message.get_field_str_value_by_id('deviceClass')  # type: ignore
         self.system_instance = message.get_field_int_value_by_id('systemInstance', 0)
-        self.industry_group = message.get_field_str_value_by_id('industryGroup')
+        self.industry_group = message.get_field_str_value_by_id('industryGroup')  # type: ignore
         self.arbitrary_address_capable = message.get_field_str_value_by_id('arbitraryAddressCapable') == "Yes"
 
-    def __repr__(self):
+    def __str__(self) -> str:
         return (
             f"IsoName(unique_number={self.unique_number}, "
             f"manufacturer_code='{self.manufacturer_code}', "
@@ -219,3 +225,6 @@ class IsoName:
             f"arbitrary_address_capable={self.arbitrary_address_capable}, "
             f"name={self.name})"
         )
+    
+    def __repr__(self):
+        return self.__str__()

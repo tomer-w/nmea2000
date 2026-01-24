@@ -99,7 +99,7 @@ def is_fast_pgn_{{ pgns_in_group[0].PGN }}() -> bool:
 
 {%- if pgns_in_group | length  > 1 and ns_pgn.has_match == true %}
 # Complex PGN. number of matches: {{ pgns_in_group | length }}
-def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message:
+def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message | None:
     {%- for pgn in pgns_in_group if pgn.Fallback is not defined or pgn.Fallback == false %}
     # {{ pgn.Id }} | Description: {{ pgn.Description }}
     if (
@@ -135,7 +135,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset = {{ field.BitOffset }}
     {%- endif %}
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN' or field.FieldType == 'DURATION' %}
-    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'LOOKUP' %}
     {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
     {{ field_name }} = master_dict['{{ field.LookupEnumeration }}'].get({{ field_name }}_raw, None)
@@ -151,9 +151,9 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
         {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, kv_metadata.bits)
         {{ field_name }} = master_dict[kv_metadata.lookup_enumeration].get({{ field_name }}_raw, None)
     if kv_metadata.field_type == 'NUMBER':
-        {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, kv_metadata.bits, {{ field_signed }}, kv_metadata.resolution)
+        {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, kv_metadata.bits, {{ field_signed }}, kv_metadata.resolution, kv_metadata.range_min, kv_metadata.range_max)
     if kv_metadata.field_type == 'TIME':
-        {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, kv_metadata.bits, {{ field_signed }},kv_metadata.resolution)
+        {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, kv_metadata.bits, {{ field_signed }},kv_metadata.resolution, kv_metadata.range_min, kv_metadata.range_max)
         {{ field_name }} = decode_time({{ field_name }}_raw)
     nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', kv_metadata.name, '', kv_metadata.unit, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, kv_metadata.field_type, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
     running_bit_offset += kv_metadata.bits
@@ -166,12 +166,12 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     {{ field_name }} = {{ field_name }}_raw
     running_bit_offset += bits_to_skip
         {%- elif field.FieldType == 'FLOAT'%}
-    {{ field_name }} = {{ field_name }}_raw = decode_float(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    {{ field_name }} = {{ field_name }}_raw = decode_float(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field.RangeMin }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'TIME' %}
-    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
     {{ field_name }} = decode_time({{ field_name }}_raw)
         {%- elif field.FieldType == 'DATE' %}
-    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
     {{ field_name }} = decode_date({{ field_name }}_raw)
         {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
     {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
@@ -222,20 +222,32 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes
     if field is None:
         raise Exception("Cant encode this message, missing '{{field.Name}}'")
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'PGN'%}
+    assert field.value is None or isinstance(field.value, (int, float))
     field_value = encode_number(field.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
     {%- elif field.FieldType == 'RESERVED' %}
     field_value = field.value
     {%- elif field.FieldType == 'FLOAT' %}
+    assert field.value is None or isinstance(field.value, (int, float))
     field_value = encode_float(field.value)
     {%- elif field.FieldType == 'LOOKUP' %}
     field_value = field.raw_value if field.raw_value is not None else lookup_encode_{{field.LookupEnumeration}}(field.value)
     {%- elif field.FieldType == 'DATE' %}
-    field_value = field.raw_value if field.raw_value is not None else encode_date(field.value)
+    if field.raw_value is not None:
+        field_value = field.raw_value
+    else:
+        assert isinstance(field.value, date)
+        field_value = encode_date(field.value)
     {%- elif field.FieldType == 'TIME' or field.FieldType == 'DURATION' %}
-    field_value = int(field.raw_value / {{ field.Resolution }}) if field.raw_value is not None else encode_time(field.value, {{ field.BitLength }})
+    if field.raw_value is not None:
+        assert isinstance(field.raw_value, (int, float))
+        field_value = int(field.raw_value / {{ field.Resolution }})
+    else:
+        assert field.value is None or isinstance(field.value, time)
+        field_value = encode_time(field.value, {{ field.BitLength }})
     {%- else %}
     raise Exception("Encoding '{{field.FieldType}}' not supported")
     {%- endif %}
+    assert isinstance(field_value, int)
     data_raw |= (field_value & {{ bits_to_hex(field.BitLength) }}) << {{ field.BitOffset }}
     {%- endif %}
     {%- endfor %}
