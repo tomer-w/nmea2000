@@ -395,7 +395,10 @@ class NMEA2000Decoder():
             binascii.hexlify(msg.data, " ").decode('ascii'),
             source_id)
         
-        return self._decode(pgn_id, priority, source_id, dest, msg.timestamp, msg.data, msg)
+        # NMEA2000Decoder expects CAN message bytes to be in reverse order
+        reversed_data = msg.data[::-1]
+        decoded = self._decode(pgn_id, priority, source_id, dest, msg.timestamp, reversed_data, msg)
+        return decoded
 
     @staticmethod
     def _isFastPGN(pgn_id: int) -> bool | None:
