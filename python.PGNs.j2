@@ -1,3 +1,4 @@
+# pylint: skip-file
 from .utils import *
 from .message import NMEA2000Message, NMEA2000Field, LookupFieldTypeEnumeration, int_to_bytes
 from .consts import PhysicalQuantities, FieldTypes
@@ -42,7 +43,7 @@ lookup_dict_encode_{{ lookup.Name }} = {
 def lookup_encode_{{ lookup.Name }}(value):
     result = lookup_dict_encode_{{ lookup.Name }}.get(value, None)
     if result is None:
-        raise Exception(f"Cant encode this message, {value} is missing from {{lookup.Name}}")
+        raise ValueError(f"Cant encode this message, {value} is missing from {{lookup.Name}}")
     return result
 {% endfor %}
 
@@ -77,7 +78,7 @@ def is_fast_pgn_{{ pgns_in_group[0].PGN }}() -> bool:
 {%- elif pgns_in_group[0].Type == 'Single' %}
     return False
 {%- else %}
-    raise Exception('PGEN type {{ pgns_in_group[0].Type }} not supported')
+    raise ValueError('PGEN type {{ pgns_in_group[0].Type }} not supported')
 {% endif %}
 
 {%- set ns_pgn = namespace(has_match=false) %}
@@ -192,7 +193,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, {{ length_field_name }}))
             {%- endif -%}
         {%- else %}
-    raise Exception("PGN {{ pgn.PGN }} FieldType ({{ field.FieldType }}) not supported")
+    raise ValueError("PGN {{ pgn.PGN }} FieldType ({{ field.FieldType }}) not supported")
         {%- endif %}
     {%- if field.FieldType != 'KEY_VALUE'  %}
     nmea2000Message.fields.append(NMEA2000Field('{{ generate_field_id(field.Id, field.FieldType, field.BitOffset) }}', '{{ field.Name }}', {% if field.Description is defined -%}"{{field.Description}}"{%- else -%}None{%- endif -%}, {% if field.Unit is defined -%}'{{field.Unit}}'{%- else -%}None{%- endif -%}, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
@@ -214,13 +215,13 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes
     {%- for field in pgn.Fields %}
     {%- set field_signed = field.Signed | default(false)  %}
     {%- if field.BitLength is not defined or field.BitOffset is not defined %}
-    raise Exception ("PGN {{pgn.PGN}} not supporting encoding for now as {{field.Name}} is missing BitLength or BitOffset")
+    raise ValueError ("PGN {{pgn.PGN}} not supporting encoding for now as {{field.Name}} is missing BitLength or BitOffset")
     {%- else %}
     {%- set field_id = generate_field_id(field.Id, field.FieldType, field.BitOffset) %}
     # {{ field_id }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}
     field = nmea2000Message.get_field_by_id("{{ field_id }}")
     if field is None:
-        raise Exception("Cant encode this message, missing '{{field.Name}}'")
+        raise ValueError("Cant encode this message, missing '{{field.Name}}'")
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'PGN'%}
     assert field.value is None or isinstance(field.value, (int, float))
     field_value = encode_number(field.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
@@ -245,7 +246,7 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes
         assert field.value is None or isinstance(field.value, time)
         field_value = encode_time(field.value, {{ field.BitLength }})
     {%- else %}
-    raise Exception("Encoding '{{field.FieldType}}' not supported")
+    raise ValueError("Encoding '{{field.FieldType}}' not supported")
     {%- endif %}
     assert isinstance(field_value, int)
     data_raw |= (field_value & {{ bits_to_hex(field.BitLength) }}) << {{ field.BitOffset }}

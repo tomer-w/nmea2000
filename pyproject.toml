@@ -5,5 +5,8 @@ build-backend = "setuptools.build_meta"
 [tool.ruff]
 extend-exclude = [ "nmea2000/pgns.py" ]
 
+[tool.pylint.messages_control]
+disable = ["line-too-long"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

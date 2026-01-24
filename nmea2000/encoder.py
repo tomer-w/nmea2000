@@ -1,35 +1,39 @@
+"""NMEA 2000 Encoder Module"""
 import logging
+from typing import Callable
 
 from .decoder import NMEA2000Decoder
 from .message import NMEA2000Message
-from .pgns import *  # noqa: F403
+from . import pgns as pgns_module
 from .utils import calculate_canbus_checksum
 
 logger = logging.getLogger(__name__)
 
 class NMEA2000Encoder:
+    """NMEA 2000 Encoder Class"""
     def __init__(self):
         # Sequence counter (3 bits)
         self.sequence_counter = 0
-        
-    def _call_encode_function(self, nmea2000Message: NMEA2000Message) -> bytes:
-        encode_func_name = f'encode_pgn_{nmea2000Message.PGN}'
-        encode_func = globals().get(encode_func_name)
+
+    def _call_encode_function(self, nmea200_message: NMEA2000Message) -> bytes:
+        encode_func_name = f'encode_pgn_{nmea200_message.PGN}'
+        encode_func: Callable[[NMEA2000Message], bytes] | None = getattr(pgns_module, encode_func_name, None)
 
         #if we have multiple functions we need to use the ID as well
         if not encode_func:
-            encode_func_name = f'encode_pgn_{nmea2000Message.PGN}_{nmea2000Message.id}'
-            encode_func = globals().get(encode_func_name)
+            encode_func_name = f'encode_pgn_{nmea200_message.PGN}_{nmea200_message.id}'
+            encode_func: Callable[[NMEA2000Message], bytes] | None = getattr(pgns_module, encode_func_name, None)
+
             if not encode_func:
-                raise ValueError(f"No encoding function found for PGN: {nmea2000Message.PGN}")
-        
+                raise ValueError(f"No encoding function found for PGN: {nmea200_message.PGN}")
+
         try:
-            can_data_bytes = encode_func(nmea2000Message)
+            can_data_bytes = encode_func(nmea200_message) # pylint: disable=not-callable
         except Exception as e:
-            raise ValueError(e)
+            raise ValueError(e) from e
         return can_data_bytes
 
-    def _encode_fast_message(self, pgn: int, priority: int, src: int, dest: int, payload_bytes: bytes) -> list[bytes]:
+    def _encode_fast_message(self, payload_bytes: bytes) -> list[bytes]:
         payload_length = len(payload_bytes)
 
         first_frame_capacity = 6
@@ -86,44 +90,44 @@ class NMEA2000Encoder:
 
         return frame_id
 
-    def _encode(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+    def _encode(self, nmea200_message: NMEA2000Message) -> list[bytes]:
         """Construct a single NMEA 2000 TCP packet from PGN, source ID, priority, and CAN data."""
-        if not (0 <= nmea2000Message.priority <= 7):
+        if not 0 <= nmea200_message.priority <= 7:
             raise ValueError("Priority must be between 0 and 7")
-        if not (0 <= nmea2000Message.source <= 255):
+        if not 0 <= nmea200_message.source <= 255:
             raise ValueError("Source ID must be between 0 and 255")
-        if not (0 <= nmea2000Message.PGN <= 0x3FFFF):  # PGN is 18 bits
+        if not 0 <= nmea200_message.PGN <= 0x3FFFF:  # PGN is 18 bits
             raise ValueError("PGN ID must be between 0 and 0x3FFFF")
 
-        can_data_bytes = self._call_encode_function(nmea2000Message)
-
-        is_fast = NMEA2000Decoder._isFastPGN(nmea2000Message.PGN)
+        can_data_bytes = self._call_encode_function(nmea200_message)
+        is_fast = NMEA2000Decoder.is_fast_pgn(nmea200_message.PGN)
         if is_fast:
-            bytes_list = self._encode_fast_message(nmea2000Message.PGN, nmea2000Message.priority, nmea2000Message.source, nmea2000Message.destination, can_data_bytes)
+            bytes_list = self._encode_fast_message(can_data_bytes)
             return bytes_list
         else:
             return [can_data_bytes]
 
-    def encode_ebyte(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
-        encoded_messages = self._encode(nmea2000Message)                
+    def encode_ebyte(self, nmea200_message: NMEA2000Message) -> list[bytes]:
+        """Construct a single NMEA 2000 eByte packet from PGN, source ID, priority, and CAN data."""
+        encoded_messages = self._encode(nmea200_message)
         # Construct the frame ID
-        frame_id_int = NMEA2000Encoder._build_header(nmea2000Message.PGN, nmea2000Message.source, nmea2000Message.destination, nmea2000Message.priority)
+        frame_id_int = NMEA2000Encoder._build_header(nmea200_message.PGN, nmea200_message.source, nmea200_message.destination, nmea200_message.priority)
         frame_id_bytes = frame_id_int.to_bytes(4, byteorder='big')
         result = []
         for message in encoded_messages:
             # Construct type byte: data length in bottom 4 bits
-            type_byte = (len(message) & 0x0F) | (1 << 7)  # Set the FF bit        
+            type_byte = (len(message) & 0x0F) | (1 << 7)  # Set the FF bit
             # Construct the full packet
             result.append(bytes([type_byte]) + frame_id_bytes + message)
         return result
 
-    def encode_usb(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+    def encode_usb(self, nmea200_message: NMEA2000Message) -> list[bytes]:
         """Construct a single NMEA 2000 USB packet from PGN, source ID, priority, and CAN data."""
-        encoded_messages = self._encode(nmea2000Message)                
-        frame_id_int = NMEA2000Encoder._build_header(nmea2000Message.PGN, nmea2000Message.source, nmea2000Message.destination, nmea2000Message.priority)
+        encoded_messages = self._encode(nmea200_message)
+        frame_id_int = NMEA2000Encoder._build_header(nmea200_message.PGN, nmea200_message.source, nmea200_message.destination, nmea200_message.priority)
         frame_id_bytes = frame_id_int.to_bytes(4, byteorder='little')
         result = []
-        for message in encoded_messages:        
+        for message in encoded_messages:
             # https://www.waveshare.com/wiki/Secondary_Development_Serial_Conversion_Definition_of_CAN_Protocol
             frame_type_byte = 0x1 # 0x0 standard frame (frame ID 2 bytes), 0x1 - extended frame (frame ID 4 bytes)
             format_type_byte = 0x02 # 0x02-Setting (for sending and receiving data with a fixed 20-byte protocol); 0x12-Setting (for sending and receiving data with a variable protocol)
@@ -133,21 +137,21 @@ class NMEA2000Encoder:
             msg_bytes += frame_id_bytes
             msg_bytes += bytes([len(message)])
             msg_bytes += message
-            for i in range(8-len(message)):
+            for _ in range(8-len(message)):
                 msg_bytes += bytes([0x00])
             msg_bytes += bytes([0x00]) # byte[18] reserved
             checksum = calculate_canbus_checksum(msg_bytes)
             msg_bytes += bytes([checksum])
             result.append(msg_bytes)
         return result
-    
-    def encode_actisense(self, nmea2000Message: NMEA2000Message) -> str:
+
+    def encode_actisense(self, nmea200_message: NMEA2000Message) -> str:
         """Convert an Nmea2000Message object into an Actisense packet string."""
         # Extract necessary fields
-        priority = nmea2000Message.priority & 0xF
-        dest = nmea2000Message.destination & 0xFF
-        src = nmea2000Message.source & 0xFF
-        pgn = nmea2000Message.PGN & 0xFFFFFF
+        priority = nmea200_message.priority & 0xF
+        dest = nmea200_message.destination & 0xFF
+        src = nmea200_message.source & 0xFF
+        pgn = nmea200_message.PGN & 0xFFFFFF
 
         # Construct the first part (priority, dest, src)
         n = (src << 12) | (dest << 4) | priority
@@ -156,28 +160,29 @@ class NMEA2000Encoder:
         # Convert PGN to hex
         pgn_part = f"{pgn:05X}"
 
-        can_data_bytes = self._call_encode_function(nmea2000Message)
+        can_data_bytes = self._call_encode_function(nmea200_message)
         can_data_part = can_data_bytes.hex().upper()
 
         # Construct the final Actisense string
         actisense_string = f"{first_part} {pgn_part} {can_data_part}"
-        
-        logger.debug(f"Encoded Actisense string: {actisense_string}")
-        
+
+        logger.debug("Encoded Actisense string: %s", actisense_string)
+
         return actisense_string
-    
+
     @staticmethod
-    def bytes_to_hex_string(data: bytes) -> str:
+    def _bytes_to_hex_string(data: bytes) -> str:
         return ' '.join(f'{byte:02X}' for byte in data)
-    
-    def encode_yacht_devices(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
-        encoded_messages = self._encode(nmea2000Message)                
+
+    def encode_yacht_devices(self, nmea200_message: NMEA2000Message) -> list[bytes]:
+        """Construct a single NMEA 2000 Yacht Devices packet from PGN, source ID, priority, and CAN data."""
+        encoded_messages = self._encode(nmea200_message)
         # Construct the frame ID
-        frame_id_int = NMEA2000Encoder._build_header(nmea2000Message.PGN, nmea2000Message.source, nmea2000Message.destination, nmea2000Message.priority)
+        frame_id_int = NMEA2000Encoder._build_header(nmea200_message.PGN, nmea200_message.source, nmea200_message.destination, nmea200_message.priority)
         frame_id_bytes = frame_id_int.to_bytes(4, byteorder='big')
         result = []
         for message in encoded_messages:
-            # Construct and return the full packet 
-            text_msg = frame_id_bytes.hex().upper() + " " + self.bytes_to_hex_string(message) + "\r\n"
+            # Construct and return the full packet
+            text_msg = frame_id_bytes.hex().upper() + " " + self._bytes_to_hex_string(message) + "\r\n"
             result.append(text_msg.encode())
         return result
