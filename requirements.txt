@@ -1,0 +1,6 @@
+pytest
+orjson
+pyserial-asyncio
+tenacity
+pytest-asyncio
+jinja2
