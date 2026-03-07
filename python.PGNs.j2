@@ -192,6 +192,35 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     assert {{ length_field_name }} is int
     {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, {{ length_field_name }}))
             {%- endif -%}
+        {%- elif field.FieldType == 'FIELD_INDEX' %}
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+        {%- elif field.FieldType == 'VARIABLE' %}
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        {{ field_name }} = {{ field_name }}_raw = None
+        {%- elif field.FieldType == 'DECIMAL' %}
+    {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    {{ field_name }} = decode_decimal({{ field_name }}_raw)
+        {%- elif field.FieldType == 'ISO_NAME' %}
+    {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
+        {%- elif field.FieldType == 'DYNAMIC_FIELD_KEY' %}
+    {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    dyn_kv_metadata = lookup_field_type_{{ field.LookupFieldTypeEnumeration }}({{ field_name }}_raw)
+    {{ field_name }} = dyn_kv_metadata.name if dyn_kv_metadata is not None else None
+        {%- elif field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+        {%- elif field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
+    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
+        _dyn_bits = dyn_kv_metadata.bits
+    else:
+        _dyn_bits = _data_raw_.bit_length() - running_bit_offset
+    if _dyn_bits > 0:
+        {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
+        running_bit_offset += _dyn_bits
+    else:
+        {{ field_name }} = {{ field_name }}_raw = None
         {%- else %}
     raise ValueError("PGN {{ pgn.PGN }} FieldType ({{ field.FieldType }}) not supported")
         {%- endif %}

@@ -479,3 +479,167 @@ def test_python_can_decode():
     decoder2 = _get_decoder()
     decoded = decoder2.decode_python_can(can_msg)
     _validate_65280_message(decoded)
+
+
+# ===== Tests for newly supported field types =====
+# Sample data sourced from https://github.com/canboat/canboat
+
+def test_field_index_and_variable_decode():
+    """Test decoding FIELD_INDEX and VARIABLE field types via PGN 126208 Request group function."""
+    decoder = _get_decoder()
+    # From canboat samples/126208.raw — Request group function (func code = 0)
+    # Expected: PGN=127501, parameter=0 (FIELD_INDEX), value=None (VARIABLE, no remaining bits)
+    msg = decoder.decode_basic_string(
+        "2016-02-28T19:57:41.000Z,3,126208,40,72,08,00,0d,f2,01,f8,01,03,01", True
+    )
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 126208
+    assert msg.description == "NMEA - Request group function"
+
+    param_field = msg.get_field_by_id("parameter")
+    assert param_field is not None
+    assert param_field.type == FieldTypes.FIELD_INDEX
+
+    value_field = msg.get_field_by_id("value")
+    assert value_field is not None
+    assert value_field.type == FieldTypes.VARIABLE
+
+
+def test_field_index_command_group_function():
+    """Test FIELD_INDEX in Command group function (func code = 1) with VARIABLE data."""
+    decoder = _get_decoder()
+    # From canboat samples/126208.raw — Command group function
+    msg = decoder.decode_basic_string(
+        "2020-04-19T00:35:55.571Z,2,126208,0,67,21,01,16,f0,01,ff,01,02,0e,01,"
+        "59,44,3a,56,4f,4c,55,4d,45,20,36,30", True
+    )
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 126208
+    assert msg.description == "NMEA - Command group function"
+
+    param_field = msg.get_field_by_id("parameter")
+    assert param_field is not None
+    assert param_field.type == FieldTypes.FIELD_INDEX
+    assert isinstance(param_field.raw_value, (int, float))
+
+    value_field = msg.get_field_by_id("value")
+    assert value_field is not None
+    assert value_field.type == FieldTypes.VARIABLE
+    assert value_field.value is not None  # has remaining data
+
+
+def test_field_index_read_fields_group_function():
+    """Test FIELD_INDEX in Read Fields group function (func code = 3)."""
+    decoder = _get_decoder()
+    # From canboat analyzer/tests/pgn-test.in
+    msg = decoder.decode_basic_string(
+        "2021-07-29T10:18:31.758Z,6,126208,36,0,11,03,02,fd,01,00,01,02,04,02,02,03", True
+    )
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 126208
+    assert msg.description == "NMEA - Read Fields group function"
+
+    # Find FIELD_INDEX fields
+    field_index_fields = [f for f in msg.fields if f.type == FieldTypes.FIELD_INDEX]
+    assert len(field_index_fields) >= 1
+
+    # Find VARIABLE fields
+    variable_fields = [f for f in msg.fields if f.type == FieldTypes.VARIABLE]
+    assert len(variable_fields) >= 1
+
+
+def test_iso_name_decode():
+    """Test decoding ISO_NAME field type via PGN 126983 (Alert)."""
+    decoder = _get_decoder()
+    # From canboat analyzer/tests/pgn-126983.in — real Alert message with two ISO_NAME fields
+    msg = decoder.decode_basic_string(
+        "2024-02-17T03:46:04.576Z,3,126983,0,1,28,"
+        "01,02,03,00,f8,19,E8,E4,10,00,82,78,C0,04,01,3b,"
+        "07,03,04,04,30,ef,34,12,21,67,32,32", True
+    )
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 126983
+    assert msg.description == "Alert"
+
+    # Check ISO_NAME fields — values verified against canboat expected output
+    iso_fields = [f for f in msg.fields if f.type == FieldTypes.ISO_NAME]
+    assert len(iso_fields) == 2
+
+    src_name_field = msg.get_field_by_id("dataSourceNetworkIdName")
+    assert src_name_field is not None
+    assert src_name_field.type == FieldTypes.ISO_NAME
+    assert src_name_field.raw_value == 13868977989282490393
+
+    ack_name_field = msg.get_field_by_id("acknowledgeSourceNetworkIdName")
+    assert ack_name_field is not None
+    assert ack_name_field.type == FieldTypes.ISO_NAME
+    assert ack_name_field.raw_value == 2383025354739811331
+
+    # Also verify surrounding fields decoded correctly
+    assert msg.get_field_by_id("alertType").value == "Emergency Alarm"
+    assert msg.get_field_by_id("alertCategory").value == "Navigational"
+    assert msg.get_field_by_id("alertId").raw_value == 63488
+
+
+def test_dynamic_field_decode():
+    """Test decoding DYNAMIC_FIELD_KEY, DYNAMIC_FIELD_LENGTH, and DYNAMIC_FIELD_VALUE via PGN 130824."""
+    decoder = _get_decoder()
+    # From canboat samples/ws320.raw — B&G key-value data (fast packet, 8 bytes)
+    # Manufacturer: B&G (381), Industry: Marine (4), Key: Remote 9 (248), Length: 4
+    msg = decoder.decode_basic_string(
+        "2018-02-14T15:55:07.944Z,3,130824,3,255,8,7d,99,f8,40,5a,58,80,05", True
+    )
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 130824
+    assert msg.description == "B&G: key-value data"
+
+    key_field = msg.get_field_by_id("key")
+    assert key_field is not None
+    assert key_field.type == FieldTypes.DYNAMIC_FIELD_KEY
+    assert key_field.value == "Remote 9"
+    assert key_field.raw_value == 248
+    assert key_field.part_of_primary_key is True
+
+    length_field = msg.get_field_by_id("length")
+    assert length_field is not None
+    assert length_field.type == FieldTypes.DYNAMIC_FIELD_LENGTH
+    assert length_field.raw_value == 4
+
+    value_field = msg.get_field_by_id("value")
+    assert value_field is not None
+    assert value_field.type == FieldTypes.DYNAMIC_FIELD_VALUE
+    assert value_field.value is not None
+
+
+def test_decimal_decode():
+    """Test decoding DECIMAL field type via PGN 129808 (DSC Distress Call Information)."""
+    decoder = _get_decoder()
+    # From canboat samples/pgn129808.raw — real DSC message with BCD-encoded DECIMAL fields
+    msg = decoder.decode_basic_string(
+        "2022-04-17-04:35:34.254,4,129808,3,255,83,"
+        "70,70,33,14,00,5f,1e,6e,64,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,"
+        "12,01,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,"
+        "70,69,80,e7,77,b1,3a,68,c0,a6,c1,04,"
+        "ff,ff,ff,ff,ff,7f,fd,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,"
+        "64,0a,01,30,38", True
+    )
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 129808
+    assert msg.description == "DSC Distress Call Information"
+
+    # Check DECIMAL fields
+    decimal_fields = [f for f in msg.fields if f.type == FieldTypes.DECIMAL]
+    assert len(decimal_fields) == 2
+
+    addr_field = msg.get_field_by_id("dscMessageAddress")
+    assert addr_field is not None
+    assert addr_field.type == FieldTypes.DECIMAL
+    assert isinstance(addr_field.value, int)
+
+    mmsi_field = msg.get_field_by_id("mmsiOfShipInDistress")
+    assert mmsi_field is not None
+    assert mmsi_field.type == FieldTypes.DECIMAL
+
+    # Verify surrounding fields
+    assert msg.get_field_by_id("dscFormat").value == "Distress"
+    assert msg.get_field_by_id("dscCategory").value == "Distress"

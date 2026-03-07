@@ -13758,13 +13758,17 @@ def decode_pgn_126208_nmeaRequestGroupFunction(_data_raw_: int) -> NMEA2000Messa
 
     # 6:parameter | Offset: 88, Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    parameter = parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('parameter', 'Parameter', "Parameter index", None, parameter, parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
     # 7:value | Offset: 96, Length: , Signed: False Resolution: , Field Type: VARIABLE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 96
-    raise ValueError("PGN 126208 FieldType (VARIABLE) not supported")
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        value = value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('value', 'Value', "Parameter value", None, value, value_raw, None, FieldTypes.VARIABLE, False))
     
 
@@ -13868,13 +13872,17 @@ def decode_pgn_126208_nmeaCommandGroupFunction(_data_raw_: int) -> NMEA2000Messa
 
     # 6:parameter | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 48
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    parameter = parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('parameter', 'Parameter', "Parameter index", None, parameter, parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
     # 7:value | Offset: 56, Length: , Signed: False Resolution: , Field Type: VARIABLE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 56
-    raise ValueError("PGN 126208 FieldType (VARIABLE) not supported")
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        value = value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('value', 'Value', "Parameter value", None, value, value_raw, None, FieldTypes.VARIABLE, False))
     
 
@@ -14076,17 +14084,21 @@ def decode_pgn_126208_nmeaReadFieldsGroupFunction(_data_raw_: int) -> NMEA2000Me
     running_bit_offset += 8
 
     # 9:selection_parameter | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    selection_parameter = selection_parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('selectionParameter', 'Selection Parameter', "Parameter index", None, selection_parameter, selection_parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
     # 10:selection_value | Offset: , Length: , Signed: False Resolution: , Field Type: VARIABLE, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (VARIABLE) not supported")
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        selection_value = selection_value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        selection_value = selection_value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('selectionValue', 'Selection Value', None, None, selection_value, selection_value_raw, None, FieldTypes.VARIABLE, False))
     
 
     # 11:parameter | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    parameter = parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('parameter', 'Parameter', "Parameter index", None, parameter, parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
@@ -14178,22 +14190,30 @@ def decode_pgn_126208_nmeaReadFieldsReplyGroupFunction(_data_raw_: int) -> NMEA2
     running_bit_offset += 8
 
     # 9:selection_parameter | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    selection_parameter = selection_parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('selectionParameter', 'Selection Parameter', "Parameter index", None, selection_parameter, selection_parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
     # 10:selection_value | Offset: , Length: , Signed: False Resolution: , Field Type: VARIABLE, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (VARIABLE) not supported")
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        selection_value = selection_value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        selection_value = selection_value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('selectionValue', 'Selection Value', None, None, selection_value, selection_value_raw, None, FieldTypes.VARIABLE, False))
     
 
     # 11:parameter | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    parameter = parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('parameter', 'Parameter', "Parameter index", None, parameter, parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
     # 12:value | Offset: , Length: , Signed: False Resolution: , Field Type: VARIABLE, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (VARIABLE) not supported")
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        value = value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('value', 'Value', None, None, value, value_raw, None, FieldTypes.VARIABLE, False))
     
 
@@ -14286,22 +14306,30 @@ def decode_pgn_126208_nmeaWriteFieldsGroupFunction(_data_raw_: int) -> NMEA2000M
     running_bit_offset += 8
 
     # 9:selection_parameter | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    selection_parameter = selection_parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('selectionParameter', 'Selection Parameter', "Parameter index", None, selection_parameter, selection_parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
     # 10:selection_value | Offset: , Length: , Signed: False Resolution: , Field Type: VARIABLE, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (VARIABLE) not supported")
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        selection_value = selection_value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        selection_value = selection_value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('selectionValue', 'Selection Value', None, None, selection_value, selection_value_raw, None, FieldTypes.VARIABLE, False))
     
 
     # 11:parameter | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    parameter = parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('parameter', 'Parameter', "Parameter index", None, parameter, parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
     # 12:value | Offset: , Length: , Signed: False Resolution: , Field Type: VARIABLE, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (VARIABLE) not supported")
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        value = value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('value', 'Value', None, None, value, value_raw, None, FieldTypes.VARIABLE, False))
     
 
@@ -14394,22 +14422,30 @@ def decode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(_data_raw_: int) -> NMEA
     running_bit_offset += 8
 
     # 9:selection_parameter | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    selection_parameter = selection_parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('selectionParameter', 'Selection Parameter', "Parameter index", None, selection_parameter, selection_parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
     # 10:selection_value | Offset: , Length: , Signed: False Resolution: , Field Type: VARIABLE, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (VARIABLE) not supported")
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        selection_value = selection_value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        selection_value = selection_value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('selectionValue', 'Selection Value', None, None, selection_value, selection_value_raw, None, FieldTypes.VARIABLE, False))
     
 
     # 11:parameter | Offset: , Length: 8, Signed: False Resolution: 1, Field Type: FIELD_INDEX, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (FIELD_INDEX) not supported")
+    parameter = parameter_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
     nmea2000Message.fields.append(NMEA2000Field('parameter', 'Parameter', "Parameter index", None, parameter, parameter_raw, None, FieldTypes.FIELD_INDEX, False))
     running_bit_offset += 8
 
     # 12:value | Offset: , Length: , Signed: False Resolution: , Field Type: VARIABLE, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 126208 FieldType (VARIABLE) not supported")
+    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    if _remaining_bits > 0:
+        value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
+    else:
+        value = value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('value', 'Value', None, None, value, value_raw, None, FieldTypes.VARIABLE, False))
     
 
@@ -18820,7 +18856,7 @@ def decode_pgn_126983(_data_raw_: int) -> NMEA2000Message:
 
     # 6:data_source_network_id_name | Offset: 40, Length: 64, Signed: False Resolution: 1, Field Type: ISO_NAME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise ValueError("PGN 126983 FieldType (ISO_NAME) not supported")
+    data_source_network_id_name = data_source_network_id_name_raw = decode_int(_data_raw_, running_bit_offset, 64)
     nmea2000Message.fields.append(NMEA2000Field('dataSourceNetworkIdName', 'Data Source Network ID NAME', None, None, data_source_network_id_name, data_source_network_id_name_raw, None, FieldTypes.ISO_NAME, False))
     running_bit_offset += 64
 
@@ -18892,7 +18928,7 @@ def decode_pgn_126983(_data_raw_: int) -> NMEA2000Message:
 
     # 17:acknowledge_source_network_id_name | Offset: 136, Length: 64, Signed: False Resolution: 1, Field Type: ISO_NAME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 136
-    raise ValueError("PGN 126983 FieldType (ISO_NAME) not supported")
+    acknowledge_source_network_id_name = acknowledge_source_network_id_name_raw = decode_int(_data_raw_, running_bit_offset, 64)
     nmea2000Message.fields.append(NMEA2000Field('acknowledgeSourceNetworkIdName', 'Acknowledge Source Network ID NAME', None, None, acknowledge_source_network_id_name, acknowledge_source_network_id_name_raw, None, FieldTypes.ISO_NAME, False))
     running_bit_offset += 64
 
@@ -19126,7 +19162,7 @@ def decode_pgn_126984(_data_raw_: int) -> NMEA2000Message:
 
     # 6:data_source_network_id_name | Offset: 40, Length: 64, Signed: False Resolution: 1, Field Type: ISO_NAME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise ValueError("PGN 126984 FieldType (ISO_NAME) not supported")
+    data_source_network_id_name = data_source_network_id_name_raw = decode_int(_data_raw_, running_bit_offset, 64)
     nmea2000Message.fields.append(NMEA2000Field('dataSourceNetworkIdName', 'Data Source Network ID NAME', None, None, data_source_network_id_name, data_source_network_id_name_raw, None, FieldTypes.ISO_NAME, False))
     running_bit_offset += 64
 
@@ -19150,7 +19186,7 @@ def decode_pgn_126984(_data_raw_: int) -> NMEA2000Message:
 
     # 10:acknowledge_source_network_id_name | Offset: 128, Length: 64, Signed: False Resolution: 1, Field Type: ISO_NAME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    raise ValueError("PGN 126984 FieldType (ISO_NAME) not supported")
+    acknowledge_source_network_id_name = acknowledge_source_network_id_name_raw = decode_int(_data_raw_, running_bit_offset, 64)
     nmea2000Message.fields.append(NMEA2000Field('acknowledgeSourceNetworkIdName', 'Acknowledge Source Network ID NAME', None, None, acknowledge_source_network_id_name, acknowledge_source_network_id_name_raw, None, FieldTypes.ISO_NAME, False))
     running_bit_offset += 64
 
@@ -19306,7 +19342,7 @@ def decode_pgn_126985(_data_raw_: int) -> NMEA2000Message:
 
     # 6:data_source_network_id_name | Offset: 40, Length: 64, Signed: False Resolution: 1, Field Type: ISO_NAME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise ValueError("PGN 126985 FieldType (ISO_NAME) not supported")
+    data_source_network_id_name = data_source_network_id_name_raw = decode_int(_data_raw_, running_bit_offset, 64)
     nmea2000Message.fields.append(NMEA2000Field('dataSourceNetworkIdName', 'Data Source Network ID NAME', None, None, data_source_network_id_name, data_source_network_id_name_raw, None, FieldTypes.ISO_NAME, False))
     running_bit_offset += 64
 
@@ -19477,7 +19513,7 @@ def decode_pgn_126986(_data_raw_: int) -> NMEA2000Message:
 
     # 6:data_source_network_id_name | Offset: 40, Length: 64, Signed: False Resolution: 1, Field Type: ISO_NAME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise ValueError("PGN 126986 FieldType (ISO_NAME) not supported")
+    data_source_network_id_name = data_source_network_id_name_raw = decode_int(_data_raw_, running_bit_offset, 64)
     nmea2000Message.fields.append(NMEA2000Field('dataSourceNetworkIdName', 'Data Source Network ID NAME', None, None, data_source_network_id_name, data_source_network_id_name_raw, None, FieldTypes.ISO_NAME, False))
     running_bit_offset += 64
 
@@ -19700,7 +19736,7 @@ def decode_pgn_126987(_data_raw_: int) -> NMEA2000Message:
 
     # 6:data_source_network_id_name | Offset: 40, Length: 64, Signed: False Resolution: 1, Field Type: ISO_NAME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise ValueError("PGN 126987 FieldType (ISO_NAME) not supported")
+    data_source_network_id_name = data_source_network_id_name_raw = decode_int(_data_raw_, running_bit_offset, 64)
     nmea2000Message.fields.append(NMEA2000Field('dataSourceNetworkIdName', 'Data Source Network ID NAME', None, None, data_source_network_id_name, data_source_network_id_name_raw, None, FieldTypes.ISO_NAME, False))
     running_bit_offset += 64
 
@@ -19910,7 +19946,7 @@ def decode_pgn_126988(_data_raw_: int) -> NMEA2000Message:
 
     # 6:data_source_network_id_name | Offset: 40, Length: 64, Signed: False Resolution: 1, Field Type: ISO_NAME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise ValueError("PGN 126988 FieldType (ISO_NAME) not supported")
+    data_source_network_id_name = data_source_network_id_name_raw = decode_int(_data_raw_, running_bit_offset, 64)
     nmea2000Message.fields.append(NMEA2000Field('dataSourceNetworkIdName', 'Data Source Network ID NAME', None, None, data_source_network_id_name, data_source_network_id_name_raw, None, FieldTypes.ISO_NAME, False))
     running_bit_offset += 64
 
@@ -36510,7 +36546,8 @@ def decode_pgn_129808_dscDistressCallInformation(_data_raw_: int) -> NMEA2000Mes
 
     # 3:dsc_message_address | Offset: 16, Length: 40, Signed: False Resolution: 1, Field Type: DECIMAL, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 129808 FieldType (DECIMAL) not supported")
+    dsc_message_address_raw = decode_int(_data_raw_, running_bit_offset, 40)
+    dsc_message_address = decode_decimal(dsc_message_address_raw)
     nmea2000Message.fields.append(NMEA2000Field('dscMessageAddress', 'DSC Message Address', "MMSI, Geographic Area or blank", None, dsc_message_address, dsc_message_address_raw, None, FieldTypes.DECIMAL, False))
     running_bit_offset += 40
 
@@ -36565,7 +36602,8 @@ def decode_pgn_129808_dscDistressCallInformation(_data_raw_: int) -> NMEA2000Mes
     running_bit_offset += 32
 
     # 12:mmsi_of_ship_in_distress | Offset: , Length: 40, Signed: False Resolution: 1, Field Type: DECIMAL, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 129808 FieldType (DECIMAL) not supported")
+    mmsi_of_ship_in_distress_raw = decode_int(_data_raw_, running_bit_offset, 40)
+    mmsi_of_ship_in_distress = decode_decimal(mmsi_of_ship_in_distress_raw)
     nmea2000Message.fields.append(NMEA2000Field('mmsiOfShipInDistress', 'MMSI of Ship In Distress', None, None, mmsi_of_ship_in_distress, mmsi_of_ship_in_distress_raw, None, FieldTypes.DECIMAL, False))
     running_bit_offset += 40
 
@@ -36716,7 +36754,8 @@ def decode_pgn_129808_dscCallInformation(_data_raw_: int) -> NMEA2000Message:
 
     # 3:dsc_message_address | Offset: 16, Length: 40, Signed: False Resolution: 1, Field Type: DECIMAL, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 129808 FieldType (DECIMAL) not supported")
+    dsc_message_address_raw = decode_int(_data_raw_, running_bit_offset, 40)
+    dsc_message_address = decode_decimal(dsc_message_address_raw)
     nmea2000Message.fields.append(NMEA2000Field('dscMessageAddress', 'DSC Message Address', "MMSI, Geographic Area or blank", None, dsc_message_address, dsc_message_address_raw, None, FieldTypes.DECIMAL, False))
     running_bit_offset += 40
 
@@ -36771,7 +36810,8 @@ def decode_pgn_129808_dscCallInformation(_data_raw_: int) -> NMEA2000Message:
     running_bit_offset += 32
 
     # 12:mmsi_of_ship_in_distress | Offset: , Length: 40, Signed: False Resolution: 1, Field Type: DECIMAL, Match: , PartOfPrimaryKey: ,
-    raise ValueError("PGN 129808 FieldType (DECIMAL) not supported")
+    mmsi_of_ship_in_distress_raw = decode_int(_data_raw_, running_bit_offset, 40)
+    mmsi_of_ship_in_distress = decode_decimal(mmsi_of_ship_in_distress_raw)
     nmea2000Message.fields.append(NMEA2000Field('mmsiOfShipInDistress', 'MMSI of Ship In Distress', None, None, mmsi_of_ship_in_distress, mmsi_of_ship_in_distress_raw, None, FieldTypes.DECIMAL, False))
     running_bit_offset += 40
 
@@ -38014,7 +38054,7 @@ def decode_pgn_130061(_data_raw_: int) -> NMEA2000Message:
 
     # 5:source_name | Offset: 24, Length: 64, Signed: False Resolution: 1, Field Type: ISO_NAME, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 24
-    raise ValueError("PGN 130061 FieldType (ISO_NAME) not supported")
+    source_name = source_name_raw = decode_int(_data_raw_, running_bit_offset, 64)
     nmea2000Message.fields.append(NMEA2000Field('sourceName', 'Source NAME', None, None, source_name, source_name_raw, None, FieldTypes.ISO_NAME, False))
     running_bit_offset += 64
 
@@ -53025,19 +53065,29 @@ def decode_pgn_130824_bGKeyValueData(_data_raw_: int) -> NMEA2000Message:
 
     # 4:key | Offset: 16, Length: 12, Signed: False Resolution: 1, Field Type: DYNAMIC_FIELD_KEY, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 16
-    raise ValueError("PGN 130824 FieldType (DYNAMIC_FIELD_KEY) not supported")
+    key_raw = decode_int(_data_raw_, running_bit_offset, 12)
+    dyn_kv_metadata = lookup_field_type_BANDG_KEY_VALUE(key_raw)
+    key = dyn_kv_metadata.name if dyn_kv_metadata is not None else None
     nmea2000Message.fields.append(NMEA2000Field('key', 'Key', None, None, key, key_raw, None, FieldTypes.DYNAMIC_FIELD_KEY, True))
     running_bit_offset += 12
 
     # 5:length | Offset: 28, Length: 4, Signed: False Resolution: 1, Field Type: DYNAMIC_FIELD_LENGTH, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 28
-    raise ValueError("PGN 130824 FieldType (DYNAMIC_FIELD_LENGTH) not supported")
+    length = length_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 1, 0, 13)
     nmea2000Message.fields.append(NMEA2000Field('length', 'Length', "Length of field 6", None, length, length_raw, None, FieldTypes.DYNAMIC_FIELD_LENGTH, False))
     running_bit_offset += 4
 
     # 6:value | Offset: 32, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    raise ValueError("PGN 130824 FieldType (DYNAMIC_FIELD_VALUE) not supported")
+    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
+        _dyn_bits = dyn_kv_metadata.bits
+    else:
+        _dyn_bits = _data_raw_.bit_length() - running_bit_offset
+    if _dyn_bits > 0:
+        value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
+        running_bit_offset += _dyn_bits
+    else:
+        value = value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('value', 'Value', "Data value", None, value, value_raw, None, FieldTypes.DYNAMIC_FIELD_VALUE, False))
     
 
@@ -53613,7 +53663,9 @@ def decode_pgn_130833(_data_raw_: int) -> NMEA2000Message:
 
     # 4:data_type | Offset: 16, Length: 12, Signed: False Resolution: 1, Field Type: DYNAMIC_FIELD_KEY, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 16
-    raise ValueError("PGN 130833 FieldType (DYNAMIC_FIELD_KEY) not supported")
+    data_type_raw = decode_int(_data_raw_, running_bit_offset, 12)
+    dyn_kv_metadata = lookup_field_type_BANDG_KEY_VALUE(data_type_raw)
+    data_type = dyn_kv_metadata.name if dyn_kv_metadata is not None else None
     nmea2000Message.fields.append(NMEA2000Field('dataType', 'Data Type', None, None, data_type, data_type_raw, None, FieldTypes.DYNAMIC_FIELD_KEY, True))
     running_bit_offset += 12
 
@@ -55583,7 +55635,9 @@ def decode_pgn_130845_simnetKeyValue(_data_raw_: int) -> NMEA2000Message:
 
     # 8:key | Offset: 48, Length: 16, Signed: False Resolution: 1, Field Type: DYNAMIC_FIELD_KEY, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 48
-    raise ValueError("PGN 130845 FieldType (DYNAMIC_FIELD_KEY) not supported")
+    key_raw = decode_int(_data_raw_, running_bit_offset, 16)
+    dyn_kv_metadata = lookup_field_type_SIMNET_KEY_VALUE(key_raw)
+    key = dyn_kv_metadata.name if dyn_kv_metadata is not None else None
     nmea2000Message.fields.append(NMEA2000Field('key', 'Key', None, None, key, key_raw, None, FieldTypes.DYNAMIC_FIELD_KEY, True))
     running_bit_offset += 16
 
@@ -55601,7 +55655,15 @@ def decode_pgn_130845_simnetKeyValue(_data_raw_: int) -> NMEA2000Message:
 
     # 11:value | Offset: 80, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 80
-    raise ValueError("PGN 130845 FieldType (DYNAMIC_FIELD_VALUE) not supported")
+    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
+        _dyn_bits = dyn_kv_metadata.bits
+    else:
+        _dyn_bits = _data_raw_.bit_length() - running_bit_offset
+    if _dyn_bits > 0:
+        value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
+        running_bit_offset += _dyn_bits
+    else:
+        value = value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('value', 'Value', "Data value", None, value, value_raw, None, FieldTypes.DYNAMIC_FIELD_VALUE, False))
     
 
@@ -55759,7 +55821,9 @@ def decode_pgn_130846_simnetParameterSet(_data_raw_: int) -> NMEA2000Message:
 
     # 8:key | Offset: 56, Length: 16, Signed: False Resolution: 1, Field Type: DYNAMIC_FIELD_KEY, Match: , PartOfPrimaryKey: True,
     running_bit_offset = 56
-    raise ValueError("PGN 130846 FieldType (DYNAMIC_FIELD_KEY) not supported")
+    key_raw = decode_int(_data_raw_, running_bit_offset, 16)
+    dyn_kv_metadata = lookup_field_type_SIMNET_KEY_VALUE(key_raw)
+    key = dyn_kv_metadata.name if dyn_kv_metadata is not None else None
     nmea2000Message.fields.append(NMEA2000Field('key', 'Key', None, None, key, key_raw, None, FieldTypes.DYNAMIC_FIELD_KEY, True))
     running_bit_offset += 16
 
@@ -55777,7 +55841,15 @@ def decode_pgn_130846_simnetParameterSet(_data_raw_: int) -> NMEA2000Message:
 
     # 11:value | Offset: 88, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    raise ValueError("PGN 130846 FieldType (DYNAMIC_FIELD_VALUE) not supported")
+    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
+        _dyn_bits = dyn_kv_metadata.bits
+    else:
+        _dyn_bits = _data_raw_.bit_length() - running_bit_offset
+    if _dyn_bits > 0:
+        value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
+        running_bit_offset += _dyn_bits
+    else:
+        value = value_raw = None
     nmea2000Message.fields.append(NMEA2000Field('value', 'Value', "Data value", None, value, value_raw, None, FieldTypes.DYNAMIC_FIELD_VALUE, False))
     
 
