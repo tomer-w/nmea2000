@@ -2,6 +2,7 @@
 import logging
 from typing import Callable
 
+import can.message
 from .decoder import NMEA2000Decoder
 from .message import NMEA2000Message
 from . import pgns as pgns_module
@@ -169,6 +170,29 @@ class NMEA2000Encoder:
         logger.debug("Encoded Actisense string: %s", actisense_string)
 
         return actisense_string
+
+    def encode_python_can(self, nmea200_message: NMEA2000Message) -> list:
+        """Construct NMEA 2000 packets as python-can Message objects."""
+        encoded_messages = self._encode(nmea200_message)
+        arbitration_id = NMEA2000Encoder._build_header(
+            nmea200_message.PGN, nmea200_message.source,
+            nmea200_message.destination, nmea200_message.priority)
+        # python-can expects timestamp as a float (Unix epoch seconds)
+        ts = nmea200_message.timestamp
+        if hasattr(ts, 'timestamp'):
+            ts = ts.timestamp()
+        result = []
+        for message in encoded_messages:
+            result.append(can.message.Message(
+                timestamp=ts,
+                arbitration_id=arbitration_id,
+                is_extended_id=True,
+                is_remote_frame=False,
+                is_error_frame=False,
+                is_rx=False,
+                data=message
+            ))
+        return result
 
     @staticmethod
     def _bytes_to_hex_string(data: bytes) -> str:

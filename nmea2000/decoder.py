@@ -4,6 +4,7 @@ import binascii
 import os
 from datetime import datetime, timedelta
 from typing import Tuple, Optional, List, Dict, Callable
+import can.message
 from .message import IsoName, NMEA2000Message
 from .consts import PhysicalQuantities
 from .utils import calculate_canbus_checksum
@@ -376,6 +377,23 @@ class NMEA2000Decoder():
             can_data.hex())
 
         return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data), packet)
+
+    def decode_python_can(self, msg: "can.message.Message") -> "NMEA2000Message | None":
+        """Decode a python-can Message object.
+
+        Process a single python-can Message and extract the PGN, source ID, and CAN data.
+        python-can already parses the message into a Message object with arbitration_id
+        and data fields. The remaining work is decoding the 29-bit arbitration ID and
+        stitching together fast data messages.
+        """
+        pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(msg.arbitration_id)
+
+        # python-can data is already in network byte order; reverse to match internal convention
+        can_data = bytes(msg.data)[::-1]
+
+        timestamp = datetime.fromtimestamp(msg.timestamp) if msg.timestamp else datetime.now()
+
+        return self._decode(pgn_id, priority, source_id, dest, timestamp, can_data, msg.data)
 
     @staticmethod
     def is_fast_pgn(pgn_id: int) -> bool | None:

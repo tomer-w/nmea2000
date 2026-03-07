@@ -4,6 +4,8 @@ import socket
 from enum import Enum
 from typing import Callable, Awaitable, Optional
 import serial_asyncio
+import can.cli
+import can.interface
 from tenacity import stop_never, wait_exponential, retry_if_exception_type
 from tenacity.asyncio import AsyncRetrying
 from abc import ABC, abstractmethod
@@ -30,6 +32,7 @@ class Type(Enum):
     EBYTE = 0
     ACTISENSE = 1
     YACHT_DEVICES = 2
+    PYTHON_CAN = 3
 
 class AsyncIOClient(ABC):
     """Base class for asynchronous NMEA2000 clients.
@@ -724,3 +727,71 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             nmea2000Message: The NMEA2000Message object to encode.
         """
         return self.encoder.encode_usb(nmea2000Message)
+
+class PythonCanAsyncIOClient(AsyncIOClient):
+    """AsyncIOClient implementation for python-can supported devices.
+
+    Connects to NMEA2000 networks through any CAN interface supported by the
+    python-can library (e.g. slcan, seeedstudio, socketcan).
+    """
+    def __init__(self,
+                 interface: str,
+                 channel: str,
+                 exclude_pgns: list[int | str] = [],
+                 include_pgns: list[int | str] = [],
+                 exclude_manufacturer_code: list[str] = [],
+                 include_manufacturer_code: list[str] = [],
+                 preferred_units: dict[PhysicalQuantities, str] = {},
+                 dump_to_file: str | None = None,
+                 dump_pgns: list[int | str] = [],
+                 build_network_map: bool = False,
+                 **kwargs):
+        """Initialize a python-can NMEA2000 client.
+
+        Args:
+            interface: python-can interface name (e.g. 'slcan', 'socketcan').
+            channel: CAN channel (e.g. '/dev/ttyUSB0', 'can0').
+            **kwargs: Additional arguments passed to python-can Bus constructor.
+        """
+        super().__init__(
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+            seed_network_map=True)
+        self.interface = interface
+        self.channel = channel
+        self.can_options = kwargs
+
+    async def _connect_impl(self):
+        """Connect to the CAN device via python-can."""
+        self.logger.info("Connecting to %s on %s", self.interface, self.channel)
+        self.bus = can.interface.Bus(
+            interface=self.interface, channel=self.channel, **self.can_options)
+        self.logger.info("Connected to %s on %s", self.interface, self.channel)
+
+    async def _receive_impl(self):
+        """Receive data from the CAN device using non-blocking poll."""
+        while True:
+            msg = self.bus.recv(timeout=0)
+            if msg is None:
+                break
+
+            self.logger.debug("Received: %s", msg)
+            decoded_frame = None
+            try:
+                decoded_frame = self.decoder.decode_python_can(msg)
+            except Exception as e:
+                self.logger.warning("decoding failed. message: %s. Error: %s", msg, e, exc_info=True)
+
+            self.logger.debug("Received message: %s", decoded_frame)
+            if decoded_frame is not None:
+                await self.queue.put(decoded_frame)
+
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list:
+        """Encode a NMEA2000 message for python-can device."""
+        return self.encoder.encode_python_can(nmea2000Message)
