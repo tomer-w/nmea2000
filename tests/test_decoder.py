@@ -460,3 +460,22 @@ def test_fusion():
     msg = decoder.decode_basic_string("2025-06-20T19:33:12.240Z,7,126720,0,255,11,a3,99,09,00,0b,07,00,00,00,02,02", True)
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 126720
+
+def test_python_can_decode():
+    """Test decoding a python-can Message object."""
+    decoder = _get_decoder()
+    # Build a CAN message for PGN 65280 (Furuno: Heave)
+    # Using the same data as test_single_parse but via python-can Message
+    encoder = NMEA2000Encoder()
+    original_msg = decoder.decode_actisense_string("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
+    assert isinstance(original_msg, NMEA2000Message)
+
+    # Encode to python-can messages
+    can_messages = encoder.encode_python_can(original_msg)
+    assert len(can_messages) == 1
+    can_msg = can_messages[0]
+
+    # Now decode the python-can message back
+    decoder2 = _get_decoder()
+    decoded = decoder2.decode_python_can(can_msg)
+    _validate_65280_message(decoded)
