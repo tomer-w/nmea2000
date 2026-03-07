@@ -19,6 +19,16 @@ dependencies = [
     "python-can>=4.6.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "ruff",
+    "pre-commit",
+    "jinja2",
+]
+
 [project.urls]
 Homepage = "https://github.com/tomer-w/nmea2000"
 Repository = "https://github.com/tomer-w/nmea2000"

@@ -4,9 +4,8 @@ from datetime import date, timedelta
 import struct
 import math
 from datetime import time
-from typing import Optional, Tuple
 
-def kelvin_to_fahrenheit(kelvin):
+def kelvin_to_fahrenheit(kelvin: float | None) -> float | None:
     """
     Converts temperature from Kelvin to Fahrenheit.
     Returns:
@@ -21,7 +20,7 @@ def kelvin_to_fahrenheit(kelvin):
     return fahrenheit
 
 
-def kelvin_to_celsius(kelvin):
+def kelvin_to_celsius(kelvin: float | None) -> float | None:
     """
     Converts temperature from Kelvin to Celsius.
     Returns:
@@ -35,7 +34,7 @@ def kelvin_to_celsius(kelvin):
 
     return celsius
 
-def pascal_to_bar(pascal):
+def pascal_to_bar(pascal: float | None) -> float | None:
     if pascal is None:
         return None
 
@@ -44,7 +43,7 @@ def pascal_to_bar(pascal):
 
     return bar
 
-def pascal_to_PSI(pascal):
+def pascal_to_PSI(pascal: float | None) -> float | None:
     if pascal is None:
         return None
 
@@ -53,7 +52,7 @@ def pascal_to_PSI(pascal):
 
     return PSI
 
-def mps_to_knots(mps):
+def mps_to_knots(mps: float | None) -> float | None:
     """
     Converts speed from meters per second (m/s) to nautical knots.
     Returns:
@@ -71,7 +70,7 @@ def mps_to_knots(mps):
     return knots
 
 
-def radians_to_degrees(radians):
+def radians_to_degrees(radians: float | None) -> float | None:
     """
     Converts an angle from radians to degrees.
     Returns:
@@ -84,7 +83,7 @@ def radians_to_degrees(radians):
     degrees = round(math.degrees(radians), 0)
     return degrees
 
-def decode_int(data_raw: int, bit_offset: int, bit_length: int):
+def decode_int(data_raw: int, bit_offset: int, bit_length: int) -> int:
     data_raw = data_raw >> bit_offset
     # Create a mask with the desired number of bits set to 1
     mask = (1 << bit_length) - 1
@@ -163,7 +162,7 @@ def encode_time(time: time | None, bit_length: int) -> int:
 
 
 
-def decode_decimal(number_int: int):
+def decode_decimal(number_int: int | None) -> int | None:
     """
     Decodes a numeric value where each byte represents 2 decimal digits in BCD format.
     """
@@ -181,7 +180,7 @@ def decode_decimal(number_int: int):
 
     return decimal_value
 
-def encode_decimal(decimal_value: int | float | None):
+def encode_decimal(decimal_value: int | float | None) -> int | None:
     """
     Encodes a numeric value into BCD format where each byte represents 2 decimal digits.
     """
@@ -200,7 +199,7 @@ def encode_decimal(decimal_value: int | float | None):
 
     return number_int
 
-def decode_float(data_raw: int, bit_offset: int, bit_length: int, min_value: float, max_value: float):
+def decode_float(data_raw: int, bit_offset: int, bit_length: int, min_value: float, max_value: float) -> float:
     """
     Decodes a 32-bit integer representing an IEEE-754 floating-point number in little endian format into a Python float.
     """
@@ -238,7 +237,7 @@ def encode_float(float_number: float | None) -> int:
     return encoded_int
 
 
-def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: float, min_value: float, max_value: float) -> Optional[float]:
+def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: float, min_value: float, max_value: float) -> float | None:
     """
     The function follows specific decoding rules based on the bit length of the number:
     - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (None is returned).
@@ -312,7 +311,7 @@ def encode_number(
 
     return number_int
 
-def decode_bit_lookup(data_raw: int, bit_lookup_dict) -> str:
+def decode_bit_lookup(data_raw: int, bit_lookup_dict: dict) -> str:
     bit = 0
     flags = []
     while data_raw !=0:
@@ -343,7 +342,7 @@ def decode_string_lz(data_raw: int, bit_offset: int) -> str:
     decoded_str = byte_arr_str.decode('utf-8', errors='ignore')
     return decoded_str
     
-def decode_string_lau(data_raw: int, bit_offset: int) -> Tuple[str | None, int]:
+def decode_string_lau(data_raw: int, bit_offset: int) -> tuple[str | None, int]:
     data_raw = data_raw >> bit_offset
     byte_arr = data_raw.to_bytes(((data_raw.bit_length() + 7) // 8)+1, byteorder='little')
     if len(byte_arr) < 2:

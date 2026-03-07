@@ -32,13 +32,19 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip && pip install .
-        python -m pip install ruff pytest pytest-asyncio
+        python -m pip install ruff pytest pytest-asyncio pytest-cov
     - name: Lint with ruff
       run: |
         ruff check . --line-length 127
     - name: Test with pytest
       run: |
-        pytest
+        pytest --cov=nmea2000 --cov-report=xml --cov-report=term-missing
+    - name: Upload coverage to Codecov
+      if: matrix.python-version == '3.13'
+      uses: codecov/codecov-action@v5
+      with:
+        files: ./coverage.xml
+        fail_ci_if_error: false
 
   update_release_draft:
     permissions:
