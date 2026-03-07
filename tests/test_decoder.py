@@ -463,7 +463,6 @@ def test_fusion():
 
 def test_python_can_decode():
     """Test decoding a python-can Message object."""
-    import can.message
     decoder = _get_decoder()
     # Build a CAN message for PGN 65280 (Furuno: Heave)
     # Using the same data as test_single_parse but via python-can Message

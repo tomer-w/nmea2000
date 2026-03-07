@@ -97,7 +97,6 @@ def test_python_can_encode():
 
 def test_python_can_roundtrip():
     """Test that encode -> decode roundtrip via python-can preserves message content."""
-    import can.message
     decoder = _get_decoder()
     encoder = NMEA2000Encoder()
     # Start with a USB-decoded message
