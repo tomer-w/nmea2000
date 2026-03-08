@@ -17,15 +17,20 @@ async def handle_received_message(message: NMEA2000Message):
     """Callback function for received data."""
     print(f"Received: {message}")
 
+async def handle_received_message_json(message: NMEA2000Message):
+    """Callback function that outputs JSON, one object per line."""
+    print(message.to_json(), flush=True)
+
 # Define status change callback as a standalone function
 async def handle_status_change(state: State):
     """Callback function for status changes."""
     print(f"Connection status: {state}")
 
-async def interactive_client(client: AsyncIOClient):
+async def interactive_client(client: AsyncIOClient, json_output: bool = False):
     """Interactive client function to handle user input."""
-    client.set_receive_callback(handle_received_message)
-    client. set_status_callback(handle_status_change)
+    callback = handle_received_message_json if json_output else handle_received_message
+    client.set_receive_callback(callback)
+    client.set_status_callback(handle_status_change)
     await client.connect()
     
     print("Connected to NMEA2000 gateway. Enter NMEA2000 messages in JSON format.")
@@ -153,6 +158,11 @@ async def async_main():
         required=True,
         help="Type of TCP server (EBYTE, ACTISENSE, or YACHT_DEVICES)"
     )
+    tcp_client_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output received messages as JSON, one per line"
+    )
 
     # USB client command
     usb_client_parser = subparsers.add_parser("usb_client", help="start USB client to CANBUS gateway (for example, Waveshare USB-CAN-A)")
@@ -172,6 +182,11 @@ async def async_main():
         type=str, 
         help="Record only specific pgns, comma seperated"
     )
+    usb_client_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output received messages as JSON, one per line"
+    )
 
     python_can_client_parser = subparsers.add_parser(
         "can_client", help="Connect generic CAN adapter using the python-can library")
@@ -179,6 +194,8 @@ async def async_main():
         "--dump_file", type=str, help="Record frames to a given file")
     python_can_client_parser.add_argument(
         "--dump_pgns", type=str, help="Record only specific pgns, comma seperated")
+    python_can_client_parser.add_argument(
+        "--json", action="store_true", help="Output received messages as JSON, one per line")
     can.cli.add_bus_arguments(python_can_client_parser)
 
     # Parse arguments
@@ -236,18 +253,18 @@ async def async_main():
         elif args.type == Type.YACHT_DEVICES:
             logger.info("Using YachtDevicesNmea2000Gateway with server: %s, port: %d", args.server, args.port)
             client = YachtDevicesNmea2000Gateway(args.server, args.port)            
-        await interactive_client(client)
+        await interactive_client(client, json_output=args.json)
     elif args.command == "usb_client":
         # Create USB client passing callbacks in constructor
         logger.info("Using WaveShareNmea2000Gateway with port: %s", args.port)
         client = WaveShareNmea2000Gateway(port=args.port, dump_to_file=args.dump_file, dump_pgns=args.dump_pgns)
-        await interactive_client(client)
+        await interactive_client(client, json_output=args.json)
     elif args.command == "can_client":
         logger.info("Using PythonCanAsyncIOClient with interface: %s", args.interface)
         consumed = ["command"]
         kwargs = {k: v for (k, v) in args.__dict__.items() if k not in consumed}
         client = PythonCanAsyncIOClient(**kwargs)
-        await interactive_client(client)
+        await interactive_client(client, json_output=args.json)
 
 def main():
     try:

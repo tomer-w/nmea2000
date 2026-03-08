@@ -95,6 +95,14 @@ for msg in bus:
 nmea2000-cli tcp_client --server 192.168.0.46 --port 8881 --type actisense
 ```
 
+Use `--json` to output received messages as JSON (one object per line), useful for piping into other tools:
+
+```bash
+nmea2000-cli tcp_client --server 192.168.0.46 --port 8881 --type actisense --json
+```
+
+The `--json` flag is also available for `usb_client` and `can_client`.
+
 ### TCP Client code
 
 ```python
@@ -170,6 +178,87 @@ encoder = NMEA2000Encoder()
 msg_bytes = encoder.encode_ebyte(_generate_test_message())
 print(msg_bytes)
 ```
+
+## Node-RED Integration
+
+You can stream decoded NMEA 2000 data into [Node-RED](https://nodered.org/) using the CLI with the `--json` flag and a Node-RED **exec** node.
+
+### Setup
+
+1. **Exec node** — add an `exec` node and configure:
+   - **Command**: `nmea2000-cli tcp_client --server 192.168.1.100 --port 8881 --type EBYTE --json`
+   - **Output**: select **"when stdout has data"** so it emits a message for each line (not on process exit)
+   - **Use spawn mode**: enable `Use spawn() instead of exec()`  
+   - **Timeout**: leave blank (this is a long-running process)
+   - **Append msg.payload**: uncheck
+
+2. **JSON node** — connect the exec node's first output (stdout) to a `json` node to parse each line into a JavaScript object.
+
+3. **Process the data** — use a `switch` or `function` node to route by PGN:
+   ```js
+   // Example function node: add topic by PGN
+   msg.topic = "nmea2000/pgn/" + msg.payload.PGN;
+   return msg;
+   ```
+
+### Importable Flow
+
+Copy and import this JSON into Node-RED (Menu → Import → Clipboard):
+
+```json
+[
+    {
+        "id": "nmea2000_exec",
+        "type": "exec",
+        "name": "NMEA2000 Stream",
+        "command": "nmea2000-cli tcp_client --server 192.168.1.100 --port 8881 --type EBYTE --json",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "true",
+        "oldrc": false,
+        "timer": "",
+        "wires": [["nmea2000_json"], [], []]
+    },
+    {
+        "id": "nmea2000_json",
+        "type": "json",
+        "name": "Parse JSON",
+        "property": "payload",
+        "wires": [["nmea2000_debug"]]
+    },
+    {
+        "id": "nmea2000_debug",
+        "type": "debug",
+        "name": "NMEA2000 Data",
+        "active": true,
+        "tosidebar": true,
+        "wires": []
+    }
+]
+```
+
+Each received NMEA 2000 message arrives as a parsed JSON object:
+
+```json
+{
+    "PGN": 127250,
+    "id": "vesselHeading",
+    "description": "Vessel Heading",
+    "source": 3,
+    "destination": 255,
+    "priority": 2,
+    "fields": [
+        {
+            "id": "heading",
+            "name": "Heading",
+            "value": 182.5,
+            "unit_of_measurement": "deg"
+        }
+    ]
+}
+```
+
+> **Tip:** Replace `tcp_client` with `usb_client` or `can_client` depending on your gateway hardware. All client commands support the `--json` flag.
 
 ## Development
 
