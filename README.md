@@ -134,7 +134,6 @@ output:
 
 
 ### Example Code
-TBD
 ```python
 from nmea2000.encoder import NMEA2000Encoder
 
