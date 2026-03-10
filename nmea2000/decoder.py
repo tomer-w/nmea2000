@@ -12,6 +12,9 @@ from . import pgns as pgns_module
 
 logger = logging.getLogger(__name__)
 
+class InvalidFrameError(Exception):
+    """Raised when a USB frame has invalid structure (bad checksum, wrong length, etc.)."""
+
 class FastPgnMetadata():
     """Class to store metadata for fast packet PGNs."""
     def __init__(self) -> None:
@@ -339,11 +342,10 @@ class NMEA2000Decoder():
     def decode_usb(self, packet: bytes) -> NMEA2000Message | None:
         """Tested with Waveshare-usb-a device. Process a single packet and extract the PGN, source ID, and CAN data."""
         if packet[0] != 0xaa or packet[1] != 0x55:
-            raise ValueError("Packet does not have the right prefix and suffix")
+            raise InvalidFrameError("Packet does not have the right prefix and suffix")
 
         if len(packet) != 20:
-            logger.warning("Packet is not 20 bytes long: %s", packet.hex())
-            return None
+            raise InvalidFrameError(f"Packet is not 20 bytes long: {packet.hex()}")
 
         # Extract the frame ID
         frame_id = packet[5:9]
@@ -354,15 +356,11 @@ class NMEA2000Decoder():
 
         checksum = calculate_canbus_checksum(packet)
         if checksum != packet[19]:
-            logger.warning("Invalid checksum: %s (expected: %s), PGN ID: %s, source: %s, dest: %s, priority: %s, packet: %s",
-                checksum,
-                packet[19],
-                pgn_id,
-                source_id,
-                dest,
-                priority,
-                packet.hex())
-            return None
+            raise InvalidFrameError(
+                f"Invalid checksum: {checksum} (expected: {packet[19]}), "
+                f"PGN ID: {pgn_id}, source: {source_id}, dest: {dest}, "
+                f"priority: {priority}, packet: {packet.hex()}"
+            )
 
         # Extract and reverse the CAN data
         data_length = packet[9]

@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 
 from .consts import PhysicalQuantities
 from .utils import calculate_canbus_checksum
-from .decoder import NMEA2000Decoder
+from .decoder import NMEA2000Decoder, InvalidFrameError
 from .encoder import NMEA2000Encoder
 from .message import NMEA2000Message
 
@@ -710,6 +710,11 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             message = None
             try:
                 message = self.decoder.decode_usb(packet)
+            except InvalidFrameError as e:
+                self.logger.debug("Invalid frame, resyncing: %s", e)
+                # Skip past this false aa55 marker to find the next valid packet start
+                self._buffer = self._buffer[start + 2:]
+                continue
             except Exception as e:
                 self.logger.warning(f"decoding failed. bytes: {packet.hex()}. Error: {e}", exc_info=True)
 

@@ -1,11 +1,12 @@
 from datetime import timedelta
 import json
-import uuid
-from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message
-from nmea2000.encoder import NMEA2000Encoder
-from nmea2000.consts import PhysicalQuantities, FieldTypes
 import os
+import uuid
 
+import pytest
+from nmea2000.consts import PhysicalQuantities, FieldTypes
+from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message, InvalidFrameError
+from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.message import IsoName
 
 
@@ -412,6 +413,21 @@ def test_usb_bytes():
     decoder = _get_decoder()
     msg = decoder.decode_usb(bytes.fromhex("aa550102010900ff1c083f9fdcffffffffff00e5"))
     _validate_65280_message(msg)
+
+def test_usb_bytes_invalid_checksum():
+    decoder = _get_decoder()
+    with pytest.raises(InvalidFrameError, match="Invalid checksum"):
+        decoder.decode_usb(bytes.fromhex("aa550102010900ff1c083f9fdcffffffffff00ff"))
+
+def test_usb_bytes_invalid_header():
+    decoder = _get_decoder()
+    with pytest.raises(InvalidFrameError, match="prefix"):
+        decoder.decode_usb(bytes.fromhex("bb550102010900ff1c083f9fdcffffffffff00e5"))
+
+def test_usb_bytes_invalid_length():
+    decoder = _get_decoder()
+    with pytest.raises(InvalidFrameError, match="not 20 bytes"):
+        decoder.decode_usb(bytes.fromhex("aa550102010900ff1c08"))
 
 def test_iso_request_decode():
     decoder = _get_decoder()
