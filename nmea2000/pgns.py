@@ -590,6 +590,7 @@ master_dict = {
         6: "WMM 2010",
         7: "WMM 2015",
         8: "WMM 2020",
+        9: "WMM 2025",
     },
     'RESIDUAL_MODE': {
         0: "Autonomous",
@@ -2294,6 +2295,38 @@ master_dict = {
     'MARETRON_PRODUCT_CODE': {
         434: "SSC200",
         2686: "SSC300",
+        2781: "TLA100",
+        3979: "NBE100",
+        4078: "RIM100",
+        8165: "ALM100",
+        20067: "TMP100",
+        22585: "DCR100",
+        23603: "SIM100",
+        26493: "ACM100",
+    },
+    'MARETRON_OPCODE': {
+        0: "Read All",
+        1: "Write Register",
+        2: "Read Config",
+        3: "Write Config",
+        4: "Calibrate",
+        5: "Clear Calibration",
+        6: "Status",
+        7: "Clear Status",
+        8: "Reset Factory Default",
+        9: "Debug",
+        16: "Write Instance",
+        17: "Read Instance",
+        32: "Write Label",
+        33: "Read Label",
+        48: "Write Switch Config",
+        49: "Read Switch Config",
+        64: "Write Alert Config",
+        65: "Read Alert Config",
+        80: "Write Channel Config",
+        81: "Read Channel Config",
+        86: "Read Channel Config Extended",
+        87: "Write Channel Config Extended",
     },
     'MARETRON_SOFTWARE_CODE': {
         1: "Version 1",
@@ -3391,6 +3424,7 @@ lookup_dict_encode_MAGNETIC_VARIATION = {
     "WMM 2010" : 6,
     "WMM 2015" : 7,
     "WMM 2020" : 8,
+    "WMM 2025" : 9,
 }
 def lookup_encode_MAGNETIC_VARIATION(value):
     result = lookup_dict_encode_MAGNETIC_VARIATION.get(value, None)
@@ -6223,11 +6257,49 @@ def lookup_encode_ZONE_SIZE(value):
 lookup_dict_encode_MARETRON_PRODUCT_CODE = {
     "SSC200" : 434,
     "SSC300" : 2686,
+    "TLA100" : 2781,
+    "NBE100" : 3979,
+    "RIM100" : 4078,
+    "ALM100" : 8165,
+    "TMP100" : 20067,
+    "DCR100" : 22585,
+    "SIM100" : 23603,
+    "ACM100" : 26493,
 }
 def lookup_encode_MARETRON_PRODUCT_CODE(value):
     result = lookup_dict_encode_MARETRON_PRODUCT_CODE.get(value, None)
     if result is None:
         raise ValueError(f"Cant encode this message, {value} is missing from MARETRON_PRODUCT_CODE")
+    return result
+
+lookup_dict_encode_MARETRON_OPCODE = {
+    "Read All" : 0,
+    "Write Register" : 1,
+    "Read Config" : 2,
+    "Write Config" : 3,
+    "Calibrate" : 4,
+    "Clear Calibration" : 5,
+    "Status" : 6,
+    "Clear Status" : 7,
+    "Reset Factory Default" : 8,
+    "Debug" : 9,
+    "Write Instance" : 16,
+    "Read Instance" : 17,
+    "Write Label" : 32,
+    "Read Label" : 33,
+    "Write Switch Config" : 48,
+    "Read Switch Config" : 49,
+    "Write Alert Config" : 64,
+    "Read Alert Config" : 65,
+    "Write Channel Config" : 80,
+    "Read Channel Config" : 81,
+    "Read Channel Config Extended" : 86,
+    "Write Channel Config Extended" : 87,
+}
+def lookup_encode_MARETRON_OPCODE(value):
+    result = lookup_dict_encode_MARETRON_OPCODE.get(value, None)
+    if result is None:
+        raise ValueError(f"Cant encode this message, {value} is missing from MARETRON_OPCODE")
     return result
 
 lookup_dict_encode_MARETRON_SOFTWARE_CODE = {
@@ -9716,7 +9788,7 @@ def encode_pgn_65240(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_65280() -> bool:
     """Return True if PGN 65280 is a fast PGN."""
     return False
-# Complex PGN. number of matches: 2
+# Complex PGN. number of matches: 3
 def decode_pgn_65280(data_raw: int) -> NMEA2000Message | None:
     # furunoHeave | Description: Furuno: Heave
     if (
@@ -9724,6 +9796,13 @@ def decode_pgn_65280(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65280_furunoHeave(data_raw)
+    
+    # maretronKeelPosition | Description: Maretron: Keel Position
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65280_maretronKeelPosition(data_raw)
     
     return decode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(data_raw)
     
@@ -9871,6 +9950,140 @@ def encode_pgn_65280_furunoHeave(nmea2000Message: NMEA2000Message) -> bytes:
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw.to_bytes(8, byteorder="little")
 
+def decode_pgn_65280_maretronKeelPosition(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65280."""
+    nmea2000Message = NMEA2000Message(PGN=65280, id='maretronKeelPosition', description='Maretron: Keel Position')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65280_maretronKeelPosition(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65280."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
+
+def is_fast_pgn_65282() -> bool:
+    """Return True if PGN 65282 is a fast PGN."""
+    return False
+def decode_pgn_65282(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65282."""
+    nmea2000Message = NMEA2000Message(PGN=65282, id='maretronNumberOfChannels', description='Maretron: Number of Channels')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65282(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65282."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
 
 def is_fast_pgn_65284() -> bool:
     """Return True if PGN 65284 is a fast PGN."""
@@ -9986,7 +10199,7 @@ def encode_pgn_65284(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_65285() -> bool:
     """Return True if PGN 65285 is a fast PGN."""
     return False
-# Complex PGN. number of matches: 2
+# Complex PGN. number of matches: 3
 def decode_pgn_65285(data_raw: int) -> NMEA2000Message | None:
     # airmarBootStateAcknowledgment | Description: Airmar: Boot State Acknowledgment
     if (
@@ -10001,6 +10214,13 @@ def decode_pgn_65285(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65285_lowranceTemperature(data_raw)
+    
+    # maretronUniversalConfigurationSf | Description: Maretron: Universal Configuration SF
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65285_maretronUniversalConfigurationSf(data_raw)
     
     
     return None
@@ -10177,11 +10397,76 @@ def encode_pgn_65285_lowranceTemperature(nmea2000Message: NMEA2000Message) -> by
     data_raw |= (field_value & 0xFFFFFF) << 40
     return data_raw.to_bytes(8, byteorder="little")
 
+def decode_pgn_65285_maretronUniversalConfigurationSf(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65285."""
+    nmea2000Message = NMEA2000Message(PGN=65285, id='maretronUniversalConfigurationSf', description='Maretron: Universal Configuration SF')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65285_maretronUniversalConfigurationSf(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65285."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
 
 def is_fast_pgn_65286() -> bool:
     """Return True if PGN 65286 is a fast PGN."""
     return False
-# Complex PGN. number of matches: 2
+# Complex PGN. number of matches: 3
 def decode_pgn_65286(data_raw: int) -> NMEA2000Message | None:
     # chetcoDimmer | Description: Chetco: Dimmer
     if (
@@ -10196,6 +10481,13 @@ def decode_pgn_65286(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65286_airmarBootStateRequest(data_raw)
+    
+    # maretronFluidFlowRate | Description: Maretron: Fluid Flow Rate
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65286_maretronFluidFlowRate(data_raw)
     
     
     return None
@@ -10401,11 +10693,76 @@ def encode_pgn_65286_airmarBootStateRequest(nmea2000Message: NMEA2000Message) ->
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
     return data_raw.to_bytes(8, byteorder="little")
 
+def decode_pgn_65286_maretronFluidFlowRate(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65286."""
+    nmea2000Message = NMEA2000Message(PGN=65286, id='maretronFluidFlowRate', description='Maretron: Fluid Flow Rate')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65286_maretronFluidFlowRate(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65286."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
 
 def is_fast_pgn_65287() -> bool:
     """Return True if PGN 65287 is a fast PGN."""
     return False
-# Complex PGN. number of matches: 2
+# Complex PGN. number of matches: 3
 def decode_pgn_65287(data_raw: int) -> NMEA2000Message | None:
     # airmarAccessLevel | Description: Airmar: Access Level
     if (
@@ -10420,6 +10777,13 @@ def decode_pgn_65287(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_65287_simnetConfigureTemperatureSensor(data_raw)
+    
+    # maretronTripVolume | Description: Maretron: Trip Volume
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65287_maretronTripVolume(data_raw)
     
     
     return None
@@ -10596,11 +10960,95 @@ def encode_pgn_65287_simnetConfigureTemperatureSensor(nmea2000Message: NMEA2000M
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
     return data_raw.to_bytes(8, byteorder="little")
 
+def decode_pgn_65287_maretronTripVolume(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65287."""
+    nmea2000Message = NMEA2000Message(PGN=65287, id='maretronTripVolume', description='Maretron: Trip Volume')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65287_maretronTripVolume(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65287."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
 
 def is_fast_pgn_65288() -> bool:
     """Return True if PGN 65288 is a fast PGN."""
     return False
-def decode_pgn_65288(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_65288(data_raw: int) -> NMEA2000Message | None:
+    # seatalkAlarm | Description: Seatalk: Alarm
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1851) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65288_seatalkAlarm(data_raw)
+    
+    # maretron420Ma | Description: Maretron: 4-20 mA
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65288_maretron420Ma(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_65288_seatalkAlarm(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65288."""
     nmea2000Message = NMEA2000Message(PGN=65288, id='seatalkAlarm', description='Seatalk: Alarm')
     running_bit_offset = 0
@@ -10659,7 +11107,7 @@ def decode_pgn_65288(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65288(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_65288_seatalkAlarm(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65288."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10720,11 +11168,95 @@ def encode_pgn_65288(nmea2000Message: NMEA2000Message) -> bytes:
     data_raw |= (field_value & 0xFFFF) << 48
     return data_raw.to_bytes(8, byteorder="little")
 
+def decode_pgn_65288_maretron420Ma(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65288."""
+    nmea2000Message = NMEA2000Message(PGN=65288, id='maretron420Ma', description='Maretron: 4-20 mA')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65288_maretron420Ma(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65288."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
 
 def is_fast_pgn_65289() -> bool:
     """Return True if PGN 65289 is a fast PGN."""
     return False
-def decode_pgn_65289(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_65289(data_raw: int) -> NMEA2000Message | None:
+    # simnetTrimTabSensorCalibration | Description: Simnet: Trim Tab Sensor Calibration
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65289_simnetTrimTabSensorCalibration(data_raw)
+    
+    # maretron010V | Description: Maretron: 0-10 V
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65289_maretron010V(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_65289_simnetTrimTabSensorCalibration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65289."""
     nmea2000Message = NMEA2000Message(PGN=65289, id='simnetTrimTabSensorCalibration', description='Simnet: Trim Tab Sensor Calibration')
     running_bit_offset = 0
@@ -10756,7 +11288,7 @@ def decode_pgn_65289(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65289(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_65289_simnetTrimTabSensorCalibration(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65289."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10789,11 +11321,95 @@ def encode_pgn_65289(nmea2000Message: NMEA2000Message) -> bytes:
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
     return data_raw.to_bytes(8, byteorder="little")
 
+def decode_pgn_65289_maretron010V(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65289."""
+    nmea2000Message = NMEA2000Message(PGN=65289, id='maretron010V', description='Maretron: 0-10 V')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65289_maretron010V(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65289."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
 
 def is_fast_pgn_65290() -> bool:
     """Return True if PGN 65290 is a fast PGN."""
     return False
-def decode_pgn_65290(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_65290(data_raw: int) -> NMEA2000Message | None:
+    # simnetPaddleWheelSpeedConfiguration | Description: Simnet: Paddle Wheel Speed Configuration
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65290_simnetPaddleWheelSpeedConfiguration(data_raw)
+    
+    # maretronRotationalRate | Description: Maretron: Rotational Rate
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65290_maretronRotationalRate(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_65290_simnetPaddleWheelSpeedConfiguration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65290."""
     nmea2000Message = NMEA2000Message(PGN=65290, id='simnetPaddleWheelSpeedConfiguration', description='Simnet: Paddle Wheel Speed Configuration')
     running_bit_offset = 0
@@ -10825,7 +11441,7 @@ def decode_pgn_65290(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65290(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_65290_simnetPaddleWheelSpeedConfiguration(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65290."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10858,11 +11474,164 @@ def encode_pgn_65290(nmea2000Message: NMEA2000Message) -> bytes:
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
     return data_raw.to_bytes(8, byteorder="little")
 
+def decode_pgn_65290_maretronRotationalRate(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65290."""
+    nmea2000Message = NMEA2000Message(PGN=65290, id='maretronRotationalRate', description='Maretron: Rotational Rate')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65290_maretronRotationalRate(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65290."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
+
+def is_fast_pgn_65291() -> bool:
+    """Return True if PGN 65291 is a fast PGN."""
+    return False
+def decode_pgn_65291(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65291."""
+    nmea2000Message = NMEA2000Message(PGN=65291, id='maretronResistance', description='Maretron: Resistance')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65291(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65291."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
 
 def is_fast_pgn_65292() -> bool:
     """Return True if PGN 65292 is a fast PGN."""
     return False
-def decode_pgn_65292(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_65292(data_raw: int) -> NMEA2000Message | None:
+    # simnetClearFluidLevelWarnings | Description: Simnet: Clear Fluid Level Warnings
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65292_simnetClearFluidLevelWarnings(data_raw)
+    
+    # maretronAutomationFunctionMaster | Description: Maretron: Automation Function Master
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_65292_maretronAutomationFunctionMaster(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_65292_simnetClearFluidLevelWarnings(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 65292."""
     nmea2000Message = NMEA2000Message(PGN=65292, id='simnetClearFluidLevelWarnings', description='Simnet: Clear Fluid Level Warnings')
     running_bit_offset = 0
@@ -10894,7 +11663,7 @@ def decode_pgn_65292(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_65292(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_65292_simnetClearFluidLevelWarnings(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 65292."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -10923,6 +11692,71 @@ def encode_pgn_65292(nmea2000Message: NMEA2000Message) -> bytes:
     if field is None:
         raise ValueError("Cant encode this message, missing 'Reserved'")
     field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(8, byteorder="little")
+
+def decode_pgn_65292_maretronAutomationFunctionMaster(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 65292."""
+    nmea2000Message = NMEA2000Message(PGN=65292, id='maretronAutomationFunctionMaster', description='Maretron: Automation Function Master')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 48, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 48))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 48
+
+    return nmea2000Message
+
+def encode_pgn_65292_maretronAutomationFunctionMaster(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 65292."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 48, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFFFFFFFFFFFF) << 16
     return data_raw.to_bytes(8, byteorder="little")
@@ -14534,7 +15368,7 @@ def encode_pgn_126464(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_126720() -> bool:
     """Return True if PGN 126720 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 34
+# Complex PGN. number of matches: 35
 def decode_pgn_126720(data_raw: int) -> NMEA2000Message | None:
     # seatalk1PilotMode | Description: Seatalk1: Pilot Mode
     if (
@@ -14790,6 +15624,13 @@ def decode_pgn_126720(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_126720_maretronSlaveResponse(data_raw)
+    
+    # maretronProprietaryConfiguration | Description: Maretron: Proprietary Configuration
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_126720_maretronProprietaryConfiguration(data_raw)
     
     # garminDayMode | Description: Garmin: Day Mode
     if (
@@ -18298,6 +19139,113 @@ def encode_pgn_126720_maretronSlaveResponse(nmea2000Message: NMEA2000Message) ->
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFF) << 56
     return data_raw.to_bytes(8, byteorder="little")
+
+def decode_pgn_126720_maretronProprietaryConfiguration(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 126720."""
+    nmea2000Message = NMEA2000Message(PGN=126720, id='maretronProprietaryConfiguration', description='Maretron: Proprietary Configuration')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:product_code | Offset: 16, Length: 16, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    product_code_raw = decode_int(_data_raw_, running_bit_offset, 16)
+    product_code = master_dict['MARETRON_PRODUCT_CODE'].get(product_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('productCode', 'Product code', None, None, product_code, product_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 16
+
+    # 5:software_code | Offset: 32, Length: 16, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 32
+    software_code = software_code_raw = decode_number(_data_raw_, running_bit_offset, 16, False, 1, 0, 65532)
+    nmea2000Message.fields.append(NMEA2000Field('softwareCode', 'Software code', None, None, software_code, software_code_raw, None, FieldTypes.NUMBER, False))
+    running_bit_offset += 16
+
+    # 6:opcode | Offset: 48, Length: 8, Signed: False Resolution: 1, Field Type: LOOKUP, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 48
+    opcode_raw = decode_int(_data_raw_, running_bit_offset, 8)
+    opcode = master_dict['MARETRON_OPCODE'].get(opcode_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('opcode', 'Opcode', None, None, opcode, opcode_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 8
+
+    # 7:payload | Offset: 56, Length: 1784, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 56
+    payload = payload_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1784))
+    nmea2000Message.fields.append(NMEA2000Field('payload', 'Payload', None, None, payload, payload_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1784
+
+    return nmea2000Message
+
+def encode_pgn_126720_maretronProprietaryConfiguration(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 126720."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # productCode | Offset: 16, Length: 16, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("productCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Product code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MARETRON_PRODUCT_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFF) << 16
+    # softwareCode | Offset: 32, Length: 16, Resolution: 1, Field Type: NUMBER
+    field = nmea2000Message.get_field_by_id("softwareCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Software code'")
+    assert field.value is None or isinstance(field.value, (int, float))
+    field_value = encode_number(field.value, 16, False, 1)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFF) << 32
+    # opcode | Offset: 48, Length: 8, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("opcode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Opcode'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MARETRON_OPCODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFF) << 48
+    # payload | Offset: 56, Length: 1784, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("payload")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Payload'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 56
+    return data_raw.to_bytes(230, byteorder="little")
 
 def decode_pgn_126720_garminDayMode(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 126720."""
@@ -47188,7 +48136,7 @@ def encode_pgn_130816_simradTextMessage(nmea2000Message: NMEA2000Message) -> byt
 def is_fast_pgn_130817() -> bool:
     """Return True if PGN 130817 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 3
+# Complex PGN. number of matches: 4
 def decode_pgn_130817(data_raw: int) -> NMEA2000Message | None:
     # navicoUnknown | Description: Navico: Unknown
     if (
@@ -47210,6 +48158,13 @@ def decode_pgn_130817(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130817_furunoSvControl(data_raw)
+    
+    # maretronAnnunciatorCapabilities | Description: Maretron: Annunciator Capabilities
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130817_maretronAnnunciatorCapabilities(data_raw)
     
     
     return None
@@ -47671,11 +48626,76 @@ def encode_pgn_130817_furunoSvControl(nmea2000Message: NMEA2000Message) -> bytes
     data_raw |= (field_value & 0xFFFFFF) << 168
     return data_raw.to_bytes(24, byteorder="little")
 
+def decode_pgn_130817_maretronAnnunciatorCapabilities(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130817."""
+    nmea2000Message = NMEA2000Message(PGN=130817, id='maretronAnnunciatorCapabilities', description='Maretron: Annunciator Capabilities')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130817_maretronAnnunciatorCapabilities(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130817."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
 
 def is_fast_pgn_130818() -> bool:
     """Return True if PGN 130818 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 2
+# Complex PGN. number of matches: 3
 def decode_pgn_130818(data_raw: int) -> NMEA2000Message | None:
     # simnetReprogramData | Description: Simnet: Reprogram Data
     if (
@@ -47690,6 +48710,13 @@ def decode_pgn_130818(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130818_furunoSensorSetup(data_raw)
+    
+    # maretronLabel | Description: Maretron: Label
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130818_maretronLabel(data_raw)
     
     
     return None
@@ -48019,11 +49046,95 @@ def encode_pgn_130818_furunoSensorSetup(nmea2000Message: NMEA2000Message) -> byt
     data_raw |= (field_value & 0xFFFF) << 208
     return data_raw.to_bytes(28, byteorder="little")
 
+def decode_pgn_130818_maretronLabel(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130818."""
+    nmea2000Message = NMEA2000Message(PGN=130818, id='maretronLabel', description='Maretron: Label')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130818_maretronLabel(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130818."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
 
 def is_fast_pgn_130819() -> bool:
     """Return True if PGN 130819 is a fast PGN."""
     return True
-def decode_pgn_130819(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130819(data_raw: int) -> NMEA2000Message | None:
+    # simnetRequestReprogram | Description: Simnet: Request Reprogram
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130819_simnetRequestReprogram(data_raw)
+    
+    # maretronAlertTransmission | Description: Maretron: Alert Transmission
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130819_maretronAlertTransmission(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130819_simnetRequestReprogram(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130819."""
     nmea2000Message = NMEA2000Message(PGN=130819, id='simnetRequestReprogram', description='Simnet: Request Reprogram')
     running_bit_offset = 0
@@ -48049,7 +49160,7 @@ def decode_pgn_130819(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130819(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130819_simnetRequestReprogram(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130819."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -48075,11 +49186,76 @@ def encode_pgn_130819(nmea2000Message: NMEA2000Message) -> bytes:
     data_raw |= (field_value & 0x7) << 13
     return data_raw.to_bytes(2, byteorder="little")
 
+def decode_pgn_130819_maretronAlertTransmission(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130819."""
+    nmea2000Message = NMEA2000Message(PGN=130819, id='maretronAlertTransmission', description='Maretron: Alert Transmission')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130819_maretronAlertTransmission(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130819."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
 
 def is_fast_pgn_130820() -> bool:
     """Return True if PGN 130820 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 39
+# Complex PGN. number of matches: 40
 def decode_pgn_130820(data_raw: int) -> NMEA2000Message | None:
     # simnetReprogramStatus | Description: Simnet: Reprogram Status
     if (
@@ -48391,6 +49567,13 @@ def decode_pgn_130820(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 16) & 0xFFFF) == 32812)
         ):
         return decode_pgn_130820_fusionSiriusxmPresets(data_raw)
+    
+    # maretronAlertResponse | Description: Maretron: Alert Response
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130820_maretronAlertResponse(data_raw)
     
     
     return None
@@ -52527,11 +53710,76 @@ def encode_pgn_130820_fusionSiriusxmPresets(nmea2000Message: NMEA2000Message) ->
     raise ValueError ("PGN 130820 not supporting encoding for now as Values is missing BitLength or BitOffset")
     return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
 
+def decode_pgn_130820_maretronAlertResponse(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130820."""
+    nmea2000Message = NMEA2000Message(PGN=130820, id='maretronAlertResponse', description='Maretron: Alert Response')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130820_maretronAlertResponse(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130820."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
 
 def is_fast_pgn_130821() -> bool:
     """Return True if PGN 130821 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 2
+# Complex PGN. number of matches: 3
 def decode_pgn_130821(data_raw: int) -> NMEA2000Message | None:
     # navicoAsciiData | Description: Navico: ASCII Data
     if (
@@ -52546,6 +53794,13 @@ def decode_pgn_130821(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130821_furunoUnknown130821(data_raw)
+    
+    # maretronAlertText | Description: Maretron: Alert Text
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130821_maretronAlertText(data_raw)
     
     
     return None
@@ -52821,11 +54076,95 @@ def encode_pgn_130821_furunoUnknown130821(nmea2000Message: NMEA2000Message) -> b
     data_raw |= (field_value & 0xFF) << 88
     return data_raw.to_bytes(12, byteorder="little")
 
+def decode_pgn_130821_maretronAlertText(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130821."""
+    nmea2000Message = NMEA2000Message(PGN=130821, id='maretronAlertText', description='Maretron: Alert Text')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130821_maretronAlertText(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130821."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
 
 def is_fast_pgn_130822() -> bool:
     """Return True if PGN 130822 is a fast PGN."""
     return True
-def decode_pgn_130822(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130822(data_raw: int) -> NMEA2000Message | None:
+    # navicoUnknown1 | Description: Navico: Unknown 1
+    if (
+        (((data_raw >> 0) & 0x7FF) == 275) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130822_navicoUnknown1(data_raw)
+    
+    # maretronAlertControl | Description: Maretron: Alert Control
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130822_maretronAlertControl(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130822_navicoUnknown1(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130822."""
     nmea2000Message = NMEA2000Message(PGN=130822, id='navicoUnknown1', description='Navico: Unknown 1')
     running_bit_offset = 0
@@ -52857,7 +54196,7 @@ def decode_pgn_130822(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130822(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130822_navicoUnknown1(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130822."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -52889,6 +54228,71 @@ def encode_pgn_130822(nmea2000Message: NMEA2000Message) -> bytes:
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
     return data_raw.to_bytes(233, byteorder="little")
+
+def decode_pgn_130822_maretronAlertControl(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130822."""
+    nmea2000Message = NMEA2000Message(PGN=130822, id='maretronAlertControl', description='Maretron: Alert Control')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130822_maretronAlertControl(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130822."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
 
 
 def is_fast_pgn_130823() -> bool:
@@ -53260,7 +54664,91 @@ def encode_pgn_130824_maretronAnnunciator(nmea2000Message: NMEA2000Message) -> b
 def is_fast_pgn_130825() -> bool:
     """Return True if PGN 130825 is a fast PGN."""
     return True
-def decode_pgn_130825(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130825(data_raw: int) -> NMEA2000Message | None:
+    # maretronDataInstanceChannelCorrelation | Description: Maretron: Data Instance Channel Correlation
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130825_maretronDataInstanceChannelCorrelation(data_raw)
+    
+    # navicoUnknown2 | Description: Navico: Unknown 2
+    if (
+        (((data_raw >> 0) & 0x7FF) == 275) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130825_navicoUnknown2(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130825_maretronDataInstanceChannelCorrelation(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130825."""
+    nmea2000Message = NMEA2000Message(PGN=130825, id='maretronDataInstanceChannelCorrelation', description='Maretron: Data Instance Channel Correlation')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130825_maretronDataInstanceChannelCorrelation(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130825."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
+def decode_pgn_130825_navicoUnknown2(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130825."""
     nmea2000Message = NMEA2000Message(PGN=130825, id='navicoUnknown2', description='Navico: Unknown 2')
     running_bit_offset = 0
@@ -53292,7 +54780,7 @@ def decode_pgn_130825(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130825(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130825_navicoUnknown2(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130825."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -53324,6 +54812,75 @@ def encode_pgn_130825(nmea2000Message: NMEA2000Message) -> bytes:
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFF) << 16
     return data_raw.to_bytes(12, byteorder="little")
+
+
+def is_fast_pgn_130826() -> bool:
+    """Return True if PGN 130826 is a fast PGN."""
+    return True
+def decode_pgn_130826(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130826."""
+    nmea2000Message = NMEA2000Message(PGN=130826, id='maretronSwitchIndicatorStatus', description='Maretron: Switch Indicator Status')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130826(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130826."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
 
 
 def is_fast_pgn_130827() -> bool:
@@ -53525,7 +55082,91 @@ def encode_pgn_130828(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_130831() -> bool:
     """Return True if PGN 130831 is a fast PGN."""
     return True
-def decode_pgn_130831(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130831(data_raw: int) -> NMEA2000Message | None:
+    # maretronUniversalConfigurationFp | Description: Maretron: Universal Configuration FP
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130831_maretronUniversalConfigurationFp(data_raw)
+    
+    # suzukiEngineAndStorageDeviceConfig | Description: Suzuki: Engine and Storage Device Config
+    if (
+        (((data_raw >> 0) & 0x7FF) == 586) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130831_suzukiEngineAndStorageDeviceConfig(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130831_maretronUniversalConfigurationFp(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130831."""
+    nmea2000Message = NMEA2000Message(PGN=130831, id='maretronUniversalConfigurationFp', description='Maretron: Universal Configuration FP')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130831_maretronUniversalConfigurationFp(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130831."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
+def decode_pgn_130831_suzukiEngineAndStorageDeviceConfig(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130831."""
     nmea2000Message = NMEA2000Message(PGN=130831, id='suzukiEngineAndStorageDeviceConfig', description='Suzuki: Engine and Storage Device Config')
     running_bit_offset = 0
@@ -53551,7 +55192,7 @@ def decode_pgn_130831(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130831(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130831_suzukiEngineAndStorageDeviceConfig(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130831."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -53581,7 +55222,91 @@ def encode_pgn_130831(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_130832() -> bool:
     """Return True if PGN 130832 is a fast PGN."""
     return True
-def decode_pgn_130832(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130832(data_raw: int) -> NMEA2000Message | None:
+    # maretronAlertOperatingMode | Description: Maretron: Alert Operating Mode
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130832_maretronAlertOperatingMode(data_raw)
+    
+    # simnetFuelUsedHighResolution | Description: Simnet: Fuel Used - High Resolution
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130832_simnetFuelUsedHighResolution(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130832_maretronAlertOperatingMode(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130832."""
+    nmea2000Message = NMEA2000Message(PGN=130832, id='maretronAlertOperatingMode', description='Maretron: Alert Operating Mode')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130832_maretronAlertOperatingMode(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130832."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
+def decode_pgn_130832_simnetFuelUsedHighResolution(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130832."""
     nmea2000Message = NMEA2000Message(PGN=130832, id='simnetFuelUsedHighResolution', description='Simnet: Fuel Used - High Resolution')
     running_bit_offset = 0
@@ -53607,7 +55332,7 @@ def decode_pgn_130832(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130832(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130832_simnetFuelUsedHighResolution(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130832."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -53637,7 +55362,91 @@ def encode_pgn_130832(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_130833() -> bool:
     """Return True if PGN 130833 is a fast PGN."""
     return True
-def decode_pgn_130833(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130833(data_raw: int) -> NMEA2000Message | None:
+    # maretronVesselDataRecorderStatus | Description: Maretron: Vessel Data Recorder Status
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130833_maretronVesselDataRecorderStatus(data_raw)
+    
+    # bGUserAndRemoteRename | Description: B&G: User and Remote rename
+    if (
+        (((data_raw >> 0) & 0x7FF) == 381) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130833_bGUserAndRemoteRename(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130833_maretronVesselDataRecorderStatus(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130833."""
+    nmea2000Message = NMEA2000Message(PGN=130833, id='maretronVesselDataRecorderStatus', description='Maretron: Vessel Data Recorder Status')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130833_maretronVesselDataRecorderStatus(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130833."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
+def decode_pgn_130833_bGUserAndRemoteRename(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130833."""
     nmea2000Message = NMEA2000Message(PGN=130833, id='bGUserAndRemoteRename', description='B&G: User and Remote rename')
     running_bit_offset = 0
@@ -53702,7 +55511,7 @@ def decode_pgn_130833(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130833(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130833_bGUserAndRemoteRename(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130833."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -53775,7 +55584,91 @@ def encode_pgn_130833(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_130834() -> bool:
     """Return True if PGN 130834 is a fast PGN."""
     return True
-def decode_pgn_130834(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130834(data_raw: int) -> NMEA2000Message | None:
+    # maretronSmsStatus | Description: Maretron: SMS Status
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130834_maretronSmsStatus(data_raw)
+    
+    # simnetEngineAndTankConfiguration | Description: Simnet: Engine and Tank Configuration
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130834_simnetEngineAndTankConfiguration(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130834_maretronSmsStatus(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130834."""
+    nmea2000Message = NMEA2000Message(PGN=130834, id='maretronSmsStatus', description='Maretron: SMS Status')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130834_maretronSmsStatus(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130834."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
+def decode_pgn_130834_simnetEngineAndTankConfiguration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130834."""
     nmea2000Message = NMEA2000Message(PGN=130834, id='simnetEngineAndTankConfiguration', description='Simnet: Engine and Tank Configuration')
     running_bit_offset = 0
@@ -53801,7 +55694,7 @@ def decode_pgn_130834(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130834(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130834_simnetEngineAndTankConfiguration(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130834."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -53831,7 +55724,91 @@ def encode_pgn_130834(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_130835() -> bool:
     """Return True if PGN 130835 is a fast PGN."""
     return True
-def decode_pgn_130835(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130835(data_raw: int) -> NMEA2000Message | None:
+    # maretronSmsTextMessage | Description: Maretron: SMS Text Message
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130835_maretronSmsTextMessage(data_raw)
+    
+    # simnetSetEngineAndTankConfiguration | Description: Simnet: Set Engine and Tank Configuration
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130835_simnetSetEngineAndTankConfiguration(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130835_maretronSmsTextMessage(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130835."""
+    nmea2000Message = NMEA2000Message(PGN=130835, id='maretronSmsTextMessage', description='Maretron: SMS Text Message')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130835_maretronSmsTextMessage(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130835."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
+def decode_pgn_130835_simnetSetEngineAndTankConfiguration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130835."""
     nmea2000Message = NMEA2000Message(PGN=130835, id='simnetSetEngineAndTankConfiguration', description='Simnet: Set Engine and Tank Configuration')
     running_bit_offset = 0
@@ -53857,7 +55834,7 @@ def decode_pgn_130835(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130835(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130835_simnetSetEngineAndTankConfiguration(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130835."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -54547,7 +56524,91 @@ def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message
 def is_fast_pgn_130838() -> bool:
     """Return True if PGN 130838 is a fast PGN."""
     return True
-def decode_pgn_130838(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130838(data_raw: int) -> NMEA2000Message | None:
+    # maretronBnwas | Description: Maretron: BNWAS
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130838_maretronBnwas(data_raw)
+    
+    # simnetFluidLevelWarning | Description: Simnet: Fluid Level Warning
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130838_simnetFluidLevelWarning(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130838_maretronBnwas(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130838."""
+    nmea2000Message = NMEA2000Message(PGN=130838, id='maretronBnwas', description='Maretron: BNWAS')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130838_maretronBnwas(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130838."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
+def decode_pgn_130838_simnetFluidLevelWarning(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130838."""
     nmea2000Message = NMEA2000Message(PGN=130838, id='simnetFluidLevelWarning', description='Simnet: Fluid Level Warning')
     running_bit_offset = 0
@@ -54573,7 +56634,7 @@ def decode_pgn_130838(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130838(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130838_simnetFluidLevelWarning(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130838."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -54659,7 +56720,91 @@ def encode_pgn_130839(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_130840() -> bool:
     """Return True if PGN 130840 is a fast PGN."""
     return True
-def decode_pgn_130840(_data_raw_: int) -> NMEA2000Message:
+# Complex PGN. number of matches: 2
+def decode_pgn_130840(data_raw: int) -> NMEA2000Message | None:
+    # maretronGenericSensor | Description: Maretron: Generic Sensor
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130840_maretronGenericSensor(data_raw)
+    
+    # simnetDataUserGroupConfiguration | Description: Simnet: Data User Group Configuration
+    if (
+        (((data_raw >> 0) & 0x7FF) == 1857) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130840_simnetDataUserGroupConfiguration(data_raw)
+    
+    
+    return None
+    
+def decode_pgn_130840_maretronGenericSensor(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130840."""
+    nmea2000Message = NMEA2000Message(PGN=130840, id='maretronGenericSensor', description='Maretron: Generic Sensor')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130840_maretronGenericSensor(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130840."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
+def decode_pgn_130840_simnetDataUserGroupConfiguration(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130840."""
     nmea2000Message = NMEA2000Message(PGN=130840, id='simnetDataUserGroupConfiguration', description='Simnet: Data User Group Configuration')
     running_bit_offset = 0
@@ -54685,7 +56830,7 @@ def decode_pgn_130840(_data_raw_: int) -> NMEA2000Message:
 
     return nmea2000Message
 
-def encode_pgn_130840(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_130840_simnetDataUserGroupConfiguration(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN 130840."""
     data_raw = 0
     # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
@@ -54710,6 +56855,75 @@ def encode_pgn_130840(nmea2000Message: NMEA2000Message) -> bytes:
     assert isinstance(field_value, int)
     data_raw |= (field_value & 0x7) << 13
     return data_raw.to_bytes(2, byteorder="little")
+
+
+def is_fast_pgn_130841() -> bool:
+    """Return True if PGN 130841 is a fast PGN."""
+    return True
+def decode_pgn_130841(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130841."""
+    nmea2000Message = NMEA2000Message(PGN=130841, id='maretronCanFrameForwarding', description='Maretron: CAN Frame Forwarding')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130841(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130841."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
 
 
 def is_fast_pgn_130842() -> bool:
@@ -55315,8 +57529,15 @@ def encode_pgn_130842_simnetAisClassBStaticDataMsg24PartB(nmea2000Message: NMEA2
 def is_fast_pgn_130843() -> bool:
     """Return True if PGN 130843 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 2
+# Complex PGN. number of matches: 3
 def decode_pgn_130843(data_raw: int) -> NMEA2000Message | None:
+    # maretronWindlassOperatingStatus | Description: Maretron: Windlass Operating Status
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130843_maretronWindlassOperatingStatus(data_raw)
+    
     # furunoHeelAngleRollInformation | Description: Furuno: Heel Angle, Roll Information
     if (
         (((data_raw >> 0) & 0x7FF) == 1855) and
@@ -55334,6 +57555,71 @@ def decode_pgn_130843(data_raw: int) -> NMEA2000Message | None:
     
     return None
     
+def decode_pgn_130843_maretronWindlassOperatingStatus(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130843."""
+    nmea2000Message = NMEA2000Message(PGN=130843, id='maretronWindlassOperatingStatus', description='Maretron: Windlass Operating Status')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130843_maretronWindlassOperatingStatus(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130843."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
 def decode_pgn_130843_furunoHeelAngleRollInformation(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130843."""
     nmea2000Message = NMEA2000Message(PGN=130843, id='furunoHeelAngleRollInformation', description='Furuno: Heel Angle, Roll Information')
@@ -55509,11 +57795,87 @@ def encode_pgn_130843_simnetSonarStatusFrequencyAndDspVoltage(nmea2000Message: N
     return data_raw.to_bytes(2, byteorder="little")
 
 
+def is_fast_pgn_130844() -> bool:
+    """Return True if PGN 130844 is a fast PGN."""
+    return True
+def decode_pgn_130844(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130844."""
+    nmea2000Message = NMEA2000Message(PGN=130844, id='maretronWindlassControlCommand', description='Maretron: Windlass Control Command')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130844(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130844."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
+
 def is_fast_pgn_130845() -> bool:
     """Return True if PGN 130845 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 2
+# Complex PGN. number of matches: 3
 def decode_pgn_130845(data_raw: int) -> NMEA2000Message | None:
+    # maretronDcEnergy | Description: Maretron: DC Energy
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130845_maretronDcEnergy(data_raw)
+    
     # furunoMultiSatsInViewExtended | Description: Furuno: Multi Sats In View Extended
     if (
         (((data_raw >> 0) & 0x7FF) == 1855) and
@@ -55531,6 +57893,71 @@ def decode_pgn_130845(data_raw: int) -> NMEA2000Message | None:
     
     return None
     
+def decode_pgn_130845_maretronDcEnergy(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130845."""
+    nmea2000Message = NMEA2000Message(PGN=130845, id='maretronDcEnergy', description='Maretron: DC Energy')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130845_maretronDcEnergy(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130845."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
+
 def decode_pgn_130845_furunoMultiSatsInViewExtended(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130845."""
     nmea2000Message = NMEA2000Message(PGN=130845, id='furunoMultiSatsInViewExtended', description='Furuno: Multi Sats In View Extended')
@@ -55751,7 +58178,7 @@ def encode_pgn_130845_simnetKeyValue(nmea2000Message: NMEA2000Message) -> bytes:
 def is_fast_pgn_130846() -> bool:
     """Return True if PGN 130846 is a fast PGN."""
     return True
-# Complex PGN. number of matches: 2
+# Complex PGN. number of matches: 3
 def decode_pgn_130846(data_raw: int) -> NMEA2000Message | None:
     # simnetParameterSet | Description: Simnet: Parameter Set
     if (
@@ -55759,6 +58186,13 @@ def decode_pgn_130846(data_raw: int) -> NMEA2000Message | None:
         (((data_raw >> 13) & 0x7) == 4)
         ):
         return decode_pgn_130846_simnetParameterSet(data_raw)
+    
+    # maretronBatteryAmpHourRecord | Description: Maretron: Battery Amp Hour Record
+    if (
+        (((data_raw >> 0) & 0x7FF) == 137) and
+        (((data_raw >> 13) & 0x7) == 4)
+        ):
+        return decode_pgn_130846_maretronBatteryAmpHourRecord(data_raw)
     
     # furunoMotionSensorStatusExtended | Description: Furuno: Motion Sensor Status Extended
     if (
@@ -55934,6 +58368,71 @@ def encode_pgn_130846_simnetParameterSet(nmea2000Message: NMEA2000Message) -> by
     data_raw |= (field_value & 0xFF) << 80
     raise ValueError ("PGN 130846 not supporting encoding for now as Value is missing BitLength or BitOffset")
     return data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
+
+def decode_pgn_130846_maretronBatteryAmpHourRecord(_data_raw_: int) -> NMEA2000Message:
+    """Decode PGN 130846."""
+    nmea2000Message = NMEA2000Message(PGN=130846, id='maretronBatteryAmpHourRecord', description='Maretron: Battery Amp Hour Record')
+    running_bit_offset = 0
+    # 1:manufacturer_code | Offset: 0, Length: 11, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 137, PartOfPrimaryKey: ,
+    running_bit_offset = 0
+    manufacturer_code_raw = decode_int(_data_raw_, running_bit_offset, 11)
+    manufacturer_code = master_dict['MANUFACTURER_CODE'].get(manufacturer_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('manufacturerCode', 'Manufacturer Code', "Maretron", None, manufacturer_code, manufacturer_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 11
+
+    # 2:reserved_11 | Offset: 11, Length: 2, Signed: False Resolution: 1, Field Type: RESERVED, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 11
+    reserved_11 = reserved_11_raw = decode_int(_data_raw_, running_bit_offset, 2)
+    nmea2000Message.fields.append(NMEA2000Field('reserved_11', 'Reserved', None, None, reserved_11, reserved_11_raw, None, FieldTypes.RESERVED, False))
+    running_bit_offset += 2
+
+    # 3:industry_code | Offset: 13, Length: 3, Signed: False Resolution: 1, Field Type: LOOKUP, Match: 4, PartOfPrimaryKey: ,
+    running_bit_offset = 13
+    industry_code_raw = decode_int(_data_raw_, running_bit_offset, 3)
+    industry_code = master_dict['INDUSTRY_CODE'].get(industry_code_raw, None)
+    nmea2000Message.fields.append(NMEA2000Field('industryCode', 'Industry Code', "Marine Industry", None, industry_code, industry_code_raw, None, FieldTypes.LOOKUP, False))
+    running_bit_offset += 3
+
+    # 4:data | Offset: 16, Length: 1768, Signed: False Resolution: 1, Field Type: BINARY, Match: , PartOfPrimaryKey: ,
+    running_bit_offset = 16
+    data = data_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, 1768))
+    nmea2000Message.fields.append(NMEA2000Field('data', 'Data', None, None, data, data_raw, None, FieldTypes.BINARY, False))
+    running_bit_offset += 1768
+
+    return nmea2000Message
+
+def encode_pgn_130846_maretronBatteryAmpHourRecord(nmea2000Message: NMEA2000Message) -> bytes:
+    """Encode Nmea2000Message object to binary data for PGN 130846."""
+    data_raw = 0
+    # manufacturerCode | Offset: 0, Length: 11, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("manufacturerCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Manufacturer Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_MANUFACTURER_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7FF) << 0
+    # reserved_11 | Offset: 11, Length: 2, Resolution: 1, Field Type: RESERVED
+    field = nmea2000Message.get_field_by_id("reserved_11")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Reserved'")
+    field_value = field.value
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x3) << 11
+    # industryCode | Offset: 13, Length: 3, Resolution: 1, Field Type: LOOKUP
+    field = nmea2000Message.get_field_by_id("industryCode")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Industry Code'")
+    field_value = field.raw_value if field.raw_value is not None else lookup_encode_INDUSTRY_CODE(field.value)
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0x7) << 13
+    # data | Offset: 16, Length: 1768, Resolution: 1, Field Type: BINARY
+    field = nmea2000Message.get_field_by_id("data")
+    if field is None:
+        raise ValueError("Cant encode this message, missing 'Data'")
+    raise ValueError("Encoding 'BINARY' not supported")
+    assert isinstance(field_value, int)
+    data_raw |= (field_value & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) << 16
+    return data_raw.to_bytes(223, byteorder="little")
 
 def decode_pgn_130846_furunoMotionSensorStatusExtended(_data_raw_: int) -> NMEA2000Message:
     """Decode PGN 130846."""
