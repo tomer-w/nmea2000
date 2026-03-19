@@ -47,6 +47,7 @@ jobs:
         fail_ci_if_error: false
 
   update_release_draft:
+    if: github.event_name == 'push'
     permissions:
       # write permission is required to create a github release
       contents: write
