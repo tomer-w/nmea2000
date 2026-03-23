@@ -7170,13 +7170,13 @@ def decode_pgn_60928(_data_raw_: int) -> NMEA2000Message:
 
     # 3:device_instance_lower | Offset: 32, Length: 3, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    device_instance_lower = device_instance_lower_raw = decode_number(_data_raw_, running_bit_offset, 3, False, 1, 0, 6)
+    device_instance_lower = device_instance_lower_raw = decode_number(_data_raw_, running_bit_offset, 3, False, 1, 0, 7)
     nmea2000Message.fields.append(NMEA2000Field('deviceInstanceLower', 'Device Instance Lower', "ISO ECU Instance", None, device_instance_lower, device_instance_lower_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 3
 
     # 4:device_instance_upper | Offset: 35, Length: 5, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 35
-    device_instance_upper = device_instance_upper_raw = decode_number(_data_raw_, running_bit_offset, 5, False, 1, 0, 29)
+    device_instance_upper = device_instance_upper_raw = decode_number(_data_raw_, running_bit_offset, 5, False, 1, 0, 31)
     nmea2000Message.fields.append(NMEA2000Field('deviceInstanceUpper', 'Device Instance Upper', "ISO Function Instance", None, device_instance_upper, device_instance_upper_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 5
 
@@ -9638,13 +9638,13 @@ def decode_pgn_65240(_data_raw_: int) -> NMEA2000Message:
 
     # 3:device_instance_lower | Offset: 32, Length: 3, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    device_instance_lower = device_instance_lower_raw = decode_number(_data_raw_, running_bit_offset, 3, False, 1, 0, 6)
+    device_instance_lower = device_instance_lower_raw = decode_number(_data_raw_, running_bit_offset, 3, False, 1, 0, 7)
     nmea2000Message.fields.append(NMEA2000Field('deviceInstanceLower', 'Device Instance Lower', "ISO ECU Instance", None, device_instance_lower, device_instance_lower_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 3
 
     # 4:device_instance_upper | Offset: 35, Length: 5, Signed: False Resolution: 1, Field Type: NUMBER, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 35
-    device_instance_upper = device_instance_upper_raw = decode_number(_data_raw_, running_bit_offset, 5, False, 1, 0, 29)
+    device_instance_upper = device_instance_upper_raw = decode_number(_data_raw_, running_bit_offset, 5, False, 1, 0, 31)
     nmea2000Message.fields.append(NMEA2000Field('deviceInstanceUpper', 'Device Instance Upper', "ISO Function Instance", None, device_instance_upper, device_instance_upper_raw, None, FieldTypes.NUMBER, False))
     running_bit_offset += 5
 
