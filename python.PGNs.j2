@@ -1,7 +1,7 @@
 # pylint: skip-file
 from .utils import *
 from .message import NMEA2000Message, NMEA2000Field, LookupFieldTypeEnumeration, int_to_bytes
-from .consts import PhysicalQuantities, FieldTypes
+from .consts import PhysicalQuantities, FieldTypes, IndirectLookupEncodeMaps
 
 master_dict = {
 {% for lookup in data['LookupEnumerations']%}
@@ -32,6 +32,264 @@ master_indirect_lookup_dict = {
     },
 {%- endfor %}
 }
+
+
+def _optional_message_field(nmea2000Message: NMEA2000Message, field_id: str) -> NMEA2000Field | None:
+    return next((field for field in nmea2000Message.fields if field.id == field_id), None)
+
+
+def _coerce_repeating_field(field_id: str, value) -> NMEA2000Field:
+    if isinstance(value, NMEA2000Field):
+        return value
+    if isinstance(value, dict):
+        return NMEA2000Field(field_id, value=value.get('value'), raw_value=value.get('raw_value'))
+    return NMEA2000Field(field_id, value=value, raw_value=None)
+
+
+def _get_repeating_entries(
+    nmea2000Message: NMEA2000Message,
+    list_field_id: str,
+    field_ids: tuple[str, ...]
+) -> list[dict[str, NMEA2000Field]]:
+    list_field = _optional_message_field(nmea2000Message, list_field_id)
+    if list_field is not None:
+        if list_field.value is None:
+            return []
+        if not isinstance(list_field.value, list):
+            raise ValueError(f"{list_field_id} must be a list of dict items")
+
+        entries: list[dict[str, NMEA2000Field]] = []
+        for item in list_field.value:
+            if not isinstance(item, dict):
+                raise ValueError(f"{list_field_id} must contain dict items")
+            entry: dict[str, NMEA2000Field] = {}
+            for field_id in field_ids:
+                if field_id in item:
+                    entry[field_id] = _coerce_repeating_field(field_id, item[field_id])
+            entries.append(entry)
+        return entries
+
+    entry: dict[str, NMEA2000Field] = {}
+    for field_id in field_ids:
+        field = _optional_message_field(nmea2000Message, field_id)
+        if field is not None:
+            entry[field_id] = field
+    return [entry] if entry else []
+
+
+def _repeating_entry_value(value, raw_value):
+    if value is None and raw_value is not None:
+        return {"value": value, "raw_value": raw_value}
+    return value
+
+
+def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnumeration], lookup_name: str) -> int:
+    for raw_value, metadata in lookup_dict.items():
+        if metadata.name == value:
+            return raw_value
+    raise ValueError(f"Cant encode this message, {value} is missing from {lookup_name}")
+
+
+{%- macro emit_encode_value(field, field_ref, pgn) %}
+    advance_running_offset = True
+    {%- set field_signed = field.Signed | default(false) %}
+    {%- if field.FieldType == 'NUMBER' or field.FieldType == 'PGN' or field.FieldType == 'MMSI' or field.FieldType == 'FIELD_INDEX' %}
+    if isinstance({{ field_ref }}.encoded_value, int) and {{ field_ref }}.raw_value == {{ field_ref }}.value:
+        field_value = {{ field_ref }}.encoded_value
+    else:
+        assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, (int, float))
+        field_value = encode_number({{ field_ref }}.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
+    field_value = {{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, int) else {{ field_ref }}.value
+    if field_value is None:
+        field_value = 0
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, '{{ field.Name }}' must be an integer")
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'FLOAT' %}
+    assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, (int, float))
+    field_value = encode_float({{ field_ref }}.value)
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'LOOKUP' %}
+    if isinstance({{ field_ref }}.raw_value, int):
+        field_value = {{ field_ref }}.raw_value
+    elif isinstance({{ field_ref }}.value, int):
+        field_value = {{ field_ref }}.value
+    else:
+        field_value = lookup_encode_{{ field.LookupEnumeration }}({{ field_ref }}.value)
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'DATE' %}
+    if isinstance({{ field_ref }}.raw_value, int):
+        field_value = {{ field_ref }}.raw_value
+    elif isinstance({{ field_ref }}.encoded_value, int) and {{ field_ref }}.raw_value == {{ field_ref }}.value:
+        field_value = {{ field_ref }}.encoded_value
+    else:
+        assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, date)
+        field_value = encode_date({{ field_ref }}.value, {{ field.BitLength }})
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'TIME' or field.FieldType == 'DURATION' %}
+    if isinstance({{ field_ref }}.encoded_value, int) and {{ field_ref }}.raw_value == {{ field_ref }}.value:
+        field_value = {{ field_ref }}.encoded_value
+    elif isinstance({{ field_ref }}.raw_value, (int, float)):
+        field_value = encode_number({{ field_ref }}.raw_value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
+    elif isinstance({{ field_ref }}.value, (int, float)):
+        field_value = encode_number({{ field_ref }}.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
+    else:
+        assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, time)
+        field_value = encode_time({{ field_ref }}.value, {{ field.BitLength }})
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'DECIMAL' %}
+    if isinstance({{ field_ref }}.raw_value, int):
+        field_value = {{ field_ref }}.raw_value
+    else:
+        field_value = encode_decimal({{ field_ref }}.value)
+    if field_value is None:
+        field_value = 0
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'STRING_FIX' %}
+    field_value = encode_string_fix({{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else ({{ field_ref }}.value if {{ field_ref }}.value is not None else {{ field_ref }}.raw_value), {{ field.BitLength }})
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'STRING_LZ' %}
+    field_bytes = encode_string_lz({{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else {{ field_ref }}.value)
+    field_value = encode_little_endian_data(field_bytes)
+    field_bit_length = binary_data_bit_length(field_bytes)
+    {%- elif field.FieldType == 'STRING_LAU' %}
+    field_bytes = encode_string_lau({{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else {{ field_ref }}.value)
+    field_value = encode_little_endian_data(field_bytes)
+    field_bit_length = binary_data_bit_length(field_bytes)
+    {%- elif field.FieldType == 'BITLOOKUP' %}
+    field_value = {{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, int) else encode_bit_lookup({{ field_ref }}.value, master_flags_dict['{{ field.LookupBitEnumeration }}'])
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'INDIRECT_LOOKUP' %}
+        {%- set controller_field = pgn.Fields[field.LookupIndirectEnumerationFieldOrder - 1] %}
+    if isinstance({{ field_ref }}.raw_value, int):
+        field_value = {{ field_ref }}.raw_value
+    elif isinstance({{ field_ref }}.value, int):
+        field_value = {{ field_ref }}.value
+    else:
+        controller_field = nmea2000Message.get_field_by_id("{{ generate_field_id(controller_field.Id, controller_field.FieldType, controller_field.BitOffset) }}")
+        if isinstance(controller_field.raw_value, int):
+            controller_raw_value = controller_field.raw_value
+        else:
+            controller_raw_value = lookup_encode_{{ controller_field.LookupEnumeration }}(controller_field.value)
+        indirect_lookup_values = IndirectLookupEncodeMaps['{{ field.LookupIndirectEnumeration }}'].get(controller_raw_value)
+        if indirect_lookup_values is None:
+            raise ValueError("Cant encode this message, '{{ field.Name }}' controller value is missing")
+        field_value = indirect_lookup_values.get({{ field_ref }}.value)
+        if field_value is None:
+            raise ValueError("Cant encode this message, '{{ field.Name }}' indirect lookup value is missing")
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'ISO_NAME' %}
+    field_value = {{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, int) else encode_iso_name({{ field_ref }}.value)
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'BINARY' %}
+    field_bytes = normalize_binary_data({{ field_ref }}.raw_value) if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data({{ field_ref }}.value)
+    field_value = encode_binary_data(field_bytes)
+        {%- if field.BitLengthField is defined %}
+            {%- set length_field = pgn.Fields[field.BitLengthField - 1] %}
+    length_field = nmea2000Message.get_field_by_id("{{ generate_field_id(length_field.Id, length_field.FieldType, length_field.BitOffset) }}")
+    if isinstance(length_field.raw_value, (int, float)):
+        field_bit_length = int(length_field.raw_value)
+    else:
+        assert length_field.value is None or isinstance(length_field.value, (int, float))
+        field_bit_length = int(length_field.value or 0)
+    advance_running_offset = False
+        {%- else %}
+    field_bit_length = {{ field.BitLength }}
+        {%- endif %}
+    {%- elif field.FieldType == 'VARIABLE' %}
+    field_bytes = normalize_binary_data({{ field_ref }}.raw_value) if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data({{ field_ref }}.value)
+    field_value = encode_binary_data(field_bytes)
+    field_bit_length = binary_data_bit_length(field_bytes)
+    advance_running_offset = False
+    {%- elif field.FieldType == 'DYNAMIC_FIELD_KEY' %}
+    if isinstance({{ field_ref }}.raw_value, int):
+        field_value = {{ field_ref }}.raw_value
+    elif isinstance({{ field_ref }}.value, int):
+        field_value = {{ field_ref }}.value
+    else:
+        field_value = _lookup_field_type_encode({{ field_ref }}.value, lookup_field_type_dict_{{ field.LookupFieldTypeEnumeration }}, "{{ field.LookupFieldTypeEnumeration }}")
+    dyn_kv_metadata = lookup_field_type_{{ field.LookupFieldTypeEnumeration }}(field_value)
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
+    if isinstance({{ field_ref }}.raw_value, (int, float)):
+        field_value = encode_number({{ field_ref }}.raw_value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
+    else:
+        assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, (int, float))
+        field_value = encode_number({{ field_ref }}.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
+    field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
+    if isinstance({{ field_ref }}.raw_value, int):
+        field_value = {{ field_ref }}.raw_value
+        field_bytes = b""
+    elif isinstance({{ field_ref }}.value, int):
+        field_value = {{ field_ref }}.value
+        field_bytes = b""
+    else:
+        field_bytes = normalize_binary_data({{ field_ref }}.raw_value) if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data({{ field_ref }}.value)
+        field_value = encode_binary_data(field_bytes)
+    {%- if field.Order > 1 and pgn.Fields[field.Order - 2].FieldType == 'DYNAMIC_FIELD_LENGTH' %}
+        {%- set length_field = pgn.Fields[field.Order - 2] %}
+    length_field = nmea2000Message.get_field_by_id("{{ generate_field_id(length_field.Id, length_field.FieldType, length_field.BitOffset) }}")
+    if isinstance(length_field.raw_value, (int, float)):
+        field_bit_length = int(length_field.raw_value) * 8
+    else:
+        assert length_field.value is None or isinstance(length_field.value, (int, float))
+        field_bit_length = int(length_field.value or 0) * 8
+    {%- else %}
+    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
+        field_bit_length = dyn_kv_metadata.bits
+    else:
+        field_bit_length = binary_data_bit_length(field_bytes)
+    {%- endif %}
+    {%- else %}
+    raise ValueError("Encoding '{{field.FieldType}}' not supported")
+    {%- endif %}
+{%- endmacro %}
+
+
+{%- macro emit_repeating_decode_value(field, field_name) %}
+    {%- set field_signed = field.Signed | default(false) %}
+    {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN' or field.FieldType == 'DURATION' %}
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    running_bit_offset += {{ field.BitLength }}
+    {%- elif field.FieldType == 'LOOKUP' %}
+    {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    {{ field_name }} = master_dict['{{ field.LookupEnumeration }}'].get({{ field_name }}_raw, None)
+    running_bit_offset += {{ field.BitLength }}
+    {%- elif field.FieldType == 'BITLOOKUP' %}
+    {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    {{ field_name }} = decode_bit_lookup({{ field_name }}_raw, master_flags_dict['{{ field.LookupBitEnumeration }}'])
+    running_bit_offset += {{ field.BitLength }}
+    {%- elif field.FieldType == 'FIELD_INDEX' %}
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    running_bit_offset += {{ field.BitLength }}
+    {%- elif field.FieldType == 'TIME' %}
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = decode_time({{ field_name }}_raw)
+    running_bit_offset += {{ field.BitLength }}
+    {%- elif field.FieldType == 'DATE' %}
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = decode_date({{ field_name }}_raw)
+    running_bit_offset += {{ field.BitLength }}
+    {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
+    {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    running_bit_offset += {{ field.BitLength }}
+    {%- elif field.FieldType == 'STRING_FIX' %}
+    {{ field_name }}, {{ field_name }}_raw = decode_string_fix_raw(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    running_bit_offset += {{ field.BitLength }}
+    {%- elif field.FieldType == 'STRING_LZ' %}
+    {{ field_name }} = {{ field_name }}_raw = decode_string_lz(_data_raw_, running_bit_offset)
+    running_bit_offset += len(encode_string_lz({{ field_name }}_raw)) * 8
+    {%- elif field.FieldType == 'STRING_LAU' %}
+    {{ field_name }}_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
+    {{ field_name }} = {{ field_name }}_raw
+    running_bit_offset += bits_to_skip
+    {%- else %}
+    raise ValueError("PGN {{ field.PGN | default('unknown') }} repeating FieldType ({{ field.FieldType }}) not supported")
+    {%- endif %}
+{%- endmacro %}
 
 
 {% for lookup in data['LookupEnumerations']%}
@@ -100,7 +358,7 @@ def is_fast_pgn_{{ pgns_in_group[0].PGN }}() -> bool:
 
 {%- if pgns_in_group | length  > 1 and ns_pgn.has_match == true %}
 # Complex PGN. number of matches: {{ pgns_in_group | length }}
-def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message | None:
+def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
     {%- for pgn in pgns_in_group if pgn.Fallback is not defined or pgn.Fallback == false %}
     # {{ pgn.Id }} | Description: {{ pgn.Description }}
     if (
@@ -109,10 +367,10 @@ def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message | No
         (((data_raw >> {{ field.BitOffset }}) & {{ field_FF }}) == {{ field.Match }}){% if not loop.last %} and{% endif %}
         {%- endfor%}
         ):
-        return decode_pgn_{{ pgn.PGN }}_{{ pgn.Id }}(data_raw)
+        return decode_pgn_{{ pgn.PGN }}_{{ pgn.Id }}(data_raw, data_length_bits)
     {% endfor%}
     {% if ns_pgn.fallback_pgn is defined -%}
-    return decode_pgn_{{ ns_pgn.fallback_pgn.PGN }}_{{ ns_pgn.fallback_pgn.Id }}(data_raw)
+    return decode_pgn_{{ ns_pgn.fallback_pgn.PGN }}_{{ ns_pgn.fallback_pgn.Id }}(data_raw, data_length_bits)
     {% else %}
     return None
     {% endif %}
@@ -123,17 +381,24 @@ def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int) -> NMEA2000Message | No
 {%- else %}
 {%- set func_name_suffix = pgn.PGN %}
 {%- endif %}
-def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
+def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int | None = None) -> NMEA2000Message:
     """Decode PGN {{ pgn.PGN }}."""
     nmea2000Message = NMEA2000Message(PGN={{pgn.PGN}}, id='{{pgn.Id}}', description='{{pgn.Description}}'{% if pgn.TransmissionInterval is defined -%}, ttl=timedelta(milliseconds={{pgn.TransmissionInterval}}){%- endif -%})
     {%- set ns_fields = namespace() %}
     running_bit_offset = 0
+    _payload_bit_length_ = _data_length_bits_ if _data_length_bits_ is not None else _data_raw_.bit_length()
+    {%- if pgn.RepeatingFieldSet1Size is defined %}
+    _repeating_field_set_1_offset = 0
+    {%- endif %}
     {%- for field in pgn.Fields %}
     {%- set field_name = generate_field_python_name(field.Name, field.FieldType, field.BitOffset) %}
     {%- set field_signed = field.Signed | default(false)  %}
     # {{ field.Order }}:{{ field_name }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Signed: {{ field_signed }} Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}, Match: {{ field.Match }}, PartOfPrimaryKey: {{ field.PartOfPrimaryKey }},
     {%- if field.BitOffset is defined %}
     running_bit_offset = {{ field.BitOffset }}
+    {%- endif %}
+    {%- if pgn.RepeatingFieldSet1Size is defined and field.Order == pgn.RepeatingFieldSet1StartField %}
+    _repeating_field_set_1_offset = running_bit_offset
     {%- endif %}
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN' or field.FieldType == 'DURATION' %}
     {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
@@ -159,7 +424,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', kv_metadata.name, '', kv_metadata.unit, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, kv_metadata.field_type, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
     running_bit_offset += kv_metadata.bits
         {%- elif field.FieldType == 'STRING_FIX'%}
-    {{ field_name }} = {{ field_name }}_raw = decode_string_fix(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    {{ field_name }}, {{ field_name }}_raw = decode_string_fix_raw(_data_raw_, running_bit_offset, {{ field.BitLength }})
         {%- elif field.FieldType == 'STRING_LZ'%}
     {{ field_name }} = {{ field_name }}_raw = decode_string_lz(_data_raw_, running_bit_offset)
         {%- elif field.FieldType == 'STRING_LAU'%}
@@ -189,13 +454,13 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
             {%- else -%}
             {%- set length_field = pgn.Fields[field.BitLengthField-1] %}
             {%- set length_field_name = generate_field_python_name(length_field.Name, length_field.FieldType, length_field.BitOffset) %}
-    assert {{ length_field_name }} is int
-    {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, {{ length_field_name }}))
+    assert isinstance({{ length_field_name }}, (int, float))
+    {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, int({{ length_field_name }})))
             {%- endif -%}
         {%- elif field.FieldType == 'FIELD_INDEX' %}
     {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'VARIABLE' %}
-    _remaining_bits = _data_raw_.bit_length() - running_bit_offset
+    _remaining_bits = _payload_bit_length_ - running_bit_offset
     if _remaining_bits > 0:
         {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
     else:
@@ -215,7 +480,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
         _dyn_bits = dyn_kv_metadata.bits
     else:
-        _dyn_bits = _data_raw_.bit_length() - running_bit_offset
+        _dyn_bits = _payload_bit_length_ - running_bit_offset
     if _dyn_bits > 0:
         {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -225,7 +490,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     raise ValueError("PGN {{ pgn.PGN }} FieldType ({{ field.FieldType }}) not supported")
         {%- endif %}
     {%- if field.FieldType != 'KEY_VALUE'  %}
-    nmea2000Message.fields.append(NMEA2000Field('{{ generate_field_id(field.Id, field.FieldType, field.BitOffset) }}', '{{ field.Name }}', {% if field.Description is defined -%}"{{field.Description}}"{%- else -%}None{%- endif -%}, {% if field.Unit is defined -%}'{{field.Unit}}'{%- else -%}None{%- endif -%}, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
+    nmea2000Message.fields.append(NMEA2000Field('{{ generate_field_id(field.Id, field.FieldType, field.BitOffset) }}', '{{ field.Name }}', {% if field.Description is defined -%}"{{field.Description}}"{%- else -%}None{%- endif -%}, {% if field.Unit is defined -%}'{{field.Unit}}'{%- else -%}None{%- endif -%}, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}, {% if field.BitLength is defined and (field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN' or field.FieldType == 'DURATION' or field.FieldType == 'TIME' or field.FieldType == 'DATE') -%}decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }}){%- else -%}None{%- endif -%}))
     {% if field.BitLength is defined -%}
     running_bit_offset += {{ field.BitLength }}
     {%- endif -%}
@@ -236,51 +501,144 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int) -> NMEA2000Message:
     {%- endif -%}
     {%- endif %}
 {% endfor %}
+    {%- set ns_repeating = namespace(set1_has_variable=false) %}
+    {%- if pgn.RepeatingFieldSet1Size is defined %}
+        {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
+            {%- if repeating_field.FieldType == 'VARIABLE' or repeating_field.FieldType == 'DYNAMIC_FIELD_KEY' or repeating_field.FieldType == 'DYNAMIC_FIELD_LENGTH' or repeating_field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
+                {%- set ns_repeating.set1_has_variable = true %}
+            {%- endif %}
+        {%- endfor %}
+    {%- endif %}
+    {%- if pgn.RepeatingFieldSet1Size is defined and ns_repeating.set1_has_variable == false %}
+    running_bit_offset = _repeating_field_set_1_offset
+    repeating_field_set_1_entries = []
+        {%- if pgn.RepeatingFieldSet1CountField is defined %}
+            {%- set count_field = pgn.Fields[pgn.RepeatingFieldSet1CountField - 1] %}
+            {%- set count_field_name = generate_field_python_name(count_field.Name, count_field.FieldType, count_field.BitOffset) %}
+    _repeating_field_set_1_count = int({{ count_field_name }}_raw or 0)
+        {%- else %}
+    _repeating_field_set_1_count = None
+        {%- endif %}
+    while (
+        (_repeating_field_set_1_count is None and running_bit_offset < _payload_bit_length_) or
+        (_repeating_field_set_1_count is not None and len(repeating_field_set_1_entries) < _repeating_field_set_1_count)
+    ):
+        repeating_entry = {}
+        {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
+            {%- set repeating_field_name = generate_field_python_name(repeating_field.Name, repeating_field.FieldType, repeating_field.BitOffset) %}
+{{ emit_repeating_decode_value(repeating_field, repeating_field_name) | indent(4, true) }}
+        repeating_entry["{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}"] = _repeating_entry_value({{ repeating_field_name }}, {{ repeating_field_name }}_raw)
+        {%- endfor %}
+        repeating_field_set_1_entries.append(repeating_entry)
+    nmea2000Message.fields = [
+        field for field in nmea2000Message.fields
+        if field.id not in {
+            {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
+            "{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}",
+            {%- endfor %}
+        }
+    ]
+    nmea2000Message.fields.append(NMEA2000Field('list', 'List', None, None, repeating_field_set_1_entries, None, None, FieldTypes.VARIABLE, False))
+    {%- endif %}
     return nmea2000Message
 
 def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes:
     """Encode Nmea2000Message object to binary data for PGN {{ pgn.PGN }}."""
     data_raw = 0
+    running_bit_offset = 0
+    payload_bit_length = 0
+    {%- if pgn.RepeatingFieldSet1Size is defined %}
+    repeating_field_set_1_entries = _get_repeating_entries(nmea2000Message, "list", (
+        {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
+        "{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}",
+        {%- endfor %}
+    ))
+    {%- endif %}
+    {%- if pgn.RepeatingFieldSet2Size is defined %}
+    repeating_field_set_2_entries = _get_repeating_entries(nmea2000Message, "list2", (
+        {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet2StartField and repeating_field.Order < pgn.RepeatingFieldSet2StartField + pgn.RepeatingFieldSet2Size %}
+        "{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}",
+        {%- endfor %}
+    ))
+    {%- endif %}
     {%- for field in pgn.Fields %}
-    {%- set field_signed = field.Signed | default(false)  %}
-    {%- if field.BitLength is not defined or field.BitOffset is not defined %}
-    raise ValueError ("PGN {{pgn.PGN}} not supporting encoding for now as {{field.Name}} is missing BitLength or BitOffset")
+    {%- if pgn.RepeatingFieldSet1Size is defined and field.Order == pgn.RepeatingFieldSet1StartField %}
+    {%- if field.BitOffset is defined %}
+    running_bit_offset = {{ field.BitOffset }}
+    {%- endif %}
+    for repeating_entry in repeating_field_set_1_entries:
+        {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
+        # {{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }} | Offset: {{ repeating_field.BitOffset }}, Length: {{ repeating_field.BitLength }}, Resolution: {{ repeating_field.Resolution }}, Field Type: {{ repeating_field.FieldType }}
+        field = repeating_entry.get("{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}")
+        if field is None:
+            raise ValueError("Cant encode this message, missing '{{repeating_field.Name}}'")
+        field_offset = running_bit_offset
+{{ emit_encode_value(repeating_field, 'field', pgn) | indent(4, true) }}
+        assert isinstance(field_value, int)
+        if field_value < 0:
+            raise ValueError("Cant encode this message, '{{repeating_field.Name}}' cannot be negative")
+        if field_bit_length < 0:
+            raise ValueError("Cant encode this message, '{{repeating_field.Name}}' has a negative bit length")
+        if field_bit_length > 0 and field_value.bit_length() > field_bit_length:
+            raise ValueError("Cant encode this message, '{{repeating_field.Name}}' exceeds the encoded bit length")
+        field_mask = (1 << field_bit_length) - 1 if field_bit_length > 0 else 0
+        data_raw |= (field_value & field_mask) << field_offset
+        payload_end_offset = field_offset + field_bit_length
+        running_bit_offset = payload_end_offset if advance_running_offset else field_offset
+        payload_bit_length = max(payload_bit_length, payload_end_offset)
+        {%- endfor %}
+    {%- elif pgn.RepeatingFieldSet1Size is defined and field.Order > pgn.RepeatingFieldSet1StartField and field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
+    {# Repeating Field Set 1 is encoded at the start field #}
+    {%- elif pgn.RepeatingFieldSet2Size is defined and field.Order == pgn.RepeatingFieldSet2StartField %}
+    {%- if field.BitOffset is defined %}
+    running_bit_offset = {{ field.BitOffset }}
+    {%- endif %}
+    for repeating_entry in repeating_field_set_2_entries:
+        {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet2StartField and repeating_field.Order < pgn.RepeatingFieldSet2StartField + pgn.RepeatingFieldSet2Size %}
+        # {{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }} | Offset: {{ repeating_field.BitOffset }}, Length: {{ repeating_field.BitLength }}, Resolution: {{ repeating_field.Resolution }}, Field Type: {{ repeating_field.FieldType }}
+        field = repeating_entry.get("{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}")
+        if field is None:
+            raise ValueError("Cant encode this message, missing '{{repeating_field.Name}}'")
+        field_offset = running_bit_offset
+{{ emit_encode_value(repeating_field, 'field', pgn) | indent(4, true) }}
+        assert isinstance(field_value, int)
+        if field_value < 0:
+            raise ValueError("Cant encode this message, '{{repeating_field.Name}}' cannot be negative")
+        if field_bit_length < 0:
+            raise ValueError("Cant encode this message, '{{repeating_field.Name}}' has a negative bit length")
+        if field_bit_length > 0 and field_value.bit_length() > field_bit_length:
+            raise ValueError("Cant encode this message, '{{repeating_field.Name}}' exceeds the encoded bit length")
+        field_mask = (1 << field_bit_length) - 1 if field_bit_length > 0 else 0
+        data_raw |= (field_value & field_mask) << field_offset
+        payload_end_offset = field_offset + field_bit_length
+        running_bit_offset = payload_end_offset if advance_running_offset else field_offset
+        payload_bit_length = max(payload_bit_length, payload_end_offset)
+        {%- endfor %}
+    {%- elif pgn.RepeatingFieldSet2Size is defined and field.Order > pgn.RepeatingFieldSet2StartField and field.Order < pgn.RepeatingFieldSet2StartField + pgn.RepeatingFieldSet2Size %}
+    {# Repeating Field Set 2 is encoded at the start field #}
     {%- else %}
     {%- set field_id = generate_field_id(field.Id, field.FieldType, field.BitOffset) %}
     # {{ field_id }} | Offset: {{ field.BitOffset }}, Length: {{ field.BitLength }}, Resolution: {{ field.Resolution }}, Field Type: {{ field.FieldType }}
-    field = nmea2000Message.get_field_by_id("{{ field_id }}")
-    if field is None:
-        raise ValueError("Cant encode this message, missing '{{field.Name}}'")
-    {%- if field.FieldType == 'NUMBER' or field.FieldType == 'PGN'%}
-    assert field.value is None or isinstance(field.value, (int, float))
-    field_value = encode_number(field.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
-    {%- elif field.FieldType == 'RESERVED' %}
-    field_value = field.value
-    {%- elif field.FieldType == 'FLOAT' %}
-    assert field.value is None or isinstance(field.value, (int, float))
-    field_value = encode_float(field.value)
-    {%- elif field.FieldType == 'LOOKUP' %}
-    field_value = field.raw_value if field.raw_value is not None else lookup_encode_{{field.LookupEnumeration}}(field.value)
-    {%- elif field.FieldType == 'DATE' %}
-    if field.raw_value is not None:
-        field_value = field.raw_value
-    else:
-        assert isinstance(field.value, date)
-        field_value = encode_date(field.value)
-    {%- elif field.FieldType == 'TIME' or field.FieldType == 'DURATION' %}
-    if field.raw_value is not None:
-        assert isinstance(field.raw_value, (int, float))
-        field_value = int(field.raw_value / {{ field.Resolution }})
-    else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, {{ field.BitLength }})
-    {%- else %}
-    raise ValueError("Encoding '{{field.FieldType}}' not supported")
+    {%- if field.BitOffset is defined %}
+    running_bit_offset = {{ field.BitOffset }}
     {%- endif %}
+    field_offset = running_bit_offset
+    field = nmea2000Message.get_field_by_id("{{ field_id }}")
+{{ emit_encode_value(field, 'field', pgn) }}
     assert isinstance(field_value, int)
-    data_raw |= (field_value & {{ bits_to_hex(field.BitLength) }}) << {{ field.BitOffset }}
+    if field_value < 0:
+        raise ValueError("Cant encode this message, '{{field.Name}}' cannot be negative")
+    if field_bit_length < 0:
+        raise ValueError("Cant encode this message, '{{field.Name}}' has a negative bit length")
+    if field_bit_length > 0 and field_value.bit_length() > field_bit_length:
+        raise ValueError("Cant encode this message, '{{field.Name}}' exceeds the encoded bit length")
+    field_mask = (1 << field_bit_length) - 1 if field_bit_length > 0 else 0
+    data_raw |= (field_value & field_mask) << field_offset
+    payload_end_offset = field_offset + field_bit_length
+    running_bit_offset = payload_end_offset if advance_running_offset else field_offset
+    payload_bit_length = max(payload_bit_length, payload_end_offset)
     {%- endif %}
     {%- endfor %}
-    return data_raw.to_bytes({{pgn.Length | default('(data_raw.bit_length() + 7) // 8') }}, byteorder="little")
+    return data_raw.to_bytes({{pgn.Length | default('(payload_bit_length + 7) // 8') }}, byteorder="little")
 {% endfor %}
 {% endfor %}

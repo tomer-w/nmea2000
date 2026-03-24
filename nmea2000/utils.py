@@ -110,10 +110,13 @@ def decode_date(days_since_epoch: int | float | None) -> date | None:
     # Format and return the date string
     return decoded_date
 
-def encode_date(decoded_date: date) -> int:
+def encode_date(decoded_date: date | None, bit_length: int = 16) -> int:
     """
     Encodes a date into an integer representing the number of days since 1970-01-01 (UNIX epoch)
     """
+    if decoded_date is None:
+        return (1 << bit_length) - 1
+
     # Define the start date as 1970-01-01
     start_date = date(1970, 1, 1)
     
@@ -324,6 +327,11 @@ def decode_bit_lookup(data_raw: int, bit_lookup_dict: dict) -> str:
     return ', '.join(flags)
 
 def decode_string_fix(data_raw: int, bit_offset: int, bit_length: int) -> str:
+    decoded_str, _ = decode_string_fix_raw(data_raw, bit_offset, bit_length)
+    return decoded_str
+
+
+def decode_string_fix_raw(data_raw: int, bit_offset: int, bit_length: int) -> tuple[str, bytes]:
     number_int = decode_int(data_raw, bit_offset, bit_length)
     num_bytes = (bit_length + 7) // 8
     byte_arr = number_int.to_bytes(num_bytes, 'little')
@@ -332,7 +340,7 @@ def decode_string_fix(data_raw: int, bit_offset: int, bit_length: int) -> str:
     decoded_str = decoded_str.split('\xff', 1)[0]
     decoded_str = decoded_str.split('@', 1)[0]
     decoded_str = decoded_str.strip()
-    return decoded_str
+    return decoded_str, byte_arr
     
 def decode_string_lz(data_raw: int, bit_offset: int) -> str:
     data_raw = data_raw >> bit_offset
@@ -360,4 +368,134 @@ def decode_string_lau(data_raw: int, bit_offset: int) -> tuple[str | None, int]:
 def calculate_canbus_checksum(data) -> int:
     checksum = sum(data[2:19])
     return checksum & 0xff
+
+
+def encode_string_fix(value: str | bytes | bytearray | memoryview | None, bit_length: int) -> int:
+    if value is None:
+        encoded = b""
+    elif isinstance(value, memoryview):
+        encoded = value.tobytes()
+    elif isinstance(value, (bytes, bytearray)):
+        encoded = bytes(value)
+    elif isinstance(value, str):
+        encoded = value.encode("utf-8")
+    else:
+        raise ValueError(f"Cannot encode STRING_FIX from {type(value).__name__}")
+
+    byte_length = (bit_length + 7) // 8
+    if len(encoded) > byte_length:
+        raise ValueError(f"STRING_FIX value is too long for {byte_length} bytes")
+
+    return int.from_bytes(encoded.ljust(byte_length, b"\x00"), byteorder="little", signed=False)
+
+
+def encode_string_lz(value: str | bytes | bytearray | memoryview | None) -> bytes:
+    if value is None:
+        return b"\x00\x00"
+    if isinstance(value, memoryview):
+        return value.tobytes()
+    if isinstance(value, (bytes, bytearray)):
+        return bytes(value)
+    if not isinstance(value, str):
+        raise ValueError(f"Cannot encode STRING_LZ from {type(value).__name__}")
+
+    encoded = value.encode("utf-8")
+    if len(encoded) > 0xFF:
+        raise ValueError("STRING_LZ value is too long")
+    return bytes([len(encoded)]) + encoded + b"\x00"
+
+
+def encode_string_lau(value: str | bytes | bytearray | memoryview | None) -> bytes:
+    if value is None:
+        return b"\x02\x01"
+    if isinstance(value, memoryview):
+        return value.tobytes()
+    if isinstance(value, (bytes, bytearray)):
+        return bytes(value)
+    if not isinstance(value, str):
+        raise ValueError(f"Cannot encode STRING_LAU from {type(value).__name__}")
+
+    try:
+        encoded = value.encode("ascii")
+        is_ascii = 1
+    except UnicodeEncodeError:
+        encoded = value.encode("utf-16-le")
+        is_ascii = 0
+
+    total_length = len(encoded) + 2
+    if total_length > 0xFF:
+        raise ValueError("STRING_LAU value is too long")
+    return bytes([total_length, is_ascii]) + encoded
+
+
+def encode_bit_lookup(value, bit_lookup_dict: dict[int, str]) -> int:
+    if value is None or value == "":
+        return 0
+    if isinstance(value, int):
+        return value
+
+    if isinstance(value, str):
+        items = [item.strip() for item in value.split(",") if item.strip()]
+    elif isinstance(value, (list, tuple, set)):
+        items = list(value)
+    else:
+        raise ValueError(f"Cannot encode BITLOOKUP from {type(value).__name__}")
+
+    reverse_lookup = {name: bit for bit, name in bit_lookup_dict.items()}
+    encoded_value = 0
+    for item in items:
+        if isinstance(item, int):
+            encoded_value |= 1 << item
+            continue
+
+        bit = reverse_lookup.get(str(item).strip())
+        if bit is None:
+            raise ValueError(f"Unknown BITLOOKUP value: {item}")
+        encoded_value |= 1 << bit
+
+    return encoded_value
+
+
+def normalize_binary_data(value: bytes | bytearray | memoryview | None) -> bytes:
+    if value is None:
+        return b""
+    if isinstance(value, memoryview):
+        return value.tobytes()
+    if isinstance(value, (bytes, bytearray)):
+        return bytes(value)
+    raise ValueError(f"Cannot encode binary data from {type(value).__name__}")
+
+
+def encode_binary_data(value: bytes | bytearray | memoryview | None) -> int:
+    payload = normalize_binary_data(value)
+    if not payload:
+        return 0
+    return int.from_bytes(payload, byteorder="big", signed=False)
+
+
+def encode_little_endian_data(value: bytes | bytearray | memoryview | None) -> int:
+    payload = normalize_binary_data(value)
+    if not payload:
+        return 0
+    return int.from_bytes(payload, byteorder="little", signed=False)
+
+
+def binary_data_bit_length(value: bytes | bytearray | memoryview | None) -> int:
+    return len(normalize_binary_data(value)) * 8
+
+
+def encode_iso_name(value) -> int:
+    if value is None:
+        raise ValueError("Cannot encode None as ISO_NAME")
+
+    iso_name = getattr(value, "name", None)
+    if isinstance(iso_name, int):
+        value = iso_name
+
+    if not isinstance(value, int):
+        raise ValueError(f"Cannot encode ISO_NAME from {type(value).__name__}")
+    if value < 0:
+        raise ValueError("ISO_NAME cannot be negative")
+
+    return value
 

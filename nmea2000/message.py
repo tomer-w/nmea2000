@@ -5,12 +5,25 @@ from datetime import date, datetime, time, timedelta
 from dataclasses import dataclass, field
 import hashlib
 import logging
-from typing import Any
+from typing import Any, TypedDict
 import orjson
 from .consts import PhysicalQuantities, FieldTypes
 from .utils import kelvin_to_celsius, kelvin_to_fahrenheit, mps_to_knots, pascal_to_bar, pascal_to_PSI, radians_to_degrees
 
 logger = logging.getLogger(__name__)
+
+type FieldScalarValue = str | int | float | bytes | time | date | None
+type FieldRawValue = int | float | str | bytes | None
+
+
+class RepeatingFieldValueWrapper(TypedDict, total=False):
+    value: FieldScalarValue
+    raw_value: FieldRawValue
+
+
+type RepeatingFieldEntryValue = FieldScalarValue | RepeatingFieldValueWrapper | NMEA2000Field
+type RepeatingFieldEntry = dict[str, RepeatingFieldEntryValue]
+type FieldValue = FieldScalarValue | list[RepeatingFieldEntry]
 
 # Helper function
 def int_to_bytes(value):
@@ -102,7 +115,6 @@ class NMEA2000Message:
                 return obj.hex()
             if isinstance(obj, timedelta):
                 return obj.total_seconds()
-            # ...existing code...
             raise TypeError
         return orjson.dumps(self.__dict__, default=default).decode()
 
@@ -143,14 +155,15 @@ class NMEA2000Field:
     name: str | None = None
     description: str | None = None
     unit_of_measurement: str | None = None
-    value: str | int | float | bytes | time | date | None = 0
-    raw_value: int | float | str | bytes | None = 0
+    value: FieldValue = 0
+    raw_value: FieldRawValue = 0
     physical_quantities: PhysicalQuantities | None = None
     type: FieldTypes = FieldTypes.NUMBER
     part_of_primary_key: bool | None = None
+    encoded_value: int | None = None
 
     def __str__(self):
-        return f"NMEA2000Field(id={self.id}, name={self.name}, description={self.description}, unit_of_measurement={self.unit_of_measurement}, value={self.value}, raw_value={self.raw_value}, physical_quantities={self.physical_quantities}, type={self.type}, part_of_primary_key = {self.part_of_primary_key})"
+        return f"NMEA2000Field(id={self.id}, name={self.name}, description={self.description}, unit_of_measurement={self.unit_of_measurement}, value={self.value}, raw_value={self.raw_value}, physical_quantities={self.physical_quantities}, type={self.type}, part_of_primary_key = {self.part_of_primary_key}, encoded_value={self.encoded_value})"
 
     def __repr__(self):
         return self.__str__()

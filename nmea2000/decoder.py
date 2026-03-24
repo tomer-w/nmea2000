@@ -456,14 +456,14 @@ class NMEA2000Decoder():
 
     def _call_decode_function(self, pgn:int, priority: int, src: int, dest: int, timestamp: datetime, data:bytes, source_iso_name: IsoName | None, raw_can_data: bytes | str) -> NMEA2000Message | None:
         decode_func_name = f'decode_pgn_{pgn}'
-        decode_func: Callable[[int], NMEA2000Message] | None = getattr(pgns_module, decode_func_name, None)
+        decode_func: Callable[[int, int | None], NMEA2000Message] | None = getattr(pgns_module, decode_func_name, None)
 
         if not decode_func or not callable(decode_func):
             logger.error("No decoding function found for PGN: %s. It should be there as we found the is_fast func", pgn)
             return None
 
         data_int = int.from_bytes(data, "big")
-        nmea2000_message: NMEA2000Message | None = decode_func(data_int) # pylint: disable=not-callable
+        nmea2000_message: NMEA2000Message | None = decode_func(data_int, len(data) * 8) # pylint: disable=not-callable
         if nmea2000_message is None:
             logger.debug("No sub-decoding function found for PGN: %s", pgn)
             return None

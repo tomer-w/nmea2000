@@ -1,8 +1,26 @@
+import json
+from pathlib import Path
+
+import pytest
+
 from nmea2000.message import NMEA2000Message, NMEA2000Field
 from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.decoder import NMEA2000Decoder
 from nmea2000.consts import PhysicalQuantities
 from .test_decoder import _get_decoder
+
+
+_ROUNDTRIP_FIXTURE_PATH = Path(__file__).with_name("canboatjs_roundtrip.json")
+with _ROUNDTRIP_FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
+    _CANBOATJS_ROUNDTRIP_CASES = json.load(fixture_file)["cases"]
+
+def _roundtrip_case_id(case: dict) -> str:
+    return f"{case['pgn']}-{case['caseIndex']}"
+
+
+def _payload_from_basic_string(raw_message: str) -> bytes:
+    return bytes(int(byte, 16) for byte in raw_message.split(",")[6:])
+
 
 def _generate_test_message() -> NMEA2000Message:
     """Generate a test NMEA2000 message."""
@@ -112,4 +130,26 @@ def test_python_can_roundtrip():
     assert decoded.PGN == msg.PGN
     assert decoded.source == msg.source
     assert decoded.priority == msg.priority
+
+
+@pytest.mark.parametrize(
+    "case",
+    _CANBOATJS_ROUNDTRIP_CASES,
+    ids=_roundtrip_case_id,
+)
+def test_canboatjs_basic_string_roundtrip_cases(case: dict):
+    decoder = _get_decoder()
+    encoder = NMEA2000Encoder()
+    expected = case["expected"]
+
+    msg = decoder.decode_basic_string(case["input"], True)
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == expected["pgn"]
+    assert msg.priority == expected["prio"]
+    assert msg.source == expected["src"]
+    assert msg.destination == expected["dst"]
+
+    assert encoder._call_encode_function(msg) == _payload_from_basic_string(
+        case["input"]
+    )
 

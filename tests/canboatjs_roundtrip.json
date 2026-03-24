@@ -1,0 +1,3175 @@
+{
+  "generatedAt": "2026-03-25T09:08:45.334Z",
+  "sourceDirectory": "/Users/john/personal-projects/n2k/canboatjs/test/pgns",
+  "caseCount": 90,
+  "cases": [
+    {
+      "pgn": 59392,
+      "sourceFile": "59392.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.825Z,6,59392,60,41,8,01,ff,ff,ff,ff,16,f0,01",
+      "expected": {
+        "prio": 6,
+        "pgn": 59392,
+        "dst": 41,
+        "src": 60,
+        "timestamp": "2016-02-28T19:57:02.825Z",
+        "fields": {
+          "control": "NAK",
+          "groupFunction": null,
+          "reserved": null,
+          "pgn": 126998
+        },
+        "description": "ISO Acknowledgement",
+        "id": "isoAcknowledgement"
+      },
+      "originalInput": "2016-02-28T19:57:02.825Z,6,59392,60,41,8,01,ff,ff,ff,ff,16,f0,01",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 59904,
+      "sourceFile": "59904.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.470Z,6,59904,172,0,3,14,f0,01",
+      "expected": {
+        "prio": 6,
+        "pgn": 59904,
+        "dst": 0,
+        "src": 172,
+        "timestamp": "2017-04-15T14:57:58.470Z",
+        "fields": {
+          "pgn": 126996
+        },
+        "description": "ISO Request",
+        "id": "isoRequest"
+      },
+      "originalInput": "2017-04-15T14:57:58.470Z,6,59904,172,0,3,14,f0,01",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 60928,
+      "sourceFile": "60928.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:58:08.982Z,6,60928,44,172,8,30,04,a0,59,00,82,97,c0",
+      "expected": {
+        "prio": 6,
+        "pgn": 60928,
+        "dst": 172,
+        "src": 44,
+        "timestamp": "2017-04-15T14:58:08.982Z",
+        "fields": {
+          "uniqueNumber": 1072,
+          "manufacturerCode": "Yacht Devices",
+          "deviceInstanceLower": 0,
+          "deviceInstanceUpper": 0,
+          "deviceFunction": 130,
+          "spare": 1,
+          "deviceClass": "Sensor Communication Interface",
+          "systemInstance": 0,
+          "industryGroup": "Marine Industry",
+          "arbitraryAddressCapable": "Yes"
+        },
+        "description": "ISO Address Claim",
+        "id": "isoAddressClaim"
+      },
+      "originalInput": "2017-04-15T14:58:08.982Z,6,60928,44,172,8,30,04,a0,59,00,82,97,c0",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 60928,
+      "sourceFile": "60928.js",
+      "caseIndex": 1,
+      "input": "2026-01-01T00:00:00.000Z,6,60928,7,255,8,16,0b,e0,e7,07,be,8c,c0",
+      "expected": {
+        "prio": 6,
+        "pgn": 60928,
+        "dst": 255,
+        "src": 7,
+        "timestamp": "2026-01-01T00:00:00.000Z",
+        "fields": {
+          "uniqueNumber": 2838,
+          "manufacturerCode": "Furuno",
+          "deviceInstanceLower": 7,
+          "deviceInstanceUpper": 0,
+          "deviceFunction": 190,
+          "spare": 0,
+          "deviceClass": "Communication",
+          "systemInstance": 0,
+          "industryGroup": "Marine Industry",
+          "arbitraryAddressCapable": "Yes"
+        },
+        "description": "ISO Address Claim",
+        "id": "isoAddressClaim"
+      },
+      "originalInput": "2026-01-01T00:00:00.000Z,6,60928,7,255,8,16,0b,e0,e7,07,be,8c,c0",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65005,
+      "sourceFile": "65005.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:07.193Z,3,65005,193,255,8,6f,3a,00,00,00,00,00,00",
+      "expected": {
+        "prio": 3,
+        "pgn": 65005,
+        "dst": 255,
+        "src": 193,
+        "timestamp": "2016-02-28T19:57:07.193Z",
+        "fields": {
+          "totalEnergyExport": 53852400000,
+          "totalEnergyImport": 0
+        },
+        "description": "Utility Total AC Energy",
+        "id": "utilityTotalAcEnergy"
+      },
+      "originalInput": "2016-02-28T19:57:07.193Z,3,65005,193,255,8,6f,3a,00,00,00,00,00,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65012,
+      "sourceFile": "65012.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:03.277Z,3,65012,193,255,8,fa,93,35,77,00,80,fc,ff",
+      "expected": {
+        "prio": 3,
+        "pgn": 65012,
+        "dst": 255,
+        "src": 193,
+        "timestamp": "2016-02-28T19:57:03.277Z",
+        "fields": {
+          "reactivePower": -6,
+          "powerFactor": 2,
+          "powerFactorLagging": "Leading",
+          "reserved": null
+        },
+        "description": "Utility Phase A AC Reactive Power",
+        "id": "utilityPhaseAAcReactivePower"
+      },
+      "originalInput": "2016-02-28T19:57:03.277Z,3,65012,193,255,8,fa,93,35,77,00,80,fc,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65013,
+      "sourceFile": "65013.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:03.277Z,3,65013,193,255,8,56,a5,35,77,56,a5,35,77",
+      "expected": {
+        "prio": 3,
+        "pgn": 65013,
+        "dst": 255,
+        "src": 193,
+        "timestamp": "2016-02-28T19:57:03.277Z",
+        "fields": {
+          "realPower": 4438,
+          "apparentPower": 4438
+        },
+        "description": "Utility Phase A AC Power",
+        "id": "utilityPhaseAAcPower"
+      },
+      "originalInput": "2016-02-28T19:57:03.277Z,3,65013,193,255,8,56,a5,35,77,56,a5,35,77",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65014,
+      "sourceFile": "65014.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:03.279Z,3,65014,193,255,8,dd,00,dd,00,00,19,14,00",
+      "expected": {
+        "prio": 3,
+        "pgn": 65014,
+        "dst": 255,
+        "src": 193,
+        "timestamp": "2016-02-28T19:57:03.279Z",
+        "fields": {
+          "lineLineAcRmsVoltage": 221,
+          "lineNeutralAcRmsVoltage": 221,
+          "acFrequency": 50,
+          "acRmsCurrent": 20
+        },
+        "description": "Utility Phase A Basic AC Quantities",
+        "id": "utilityPhaseABasicAcQuantities"
+      },
+      "originalInput": "2016-02-28T19:57:03.279Z,3,65014,193,255,8,dd,00,dd,00,00,19,14,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65018,
+      "sourceFile": "65018.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.828Z,3,65018,196,255,8,f6,03,00,00,00,00,00,00",
+      "expected": {
+        "prio": 3,
+        "pgn": 65018,
+        "dst": 255,
+        "src": 196,
+        "timestamp": "2016-02-28T19:57:02.828Z",
+        "fields": {
+          "totalEnergyExport": 3650400000,
+          "totalEnergyImport": 0
+        },
+        "description": "Generator Total AC Energy",
+        "id": "generatorTotalAcEnergy"
+      },
+      "originalInput": "2016-02-28T19:57:02.828Z,3,65018,196,255,8,f6,03,00,00,00,00,00,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65025,
+      "sourceFile": "65025.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.826Z,3,65025,196,255,8,1a,95,35,77,80,79,fd,ff",
+      "expected": {
+        "prio": 3,
+        "pgn": 65025,
+        "dst": 255,
+        "src": 196,
+        "timestamp": "2016-02-28T19:57:02.826Z",
+        "fields": {
+          "reactivePower": 282,
+          "powerFactor": 1.89844,
+          "powerFactorLagging": "Lagging",
+          "reserved": null
+        },
+        "description": "Generator Phase A AC Reactive Power",
+        "id": "generatorPhaseAAcReactivePower"
+      },
+      "originalInput": "2016-02-28T19:57:02.826Z,3,65025,196,255,8,1a,95,35,77,80,79,fd,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65026,
+      "sourceFile": "65026.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.826Z,3,65026,196,255,8,42,96,35,77,83,96,35,77",
+      "expected": {
+        "prio": 3,
+        "pgn": 65026,
+        "dst": 255,
+        "src": 196,
+        "timestamp": "2016-02-28T19:57:02.826Z",
+        "fields": {
+          "realPower": 578,
+          "apparentPower": 643
+        },
+        "description": "Generator Phase A AC Power",
+        "id": "generatorPhaseAAcPower"
+      },
+      "originalInput": "2016-02-28T19:57:02.826Z,3,65026,196,255,8,42,96,35,77,83,96,35,77",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65026,
+      "sourceFile": "65026.js",
+      "caseIndex": 1,
+      "input": "2016-02-28T19:57:02.826Z,3,65026,194,255,8,00,94,35,77,00,94,35,77",
+      "expected": {
+        "prio": 3,
+        "pgn": 65026,
+        "dst": 255,
+        "src": 194,
+        "timestamp": "2016-02-28T19:57:02.826Z",
+        "fields": {
+          "realPower": 0,
+          "apparentPower": 0
+        },
+        "description": "Generator Phase A AC Power",
+        "id": "generatorPhaseAAcPower"
+      },
+      "originalInput": "2016-02-28T19:57:02.826Z,3,65026,194,255,8,00,94,35,77,00,94,35,77",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65026,
+      "sourceFile": "65026.js",
+      "caseIndex": 2,
+      "input": "2016-02-28T19:57:15.807Z,3,65026,195,255,8,8d,a3,35,77,b6,a3,35,77",
+      "expected": {
+        "prio": 3,
+        "pgn": 65026,
+        "dst": 255,
+        "src": 195,
+        "timestamp": "2016-02-28T19:57:15.807Z",
+        "fields": {
+          "realPower": 3981,
+          "apparentPower": 4022
+        },
+        "description": "Generator Phase A AC Power",
+        "id": "generatorPhaseAAcPower"
+      },
+      "originalInput": "2016-02-28T19:57:15.807Z,3,65026,195,255,8,8d,a3,35,77,b6,a3,35,77",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65027,
+      "sourceFile": "65027.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.827Z,3,65027,196,255,8,7e,00,7e,00,02,1e,05,00",
+      "expected": {
+        "prio": 3,
+        "pgn": 65027,
+        "dst": 255,
+        "src": 196,
+        "timestamp": "2016-02-28T19:57:02.827Z",
+        "fields": {
+          "lineLineAcRmsVoltage": 126,
+          "lineNeutralAcRmsVoltage": 126,
+          "acFrequency": 60.016,
+          "acRmsCurrent": 5
+        },
+        "description": "Generator Phase A Basic AC Quantities",
+        "id": "generatorPhaseABasicAcQuantities"
+      },
+      "originalInput": "2016-02-28T19:57:02.827Z,3,65027,196,255,8,7e,00,7e,00,02,1e,05,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65280,
+      "sourceFile": "65280.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.364Z,7,65280,7,255,8,3f,9f,12,00,00,00,ff,ff",
+      "expected": {
+        "prio": 7,
+        "pgn": 65280,
+        "dst": 255,
+        "src": 7,
+        "timestamp": "2016-02-28T19:57:02.364Z",
+        "fields": {
+          "manufacturerCode": "Furuno",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "heave": 0.018,
+          "reserved5": null
+        },
+        "description": "Furuno: Heave",
+        "id": "furunoHeave"
+      },
+      "originalInput": "2016-02-28T19:57:02.364Z,7,65280,7,255,8,3f,9f,12,00,00,00,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65359,
+      "sourceFile": "65359.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,7,65359,204,255,8,3b,9f,ff,ff,ff,18,60,ff",
+      "expected": {
+        "prio": 7,
+        "pgn": 65359,
+        "dst": 255,
+        "src": 204,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "manufacturerCode": "Raymarine",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "sid": null,
+          "headingTrue": null,
+          "headingMagnetic": 2.46,
+          "reserved7": null
+        },
+        "description": "Seatalk: Pilot Heading",
+        "id": "seatalkPilotHeading"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,7,65359,204,255,8,3b,9f,ff,ff,ff,18,60,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65360,
+      "sourceFile": "65360.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,7,65360,204,255,8,3b,9f,ff,ff,ff,17,60,ff",
+      "expected": {
+        "prio": 7,
+        "pgn": 65360,
+        "dst": 255,
+        "src": 204,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "manufacturerCode": "Raymarine",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "sid": null,
+          "targetHeadingTrue": null,
+          "targetHeadingMagnetic": 2.4599,
+          "reserved7": null
+        },
+        "description": "Seatalk: Pilot Locked Heading",
+        "id": "seatalkPilotLockedHeading"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,7,65360,204,255,8,3b,9f,ff,ff,ff,17,60,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65379,
+      "sourceFile": "65379.js",
+      "caseIndex": 0,
+      "input": "2024-08-02T13:42:25.815Z,7,65379,204,255,8,3b,9f,40,00,00,00,00,ff",
+      "expected": {
+        "prio": 7,
+        "pgn": 65379,
+        "dst": 255,
+        "src": 204,
+        "timestamp": "2024-08-02T13:42:25.815Z",
+        "fields": {
+          "manufacturerCode": "Raymarine",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "pilotMode": "Auto, compass commanded",
+          "subMode": 0,
+          "pilotModeData": 0,
+          "reserved7": null
+        },
+        "description": "Seatalk: Pilot Mode",
+        "id": "seatalkPilotMode"
+      },
+      "originalInput": "2024-08-02T13:42:25.815Z,7,65379,204,255,8,3b,9f,40,00,00,00,00,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65408,
+      "sourceFile": "65408.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.828Z,7,65408,36,255,8,87,98,16,fa,ff,ff,ff,ff",
+      "expected": {
+        "prio": 7,
+        "pgn": 65408,
+        "dst": 255,
+        "src": 36,
+        "timestamp": "2016-02-28T19:57:02.828Z",
+        "fields": {
+          "manufacturerCode": "Airmar",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "sid": 22,
+          "depthQualityFactor": "Quality 100%",
+          "reserved6": null
+        },
+        "description": "Airmar: Depth Quality Factor",
+        "id": "airmarDepthQualityFactor"
+      },
+      "originalInput": "2016-02-28T19:57:02.828Z,7,65408,36,255,8,87,98,16,fa,ff,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 65410,
+      "sourceFile": "65410.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.828Z,7,65410,36,255,8,87,98,2e,0f,7c,ce,04,ff",
+      "expected": {
+        "prio": 7,
+        "pgn": 65410,
+        "dst": 255,
+        "src": 36,
+        "timestamp": "2016-02-28T19:57:02.828Z",
+        "fields": {
+          "manufacturerCode": "Airmar",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "sid": 46,
+          "internalDeviceTemperature": 317.59,
+          "supplyVoltage": 12.3,
+          "reserved7": null
+        },
+        "description": "Airmar: Device Information",
+        "id": "airmarDeviceInformation"
+      },
+      "originalInput": "2016-02-28T19:57:02.828Z,7,65410,36,255,8,87,98,2e,0f,7c,ce,04,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 126208,
+      "sourceFile": "126208.js",
+      "caseIndex": 0,
+      "input": "2020-04-19T00:35:55.571Z,2,126208,0,67,21,01,16,f0,01,ff,01,02,0e,01,59,44,3a,56,4f,4c,55,4d,45,20,36,30",
+      "expected": {
+        "prio": 2,
+        "pgn": 126208,
+        "dst": 67,
+        "src": 0,
+        "timestamp": "2020-04-19T00:35:55.571Z",
+        "fields": {
+          "functionCode": "Command",
+          "pgn": 126998,
+          "priority": null,
+          "reserved": null,
+          "numberOfParameters": 1,
+          "list": [
+            {
+              "parameter": 2,
+              "parameterId": "installationDescription2",
+              "value": "YD:VOLUME 60"
+            }
+          ]
+        },
+        "description": "NMEA - Command group function",
+        "id": "nmeaCommandGroupFunction"
+      },
+      "originalInput": "2020-04-19T00:35:55.571Z,2,126208,0,67,21,01,16,f0,01,ff,01,02,0e,01,59,44,3a,56,4f,4c,55,4d,45,20,36,30",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 126208,
+      "sourceFile": "126208.js",
+      "caseIndex": 1,
+      "input": "1970-01-01T00:00:00.000Z,3,126208,0,35,63,01,00,ef,01,f8,14,01,87,00,03,04,04,29,05,08,06,a0,00,07,ec,13,08,bc,02,09,d8,27,0a,5e,06,0b,14,50,0c,38,09,0d,50,78,0e,54,0b,0f,8c,a0,10,48,0d,11,04,f1,12,20,0d,13,d0,02,14,30,0c,15,37,03",
+      "expected": {
+        "prio": 3,
+        "pgn": 126208,
+        "dst": 35,
+        "src": 0,
+        "timestamp": "1970-01-01T00:00:00.000Z",
+        "fields": {
+          "functionCode": "Command",
+          "pgn": 126720,
+          "priority": "Leave unchanged",
+          "reserved": null,
+          "numberOfParameters": 20,
+          "list": [
+            {
+              "parameter": 1,
+              "parameterId": "manufacturerCode",
+              "value": "Airmar"
+            },
+            {
+              "parameter": 3,
+              "parameterId": "industryCode",
+              "value": "Marine Industry"
+            },
+            {
+              "parameter": 4,
+              "parameterId": "proprietaryId",
+              "value": "Calibrate Speed"
+            },
+            {
+              "parameter": 5,
+              "parameterId": "numberOfPairsOfDataPoints",
+              "value": 8
+            },
+            {
+              "parameter": 6,
+              "parameterId": "inputFrequency",
+              "value": 16
+            },
+            {
+              "parameter": 7,
+              "parameterId": "outputSpeed",
+              "value": 51
+            },
+            {
+              "parameter": 8,
+              "parameterId": "inputFrequency",
+              "value": 70
+            },
+            {
+              "parameter": 9,
+              "parameterId": "outputSpeed",
+              "value": 102
+            },
+            {
+              "parameter": 10,
+              "parameterId": "inputFrequency",
+              "value": 163
+            },
+            {
+              "parameter": 11,
+              "parameterId": "outputSpeed",
+              "value": 205
+            },
+            {
+              "parameter": 12,
+              "parameterId": "inputFrequency",
+              "value": 236
+            },
+            {
+              "parameter": 13,
+              "parameterId": "outputSpeed",
+              "value": 308
+            },
+            {
+              "parameter": 14,
+              "parameterId": "inputFrequency",
+              "value": 290
+            },
+            {
+              "parameter": 15,
+              "parameterId": "outputSpeed",
+              "value": 411
+            },
+            {
+              "parameter": 16,
+              "parameterId": "inputFrequency",
+              "value": 340
+            },
+            {
+              "parameter": 17,
+              "parameterId": "outputSpeed",
+              "value": 617
+            },
+            {
+              "parameter": 18,
+              "parameterId": "inputFrequency",
+              "value": 336
+            },
+            {
+              "parameter": 19,
+              "parameterId": "outputSpeed",
+              "value": 7.2
+            },
+            {
+              "parameter": 20,
+              "parameterId": "inputFrequency",
+              "value": 312
+            },
+            {
+              "parameter": 21,
+              "parameterId": "outputSpeed",
+              "value": 8.23
+            }
+          ]
+        },
+        "description": "NMEA - Command group function",
+        "id": "nmeaCommandGroupFunction"
+      },
+      "originalInput": "2023-09-25T00:20:09.551Z,3,126208,0,35,63,01,00,ef,01,f8,14,01,87,00,03,04,04,29,05,08,06,a0,00,07,ec,13,08,bc,02,09,d8,27,0a,5e,06,0b,14,50,0c,38,09,0d,50,78,0e,54,0b,0f,8c,a0,10,48,0d,11,04,f1,12,20,0d,13,d0,02,14,30,0c,15,37,03",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 126208,
+      "sourceFile": "126208.js",
+      "caseIndex": 2,
+      "input": "2026-02-24T00:00:00.000Z,3,126208,0,37,11,05,14,f2,01,00,01,01,01,66,01,05",
+      "expected": {
+        "prio": 3,
+        "pgn": 126208,
+        "dst": 37,
+        "src": 0,
+        "timestamp": "2026-02-24T00:00:00.000Z",
+        "fields": {
+          "functionCode": "Write Fields",
+          "pgn": 127508,
+          "uniqueId": 0,
+          "numberOfSelectionPairs": 1,
+          "numberOfParameters": 1,
+          "list": [
+            {
+              "selectionParameter": 1,
+              "parameterId": "instance",
+              "selectionValue": 102
+            }
+          ],
+          "list2": [
+            {
+              "parameter": 1,
+              "parameterId": "instance",
+              "value": 5
+            }
+          ]
+        },
+        "description": "NMEA - Write Fields group function",
+        "id": "nmeaWriteFieldsGroupFunction"
+      },
+      "originalInput": "2026-02-24T00:00:00.000Z,3,126208,0,37,11,05,14,f2,01,00,01,01,01,66,01,05",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 126464,
+      "sourceFile": "126464.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:59:40.090Z,6,126464,2,3,223,01,00,ee,00,00,ea,00,00,ed,01,00,e8,00,00,ee,01,ff,ff,01,ff,ff,00,67,ff,01,00,ef,00,04,f9,01,03,f9,01,20,ff,01,0b,ff,00,22,ff,01,0b,f5,01,1c,ff,00,00,ff,00,02,fd,01,02,ff,01,4f,ff,00,50,ff,00,0d,f1,01,41,ff,00,66,ff,01,64,ff,01,63,ff,00,12,f1,01,05,f1,01,04,ff,00,11,fe,01,07,ff,01,0a,ff,00,21,ff,01,14,f0,01,03,f5,01,13,f5,01,1b,ff,00,03,ff,00,1a,ff,00,06,ff,01,11,f2,01,08,f2,01,29,ff,01,19,f1,01,13,f1,01,10,fe,01,06,fd,01,07,fd,01,0b,f9,01,14,f1,01,26,ff,01,40,ff,01,1a,f1,01,1f,ff,00,30,ff,01,01,f2,01,05,f2,01,0a,f2,01,00,f2,01,14,f2,01,12,f2,01,09,f2,01,02,f8,01,05,f8,01,01,f8,01,14,f8,01,2e,ff,00,09,ff,01,18,ff,01,10,f0,01,09,f8,01,53,ff,00,27,ff,00,52,ff,00",
+      "expected": {
+        "prio": 6,
+        "pgn": 126464,
+        "dst": 3,
+        "src": 2,
+        "timestamp": "2017-04-15T14:59:40.090Z",
+        "fields": {
+          "functionCode": "Receive PGN list",
+          "list": [
+            {
+              "pgn": 60928
+            },
+            {
+              "pgn": 59904
+            },
+            {
+              "pgn": 126208
+            },
+            {
+              "pgn": 59392
+            },
+            {
+              "pgn": 126464
+            },
+            {
+              "pgn": 131071
+            },
+            {
+              "pgn": 65535
+            },
+            {
+              "pgn": 130919
+            },
+            {
+              "pgn": 61184
+            },
+            {
+              "pgn": 129284
+            },
+            {
+              "pgn": 129283
+            },
+            {
+              "pgn": 130848
+            },
+            {
+              "pgn": 65291
+            },
+            {
+              "pgn": 130850
+            },
+            {
+              "pgn": 128267
+            },
+            {
+              "pgn": 65308
+            },
+            {
+              "pgn": 65280
+            },
+            {
+              "pgn": 130306
+            },
+            {
+              "pgn": 130818
+            },
+            {
+              "pgn": 65359
+            },
+            {
+              "pgn": 65360
+            },
+            {
+              "pgn": 127245
+            },
+            {
+              "pgn": 65345
+            },
+            {
+              "pgn": 130918
+            },
+            {
+              "pgn": 130916
+            },
+            {
+              "pgn": 65379
+            },
+            {
+              "pgn": 127250
+            },
+            {
+              "pgn": 127237
+            },
+            {
+              "pgn": 65284
+            },
+            {
+              "pgn": 130577
+            },
+            {
+              "pgn": 130823
+            },
+            {
+              "pgn": 65290
+            },
+            {
+              "pgn": 130849
+            },
+            {
+              "pgn": 126996
+            },
+            {
+              "pgn": 128259
+            },
+            {
+              "pgn": 128275
+            },
+            {
+              "pgn": 65307
+            },
+            {
+              "pgn": 65283
+            },
+            {
+              "pgn": 65306
+            },
+            {
+              "pgn": 130822
+            },
+            {
+              "pgn": 127505
+            },
+            {
+              "pgn": 127496
+            },
+            {
+              "pgn": 130857
+            },
+            {
+              "pgn": 127257
+            },
+            {
+              "pgn": 127251
+            },
+            {
+              "pgn": 130576
+            },
+            {
+              "pgn": 130310
+            },
+            {
+              "pgn": 130311
+            },
+            {
+              "pgn": 129291
+            },
+            {
+              "pgn": 127252
+            },
+            {
+              "pgn": 130854
+            },
+            {
+              "pgn": 130880
+            },
+            {
+              "pgn": 127258
+            },
+            {
+              "pgn": 65311
+            },
+            {
+              "pgn": 130864
+            },
+            {
+              "pgn": 127489
+            },
+            {
+              "pgn": 127493
+            },
+            {
+              "pgn": 127498
+            },
+            {
+              "pgn": 127488
+            },
+            {
+              "pgn": 127508
+            },
+            {
+              "pgn": 127506
+            },
+            {
+              "pgn": 127497
+            },
+            {
+              "pgn": 129026
+            },
+            {
+              "pgn": 129029
+            },
+            {
+              "pgn": 129025
+            },
+            {
+              "pgn": 129044
+            },
+            {
+              "pgn": 65326
+            },
+            {
+              "pgn": 130825
+            },
+            {
+              "pgn": 130840
+            },
+            {
+              "pgn": 126992
+            },
+            {
+              "pgn": 129033
+            },
+            {
+              "pgn": 65363
+            },
+            {
+              "pgn": 65319
+            },
+            {
+              "pgn": 65362
+            }
+          ]
+        },
+        "description": "PGN List (Transmit and Receive)",
+        "id": "pgnListTransmitAndReceive"
+      },
+      "originalInput": "2017-04-15T14:59:40.090Z,6,126464,2,3,223,01,00,ee,00,00,ea,00,00,ed,01,00,e8,00,00,ee,01,ff,ff,01,ff,ff,00,67,ff,01,00,ef,00,04,f9,01,03,f9,01,20,ff,01,0b,ff,00,22,ff,01,0b,f5,01,1c,ff,00,00,ff,00,02,fd,01,02,ff,01,4f,ff,00,50,ff,00,0d,f1,01,41,ff,00,66,ff,01,64,ff,01,63,ff,00,12,f1,01,05,f1,01,04,ff,00,11,fe,01,07,ff,01,0a,ff,00,21,ff,01,14,f0,01,03,f5,01,13,f5,01,1b,ff,00,03,ff,00,1a,ff,00,06,ff,01,11,f2,01,08,f2,01,29,ff,01,19,f1,01,13,f1,01,10,fe,01,06,fd,01,07,fd,01,0b,f9,01,14,f1,01,26,ff,01,40,ff,01,1a,f1,01,1f,ff,00,30,ff,01,01,f2,01,05,f2,01,0a,f2,01,00,f2,01,14,f2,01,12,f2,01,09,f2,01,02,f8,01,05,f8,01,01,f8,01,14,f8,01,2e,ff,00,09,ff,01,18,ff,01,10,f0,01,09,f8,01,53,ff,00,27,ff,00,52,ff,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 126720,
+      "sourceFile": "126720.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T16:02:48.913Z,7,126720,1,255,7,3b,9f,f0,81,90,ff,03",
+      "expected": {
+        "prio": 7,
+        "pgn": 126720,
+        "dst": 255,
+        "src": 1,
+        "timestamp": "2017-04-15T16:02:48.913Z",
+        "fields": {
+          "manufacturerCode": "Raymarine",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "proprietaryId": "Seatalk 1 Encoded",
+          "command": "Seatalk1",
+          "seatalk1Command": "Device Indentification",
+          "reserved7": null,
+          "device": "S100"
+        },
+        "description": "Seatalk1: Device Identification",
+        "id": "seatalk1DeviceIdentification"
+      },
+      "originalInput": "2017-04-15T16:02:48.913Z,7,126720,1,255,7,3b,9f,f0,81,90,ff,03",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 126720,
+      "sourceFile": "126720.js",
+      "caseIndex": 1,
+      "input": "2023-09-25T18:06:16.648Z,7,126720,35,100,36,87,98,29,08,17,00,33,00,4f,00,67,00,b3,00,ce,00,0a,01,35,01,54,01,9c,01,be,01,69,02,df,01,d0,02,f3,01,37,03",
+      "expected": {
+        "prio": 7,
+        "pgn": 126720,
+        "dst": 100,
+        "src": 35,
+        "timestamp": "2023-09-25T18:06:16.648Z",
+        "fields": {
+          "manufacturerCode": "Airmar",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "proprietaryId": "Calibrate Speed",
+          "numberOfPairsOfDataPoints": 8,
+          "list": [
+            {
+              "inputFrequency": 2.3,
+              "outputSpeed": 0.51
+            },
+            {
+              "inputFrequency": 7.9,
+              "outputSpeed": 1.03
+            },
+            {
+              "inputFrequency": 17.9,
+              "outputSpeed": 2.06
+            },
+            {
+              "inputFrequency": 26.6,
+              "outputSpeed": 3.09
+            },
+            {
+              "inputFrequency": 34,
+              "outputSpeed": 4.12
+            },
+            {
+              "inputFrequency": 44.6,
+              "outputSpeed": 6.17
+            },
+            {
+              "inputFrequency": 47.9,
+              "outputSpeed": 7.2
+            },
+            {
+              "inputFrequency": 49.9,
+              "outputSpeed": 8.23
+            }
+          ]
+        },
+        "description": "Airmar: Calibrate Speed",
+        "id": "airmarCalibrateSpeed"
+      },
+      "originalInput": [
+        "2023-09-25T18:06:16.632Z,7,126720,35,100,8,c0,24,87,98,29,08,17,00",
+        "2023-09-25T18:06:16.636Z,7,126720,35,100,8,c1,33,00,4f,00,67,00,b3",
+        "2023-09-25T18:06:16.639Z,7,126720,35,100,8,c2,00,ce,00,0a,01,35,01",
+        "2023-09-25T18:06:16.641Z,7,126720,35,100,8,c3,54,01,9c,01,be,01,69",
+        "2023-09-25T18:06:16.645Z,7,126720,35,100,8,c4,02,df,01,d0,02,f3,01",
+        "2023-09-25T18:06:16.648Z,7,126720,35,100,8,c5,37,03,ff,ff,ff,ff,ff"
+      ],
+      "originalFormat": 0
+    },
+    {
+      "pgn": 126992,
+      "sourceFile": "126992.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.471Z,3,126992,3,255,8,ff,ff,77,43,50,fa,1c,20",
+      "expected": {
+        "prio": 3,
+        "pgn": 126992,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.471Z",
+        "fields": {
+          "sid": null,
+          "source": null,
+          "reserved": null,
+          "date": "2017.04.15",
+          "time": "14:57:57"
+        },
+        "description": "System Time",
+        "id": "systemTime"
+      },
+      "originalInput": "2017-04-15T14:57:58.471Z,3,126992,3,255,8,ff,ff,77,43,50,fa,1c,20",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 126996,
+      "sourceFile": "126996.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.470Z,6,126996,0,255,134,14,05,27,6e,4e,4d,45,41,20,32,30,30,30,20,50,43,20,49,6e,74,65,72,66,61,63,65,20,28,4e,47,54,2d,31,29,ff,ff,31,2e,31,30,30,2c,20,32,2e,32,31,30,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,4e,47,54,2d,31,2d,55,53,42,20,20,68,76,31,2e,30,33,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,31,37,37,38,30,30,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,00,01",
+      "expected": {
+        "prio": 6,
+        "pgn": 126996,
+        "dst": 255,
+        "src": 0,
+        "timestamp": "2017-04-15T14:57:58.470Z",
+        "fields": {
+          "nmea2000Version": 1.3,
+          "productCode": 28199,
+          "modelId": "NMEA 2000 PC Interface (NGT-1)",
+          "softwareVersionCode": "1.100, 2.210",
+          "modelVersion": "NGT-1-USB  hv1.03",
+          "modelSerialCode": "177800",
+          "certificationLevel": "Level A",
+          "loadEquivalency": 1
+        },
+        "description": "Product Information",
+        "id": "productInformation"
+      },
+      "originalInput": "2017-04-15T14:57:58.470Z,6,126996,0,255,134,14,05,27,6e,4e,4d,45,41,20,32,30,30,30,20,50,43,20,49,6e,74,65,72,66,61,63,65,20,28,4e,47,54,2d,31,29,ff,ff,31,2e,31,30,30,2c,20,32,2e,32,31,30,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,4e,47,54,2d,31,2d,55,53,42,20,20,68,76,31,2e,30,33,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,31,37,37,38,30,30,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,00,01",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127237,
+      "sourceFile": "127237.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.469Z,2,127237,172,255,21,3c,c2,3f,f1,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,7f,ff,7f,ff,7f,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 127237,
+        "dst": 255,
+        "src": 172,
+        "timestamp": "2017-04-15T14:57:58.469Z",
+        "fields": {
+          "rudderLimitExceeded": "No",
+          "offHeadingLimitExceeded": null,
+          "offTrackLimitExceeded": null,
+          "override": "No",
+          "steeringMode": "Follow-Up Device",
+          "turnMode": "Rudder limit controlled",
+          "headingReference": null,
+          "reserved": null,
+          "commandedRudderDirection": "Move to starboard",
+          "commandedRudderAngle": -0.0015,
+          "headingToSteerCourse": null,
+          "track": null,
+          "rudderLimit": null,
+          "offHeadingLimit": null,
+          "radiusOfTurnOrder": null,
+          "rateOfTurnOrder": null,
+          "offTrackLimit": null,
+          "vesselHeading": null
+        },
+        "description": "Heading/Track control",
+        "id": "headingTrackControl"
+      },
+      "originalInput": "2017-04-15T14:57:58.469Z,2,127237,172,255,21,3c,c2,3f,f1,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,7f,ff,7f,ff,7f,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127245,
+      "sourceFile": "127245.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,2,127245,172,255,8,fc,fc,eb,ff,e3,ff,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 127245,
+        "dst": 255,
+        "src": 172,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "instance": 252,
+          "directionOrder": 4,
+          "reserved": null,
+          "angleOrder": -0.0021,
+          "position": -0.0029,
+          "reserved6": null
+        },
+        "description": "Rudder",
+        "id": "rudder"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,2,127245,172,255,8,fc,fc,eb,ff,e3,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127250,
+      "sourceFile": "127250.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,2,127250,204,255,8,ff,18,60,ff,7f,ff,7f,fd",
+      "expected": {
+        "prio": 2,
+        "pgn": 127250,
+        "dst": 255,
+        "src": 204,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "sid": null,
+          "heading": 2.46,
+          "deviation": null,
+          "variation": null,
+          "reference": "Magnetic",
+          "reserved": null
+        },
+        "description": "Vessel Heading",
+        "id": "vesselHeading"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,2,127250,204,255,8,ff,18,60,ff,7f,ff,7f,fd",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127251,
+      "sourceFile": "127251.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,2,127251,204,255,8,ff,61,56,00,00,ff,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 127251,
+        "dst": 255,
+        "src": 204,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "sid": null,
+          "rate": 0.00069103,
+          "reserved": null
+        },
+        "description": "Rate of Turn",
+        "id": "rateOfTurn"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,2,127251,204,255,8,ff,61,56,00,00,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127257,
+      "sourceFile": "127257.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,2,127257,204,255,8,ff,18,60,2f,01,01,00,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 127257,
+        "dst": 255,
+        "src": 204,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "sid": null,
+          "yaw": 2.46,
+          "pitch": 0.0303,
+          "roll": 0.0001,
+          "reserved": null
+        },
+        "description": "Attitude",
+        "id": "attitude"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,2,127257,204,255,8,ff,18,60,2f,01,01,00,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127258,
+      "sourceFile": "127258.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.469Z,6,127258,3,255,8,ff,f7,34,40,5d,f8,ff,ff",
+      "expected": {
+        "prio": 6,
+        "pgn": 127258,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.469Z",
+        "fields": {
+          "sid": null,
+          "source": "WMM 2015",
+          "reserved": null,
+          "ageOfService": "2015.01.01",
+          "variation": -0.1955,
+          "reserved6": null
+        },
+        "description": "Magnetic Variation",
+        "id": "magneticVariation"
+      },
+      "originalInput": "2017-04-15T14:57:58.469Z,6,127258,3,255,8,ff,f7,34,40,5d,f8,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127488,
+      "sourceFile": "127488.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,2,127488,17,255,8,01,00,00,ff,ff,7f,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 127488,
+        "dst": 255,
+        "src": 17,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "instance": "Dual Engine Starboard",
+          "speed": 0,
+          "boostPressure": null,
+          "tiltTrim": null,
+          "reserved": null
+        },
+        "description": "Engine Parameters, Rapid Update",
+        "id": "engineParametersRapidUpdate"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,2,127488,17,255,8,01,00,00,ff,ff,7f,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127489,
+      "sourceFile": "127489.js",
+      "caseIndex": 0,
+      "input": "2023-04-01T17:24:51.634Z,2,127489,16,255,26,00,2f,06,ff,ff,e3,73,66,05,ff,7f,58,02,00,00,ff,ff,ff,ff,ff,06,00,00,00,7f,7f",
+      "expected": {
+        "prio": 2,
+        "pgn": 127489,
+        "dst": 255,
+        "src": 16,
+        "timestamp": "2023-04-01T17:24:51.634Z",
+        "fields": {
+          "instance": "Single Engine or Dual Engine Port",
+          "oilPressure": 158300,
+          "oilTemperature": null,
+          "temperature": 296.67,
+          "alternatorPotential": 13.82,
+          "fuelRate": null,
+          "totalEngineHours": "00:10:00",
+          "coolantPressure": null,
+          "fuelPressure": null,
+          "reserved": null,
+          "discreteStatus1": [
+            "Over Temperature",
+            "Low Oil Pressure"
+          ],
+          "discreteStatus2": [],
+          "engineLoad": null,
+          "engineTorque": null
+        },
+        "description": "Engine Parameters, Dynamic",
+        "id": "engineParametersDynamic"
+      },
+      "originalInput": "2023-04-01T17:24:51.634Z,2,127489,16,255,26,00,2f,06,ff,ff,e3,73,66,05,ff,7f,58,02,00,00,ff,ff,ff,ff,ff,06,00,00,00,7f,7f",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127489,
+      "sourceFile": "127489.js",
+      "caseIndex": 1,
+      "input": "2017-04-15T14:57:58.469Z,2,127489,17,255,26,00,5a,0f,ff,ff,13,81,ff,7f,ff,7f,ff,ff,ff,ff,ff,ff,ff,ff,ff,00,00,00,00,7f,7f",
+      "expected": {
+        "prio": 2,
+        "pgn": 127489,
+        "dst": 255,
+        "src": 17,
+        "timestamp": "2017-04-15T14:57:58.469Z",
+        "fields": {
+          "instance": "Single Engine or Dual Engine Port",
+          "oilPressure": 393000,
+          "oilTemperature": null,
+          "temperature": 330.43,
+          "alternatorPotential": null,
+          "fuelRate": null,
+          "totalEngineHours": null,
+          "coolantPressure": null,
+          "fuelPressure": null,
+          "reserved": null,
+          "discreteStatus1": [],
+          "discreteStatus2": [],
+          "engineLoad": null,
+          "engineTorque": null
+        },
+        "description": "Engine Parameters, Dynamic",
+        "id": "engineParametersDynamic"
+      },
+      "originalInput": "2017-04-15T14:57:58.469Z,2,127489,17,255,26,00,5a,0f,ff,ff,13,81,ff,7f,ff,7f,ff,ff,ff,ff,ff,ff,ff,ff,ff,00,00,00,00,7f,7f",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127497,
+      "sourceFile": "127497.js",
+      "caseIndex": 0,
+      "input": "2020-03-31T02:34:18.529Z,5,127497,57,255,9,e0,09,00,e6,86,ff,7f,ff,ff",
+      "expected": {
+        "prio": 5,
+        "pgn": 127497,
+        "dst": 255,
+        "src": 57,
+        "timestamp": "2020-03-31T02:34:18.529Z",
+        "fields": {
+          "instance": 224,
+          "tripFuelUsed": 9,
+          "fuelRateAverage": -3100.2,
+          "fuelRateEconomy": null,
+          "instantaneousFuelEconomy": -0.1
+        },
+        "description": "Trip Parameters, Engine",
+        "id": "tripParametersEngine"
+      },
+      "originalInput": "2020-03-31T02:34:18.529Z,5,127497,57,255,9,e0,09,00,e6,86,ff,7f,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127501,
+      "sourceFile": "127501.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.481Z,3,127501,60,255,8,01,fc,ff,ff,ff,ff,ff,ff",
+      "expected": {
+        "prio": 3,
+        "pgn": 127501,
+        "dst": 255,
+        "src": 60,
+        "timestamp": "2016-02-28T19:57:02.481Z",
+        "fields": {
+          "instance": 1,
+          "indicator1": "Off",
+          "indicator2": null,
+          "indicator3": null,
+          "indicator4": null,
+          "indicator5": null,
+          "indicator6": null,
+          "indicator7": null,
+          "indicator8": null,
+          "indicator9": null,
+          "indicator10": null,
+          "indicator11": null,
+          "indicator12": null,
+          "indicator13": null,
+          "indicator14": null,
+          "indicator15": null,
+          "indicator16": null,
+          "indicator17": null,
+          "indicator18": null,
+          "indicator19": null,
+          "indicator20": null,
+          "indicator21": null,
+          "indicator22": null,
+          "indicator23": null,
+          "indicator24": null,
+          "indicator25": null,
+          "indicator26": null,
+          "indicator27": null,
+          "indicator28": null
+        },
+        "description": "Binary Switch Bank Status",
+        "id": "binarySwitchBankStatus"
+      },
+      "originalInput": "2016-02-28T19:57:02.481Z,3,127501,60,255,8,01,fc,ff,ff,ff,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127505,
+      "sourceFile": "127505.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.469Z,6,127505,17,255,8,00,f2,36,ea,01,00,00,ff",
+      "expected": {
+        "prio": 6,
+        "pgn": 127505,
+        "dst": 255,
+        "src": 17,
+        "timestamp": "2017-04-15T14:57:58.469Z",
+        "fields": {
+          "instance": 0,
+          "type": "Fuel",
+          "level": 56.264,
+          "capacity": 49,
+          "reserved": null
+        },
+        "description": "Fluid Level",
+        "id": "fluidLevel"
+      },
+      "originalInput": "2017-04-15T14:57:58.469Z,6,127505,17,255,8,00,f2,36,ea,01,00,00,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127506,
+      "sourceFile": "127506.js",
+      "caseIndex": 0,
+      "input": "2023-04-01T17:28:01.128Z,2,127506,60,255,11,ff,03,ff,64,ff,14,00,ff,ff,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 127506,
+        "dst": 255,
+        "src": 60,
+        "timestamp": "2023-04-01T17:28:01.128Z",
+        "fields": {
+          "sid": null,
+          "instance": 3,
+          "dcType": null,
+          "stateOfCharge": 100,
+          "stateOfHealth": null,
+          "timeRemaining": "00:20:00",
+          "rippleVoltage": null,
+          "remainingCapacity": null
+        },
+        "description": "DC Detailed Status",
+        "id": "dcDetailedStatus"
+      },
+      "originalInput": "2023-04-01T17:28:01.128Z,2,127506,60,255,11,ff,03,ff,64,ff,14,00,ff,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127507,
+      "sourceFile": "127507.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.829Z,6,127507,129,255,6,72,06,08,fc,ff,ff",
+      "expected": {
+        "prio": 6,
+        "pgn": 127507,
+        "dst": 255,
+        "src": 129,
+        "timestamp": "2016-02-28T19:57:02.829Z",
+        "fields": {
+          "instance": 114,
+          "batteryInstance": 6,
+          "operatingState": "Disabled",
+          "chargeMode": "Standalone",
+          "enabled": "Off",
+          "equalizationPending": null,
+          "reserved": null,
+          "equalizationTimeRemaining": null
+        },
+        "description": "Charger Status",
+        "id": "chargerStatus"
+      },
+      "originalInput": "2016-02-28T19:57:02.829Z,6,127507,129,255,6,72,06,08,fc,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 127508,
+      "sourceFile": "127508.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.473Z,6,127508,17,255,8,01,b6,05,ff,7f,ff,ff,00",
+      "expected": {
+        "prio": 6,
+        "pgn": 127508,
+        "dst": 255,
+        "src": 17,
+        "timestamp": "2017-04-15T14:57:58.473Z",
+        "fields": {
+          "instance": 1,
+          "voltage": 14.62,
+          "current": null,
+          "temperature": null,
+          "sid": 0
+        },
+        "description": "Battery Status",
+        "id": "batteryStatus"
+      },
+      "originalInput": "2017-04-15T14:57:58.473Z,6,127508,17,255,8,01,b6,05,ff,7f,ff,ff,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 128259,
+      "sourceFile": "128259.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.469Z,2,128259,35,255,8,14,00,00,ff,ff,00,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 128259,
+        "dst": 255,
+        "src": 35,
+        "timestamp": "2017-04-15T14:57:58.469Z",
+        "fields": {
+          "sid": 20,
+          "speedWaterReferenced": 0,
+          "speedGroundReferenced": null,
+          "speedWaterReferencedType": "Paddle wheel",
+          "speedDirection": null,
+          "reserved": null
+        },
+        "description": "Speed",
+        "id": "speed"
+      },
+      "originalInput": "2017-04-15T14:57:58.469Z,2,128259,35,255,8,14,00,00,ff,ff,00,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 128267,
+      "sourceFile": "128267.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.469Z,3,128267,35,255,8,12,be,01,00,00,79,00,ff",
+      "expected": {
+        "prio": 3,
+        "pgn": 128267,
+        "dst": 255,
+        "src": 35,
+        "timestamp": "2017-04-15T14:57:58.469Z",
+        "fields": {
+          "sid": 18,
+          "depth": 4.46,
+          "offset": 0.121,
+          "range": null
+        },
+        "description": "Water Depth",
+        "id": "waterDepth"
+      },
+      "originalInput": "2017-04-15T14:57:58.469Z,3,128267,35,255,8,12,be,01,00,00,79,00,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 128275,
+      "sourceFile": "128275.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.469Z,6,128275,35,255,14,ff,ff,ff,ff,ff,ff,00,00,00,00,00,00,00,00",
+      "expected": {
+        "prio": 6,
+        "pgn": 128275,
+        "dst": 255,
+        "src": 35,
+        "timestamp": "2017-04-15T14:57:58.469Z",
+        "fields": {
+          "date": null,
+          "time": null,
+          "log": 0,
+          "tripLog": 0
+        },
+        "description": "Distance Log",
+        "id": "distanceLog"
+      },
+      "originalInput": "2017-04-15T14:57:58.469Z,6,128275,35,255,14,ff,ff,ff,ff,ff,ff,00,00,00,00,00,00,00,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129025,
+      "sourceFile": "129025.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,2,129025,3,255,8,82,9f,49,17,43,83,6c,d2",
+      "expected": {
+        "prio": 2,
+        "pgn": 129025,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "latitude": 39.070093,
+          "longitude": -76.4640445
+        },
+        "description": "Position, Rapid Update",
+        "id": "positionRapidUpdate"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,2,129025,3,255,8,82,9f,49,17,43,83,6c,d2",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129025,
+      "sourceFile": "129025.js",
+      "caseIndex": 1,
+      "input": "2023-07-22T15:58:03.514Z,2,129025,5,255,8,ff,ff,ff,7f,ff,ff,ff,7f",
+      "expected": {
+        "prio": 2,
+        "pgn": 129025,
+        "dst": 255,
+        "src": 5,
+        "timestamp": "2023-07-22T15:58:03.514Z",
+        "fields": {
+          "latitude": null,
+          "longitude": null
+        },
+        "description": "Position, Rapid Update",
+        "id": "positionRapidUpdate"
+      },
+      "originalInput": "2023-07-22T15:58:03.514Z,2,129025,5,255,8,fe,ff,ff,7f,fe,ff,ff,7f",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129026,
+      "sourceFile": "129026.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,2,129026,3,255,8,ff,fc,e1,51,f6,00,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 129026,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "sid": null,
+          "cogReference": "True",
+          "reserved": null,
+          "cog": 2.0961,
+          "sog": 2.46,
+          "reserved6": null
+        },
+        "description": "COG & SOG, Rapid Update",
+        "id": "cogSogRapidUpdate"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,2,129026,3,255,8,ff,fc,e1,51,f6,00,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129029,
+      "sourceFile": "129029.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.470Z,3,129029,3,255,43,9b,77,43,36,f6,1c,20,00,2e,cf,33,60,0c,6c,05,ff,49,10,5d,ae,73,63,f5,ff,ff,ff,ff,ff,ff,ff,7f,23,fc,12,41,00,ff,7f,ff,ff,ff,7f,00",
+      "expected": {
+        "prio": 3,
+        "pgn": 129029,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.470Z",
+        "fields": {
+          "sid": 155,
+          "date": "2017.04.15",
+          "time": "14:57:56.89500",
+          "latitude": 39.0700875,
+          "longitude": -76.4640319,
+          "altitude": null,
+          "gnssType": "GPS+SBAS/WAAS",
+          "method": "DGNSS fix",
+          "integrity": "No integrity checking",
+          "reserved": null,
+          "numberOfSvs": 18,
+          "hdop": 0.65,
+          "pdop": null,
+          "geoidalSeparation": null,
+          "referenceStations": 0,
+          "list": []
+        },
+        "description": "GNSS Position Data",
+        "id": "gnssPositionData"
+      },
+      "originalInput": "2017-04-15T14:57:58.470Z,3,129029,3,255,43,9b,77,43,36,f6,1c,20,00,2e,cf,33,60,0c,6c,05,ff,49,10,5d,ae,73,63,f5,ff,ff,ff,ff,ff,ff,ff,7f,23,fc,12,41,00,ff,7f,ff,ff,ff,7f,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129029,
+      "sourceFile": "129029.js",
+      "caseIndex": 1,
+      "input": "1970-01-01T00:00:00.000Z,3,129029,35,255,43,7e,9a,47,70,f8,2f,26,00,0c,d1,ef,45,98,e5,05,ff,7d,c2,94,03,a8,29,f6,c0,b6,77,02,00,00,00,00,23,fc,0a,5a,00,a0,00,ee,f3,ff,ff,00",
+      "expected": {
+        "prio": 3,
+        "pgn": 129029,
+        "dst": 255,
+        "src": 35,
+        "timestamp": "1970-01-01T00:00:00.000Z",
+        "fields": {
+          "sid": 126,
+          "date": "2020.03.09",
+          "time": "17:47:47.80000",
+          "latitude": 42.4913166,
+          "longitude": -70.8850733,
+          "altitude": 41.4,
+          "gnssType": "GPS+SBAS/WAAS",
+          "method": "DGNSS fix",
+          "integrity": "No integrity checking",
+          "reserved": null,
+          "numberOfSvs": 10,
+          "hdop": 0.9,
+          "pdop": 1.6,
+          "geoidalSeparation": -30.9,
+          "referenceStations": 0,
+          "list": []
+        },
+        "description": "GNSS Position Data",
+        "id": "gnssPositionData"
+      },
+      "originalInput": [
+        "can0  0DF80523   [8]  C0 2B 7E 9A 47 70 F8 2F",
+        "can0  0DF80523   [8]  C1 26 00 0C D1 EF 45 98",
+        "can0  0DF80523   [8]  C2 E5 05 00 7E C2 94 03",
+        "can0  0DF80523   [8]  C3 A8 29 F6 C0 B6 77 02",
+        "can0  0DF80523   [8]  C4 00 00 00 00 23 FC 0A",
+        "can0  0DF80523   [8]  C5 5A 00 A0 00 EE F3 FF",
+        "can0  0DF80523   [8]  C6 FF 00 FF FF FF FF FF"
+      ],
+      "originalFormat": 0
+    },
+    {
+      "pgn": 129029,
+      "sourceFile": "129029.js",
+      "caseIndex": 2,
+      "input": "2023-07-22T15:25:03.923Z,3,129029,5,255,43,ff,68,4c,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,7f,ff,ff,ff,ff,ff,ff,ff,7f,ff,ff,ff,ff,ff,ff,ff,7f,14,fc,00,ff,7f,ff,7f,ff,ff,ff,7f,00",
+      "expected": {
+        "prio": 3,
+        "pgn": 129029,
+        "dst": 255,
+        "src": 5,
+        "timestamp": "2023-07-22T15:25:03.923Z",
+        "fields": {
+          "sid": null,
+          "date": "2023.07.22",
+          "time": null,
+          "latitude": null,
+          "longitude": null,
+          "altitude": null,
+          "gnssType": "GPS+SBAS/WAAS+GLONASS",
+          "method": "GNSS fix",
+          "integrity": "No integrity checking",
+          "reserved": null,
+          "numberOfSvs": 0,
+          "hdop": null,
+          "pdop": null,
+          "geoidalSeparation": null,
+          "referenceStations": 0,
+          "list": []
+        },
+        "description": "GNSS Position Data",
+        "id": "gnssPositionData"
+      },
+      "originalInput": "2023-07-22T15:25:03.923Z,3,129029,5,255,43,ff,68,4c,fe,ff,ff,ff,fe,ff,ff,ff,ff,ff,ff,7f,fe,ff,ff,ff,ff,ff,ff,7f,fe,ff,ff,ff,ff,ff,ff,7f,14,fc,00,fe,7f,fe,7f,fe,ff,ff,7f,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129033,
+      "sourceFile": "129033.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.470Z,3,129033,3,255,8,77,43,36,f6,1c,20,10,ff",
+      "expected": {
+        "prio": 3,
+        "pgn": 129033,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.470Z",
+        "fields": {
+          "date": "2017.04.15",
+          "time": "14:57:56.89500",
+          "localOffset": "-4:00:00"
+        },
+        "description": "Time & Date",
+        "id": "timeDate"
+      },
+      "originalInput": "2017-04-15T14:57:58.470Z,3,129033,3,255,8,77,43,36,f6,1c,20,10,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129038,
+      "sourceFile": "129038.js",
+      "caseIndex": 0,
+      "input": "2019-04-15T15:12:21.553Z,4,129038,43,255,28,01,fa,a6,e4,15,93,3a,61,d2,42,d9,63,17,58,19,d4,c3,00,d1,08,08,ff,ff,ff,7f,0f,00,ff",
+      "expected": {
+        "prio": 4,
+        "pgn": 129038,
+        "dst": 255,
+        "src": 43,
+        "timestamp": "2019-04-15T15:12:21.553Z",
+        "fields": {
+          "messageId": "Scheduled Class A position report",
+          "repeatIndicator": "Initial",
+          "userId": 367306490,
+          "longitude": -76.5379949,
+          "latitude": 39.241965,
+          "positionAccuracy": "Low",
+          "raim": "not in use",
+          "timeStamp": "22",
+          "cog": 5.4297,
+          "sog": 1.95,
+          "communicationState": 2257,
+          "aisTransceiverInformation": "Channel B VDL reception",
+          "heading": null,
+          "rateOfTurn": null,
+          "navStatus": null,
+          "specialManeuverIndicator": "Not available",
+          "reserved": 0,
+          "spare18": 0,
+          "reserved19": 0,
+          "sequenceId": null
+        },
+        "description": "AIS Class A Position Report",
+        "id": "aisClassAPositionReport"
+      },
+      "originalInput": "2019-04-15T15:12:21.553Z,4,129038,43,255,28,01,fa,a6,e4,15,93,3a,61,d2,42,d9,63,17,58,19,d4,c3,00,d1,08,08,ff,ff,ff,7f,0f,00,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129039,
+      "sourceFile": "129039.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:59.409Z,4,129039,43,255,27,12,78,48,28,14,e0,84,6c,d2,eb,9c,49,17,ef,d6,52,f6,00,06,00,26,ff,ff,00,74,ff,ff",
+      "expected": {
+        "prio": 4,
+        "pgn": 129039,
+        "dst": 255,
+        "src": 43,
+        "timestamp": "2017-04-15T14:57:59.409Z",
+        "fields": {
+          "messageId": "Standard Class B position report",
+          "repeatIndicator": "Initial",
+          "userId": 338184312,
+          "longitude": -76.4640032,
+          "latitude": 39.0700267,
+          "positionAccuracy": "High",
+          "raim": "in use",
+          "timeStamp": "59",
+          "cog": 2.1206,
+          "sog": 2.46,
+          "communicationState": 393222,
+          "aisTransceiverInformation": "Own information not broadcast",
+          "heading": null,
+          "regionalApplication": 0,
+          "regionalApplicationB": 0,
+          "unitType": "CS",
+          "integratedDisplay": "No",
+          "dsc": "Yes",
+          "band": "Entire marine band",
+          "canHandleMsg22": "Yes",
+          "aisMode": "Autonomous",
+          "aisCommunicationState": "ITDMA",
+          "reserved": null
+        },
+        "description": "AIS Class B Position Report",
+        "id": "aisClassBPositionReport"
+      },
+      "originalInput": "2017-04-15T14:57:59.409Z,4,129039,43,255,27,12,78,48,28,14,e0,84,6c,d2,eb,9c,49,17,ef,d6,52,f6,00,06,00,26,ff,ff,00,74,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129041,
+      "sourceFile": "129041.js",
+      "caseIndex": 0,
+      "input": "2019-04-15T15:13:37.159Z,4,129041,43,255,46,15,78,3c,3a,3b,28,83,62,d2,9b,e5,5f,17,f5,ff,ff,ff,ff,ff,ff,ff,ff,4d,0e,00,00,14,01,53,43,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20",
+      "expected": {
+        "prio": 4,
+        "pgn": 129041,
+        "dst": 255,
+        "src": 43,
+        "timestamp": "2019-04-15T15:13:37.159Z",
+        "fields": {
+          "messageId": "ATON report",
+          "repeatIndicator": "Initial",
+          "userId": 993672312,
+          "longitude": -76.5295832,
+          "latitude": 39.2160667,
+          "positionAccuracy": "High",
+          "raim": "not in use",
+          "timeStamp": "Manual input mode",
+          "lengthDiameter": null,
+          "beamDiameter": null,
+          "positionReferenceFromStarboardEdge": null,
+          "positionReferenceFromTrueNorthFacingEdge": null,
+          "atonType": "Fixed beacon: port hand",
+          "offPositionIndicator": "No",
+          "virtualAtonFlag": "Yes",
+          "assignedModeFlag": "Autonomous and continuous",
+          "spare": 0,
+          "positionFixingDeviceType": "Surveyed",
+          "reserved19": 0,
+          "atonStatus": 0,
+          "aisTransceiverInformation": "Channel A VDL reception",
+          "reserved22": 0,
+          "atonName": "SC"
+        },
+        "description": "AIS Aids to Navigation (AtoN) Report",
+        "id": "aisAidsToNavigationAtonReport"
+      },
+      "originalInput": "2019-04-15T15:13:37.159Z,4,129041,43,255,46,15,78,3c,3a,3b,28,83,62,d2,9b,e5,5f,17,f5,ff,ff,ff,ff,ff,ff,ff,ff,4d,0e,00,00,14,01,53,43,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129044,
+      "sourceFile": "129044.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:58:06.474Z,6,129044,3,255,20,57,38,34,ff,00,00,00,00,00,00,00,00,00,00,00,00,57,38,34,ff",
+      "expected": {
+        "prio": 6,
+        "pgn": 129044,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:58:06.474Z",
+        "fields": {
+          "localDatum": "W84",
+          "deltaLatitude": 0,
+          "deltaLongitude": 0,
+          "deltaAltitude": 0,
+          "referenceDatum": "W84"
+        },
+        "description": "Datum",
+        "id": "datum"
+      },
+      "originalInput": "2017-04-15T14:58:06.474Z,6,129044,3,255,20,57,38,34,ff,00,00,00,00,00,00,00,00,00,00,00,00,57,38,34,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129044,
+      "sourceFile": "129044.js",
+      "caseIndex": 1,
+      "input": "2017-04-15T14:58:06.474Z,6,129044,3,255,20,57,38,ff,ff,00,00,00,00,00,00,00,00,00,00,00,00,57,38,34,ff",
+      "expected": {
+        "prio": 6,
+        "pgn": 129044,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:58:06.474Z",
+        "fields": {
+          "localDatum": "W8",
+          "deltaLatitude": 0,
+          "deltaLongitude": 0,
+          "deltaAltitude": 0,
+          "referenceDatum": "W84"
+        },
+        "description": "Datum",
+        "id": "datum"
+      },
+      "originalInput": "2017-04-15T14:58:06.474Z,6,129044,3,255,20,57,38,00,ff,00,00,00,00,00,00,00,00,00,00,00,00,57,38,34,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129283,
+      "sourceFile": "129283.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,3,129283,3,255,8,ff,30,b5,ff,ff,ff,ff,ff",
+      "expected": {
+        "prio": 3,
+        "pgn": 129283,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "sid": null,
+          "xteMode": "Autonomous",
+          "reserved": null,
+          "navigationTerminated": "No",
+          "xte": -0.75,
+          "reserved6": null
+        },
+        "description": "Cross Track Error",
+        "id": "crossTrackError"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,3,129283,3,255,8,ff,30,b5,ff,ff,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129284,
+      "sourceFile": "129284.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,3,129284,3,255,34,0b,48,ef,04,00,00,60,53,e5,20,77,43,e1,51,e1,51,ff,ff,ff,ff,02,00,00,00,77,64,47,17,71,75,71,d2,f6,00",
+      "expected": {
+        "prio": 3,
+        "pgn": 129284,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "sid": 11,
+          "distanceToWaypoint": 3234,
+          "courseBearingReference": "True",
+          "perpendicularCrossed": "No",
+          "arrivalCircleEntered": "No",
+          "calculationType": "Great Circle",
+          "etaTime": "15:19:50",
+          "etaDate": "2017.04.15",
+          "bearingOriginToDestinationWaypoint": 2.0961,
+          "bearingPositionToDestinationWaypoint": 2.0961,
+          "originWaypointNumber": null,
+          "destinationWaypointNumber": 2,
+          "destinationLatitude": 39.0554743,
+          "destinationLongitude": -76.4316303,
+          "waypointClosingVelocity": 2.46
+        },
+        "description": "Navigation Data",
+        "id": "navigationData"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,3,129284,3,255,34,0b,48,ef,04,00,00,60,53,e5,20,77,43,e1,51,e1,51,ff,ff,ff,ff,02,00,00,00,77,64,47,17,71,75,71,d2,f6,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129285,
+      "sourceFile": "129285.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T16:16:45.897Z,6,129285,3,255,83,03,00,03,00,00,00,00,00,07,07,01,52,6f,75,74,65,ff,03,00,08,01,4f,52,49,47,49,4e,bd,f1,46,17,66,7d,73,d2,04,00,0e,01,57,61,79,70,6f,69,6e,74,20,31,36,38,49,0f,48,17,04,af,88,d2,05,00,0e,01,57,61,79,70,6f,69,6e,74,20,32,34,35,32,d6,41,17,3b,db,8c,d2",
+      "expected": {
+        "prio": 6,
+        "pgn": 129285,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T16:16:45.897Z",
+        "fields": {
+          "startRps": 3,
+          "nitems": 3,
+          "databaseId": 0,
+          "routeId": 0,
+          "navigationDirectionInRoute": null,
+          "supplementaryRouteWpDataAvailable": "Off",
+          "reserved": 0,
+          "routeName": "Route",
+          "reserved9": null,
+          "list": [
+            {
+              "wpId": 3,
+              "wpName": "ORIGIN",
+              "wpLatitude": 39.0525373,
+              "wpLongitude": -76.4183194
+            },
+            {
+              "wpId": 4,
+              "wpName": "Waypoint 168",
+              "wpLatitude": 39.0598473,
+              "wpLongitude": -76.2794236
+            },
+            {
+              "wpId": 5,
+              "wpName": "Waypoint 245",
+              "wpLatitude": 39.0190642,
+              "wpLongitude": -76.2520773
+            }
+          ]
+        },
+        "description": "Navigation - Route/WP Information",
+        "id": "navigationRouteWpInformation"
+      },
+      "originalInput": "2017-04-15T16:16:45.897Z,6,129285,3,255,83,03,00,03,00,00,00,00,00,07,07,01,52,6f,75,74,65,ff,03,00,08,01,4f,52,49,47,49,4e,bd,f1,46,17,66,7d,73,d2,04,00,0e,01,57,61,79,70,6f,69,6e,74,20,31,36,38,49,0f,48,17,04,af,88,d2,05,00,0e,01,57,61,79,70,6f,69,6e,74,20,32,34,35,32,d6,41,17,3b,db,8c,d2",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129285,
+      "sourceFile": "129285.js",
+      "caseIndex": 1,
+      "input": "2023-07-23T17:37:26.091Z,6,129285,10,255,89,01,00,03,00,00,00,00,00,07,07,01,52,6f,75,74,65,ff,01,00,0e,01,57,61,79,70,6f,69,6e,74,20,37,31,37,0a,b8,48,17,d4,df,68,d2,02,00,0e,01,57,61,79,70,6f,69,6e,74,20,37,31,36,ec,72,49,17,3a,98,69,d2,03,00,0e,01,57,61,79,70,6f,69,6e,74,20,37,31,35,c9,9e,49,17,ae,18,6a,d2",
+      "expected": {
+        "prio": 6,
+        "pgn": 129285,
+        "dst": 255,
+        "src": 10,
+        "timestamp": "2023-07-23T17:37:26.091Z",
+        "fields": {
+          "startRps": 1,
+          "nitems": 3,
+          "databaseId": 0,
+          "routeId": 0,
+          "navigationDirectionInRoute": null,
+          "supplementaryRouteWpDataAvailable": "Off",
+          "reserved": 0,
+          "routeName": "Route",
+          "reserved9": null,
+          "list": [
+            {
+              "wpId": 1,
+              "wpName": "Waypoint 717",
+              "wpLatitude": 39.0641674,
+              "wpLongitude": -76.4878892
+            },
+            {
+              "wpId": 2,
+              "wpName": "Waypoint 716",
+              "wpLatitude": 39.0689516,
+              "wpLongitude": -76.4831686
+            },
+            {
+              "wpId": 3,
+              "wpName": "Waypoint 715",
+              "wpLatitude": 39.0700745,
+              "wpLongitude": -76.4798802
+            }
+          ]
+        },
+        "description": "Navigation - Route/WP Information",
+        "id": "navigationRouteWpInformation"
+      },
+      "originalInput": [
+        "17:29:52.256 R 19F9050A 20 59 01 00 03 00 00 00",
+        "17:29:52.257 R 19F9050A 21 00 00 07 07 01 52 6F",
+        "17:29:52.258 R 19F9050A 22 75 74 65 FF 01 00 0E",
+        "17:29:52.259 R 19F9050A 23 01 57 61 79 70 6F 69",
+        "17:29:52.260 R 19F9050A 24 6E 74 20 37 31 37 0A",
+        "17:29:52.261 R 19F9050A 25 B8 48 17 D4 DF 68 D2",
+        "17:29:52.261 R 19F9050A 26 02 00 0E 01 57 61 79",
+        "17:29:52.262 R 19F9050A 27 70 6F 69 6E 74 20 37",
+        "17:29:52.263 R 19F9050A 28 31 36 EC 72 49 17 3A",
+        "17:29:52.264 R 19F9050A 29 98 69 D2 03 00 0E 01",
+        "17:29:52.264 R 19F9050A 2A 57 61 79 70 6F 69 6E",
+        "17:29:52.265 R 19F9050A 2B 74 20 37 31 35 C9 9E",
+        "17:29:52.266 R 19F9050A 2C 49 17 AE 18 6A D2 FF"
+      ],
+      "originalFormat": 0
+    },
+    {
+      "pgn": 129291,
+      "sourceFile": "129291.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:59.385Z,3,129291,3,255,8,ff,fc,ec,51,f5,00,ff,ff",
+      "expected": {
+        "prio": 3,
+        "pgn": 129291,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:59.385Z",
+        "fields": {
+          "sid": null,
+          "setReference": "True",
+          "reserved": null,
+          "set": 2.0972,
+          "drift": 2.45,
+          "reserved6": null
+        },
+        "description": "Set & Drift, Rapid Update",
+        "id": "setDriftRapidUpdate"
+      },
+      "originalInput": "2017-04-15T14:57:59.385Z,3,129291,3,255,8,ff,fc,ec,51,f5,00,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129539,
+      "sourceFile": "129539.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:03.429Z,6,129539,33,255,8,c7,d3,4f,00,7a,00,ff,7f",
+      "expected": {
+        "prio": 6,
+        "pgn": 129539,
+        "dst": 255,
+        "src": 33,
+        "timestamp": "2016-02-28T19:57:03.429Z",
+        "fields": {
+          "sid": 199,
+          "desiredMode": "Auto",
+          "actualMode": "3D",
+          "reserved": null,
+          "hdop": 0.79,
+          "vdop": 1.22,
+          "tdop": null
+        },
+        "description": "GNSS DOPs",
+        "id": "gnssDops"
+      },
+      "originalInput": "2016-02-28T19:57:03.429Z,6,129539,33,255,8,c7,d3,4f,00,7a,00,ff,7f",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129540,
+      "sourceFile": "129540.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.469Z,6,129540,3,255,219,b8,ff,12,03,d1,15,9f,d0,1c,0c,00,00,00,00,f5,04,39,28,44,75,f0,0a,00,00,00,00,f5,0a,17,04,2c,71,f0,0a,00,00,00,00,f5,0e,ff,2c,ff,3b,b8,0b,00,00,00,00,f5,10,ae,0f,4f,86,e4,0c,00,00,00,00,f5,16,5d,1f,da,bc,1c,0c,00,00,00,00,f5,19,ba,11,ff,1d,e4,0c,00,00,00,00,f5,1a,74,23,cf,7e,28,0a,00,00,00,00,f5,1f,b9,2f,dd,08,1c,0c,00,00,00,00,f5,43,51,1d,67,6c,80,0c,00,00,00,00,f5,44,22,33,e5,cd,48,0d,00,00,00,00,f5,45,ae,0f,f0,de,28,0a,00,00,00,00,f5,4d,2e,17,dd,17,54,0b,00,00,00,00,f5,4e,68,30,2b,cb,8c,0a,00,00,00,00,f5,4f,e8,19,09,a7,ac,0d,00,00,00,00,f5,2e,e8,19,da,8f,b8,0b,00,00,00,00,f5,30,97,0b,66,a8,54,0b,00,00,00,00,f5,33,dd,17,b7,98,ac,0d,00,00,00,00,f5",
+      "expected": {
+        "prio": 6,
+        "pgn": 129540,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.469Z",
+        "fields": {
+          "sid": 184,
+          "rangeResidualMode": null,
+          "reserved": null,
+          "satsInView": 18,
+          "list": [
+            {
+              "prn": 3,
+              "elevation": 0.5585,
+              "azimuth": 5.3407,
+              "snr": 31,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 4,
+              "elevation": 1.0297,
+              "azimuth": 3.002,
+              "snr": 28,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 10,
+              "elevation": 0.1047,
+              "azimuth": 2.8972,
+              "snr": 28,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 14,
+              "elevation": 1.1519,
+              "azimuth": 1.5359,
+              "snr": 30,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 16,
+              "elevation": 0.4014,
+              "azimuth": 3.4383,
+              "snr": 33,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 22,
+              "elevation": 0.8029,
+              "azimuth": 4.8346,
+              "snr": 31,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 25,
+              "elevation": 0.4538,
+              "azimuth": 0.7679,
+              "snr": 33,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 26,
+              "elevation": 0.9076,
+              "azimuth": 3.2463,
+              "snr": 26,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 31,
+              "elevation": 1.2217,
+              "azimuth": 0.2269,
+              "snr": 31,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 67,
+              "elevation": 0.7505,
+              "azimuth": 2.7751,
+              "snr": 32,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 68,
+              "elevation": 1.309,
+              "azimuth": 5.2709,
+              "snr": 34,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 69,
+              "elevation": 0.4014,
+              "azimuth": 5.7072,
+              "snr": 26,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 77,
+              "elevation": 0.5934,
+              "azimuth": 0.6109,
+              "snr": 29,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 78,
+              "elevation": 1.2392,
+              "azimuth": 5.2011,
+              "snr": 27,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 79,
+              "elevation": 0.6632,
+              "azimuth": 4.2761,
+              "snr": 35,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 46,
+              "elevation": 0.6632,
+              "azimuth": 3.6826,
+              "snr": 30,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 48,
+              "elevation": 0.2967,
+              "azimuth": 4.311,
+              "snr": 29,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            },
+            {
+              "prn": 51,
+              "elevation": 0.6109,
+              "azimuth": 3.9095,
+              "snr": 35,
+              "rangeResiduals": 0,
+              "status": "Used+Diff",
+              "reserved11": null
+            }
+          ]
+        },
+        "description": "GNSS Sats in View",
+        "id": "gnssSatsInView"
+      },
+      "originalInput": "2017-04-15T14:57:58.469Z,6,129540,3,255,219,b8,ff,12,03,d1,15,9f,d0,1c,0c,00,00,00,00,f5,04,39,28,44,75,f0,0a,00,00,00,00,f5,0a,17,04,2c,71,f0,0a,00,00,00,00,f5,0e,ff,2c,ff,3b,b8,0b,00,00,00,00,f5,10,ae,0f,4f,86,e4,0c,00,00,00,00,f5,16,5d,1f,da,bc,1c,0c,00,00,00,00,f5,19,ba,11,ff,1d,e4,0c,00,00,00,00,f5,1a,74,23,cf,7e,28,0a,00,00,00,00,f5,1f,b9,2f,dd,08,1c,0c,00,00,00,00,f5,43,51,1d,67,6c,80,0c,00,00,00,00,f5,44,22,33,e5,cd,48,0d,00,00,00,00,f5,45,ae,0f,f0,de,28,0a,00,00,00,00,f5,4d,2e,17,dd,17,54,0b,00,00,00,00,f5,4e,68,30,2b,cb,8c,0a,00,00,00,00,f5,4f,e8,19,09,a7,ac,0d,00,00,00,00,f5,2e,e8,19,da,8f,b8,0b,00,00,00,00,f5,30,97,0b,66,a8,54,0b,00,00,00,00,f5,33,dd,17,b7,98,ac,0d,00,00,00,00,f5",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129540,
+      "sourceFile": "129540.js",
+      "caseIndex": 1,
+      "input": "2020-08-16T09:00:00.364Z,6,129540,1,255,147,52,fe,0c,07,8b,09,87,db,e4,0c,00,00,00,00,f2,0a,e8,19,4f,77,ac,0d,00,00,00,00,f2,0d,45,0c,2e,17,74,0e,00,00,00,00,f2,0f,0b,11,ad,2d,3c,0f,00,00,00,00,f2,10,5c,1f,ce,9c,1c,0c,00,00,00,00,f2,12,0b,20,e7,37,80,0c,00,00,00,00,f2,14,e7,28,fe,59,10,0e,00,00,00,00,f2,15,7f,25,b7,a7,f0,0a,00,00,00,00,f2,1a,f4,0c,fd,86,ac,0d,00,00,00,00,f2,1b,e7,28,e5,be,ac,0d,00,00,00,00,f2,08,16,13,cd,c9,60,09,00,00,00,00,f2,57,b9,2f,87,cc,f0,0a,00,00,00,00,f2",
+      "expected": {
+        "prio": 6,
+        "pgn": 129540,
+        "dst": 255,
+        "src": 1,
+        "timestamp": "2020-08-16T09:00:00.364Z",
+        "fields": {
+          "sid": 82,
+          "rangeResidualMode": 2,
+          "reserved": null,
+          "satsInView": 12,
+          "list": [
+            {
+              "prn": 7,
+              "elevation": 0.2443,
+              "azimuth": 5.6199,
+              "snr": 33,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 10,
+              "elevation": 0.6632,
+              "azimuth": 3.0543,
+              "snr": 35,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 13,
+              "elevation": 0.3141,
+              "azimuth": 0.5934,
+              "snr": 37,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 15,
+              "elevation": 0.4363,
+              "azimuth": 1.1693,
+              "snr": 39,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 16,
+              "elevation": 0.8028,
+              "azimuth": 4.0142,
+              "snr": 31,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 18,
+              "elevation": 0.8203,
+              "azimuth": 1.4311,
+              "snr": 32,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 20,
+              "elevation": 1.0471,
+              "azimuth": 2.3038,
+              "snr": 36,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 21,
+              "elevation": 0.9599,
+              "azimuth": 4.2935,
+              "snr": 28,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 26,
+              "elevation": 0.3316,
+              "azimuth": 3.4557,
+              "snr": 35,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 27,
+              "elevation": 1.0471,
+              "azimuth": 4.8869,
+              "snr": 35,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 8,
+              "elevation": 0.4886,
+              "azimuth": 5.1661,
+              "snr": 24,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            },
+            {
+              "prn": 87,
+              "elevation": 1.2217,
+              "azimuth": 5.2359,
+              "snr": 28,
+              "rangeResiduals": 0,
+              "status": "Used",
+              "reserved11": null
+            }
+          ]
+        },
+        "description": "GNSS Sats in View",
+        "id": "gnssSatsInView"
+      },
+      "originalInput": [
+        "2020-08-16T09:00:00.333Z,6,129540,1,255,8,20,93,52,fe,0c,07,8b,09",
+        "2020-08-16T09:00:00.334Z,6,129540,1,255,8,21,87,db,e4,0c,00,00,00",
+        "2020-08-16T09:00:00.334Z,6,129540,1,255,8,22,00,f2,0a,e8,19,4f,77",
+        "2020-08-16T09:00:00.335Z,6,129540,1,255,8,23,ac,0d,00,00,00,00,f2",
+        "2020-08-16T09:00:00.335Z,6,129540,1,255,8,24,0d,45,0c,2e,17,74,0e",
+        "2020-08-16T09:00:00.336Z,6,129540,1,255,8,25,00,00,00,00,f2,0f,0b",
+        "2020-08-16T09:00:00.336Z,6,129540,1,255,8,26,11,ad,2d,3c,0f,00,00",
+        "2020-08-16T09:00:00.337Z,6,129540,1,255,8,27,00,00,f2,10,5c,1f,ce",
+        "2020-08-16T09:00:00.337Z,6,129540,1,255,8,28,9c,1c,0c,00,00,00,00",
+        "2020-08-16T09:00:00.338Z,6,129540,1,255,8,29,f2,12,0b,20,e7,37,80",
+        "2020-08-16T09:00:00.339Z,6,129540,1,255,8,2a,0c,00,00,00,00,f2,14",
+        "2020-08-16T09:00:00.358Z,6,129540,1,255,8,2b,e7,28,fe,59,10,0e,00",
+        "2020-08-16T09:00:00.359Z,6,129540,1,255,8,2c,00,00,00,f2,15,7f,25",
+        "2020-08-16T09:00:00.360Z,6,129540,1,255,8,2d,b7,a7,f0,0a,00,00,00",
+        "2020-08-16T09:00:00.360Z,6,129540,1,255,8,2e,00,f2,1a,f4,0c,fd,86",
+        "2020-08-16T09:00:00.361Z,6,129540,1,255,8,2f,ac,0d,00,00,00,00,f2",
+        "2020-08-16T09:00:00.361Z,6,129540,1,255,8,30,1b,e7,28,e5,be,ac,0d",
+        "2020-08-16T09:00:00.361Z,6,129540,1,255,8,31,00,00,00,00,f2,08,16",
+        "2020-08-16T09:00:00.362Z,6,129540,1,255,8,32,13,cd,c9,60,09,00,00",
+        "2020-08-16T09:00:00.363Z,6,129540,1,255,8,33,00,00,f2,57,b9,2f,87",
+        "2020-08-16T09:00:00.363Z,6,129540,1,255,8,34,cc,f0,0a,00,00,00,00",
+        "2020-08-16T09:00:00.364Z,6,129540,1,255,8,35,f2,ff,ff,ff,ff,ff,ff"
+      ],
+      "originalFormat": 0
+    },
+    {
+      "pgn": 129542,
+      "sourceFile": "129542.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T15:43:57.658Z,6,129542,3,255,15,78,49,00,00,00,00,00,00,00,00,00,00,00,00,00",
+      "expected": {
+        "prio": 6,
+        "pgn": 129542,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T15:43:57.658Z",
+        "fields": {
+          "sid": 120,
+          "rmsOfPositionUncertainty": 0.73,
+          "stdOfMajorAxis": 0,
+          "stdOfMinorAxis": 0,
+          "orientationOfMajorAxis": 0,
+          "stdOfLatError": 0,
+          "stdOfLonError": 0,
+          "stdOfAltError": 0
+        },
+        "description": "GNSS Pseudorange Noise Statistics",
+        "id": "gnssPseudorangeNoiseStatistics"
+      },
+      "originalInput": "2017-04-15T15:43:57.658Z,6,129542,3,255,15,78,49,00,00,00,00,00,00,00,00,00,00,00,00,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129793,
+      "sourceFile": "129793.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:58:00.590Z,7,129793,43,255,24,04,43,db,37,00,3a,06,6e,d2,04,b8,3b,17,ff,80,6f,1d,20,19,41,01,77,43,ff",
+      "expected": {
+        "prio": 7,
+        "pgn": 129793,
+        "dst": 255,
+        "src": 43,
+        "timestamp": "2017-04-15T14:58:00.590Z",
+        "fields": {
+          "messageId": "Base station report",
+          "repeatIndicator": "Initial",
+          "userId": 3660611,
+          "longitude": -76.4541382,
+          "latitude": 38.97897,
+          "positionAccuracy": "High",
+          "raim": "in use",
+          "reserved": null,
+          "positionTime": "14:58:00",
+          "communicationState": 82201,
+          "aisTransceiverInformation": "Channel A VDL reception",
+          "positionDate": "2017.04.15",
+          "reserved13": null,
+          "gnssType": null
+        },
+        "description": "AIS UTC and Date Report",
+        "id": "aisUtcAndDateReport"
+      },
+      "originalInput": "2017-04-15T14:58:00.590Z,7,129793,43,255,24,04,43,db,37,00,3a,06,6e,d2,04,b8,3b,17,ff,80,6f,1d,20,19,41,01,77,43,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129794,
+      "sourceFile": "129794.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:58:37.235Z,6,129794,43,255,75,05,4a,ac,e4,15,00,00,00,00,57,44,44,39,31,37,31,41,54,4c,41,4e,54,49,43,20,43,4f,41,53,54,ff,ff,ff,ff,ff,ff,34,2c,01,46,00,00,00,5a,00,b7,44,00,e6,df,0c,a4,01,42,41,4c,54,49,4d,4f,52,45,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,84,e1",
+      "expected": {
+        "prio": 6,
+        "pgn": 129794,
+        "dst": 255,
+        "src": 43,
+        "timestamp": "2017-04-15T14:58:37.235Z",
+        "fields": {
+          "messageId": "Static and voyage related data",
+          "repeatIndicator": "Initial",
+          "userId": 367307850,
+          "imoNumber": 0,
+          "callsign": "WDD9171",
+          "name": "ATLANTIC COAST",
+          "typeOfShip": "Tug",
+          "length": 30,
+          "beam": 7,
+          "positionReferenceFromStarboard": 0,
+          "positionReferenceFromBow": 9,
+          "etaDate": "2018.03.01",
+          "etaTime": "06:00:00",
+          "draft": 4.2,
+          "destination": "BALTIMORE",
+          "aisVersionIndicator": "ITU-R M.1371-1",
+          "gnssType": "GPS",
+          "dte": "Available",
+          "reserved": 1,
+          "aisTransceiverInformation": "Channel B VDL reception",
+          "reserved21": null
+        },
+        "description": "AIS Class A Static and Voyage Related Data",
+        "id": "aisClassAStaticAndVoyageRelatedData"
+      },
+      "originalInput": "2017-04-15T14:58:37.235Z,6,129794,43,255,75,05,4a,ac,e4,15,00,00,00,00,57,44,44,39,31,37,31,41,54,4c,41,4e,54,49,43,20,43,4f,41,53,54,ff,ff,ff,ff,ff,ff,34,2c,01,46,00,00,00,5a,00,b7,44,00,e6,df,0c,a4,01,42,41,4c,54,49,4d,4f,52,45,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,84,e1",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129798,
+      "sourceFile": "129798.js",
+      "caseIndex": 0,
+      "input": "2023-07-22T13:43:31.021Z,4,129798,43,255,27,09,bd,59,29,14,cd,ad,cc,d2,e1,bc,a1,17,2b,fe,56,20,1b,a4,81,00,f0,36,01,00,00,01",
+      "expected": {
+        "prio": 4,
+        "pgn": 129798,
+        "dst": 255,
+        "src": 43,
+        "timestamp": "2023-07-22T13:43:31.021Z",
+        "fields": {
+          "messageId": "Standard SAR aircraft position report",
+          "repeatIndicator": "Initial",
+          "userId": 338254269,
+          "longitude": -75.8338099,
+          "latitude": 39.6475617,
+          "positionAccuracy": "High",
+          "raim": "in use",
+          "timeStamp": "10",
+          "cog": 2.227,
+          "sog": 694.4,
+          "communicationState": 33188,
+          "aisTransceiverInformation": "Channel A VDL reception",
+          "altitude": 796,
+          "reservedForRegionalApplications": 0,
+          "dte": "Not available",
+          "spare": 0,
+          "reserved17": 0
+        },
+        "description": "AIS SAR Aircraft Position Report",
+        "id": "aisSarAircraftPositionReport"
+      },
+      "originalInput": "2023-07-22T13:43:31.021Z,4,129798,43,255,27,09,bd,59,29,14,cd,ad,cc,d2,e1,bc,a1,17,2b,fe,56,20,1b,a4,81,00,f0,36,01,00,00,01",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129809,
+      "sourceFile": "129809.js",
+      "caseIndex": 0,
+      "input": "2019-04-15T15:16:46.572Z,6,129809,43,255,27,18,78,48,28,14,57,49,4c,48,45,4c,4d,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,02,ff",
+      "expected": {
+        "prio": 6,
+        "pgn": 129809,
+        "dst": 255,
+        "src": 43,
+        "timestamp": "2019-04-15T15:16:46.572Z",
+        "fields": {
+          "messageId": "Static data report",
+          "repeatIndicator": "Initial",
+          "userId": 338184312,
+          "name": "WILHELM",
+          "aisTransceiverInformation": "Channel A VDL transmission",
+          "reserved": 0,
+          "sequenceId": null
+        },
+        "description": "AIS Class B static data (msg 24 Part A)",
+        "id": "aisClassBStaticDataMsg24PartA"
+      },
+      "originalInput": "2019-04-15T15:16:46.572Z,6,129809,43,255,27,18,78,48,28,14,57,49,4c,48,45,4c,4d,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,02,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 129810,
+      "sourceFile": "129810.js",
+      "caseIndex": 0,
+      "input": "2023-07-22T13:41:17.102Z,6,129810,43,255,35,18,b5,59,29,14,25,47,41,52,4d,49,4e,ff,40,40,40,40,40,40,40,8c,00,0e,01,fa,00,3c,00,b6,59,29,14,20,01,ff",
+      "expected": {
+        "prio": 6,
+        "pgn": 129810,
+        "dst": 255,
+        "src": 43,
+        "timestamp": "2023-07-22T13:41:17.102Z",
+        "fields": {
+          "messageId": "Static data report",
+          "repeatIndicator": "Initial",
+          "userId": 338254261,
+          "typeOfShip": "Pleasure",
+          "vendorId": "GARMIN",
+          "length": 14,
+          "beam": 27,
+          "positionReferenceFromStarboard": 25,
+          "positionReferenceFromBow": 6,
+          "mothershipUserId": 338254262,
+          "reserved": 0,
+          "spare13": 0,
+          "gnssType": "GLONASS",
+          "aisTransceiverInformation": "Channel B VDL reception",
+          "reserved16": 0,
+          "sequenceId": null
+        },
+        "description": "AIS Class B static data (msg 24 Part B)",
+        "id": "aisClassBStaticDataMsg24PartB"
+      },
+      "originalInput": "2023-07-22T13:41:17.102Z,6,129810,43,255,35,18,b5,59,29,14,25,47,41,52,4d,49,4e,ff,40,40,40,40,40,40,40,8c,00,0e,01,fa,00,3c,00,b6,59,29,14,20,01,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130306,
+      "sourceFile": "130306.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,2,130306,3,255,8,ff,7e,02,ae,0f,fa,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 130306,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "sid": null,
+          "windSpeed": 6.38,
+          "windAngle": 0.4014,
+          "reference": "Apparent",
+          "reserved": null
+        },
+        "description": "Wind Data",
+        "id": "windData"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,2,130306,3,255,8,ff,7e,02,ae,0f,fa,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130310,
+      "sourceFile": "130310.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.824Z,5,130310,130,255,8,04,ff,ff,85,75,f2,03,ff",
+      "expected": {
+        "prio": 5,
+        "pgn": 130310,
+        "dst": 255,
+        "src": 130,
+        "timestamp": "2016-02-28T19:57:02.824Z",
+        "fields": {
+          "sid": 4,
+          "waterTemperature": null,
+          "outsideAmbientAirTemperature": 300.85,
+          "atmosphericPressure": 101000,
+          "reserved": null
+        },
+        "description": "Environmental Parameters (obsolete)",
+        "id": "environmentalParametersObsolete"
+      },
+      "originalInput": "2016-02-28T19:57:02.824Z,5,130310,130,255,8,04,ff,ff,85,75,f2,03,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130311,
+      "sourceFile": "130311.js",
+      "caseIndex": 0,
+      "input": "2023-07-20T19:01:57.251Z,5,130311,35,255,8,14,ff,ff,ff,c1,36,ff,ff",
+      "expected": {
+        "prio": 5,
+        "pgn": 130311,
+        "dst": 255,
+        "src": 35,
+        "timestamp": "2023-07-20T19:01:57.251Z",
+        "fields": {
+          "sid": 20,
+          "temperatureSource": null,
+          "humiditySource": null,
+          "temperature": null,
+          "humidity": 56.068,
+          "atmosphericPressure": null
+        },
+        "description": "Environmental Parameters",
+        "id": "environmentalParameters"
+      },
+      "originalInput": "2023-07-20T19:01:57.251Z,5,130311,35,255,8,14,ff,ff,ff,c1,36,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130312,
+      "sourceFile": "130312.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.473Z,6,130312,45,255,8,8e,00,03,b3,6a,ff,ff,ff",
+      "expected": {
+        "prio": 6,
+        "pgn": 130312,
+        "dst": 255,
+        "src": 45,
+        "timestamp": "2017-04-15T14:57:58.473Z",
+        "fields": {
+          "sid": 142,
+          "instance": 0,
+          "source": "Engine Room Temperature",
+          "actualTemperature": 273.15,
+          "setTemperature": null,
+          "reserved": null
+        },
+        "description": "Temperature",
+        "id": "temperature"
+      },
+      "originalInput": "2017-04-15T14:57:58.473Z,6,130312,45,255,8,8e,00,03,b3,6a,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130313,
+      "sourceFile": "130313.js",
+      "caseIndex": 0,
+      "input": "2023-07-20T19:07:54.802Z,5,130313,130,255,8,17,00,01,b5,3a,3d,4c,ff",
+      "expected": {
+        "prio": 5,
+        "pgn": 130313,
+        "dst": 255,
+        "src": 130,
+        "timestamp": "2023-07-20T19:07:54.802Z",
+        "fields": {
+          "sid": 23,
+          "instance": 0,
+          "source": "Outside",
+          "actualHumidity": 60.116,
+          "setHumidity": 78.068,
+          "reserved": null
+        },
+        "description": "Humidity",
+        "id": "humidity"
+      },
+      "originalInput": "2023-07-20T19:07:54.802Z,5,130313,130,255,8,17,00,01,b5,3a,3d,4c,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130314,
+      "sourceFile": "130314.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:02.825Z,5,130314,88,255,8,64,00,04,8a,49,0e,00,ff",
+      "expected": {
+        "prio": 5,
+        "pgn": 130314,
+        "dst": 255,
+        "src": 88,
+        "timestamp": "2016-02-28T19:57:02.825Z",
+        "fields": {
+          "sid": 100,
+          "instance": 0,
+          "source": "Hydraulic",
+          "pressure": 93633,
+          "reserved": null
+        },
+        "description": "Actual Pressure",
+        "id": "actualPressure"
+      },
+      "originalInput": "2016-02-28T19:57:02.825Z,5,130314,88,255,8,64,00,04,8a,49,0e,00,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130316,
+      "sourceFile": "130316.js",
+      "caseIndex": 0,
+      "input": "1970-01-01T00:00:00.000Z,2,130316,103,255,8,ff,65,01,32,4c,04,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 130316,
+        "dst": 255,
+        "src": 103,
+        "timestamp": "1970-01-01T00:00:00.000Z",
+        "fields": {
+          "sid": null,
+          "instance": 101,
+          "source": "Outside Temperature",
+          "temperature": 281.65,
+          "setTemperature": null
+        },
+        "description": "Temperature Extended Range",
+        "id": "temperatureExtendedRange"
+      },
+      "originalInput": "2025-12-30T20:41:29.053Z,2,130316,103,255,8,ff,65,01,32,4c,04,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130316,
+      "sourceFile": "130316.js",
+      "caseIndex": 1,
+      "input": "1970-01-01T00:00:00.000Z,2,130316,103,255,8,ff,65,01,ff,ff,ff,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 130316,
+        "dst": 255,
+        "src": 103,
+        "timestamp": "1970-01-01T00:00:00.000Z",
+        "fields": {
+          "sid": null,
+          "instance": 101,
+          "source": "Outside Temperature",
+          "temperature": null,
+          "setTemperature": null
+        },
+        "description": "Temperature Extended Range",
+        "id": "temperatureExtendedRange"
+      },
+      "originalInput": "2025-12-30T20:42:41.056Z,2,130316,103,255,8,ff,65,01,ff,ff,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130577,
+      "sourceFile": "130577.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.468Z,3,130577,3,255,14,c0,9c,e1,51,f6,00,ff,ff,ff,ff,b2,51,f5,00",
+      "expected": {
+        "prio": 3,
+        "pgn": 130577,
+        "dst": 255,
+        "src": 3,
+        "timestamp": "2017-04-15T14:57:58.468Z",
+        "fields": {
+          "dataMode": "Autonomous",
+          "cogReference": "True",
+          "reserved": null,
+          "sid": 156,
+          "cog": 2.0961,
+          "sog": 2.46,
+          "heading": null,
+          "speedThroughWater": null,
+          "set": 2.0914,
+          "drift": 2.45
+        },
+        "description": "Direction Data",
+        "id": "directionData"
+      },
+      "originalInput": "2017-04-15T14:57:58.468Z,3,130577,3,255,14,c0,9c,e1,51,f6,00,ff,ff,ff,ff,b2,51,f5,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130820,
+      "sourceFile": "130820.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T14:57:58.469Z,7,130820,10,255,5,a3,99,20,80,01",
+      "expected": {
+        "prio": 7,
+        "pgn": 130820,
+        "dst": 255,
+        "src": 10,
+        "timestamp": "2017-04-15T14:57:58.469Z",
+        "fields": {
+          "manufacturerCode": "Fusion Electronics",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "messageId": "Power",
+          "state": "On"
+        },
+        "description": "Fusion: Power State",
+        "id": "fusionPowerState"
+      },
+      "originalInput": "2017-04-15T14:57:58.469Z,7,130820,10,255,5,a3,99,20,80,01",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130820,
+      "sourceFile": "130820.js",
+      "caseIndex": 1,
+      "input": "2023-03-30T18:28:03.510Z,7,130820,11,255,12,a3,99,02,80,01,0b,01,c5,02,46,4d,00",
+      "expected": {
+        "prio": 7,
+        "pgn": 130820,
+        "dst": 255,
+        "src": 11,
+        "timestamp": "2023-03-30T18:28:03.510Z",
+        "fields": {
+          "manufacturerCode": "Fusion Electronics",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "messageId": "Source",
+          "sourceId": 1,
+          "currentSourceId": 11,
+          "sourceType": "FM",
+          "flags": 197,
+          "source": "FM"
+        },
+        "description": "Fusion: Source",
+        "id": "fusionSource"
+      },
+      "originalInput": "2023-03-30T18:28:03.510Z,7,130820,11,255,12,a3,99,02,80,01,0b,01,c5,02,46,4d,00",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130821,
+      "sourceFile": "130821.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:04.816Z,7,130821,8,255,12,3f,9f,13,00,cf,e3,36,11,00,be,a0,c0",
+      "expected": {
+        "prio": 7,
+        "pgn": 130821,
+        "dst": 255,
+        "src": 8,
+        "timestamp": "2016-02-28T19:57:04.816Z",
+        "fields": {
+          "manufacturerCode": "Furuno",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "sid": 19,
+          "a": 0,
+          "b": 207,
+          "c": 227,
+          "d": 54,
+          "e": 17,
+          "f": 0,
+          "g": 190,
+          "h": 160,
+          "i": 192
+        },
+        "description": "Furuno: Unknown 130821",
+        "id": "furunoUnknown130821"
+      },
+      "originalInput": "2016-02-28T19:57:04.816Z,7,130821,8,255,12,3f,9f,13,00,cf,e3,36,11,00,be,a0,c0",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130824,
+      "sourceFile": "130824.js",
+      "caseIndex": 0,
+      "input": "2016-02-28T19:57:03.931Z,2,130824,24,255,9,89,98,00,00,ff,ff,ff,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 130824,
+        "dst": 255,
+        "src": 24,
+        "timestamp": "2016-02-28T19:57:03.931Z",
+        "fields": {
+          "manufacturerCode": "Maretron",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "field4": 0,
+          "field5": 0,
+          "field6": null,
+          "field7": null,
+          "field8": null
+        },
+        "description": "Maretron: Annunciator",
+        "id": "maretronAnnunciator"
+      },
+      "originalInput": "2016-02-28T19:57:03.931Z,2,130824,24,255,9,89,98,00,00,ff,ff,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130842,
+      "sourceFile": "130842.js",
+      "caseIndex": 0,
+      "input": "2017-04-15T15:00:51.300Z,6,130842,43,255,29,41,9f,80,ff,18,78,48,28,14,57,49,4c,48,45,4c,4d,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff",
+      "expected": {
+        "prio": 6,
+        "pgn": 130842,
+        "dst": 255,
+        "src": 43,
+        "timestamp": "2017-04-15T15:00:51.300Z",
+        "fields": {
+          "manufacturerCode": "Simrad",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "messageId": "Msg 24 Part A",
+          "repeatIndicator": "Second retransmission",
+          "d": null,
+          "e": 24,
+          "userId": 338184312,
+          "name": "WILHELM"
+        },
+        "description": "Simnet: AIS Class B static data (msg 24 Part A)",
+        "id": "simnetAisClassBStaticDataMsg24PartA"
+      },
+      "originalInput": "2017-04-15T15:00:51.300Z,6,130842,43,255,29,41,9f,80,ff,18,78,48,28,14,57,49,4c,48,45,4c,4d,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130845,
+      "sourceFile": "130845.js",
+      "caseIndex": 0,
+      "input": "2023-09-20T14:11:11.577Z,3,130845,2,255,11,41,9f,ff,ff,01,ff,ff,12,00,01,58",
+      "expected": {
+        "prio": 3,
+        "pgn": 130845,
+        "dst": 255,
+        "src": 2,
+        "timestamp": "2023-09-20T14:11:11.577Z",
+        "fields": {
+          "manufacturerCode": "Simrad",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "address": null,
+          "repeatIndicator": null,
+          "displayGroup": "Default",
+          "reserved7": null,
+          "key": "Backlight level",
+          "spare9": 0,
+          "minlength": 1,
+          "value": 88
+        },
+        "description": "Simnet: Key Value",
+        "id": "simnetKeyValue"
+      },
+      "originalInput": "2023-09-20T14:11:11.577Z,3,130845,2,255,11,41,9f,ff,ff,01,ff,ff,12,00,01,58",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130845,
+      "sourceFile": "130845.js",
+      "caseIndex": 1,
+      "input": "2023-09-20T14:11:11.577Z,3,130845,2,255,11,41,9f,ff,ff,01,ff,ff,12,00,01,58",
+      "expected": {
+        "prio": 3,
+        "pgn": 130845,
+        "dst": 255,
+        "src": 2,
+        "timestamp": "2023-09-20T14:11:11.577Z",
+        "fields": {
+          "manufacturerCode": "Simrad",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "address": null,
+          "repeatIndicator": null,
+          "displayGroup": "Default",
+          "reserved7": null,
+          "key": "Backlight level",
+          "spare9": 0,
+          "minlength": 1,
+          "value": 88
+        },
+        "description": "Simnet: Key Value",
+        "id": "simnetKeyValue"
+      },
+      "originalInput": "2023-09-20T14:11:11.577Z,3,130845,2,255,11,41,9f,ff,ff,01,ff,ff,12,00,01,58",
+      "originalFormat": 1
+    },
+    {
+      "pgn": 130850,
+      "sourceFile": "130850.js",
+      "caseIndex": 0,
+      "input": "2025-10-15T22:12:21.248Z,2,130850,5,255,11,41,9f,03,ff,ff,0a,0c,00,ff,ff,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 130850,
+        "dst": 255,
+        "src": 5,
+        "timestamp": "2025-10-15T22:12:21.248Z",
+        "fields": {
+          "manufacturerCode": "Simrad",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "address": 3,
+          "reserved5": null,
+          "proprietaryId": "Autopilot",
+          "commandType": "AP Command",
+          "event": "No Drift mode",
+          "unknown": 0,
+          "reserved10": null,
+          "reserved11": null,
+          "reserved12": null
+        },
+        "description": "Simnet: Command AP NoDrift",
+        "id": "simnetCommandApNodrift"
+      },
+      "originalInput": "2025-10-15T22:12:21.248Z,2,130850,5,255,11,41,9f,03,ff,ff,0a,0c,00,ff,ff,ff",
+      "originalFormat": 0
+    },
+    {
+      "pgn": 130850,
+      "sourceFile": "130850.js",
+      "caseIndex": 1,
+      "input": "2025-10-15T23:32:01.383Z,2,130850,5,255,12,41,9f,03,ff,ff,0a,1a,00,03,d1,06,ff",
+      "expected": {
+        "prio": 2,
+        "pgn": 130850,
+        "dst": 255,
+        "src": 5,
+        "timestamp": "2025-10-15T23:32:01.383Z",
+        "fields": {
+          "manufacturerCode": "Simrad",
+          "reserved": null,
+          "industryCode": "Marine Industry",
+          "address": 3,
+          "reserved5": null,
+          "proprietaryId": "Autopilot",
+          "commandType": "AP Command",
+          "event": "Change course",
+          "unknown": 0,
+          "direction": "Starboard",
+          "angle": 0.1745,
+          "reserved12": null
+        },
+        "description": "Simnet: Command AP Change Course",
+        "id": "simnetCommandApChangeCourse"
+      },
+      "originalInput": "2025-10-15T23:32:01.383Z,2,130850,5,255,12,41,9f,03,ff,ff,0a,1a,00,03,d1,06,ff",
+      "originalFormat": 0
+    }
+  ]
+}

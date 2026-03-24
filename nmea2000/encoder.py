@@ -31,7 +31,11 @@ class NMEA2000Encoder:
         try:
             can_data_bytes = encode_func(nmea200_message) # pylint: disable=not-callable
         except Exception as e:
-            raise ValueError(e) from e
+            error_message = str(e) or (
+                f"{type(e).__name__} while encoding PGN {nmea200_message.PGN}"
+                f"{f' ({nmea200_message.id})' if nmea200_message.id else ''}"
+            )
+            raise ValueError(error_message) from e
         return can_data_bytes
 
     def _encode_fast_message(self, payload_bytes: bytes) -> list[bytes]:

@@ -7,7 +7,7 @@ import pytest
 from nmea2000.consts import PhysicalQuantities, FieldTypes
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message, InvalidFrameError
 from nmea2000.encoder import NMEA2000Encoder
-from nmea2000.message import IsoName
+from nmea2000.message import IsoName, NMEA2000Field
 
 
 dump_to_file = None
@@ -295,6 +295,41 @@ def test_json():
         assert field2.unit_of_measurement == field.unit_of_measurement
         assert field2.value == field.value
         assert field2.raw_value == field.raw_value
+
+def test_json_with_repeating_field_list():
+    msg = NMEA2000Message(
+        PGN=129029,
+        id="gnssPositionData",
+        fields=[
+            NMEA2000Field(id="referenceStations", value=1, raw_value=1),
+            NMEA2000Field(
+                id="list",
+                name="List",
+                value=[
+                    {
+                        "referenceStationType": {"value": None, "raw_value": 15},
+                        "referenceStationId": 4242,
+                        "ageOfDgnssCorrections": 1.25,
+                    }
+                ],
+                raw_value=None,
+                type=FieldTypes.VARIABLE,
+                part_of_primary_key=False,
+            ),
+        ],
+    )
+
+    json_msg = msg.to_json()
+    msg2 = NMEA2000Message.from_json(json_msg)
+    list_field = msg2.get_field_by_id("list")
+    assert isinstance(list_field.value, list)
+    assert list_field.value == [
+        {
+            "referenceStationType": {"value": None, "raw_value": 15},
+            "referenceStationId": 4242,
+            "ageOfDgnssCorrections": 1.25,
+        }
+    ]
 
 def _validate_130842_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
