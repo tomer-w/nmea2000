@@ -9,6 +9,7 @@ from .message import NMEA2000Message
 from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, Type, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway, PythonCanAsyncIOClient
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
+from .input_formats import decode_n2k_text_line
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +73,7 @@ def parse(filename: str, decoder: NMEA2000Decoder, single_line: bool):
                 line = line.strip()
                 logger.info(f'Processing: {line}')
                 try:
-                    decoder.decode_basic_string(line, single_line)
+                    decode_n2k_text_line(decoder, line, single_line)
                 except Exception as e:
                     print(f"Error: {e}")
     except KeyboardInterrupt:
@@ -92,17 +93,17 @@ async def async_main():
     decode_parser.add_argument(
         "--frame", 
         type=str, 
-        help="Hex-encoded NMEA 2000 frame (optional if file is provided)"
+        help="NMEA 2000 text frame in any supported input format"
     )
     decode_parser.add_argument(
         "--file", 
         type=str, 
-        help="Path to a file containing a Hex-encoded NMEA 2000 frame"
+        help="Path to a file containing supported NMEA 2000 text frames"
     )
     decode_parser.add_argument(
         "--single_line", 
         action="store_true", 
-        help="Fast frame is already merged to single line"
+        help="Treat basic CSV input as already merged to a single fast-packet line"
     )
 
     # Encode command
@@ -211,7 +212,7 @@ async def async_main():
 
         # Decode from a frame string if provided
         if args.frame:
-            decoded = decoder.decode_actisense_string(args.frame)
+            decoded = decode_n2k_text_line(decoder, args.frame, args.single_line)
             if decoded is not None:
                 print(decoded.to_json())
 
