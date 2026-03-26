@@ -382,7 +382,6 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int |
     nmea2000Message = NMEA2000Message(PGN={{pgn.PGN}}, id='{{pgn.Id}}', description='{{pgn.Description}}'{% if pgn.TransmissionInterval is defined -%}, ttl=timedelta(milliseconds={{pgn.TransmissionInterval}}){%- endif -%})
     {%- set ns_fields = namespace() %}
     running_bit_offset = 0
-    _payload_bit_length_ = _data_length_bits_ if _data_length_bits_ is not None else _data_raw_.bit_length()
     {%- if pgn.RepeatingFieldSet1Size is defined %}
     _repeating_field_set_1_offset = 0
     {%- endif %}
@@ -456,7 +455,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int |
         {%- elif field.FieldType == 'FIELD_INDEX' %}
     {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'VARIABLE' %}
-    _remaining_bits = _payload_bit_length_ - running_bit_offset
+    _remaining_bits = _data_length_bits_ - running_bit_offset
     if _remaining_bits > 0:
         {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _remaining_bits))
     else:
@@ -476,7 +475,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int |
     if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
         _dyn_bits = dyn_kv_metadata.bits
     else:
-        _dyn_bits = _payload_bit_length_ - running_bit_offset
+        _dyn_bits = _data_length_bits_ - running_bit_offset
     if _dyn_bits > 0:
         {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -516,7 +515,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int |
     _repeating_field_set_1_count = None
         {%- endif %}
     while (
-        (_repeating_field_set_1_count is None and running_bit_offset < _payload_bit_length_) or
+        (_repeating_field_set_1_count is None and running_bit_offset < _data_length_bits_) or
         (_repeating_field_set_1_count is not None and len(repeating_field_set_1_entries) < _repeating_field_set_1_count)
     ):
         repeating_entry = {}
