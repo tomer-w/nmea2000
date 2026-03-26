@@ -71,6 +71,7 @@ class NMEA2000Message:
     def apply_preferred_units(self, preferred_units: dict[PhysicalQuantities, str]):
         if len(preferred_units) == 0:
             return
+
         for f in self.fields:
             if f.physical_quantities == PhysicalQuantities.TEMPERATURE:
                 requested_unit = preferred_units.get(PhysicalQuantities.TEMPERATURE, None)

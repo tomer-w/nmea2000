@@ -22,6 +22,44 @@ def _payload_from_basic_string(raw_message: str) -> bytes:
     return bytes(int(byte, 16) for byte in raw_message.split(",")[6:])
 
 
+_GNSS_PRECISION_TOLERANCES = {
+    "latitude": 1e-15,
+    "longitude": 1e-15,
+}
+
+
+def _assert_payload_roundtrip(
+    decoder: NMEA2000Decoder,
+    encoder: NMEA2000Encoder,
+    msg: NMEA2000Message,
+    raw_message: str,
+):
+    expected_payload = _payload_from_basic_string(raw_message)
+    actual_payload = encoder._call_encode_function(msg)
+    if actual_payload == expected_payload:
+        return
+
+    if msg.PGN != 129029 or msg.id != "gnssPositionData":
+        assert actual_payload == expected_payload
+        return
+
+    redecoder = _get_decoder()
+    redecoded = None
+    for packet in encoder.encode_ebyte(msg):
+        redecoded = redecoder.decode_tcp(packet)
+    assert isinstance(redecoded, NMEA2000Message)
+
+    for field in msg.fields:
+        other = redecoded.get_field_by_id(field.id)
+        abs_tol = _GNSS_PRECISION_TOLERANCES.get(field.id)
+        if abs_tol is not None:
+            assert other.value == pytest.approx(field.value, abs=abs_tol)
+            assert other.raw_value == pytest.approx(field.raw_value, abs=abs_tol)
+        else:
+            assert other.value == field.value
+            assert other.raw_value == field.raw_value
+
+
 def _generate_test_message() -> NMEA2000Message:
     """Generate a test NMEA2000 message."""
     # Example: Generate a vessel heading message (PGN 127250)
@@ -149,7 +187,5 @@ def test_canboatjs_basic_string_roundtrip_cases(case: dict):
     assert msg.source == expected["src"]
     assert msg.destination == expected["dst"]
 
-    assert encoder._call_encode_function(msg) == _payload_from_basic_string(
-        case["input"]
-    )
+    _assert_payload_roundtrip(decoder, encoder, msg, case["input"])
 

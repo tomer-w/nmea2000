@@ -503,7 +503,7 @@ def test_decode_speed():
     assert len(msg.fields) == 5
     assert msg.fields[1].name == 'Wind Speed'
     assert msg.fields[1].unit_of_measurement == 'kts'
-    assert msg.fields[1].raw_value == 337
+    assert msg.fields[1].raw_value == 3.37
     assert msg.fields[1].value == 6.6
 
 def test_fusion():

@@ -94,9 +94,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     advance_running_offset = True
     {%- set field_signed = field.Signed | default(false) %}
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'PGN' or field.FieldType == 'MMSI' or field.FieldType == 'FIELD_INDEX' %}
-    if isinstance({{ field_ref }}.raw_value, int) and ({{ field.Resolution }} == 1 or raw_number_matches_value({{ field_ref }}.raw_value, {{ field_ref }}.value, {{ field.Resolution }})):
-        field_value = encode_number_raw({{ field_ref }}.raw_value, {{ field.BitLength }}, {{ field_signed }})
-    elif isinstance({{ field_ref }}.raw_value, (int, float)):
+    if isinstance({{ field_ref }}.raw_value, (int, float)):
         field_value = encode_number({{ field_ref }}.raw_value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
     else:
         assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, (int, float))
@@ -129,9 +127,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
         field_value = encode_date({{ field_ref }}.value, {{ field.BitLength }})
     field_bit_length = {{ field.BitLength }}
     {%- elif field.FieldType == 'TIME' or field.FieldType == 'DURATION' %}
-    if isinstance({{ field_ref }}.raw_value, int) and ({% if field.FieldType == 'TIME' %}isinstance({{ field_ref }}.value, time){% else %}{{ field.Resolution }} == 1 or raw_number_matches_value({{ field_ref }}.raw_value, {{ field_ref }}.value, {{ field.Resolution }}){% endif %}):
-        field_value = encode_number_raw({{ field_ref }}.raw_value, {{ field.BitLength }}, {{ field_signed }})
-    elif isinstance({{ field_ref }}.raw_value, (int, float)):
+    if isinstance({{ field_ref }}.raw_value, (int, float)):
         field_value = encode_number({{ field_ref }}.raw_value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
     elif isinstance({{ field_ref }}.value, (int, float)):
         field_value = encode_number({{ field_ref }}.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
@@ -213,9 +209,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     dyn_kv_metadata = lookup_field_type_{{ field.LookupFieldTypeEnumeration }}(field_value)
     field_bit_length = {{ field.BitLength }}
     {%- elif field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
-    if isinstance({{ field_ref }}.raw_value, int) and ({{ field.Resolution }} == 1 or raw_number_matches_value({{ field_ref }}.raw_value, {{ field_ref }}.value, {{ field.Resolution }})):
-        field_value = encode_number_raw({{ field_ref }}.raw_value, {{ field.BitLength }}, {{ field_signed }})
-    elif isinstance({{ field_ref }}.raw_value, (int, float)):
+    if isinstance({{ field_ref }}.raw_value, (int, float)):
         field_value = encode_number({{ field_ref }}.raw_value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
     else:
         assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, (int, float))
@@ -254,8 +248,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
 {%- macro emit_repeating_decode_value(field, field_name) %}
     {%- set field_signed = field.Signed | default(false) %}
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN' or field.FieldType == 'DURATION' %}
-    {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }})
-    {{ field_name }} = decode_number_value({{ field_name }}_raw, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'LOOKUP' %}
     {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
@@ -266,16 +259,15 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     {{ field_name }} = decode_bit_lookup({{ field_name }}_raw, master_flags_dict['{{ field.LookupBitEnumeration }}'])
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'FIELD_INDEX' %}
-    {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }})
-    {{ field_name }} = decode_number_value({{ field_name }}_raw, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'TIME' %}
-    {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }})
-    {{ field_name }} = decode_time(decode_number_value({{ field_name }}_raw, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }}))
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = decode_time({{ field_name }}_raw)
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'DATE' %}
-    {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }})
-    {{ field_name }} = decode_date(decode_number_value({{ field_name }}_raw, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }}))
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = decode_date({{ field_name }}_raw)
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
     {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
@@ -405,8 +397,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int |
     _repeating_field_set_1_offset = running_bit_offset
     {%- endif %}
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN' or field.FieldType == 'DURATION' %}
-    {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }})
-    {{ field_name }} = decode_number_value({{ field_name }}_raw, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'LOOKUP' %}
     {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
     {{ field_name }} = master_dict['{{ field.LookupEnumeration }}'].get({{ field_name }}_raw, None)
@@ -422,11 +413,10 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int |
         {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, kv_metadata.bits)
         {{ field_name }} = master_dict[kv_metadata.lookup_enumeration].get({{ field_name }}_raw, None)
     if kv_metadata.field_type == 'NUMBER':
-        {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, kv_metadata.bits, {{ field_signed }})
-        {{ field_name }} = decode_number_value({{ field_name }}_raw, kv_metadata.resolution, kv_metadata.range_min, kv_metadata.range_max)
+        {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, kv_metadata.bits, {{ field_signed }}, kv_metadata.resolution, kv_metadata.range_min, kv_metadata.range_max)
     if kv_metadata.field_type == 'TIME':
-        {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, kv_metadata.bits, {{ field_signed }})
-        {{ field_name }} = decode_time(decode_number_value({{ field_name }}_raw, kv_metadata.resolution, kv_metadata.range_min, kv_metadata.range_max))
+        {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, kv_metadata.bits, {{ field_signed }},kv_metadata.resolution, kv_metadata.range_min, kv_metadata.range_max)
+        {{ field_name }} = decode_time({{ field_name }}_raw)
     nmea2000Message.fields.append(NMEA2000Field('{{ field_name }}', kv_metadata.name, '', kv_metadata.unit, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, kv_metadata.field_type, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
     running_bit_offset += kv_metadata.bits
         {%- elif field.FieldType == 'STRING_FIX'%}
@@ -440,11 +430,11 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int |
         {%- elif field.FieldType == 'FLOAT'%}
     {{ field_name }} = {{ field_name }}_raw = decode_float(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field.RangeMin }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'TIME' %}
-    {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }})
-    {{ field_name }} = decode_time(decode_number_value({{ field_name }}_raw, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }}))
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = decode_time({{ field_name }}_raw)
         {%- elif field.FieldType == 'DATE' %}
-    {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }})
-    {{ field_name }} = decode_date(decode_number_value({{ field_name }}_raw, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }}))
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = decode_date({{ field_name }}_raw)
         {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
     {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
         {%- elif field.FieldType == 'INDIRECT_LOOKUP' %}
@@ -464,8 +454,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int |
     {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, int({{ length_field_name }})))
             {%- endif -%}
         {%- elif field.FieldType == 'FIELD_INDEX' %}
-    {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }})
-    {{ field_name }} = decode_number_value({{ field_name }}_raw, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'VARIABLE' %}
     _remaining_bits = _payload_bit_length_ - running_bit_offset
     if _remaining_bits > 0:
@@ -482,8 +471,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int |
     dyn_kv_metadata = lookup_field_type_{{ field.LookupFieldTypeEnumeration }}({{ field_name }}_raw)
     {{ field_name }} = dyn_kv_metadata.name if dyn_kv_metadata is not None else None
         {%- elif field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
-    {{ field_name }}_raw = decode_number_raw(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }})
-    {{ field_name }} = decode_number_value({{ field_name }}_raw, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
     if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
         _dyn_bits = dyn_kv_metadata.bits
