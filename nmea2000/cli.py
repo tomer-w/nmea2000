@@ -9,7 +9,7 @@ from .message import NMEA2000Message
 from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, Type, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway, PythonCanAsyncIOClient
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
-from .input_formats import decode_n2k_text_line
+from .input_formats import N2KFormat
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ def parse(filename: str, decoder: NMEA2000Decoder, single_line: bool):
                 line = line.strip()
                 logger.info(f'Processing: {line}')
                 try:
-                    decode_n2k_text_line(decoder, line, single_line)
+                    decoder.decode(line, single_line)
                 except Exception as e:
                     print(f"Error: {e}")
     except KeyboardInterrupt:
@@ -212,7 +212,7 @@ async def async_main():
 
         # Decode from a frame string if provided
         if args.frame:
-            decoded = decode_n2k_text_line(decoder, args.frame, args.single_line)
+            decoded = decoder.decode(args.frame, args.single_line)
             if decoded is not None:
                 print(decoded.to_json())
 
@@ -230,14 +230,20 @@ async def async_main():
         if args.frame:
             frame_str = args.frame
             print(f"Encoding frame: {frame_str}")
-            encoded = encoder.encode_actisense(NMEA2000Message.from_json(args.frame))
+            encoded = encoder.encode(
+                NMEA2000Message.from_json(args.frame),
+                output_format=N2KFormat.ACTISENSE,
+            )
             print(encoded)
 
         # Encode from a json file
         elif args.file:
             with open(args.file, 'r') as file:
                 json_string = file.read()
-            encoded = encoder.encode_actisense(NMEA2000Message.from_json(json_string))
+            encoded = encoder.encode(
+                NMEA2000Message.from_json(json_string),
+                output_format=N2KFormat.ACTISENSE,
+            )
             print(encoded)
         else:
             print("Error: You must provide either a frame or a file to encode.")

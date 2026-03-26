@@ -1,19 +1,21 @@
 """NMEA2000 Decoder module to decode NMEA2000 messages from various input formats."""
 import logging
-import binascii
 import os
 from datetime import datetime, timedelta
 from typing import Tuple, Optional, List, Dict, Callable
-import can.message
+from .decoder_formats import (
+    DecoderBinaryMixin,
+    DecoderCanFrameTextMixin,
+    DecoderDispatchMixin,
+    DecoderNativeTextMixin,
+    DecoderSentenceTextMixin,
+    InvalidFrameError,
+)
 from .message import IsoName, NMEA2000Message
 from .consts import PhysicalQuantities
-from .utils import calculate_canbus_checksum
 from . import pgns as pgns_module
 
 logger = logging.getLogger(__name__)
-
-class InvalidFrameError(Exception):
-    """Raised when a USB frame has invalid structure (bad checksum, wrong length, etc.)."""
 
 class FastPgnMetadata():
     """Class to store metadata for fast packet PGNs."""
@@ -29,7 +31,13 @@ class FastPgnMetadata():
 ISO_CLAIM_PGN = 60928
 ISO_CLAIM_PGN_ID = "isoAddressClaim"
 
-class NMEA2000Decoder():
+class NMEA2000Decoder(
+    DecoderDispatchMixin,
+    DecoderNativeTextMixin,
+    DecoderCanFrameTextMixin,
+    DecoderSentenceTextMixin,
+    DecoderBinaryMixin,
+):
     """NMEA2000 Decoder class to decode NMEA2000 messages from various input formats."""
     def __init__(self,
                  exclude_pgns: Optional[List[int | str]] = None,
@@ -196,97 +204,6 @@ class NMEA2000Decoder():
         logger.debug("Waiting for %s more bytes.", fast_pgn.payload_length - fast_pgn.bytes_stored)
         return None
 
-    def decode_actisense_string(self, actisense_string: str) -> NMEA2000Message | None:
-        """Process an Actisense packet string and extract the PGN, source ID, and CAN data. Based on: https://actisense.com/knowledge-base/nmea-2000/w2k-1-nmea-2000-to-wifi-gateway/nmea-2000-ascii-output-format/"""
-        # Split the Actisense string by spaces
-        parts = actisense_string.split()
-
-        if len(parts) < 3:
-            raise ValueError("Invalid Actisense string format")
-
-        if not parts[0].startswith("A"):
-            raise ValueError("Invalid format: should start with 'A'")
-
-        # Extract the timestamp from the first part
-        seconds, milliseconds = map(int, parts[0][1:].split("."))
-        offset = timedelta(seconds=seconds, milliseconds=milliseconds)
-        timestamp = datetime.now() + offset
-
-        # Extract the priority, destination, and source from the second part
-        n = int(parts[1], 16)
-        priority = n & 0xF
-        dest = (n >> 4) & 0xFF
-        src = (n >> 12) & 0xFF
-
-        # Extract the PGN from the third part
-        pgn = int(parts[2], 16)
-
-        # Extract the CAN data from the remaining parts
-        # Convert to bytes
-        bytes_data = bytes.fromhex(parts[3])
-
-        # Reverse the byte order
-        reversed_bytes = bytes_data[::-1]
-
-        # Log the extracted information
-        logger.debug("Priority: %s, Destination: %s, Source: %s, PGN: %s, CAN Data: %s", priority, dest, src, pgn, reversed_bytes)
-
-        return self._decode(pgn, priority, src, dest, timestamp, bytes(reversed_bytes), bytes_data, True)
-
-    def decode_yacht_devices_string(self, yd_string: str) -> NMEA2000Message | None:
-        """Process an Yacht Devices string and extract the PGN, source ID, and CAN data. Based on: https://www.yachtd.com/downloads/ydwg02.pdf page 62-63"""
-        # Split the Actisense string by spaces
-        parts = yd_string.split()
-
-        if len(parts) < 4:
-            raise ValueError("Invalid Yacht Devices string format")
-
-        if parts[1] not in ["R", "T"]:
-            raise ValueError("Invalid format: 2nd part should be 'R'")
-
-        # Extract the timestamp from the first part
-        timestamp = datetime.strptime(parts[0], "%H:%M:%S.%f")
-
-        # Extract the PGN, priority, destination, and source from the second part
-        msgid = int(parts[2], 16)
-        pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(msgid)
-
-        # Extract the CAN data from the remaining parts
-        can_data = parts[3:][::-1]
-        can_data_bytes = [int(byte, 16) for byte in can_data]
-
-        # Log the extracted information
-        logger.debug("Priority: %s, Destination: %s, Source: %s, PGN: %s, CAN Data: %s", priority, dest, source_id, pgn_id, can_data_bytes)
-
-        return self._decode(pgn_id, priority, source_id, dest, timestamp, bytes(can_data_bytes), yd_string)
-
-    def decode_basic_string(self, basic_string: str, already_combined: bool = False) -> NMEA2000Message | None:
-        """Process an Actisense packet string and extract the PGN, source ID, and CAN data."""
-        # Split the Actisense string by spaces
-        parts = basic_string.split(",")
-
-        if len(parts) < 7: # should have at least one data bytes probably
-            raise ValueError("Invalid string format")
-
-        # Extract the fields
-        if parts[0].endswith("Z"):
-            timestamp = datetime.strptime(parts[0], "%Y-%m-%dT%H:%M:%S.%fZ")
-        else:
-            timestamp = datetime.strptime(parts[0], "%Y-%m-%d-%H:%M:%S.%f")
-        priority = int(parts[1])
-        pgn_id = int(parts[2])
-        src = int(parts[3])
-        dest = int(parts[4])
-        length = int(parts[5])
-        # Extract the CAN data from the remaining parts
-        can_data = parts[6:6 + length][::-1]
-        can_data_bytes = [int(byte, 16) for byte in can_data]
-        # Log the extracted information
-        logger.debug("Priority: %s, Destination: %s, Source: %s, PGN: %s, CAN Data: %s", priority, dest, src, pgn_id, can_data_bytes)
-
-        # not calling _decode as in this format the fast frames are already combined
-        return self._decode(pgn_id, priority, src, dest, timestamp, bytes(can_data_bytes), basic_string,already_combined)
-
     @staticmethod
     def _extract_header(frame_id_int: int) -> Tuple[int, int, int, int]:
         """
@@ -312,86 +229,6 @@ class NMEA2000Decoder():
             pgn_id = (dp << 16) | (pf << 8) | ps
 
         return pgn_id, source_id, dest, priority
-
-    def decode_tcp(self, packet: bytes) -> NMEA2000Message | None:
-        """Tested with ECAN devices. Process a single packet and extract the PGN, source ID, and CAN data."""
-
-        # First byte has the data length in the lowest 4 bits
-        type_byte = packet[0]
-        data_length = type_byte & 0x0F  # last 4 bits represent the data length
-
-        # Extract the frame ID
-        frame_id = packet[1:5]
-        # Convert frame_id bytes to an integer
-        frame_id_int = int.from_bytes(frame_id, byteorder='big')
-        # Parse it
-        pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(frame_id_int)
-
-        # Extract and reverse the CAN data
-        can_data = packet[5:5 + data_length][::-1]
-
-        # Log the extracted information including the combined string
-        logger.debug("PGN ID: %s, Frame ID: %s, CAN Data: %s, Source ID: %s",
-            pgn_id,
-            binascii.hexlify(frame_id).decode('ascii'),
-            can_data,
-            source_id)
-
-        return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data), packet)
-
-    def decode_usb(self, packet: bytes) -> NMEA2000Message | None:
-        """Tested with Waveshare-usb-a device. Process a single packet and extract the PGN, source ID, and CAN data."""
-        if packet[0] != 0xaa or packet[1] != 0x55:
-            raise InvalidFrameError("Packet does not have the right prefix and suffix")
-
-        if len(packet) != 20:
-            raise InvalidFrameError(f"Packet is not 20 bytes long: {packet.hex()}")
-
-        # Extract the frame ID
-        frame_id = packet[5:9]
-        # Convert frame_id bytes to an integer
-        frame_id_int = int.from_bytes(frame_id, byteorder='little')
-        # Parse it
-        pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(frame_id_int)
-
-        checksum = calculate_canbus_checksum(packet)
-        if checksum != packet[19]:
-            raise InvalidFrameError(
-                f"Invalid checksum: {checksum} (expected: {packet[19]}), "
-                f"PGN ID: {pgn_id}, source: {source_id}, dest: {dest}, "
-                f"priority: {priority}, packet: {packet.hex()}"
-            )
-
-        # Extract and reverse the CAN data
-        data_length = packet[9]
-        can_data = packet[10:10 + data_length][::-1]
-
-        # Log the extracted information including the combined string
-        logger.debug("Got valid packet. PGN ID: %s, source: %s, dest: %s, priority: %s, CAN Data: %s",
-            pgn_id,
-            source_id,
-            dest,
-            priority,
-            can_data.hex())
-
-        return self._decode(pgn_id, priority, source_id, dest, datetime.now(), bytes(can_data), packet)
-
-    def decode_python_can(self, msg: "can.message.Message") -> "NMEA2000Message | None":
-        """Decode a python-can Message object.
-
-        Process a single python-can Message and extract the PGN, source ID, and CAN data.
-        python-can already parses the message into a Message object with arbitration_id
-        and data fields. The remaining work is decoding the 29-bit arbitration ID and
-        stitching together fast data messages.
-        """
-        pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(msg.arbitration_id)
-
-        # python-can data is already in network byte order; reverse to match internal convention
-        can_data = bytes(msg.data)[::-1]
-
-        timestamp = datetime.fromtimestamp(msg.timestamp) if msg.timestamp else datetime.now()
-
-        return self._decode(pgn_id, priority, source_id, dest, timestamp, can_data, msg.data)
 
     @staticmethod
     def is_fast_pgn(pgn_id: int) -> bool | None:
@@ -516,3 +353,6 @@ class NMEA2000Decoder():
     def __exit__(self, exc_type, exc_value, traceback):
         """Exit the runtime context and clean up resources."""
         self.close()
+
+
+__all__ = ["InvalidFrameError", "NMEA2000Decoder", "NMEA2000Message"]
