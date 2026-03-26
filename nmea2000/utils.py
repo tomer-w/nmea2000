@@ -240,17 +240,15 @@ def encode_float(float_number: float | None) -> int:
     return encoded_int
 
 
-def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: float, min_value: float, max_value: float) -> float | None:
+def decode_number_raw(data_raw: int, bit_offset: int, bit_length: int, signed: bool) -> int | None:
     """
-    The function follows specific decoding rules based on the bit length of the number:
-    - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (None is returned).
-    - For numbers using 4 bits or more, the maximum positive value indicates the field is not present (None is returned).
+    Decode a raw integer field, applying sign extension and NMEA 2000 "not available" handling.
     """
     number_int = decode_int(data_raw, bit_offset, bit_length)
 
-    #make it signed using sign extension operation
+    # make it signed using sign extension operation
     if signed:
-        signed_mask = 1 << (bit_length -1)
+        signed_mask = 1 << (bit_length - 1)
         if number_int & signed_mask != 0:
             number_int -= (1 << bit_length)
 
@@ -262,15 +260,37 @@ def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool,
         if number_int == max_positive_value:
             return None
 
-    # adjust resolution
-    number_int *= resolution
+    return number_int
 
-    if number_int < min_value:
+def decode_number_value(number_raw: int | None, resolution: float, min_value: float, max_value: float) -> float | None:
+    """
+    Convert a decoded raw numeric value into its scaled engineering value.
+    """
+    if number_raw is None:
+        return None
+
+    # adjust resolution
+    number_value = number_raw * resolution
+
+    if number_value < min_value:
         raise ValueError("Value below minimum allowed")
-    if number_int > max_value:
+    if number_value > max_value:
         raise ValueError("Value above maximum allowed")
 
-    return number_int
+    return number_value
+
+def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: float, min_value: float, max_value: float) -> float | None:
+    """
+    The function follows specific decoding rules based on the bit length of the number:
+    - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (None is returned).
+    - For numbers using 4 bits or more, the maximum positive value indicates the field is not present (None is returned).
+    """
+    return decode_number_value(
+        decode_number_raw(data_raw, bit_offset, bit_length, signed),
+        resolution,
+        min_value,
+        max_value,
+    )
 
 def encode_number(
     value: float | None,
@@ -313,6 +333,46 @@ def encode_number(
         number_int = (1 << bit_length) + number_int
 
     return number_int
+
+def encode_number_raw(raw_value: int | float | None, bit_length: int, signed: bool) -> int:
+    """
+    Encode a pre-scaled raw integer value into the wire representation.
+    """
+    if raw_value is None:
+        return encode_number(None, bit_length, signed, 1)
+
+    if isinstance(raw_value, float):
+        if not raw_value.is_integer():
+            raise ValueError(f"Raw value {raw_value} must be an integer")
+        raw_value = int(raw_value)
+
+    if not isinstance(raw_value, int):
+        raise ValueError(f"Raw value {raw_value} must be an integer")
+
+    if signed:
+        min_val = -(1 << (bit_length - 1))
+        max_val = (1 << (bit_length - 1)) - 2
+    else:
+        min_val = 0
+        max_val = (1 << bit_length) - 2
+
+    if not (min_val <= raw_value <= max_val):
+        raise ValueError(f"Raw value {raw_value} out of range")
+
+    if signed and raw_value < 0:
+        raw_value = (1 << bit_length) + raw_value
+
+    return raw_value
+
+def raw_number_matches_value(raw_value: int | float | None, value: float | None, resolution: float) -> bool:
+    """
+    Check whether a raw integer and engineering value represent the same numeric field.
+    """
+    if not isinstance(raw_value, int):
+        return False
+    if value is None:
+        return False
+    return math.isclose(raw_value * resolution, value, rel_tol=0.0, abs_tol=max(abs(resolution) / 2, 1e-12))
 
 def decode_bit_lookup(data_raw: int, bit_lookup_dict: dict) -> str:
     bit = 0
