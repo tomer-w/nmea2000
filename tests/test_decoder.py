@@ -503,7 +503,10 @@ def test_iso_request_decode():
     encoder = NMEA2000Encoder()
     msg_bytes = encoder.encode_usb(msg)[0]
     assert isinstance(msg_bytes, bytes)
-    msg2 = decoder.decode_usb(msg_bytes)
+    with pytest.raises(ValueError, match="already bound to basic_string"):
+        decoder.decode_usb(msg_bytes)
+    usb_decoder = _get_decoder()
+    msg2 = usb_decoder.decode_usb(msg_bytes)
     assert isinstance(msg2, NMEA2000Message)
     assert msg2.PGN == 59904
     assert msg2.fields[0].raw_value == msg.fields[0].raw_value

@@ -174,7 +174,7 @@ def test_python_can_encode():
     assert can_msg.is_rx is False
     assert len(can_msg.data) == 8
     # Verify arbitration_id encodes PGN 65280, source 9, priority 7
-    pgn_id, source_id, dest, priority = NMEA2000Decoder._extract_header(can_msg.arbitration_id)
+    pgn_id, source_id, dest, priority = NMEA2000Decoder.extract_header(can_msg.arbitration_id)
     assert pgn_id == 65280
     assert source_id == 9
     assert priority == 7

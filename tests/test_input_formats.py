@@ -117,9 +117,9 @@ def test_detect_format_rejects_unknown_input():
         (CANDUMP3_FRAME, 60928),
     ],
 )
-def test_decode_text_line_supported(input_line: str, expected_pgn: int):
+def test_decode_supported_text_input(input_line: str, expected_pgn: int):
     decoder = _get_decoder()
-    msg = decoder.decode_text_line(input_line)
+    msg = decoder.decode(input_line)
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == expected_pgn
 
@@ -137,10 +137,10 @@ def test_decoder_decode_supports_binary_packets():
     assert isinstance(msg, NMEA2000Message)
 
 
-def test_decode_text_line_rejects_pdgy_debug():
+def test_decode_rejects_pdgy_debug():
     decoder = _get_decoder()
     with pytest.raises(ValueError, match="PDGY debug lines are not supported"):
-        decoder.decode_text_line(PDGY_DEBUG_FRAME)
+        decoder.decode(PDGY_DEBUG_FRAME)
 
 
 @pytest.mark.parametrize(
