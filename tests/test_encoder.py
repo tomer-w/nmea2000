@@ -58,22 +58,19 @@ def _assert_payload_roundtrip(
     expected_input: str | list[str],
     encoder: NMEA2000Encoder,
     msg: NMEA2000Message,
-    *,
-    allow_basic_string_canonicalization: bool = False,
 ):
-    output_format = (
-        N2KFormat.BASIC_STRING
-        if allow_basic_string_canonicalization
-        else detect_format(expected_input)
-    )
+    output_format = detect_format(expected_input)
     actual_output = encoder.encode(msg, output_format=output_format)
-    redecoder = _get_decoder()
-    redecoded = redecoder.decode(
-        actual_output,
-        output_format == N2KFormat.BASIC_STRING and isinstance(actual_output, str),
-    )
-    assert isinstance(redecoded, NMEA2000Message)
-    _assert_semantic_roundtrip(msg, redecoded)
+
+    if actual_output != expected_input:
+        # If the encoded output doesn't match the expected input, redecode it and compare semantically
+        redecoder = _get_decoder()
+        redecoded = redecoder.decode(
+            actual_output,
+            output_format == N2KFormat.BASIC_STRING and isinstance(actual_output, str),
+        )
+        assert isinstance(redecoded, NMEA2000Message)
+        _assert_semantic_roundtrip(msg, redecoded)
 
 
 def _decode_roundtrip_case(case: dict) -> NMEA2000Message:
@@ -218,6 +215,5 @@ def test_canboatjs_autosense_roundtrip_cases(case: dict):
         case["input"],
         encoder,
         msg,
-        allow_basic_string_canonicalization=bool(case.get("skipEncoderTest")),
     )
 
