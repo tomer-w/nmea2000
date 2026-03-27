@@ -377,7 +377,7 @@ def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int, data_length_bits: int |
 {%- else %}
 {%- set func_name_suffix = pgn.PGN %}
 {%- endif %}
-def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int | None = None) -> NMEA2000Message:
+def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Message:
     """Decode PGN {{ pgn.PGN }}."""
     nmea2000Message = NMEA2000Message(PGN={{pgn.PGN}}, id='{{pgn.Id}}', description='{{pgn.Description}}'{% if pgn.TransmissionInterval is defined -%}, ttl=timedelta(milliseconds={{pgn.TransmissionInterval}}){%- endif -%})
     {%- set ns_fields = namespace() %}

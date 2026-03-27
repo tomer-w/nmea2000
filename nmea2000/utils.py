@@ -248,6 +248,15 @@ def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool,
     """
     number_int = decode_int(data_raw, bit_offset, bit_length)
 
+    if bit_length == 64:
+        lower_word = number_int & 0xFFFFFFFF
+        upper_word = number_int >> 32
+        if signed:
+            if lower_word in (0xFFFFFFFF, 0xFFFFFFFE) and upper_word == 0x7FFFFFFF:
+                return None
+        elif lower_word in (0xFFFFFFFF, 0xFFFFFFFE) and upper_word == 0xFFFFFFFF:
+            return None
+
     # make it signed using sign extension operation
     if signed:
         signed_mask = 1 << (bit_length - 1)
@@ -268,7 +277,7 @@ def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool,
     if number_int < min_value:
         raise ValueError("Value below minimum allowed")
     if number_int > max_value:
-        raise ValueError("Value above maximum allowed")
+        return None
 
     return number_int
 

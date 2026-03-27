@@ -331,6 +331,38 @@ def test_json_with_repeating_field_list():
         }
     ]
 
+
+def test_decode_alt_signed_sentinel_as_none_for_position_rapid_update():
+    decoder = _get_decoder()
+    msg = decoder.decode_basic_string(
+        "2023-07-22T15:58:03.514Z,2,129025,5,255,8,fe,ff,ff,7f,fe,ff,ff,7f",
+        True,
+    )
+
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.get_field_by_id("latitude").value is None
+    assert msg.get_field_by_id("latitude").raw_value is None
+    assert msg.get_field_by_id("longitude").value is None
+    assert msg.get_field_by_id("longitude").raw_value is None
+
+
+def test_decode_alt_null_sentinels_as_none_for_gnss_position_data():
+    decoder = _get_decoder()
+    msg = decoder.decode_basic_string(
+        "2023-07-22T15:25:03.923Z,3,129029,5,255,43,ff,68,4c,fe,ff,ff,ff,fe,ff,ff,ff,ff,ff,ff,7f,fe,ff,ff,ff,ff,ff,ff,7f,14,fc,00,fe,7f,fe,7f,fe,ff,ff,7f,00",
+        True,
+    )
+
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.get_field_by_id("sid").value is None
+    assert msg.get_field_by_id("sid").raw_value is None
+    assert msg.get_field_by_id("time").value is None
+    assert msg.get_field_by_id("time").raw_value is None
+    assert msg.get_field_by_id("latitude").value is None
+    assert msg.get_field_by_id("latitude").raw_value is None
+    assert msg.get_field_by_id("longitude").value is None
+    assert msg.get_field_by_id("longitude").raw_value is None
+
 def _validate_130842_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 130842
@@ -471,7 +503,10 @@ def test_iso_request_decode():
     encoder = NMEA2000Encoder()
     msg_bytes = encoder.encode_usb(msg)[0]
     assert isinstance(msg_bytes, bytes)
-    msg2 = decoder.decode_usb(msg_bytes)
+    with pytest.raises(ValueError, match="already bound to basic_string"):
+        decoder.decode_usb(msg_bytes)
+    usb_decoder = _get_decoder()
+    msg2 = usb_decoder.decode_usb(msg_bytes)
     assert isinstance(msg2, NMEA2000Message)
     assert msg2.PGN == 59904
     assert msg2.fields[0].raw_value == msg.fields[0].raw_value

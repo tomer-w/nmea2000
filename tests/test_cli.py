@@ -19,6 +19,11 @@ CLI_MODULE = [sys.executable, "-m", "nmea2000.cli"]
 
 
 ACTISENSE_FRAME = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF"
+BASIC_STRING_FRAME = (
+    "2016-04-09T16:41:09.078Z,3,127257,17,255,8,00,ff,7f,52,00,21,fe,ff"
+)
+CANDUMP1_FRAME = "<0x18eeff01> [8] 05 a0 be 1c 00 a0 a0 c0"
+PDGY_DEBUG_FRAME = "$PDGY,000000,4,,5,482,1,0"
 
 
 class TestCliDecode:
@@ -49,6 +54,16 @@ class TestCliDecode:
         assert fields[0]["id"] == "manufacturerCode"
         assert fields[0]["value"] == "Furuno"
 
+    def test_decode_basic_string_frame(self):
+        result = subprocess.run(
+            [*CLI_MODULE, "decode", "--frame", BASIC_STRING_FRAME],
+            capture_output=True, text=True, timeout=10
+        )
+        assert result.returncode == 0
+        data = json.loads(result.stdout.strip())
+        assert data["PGN"] == 127257
+        assert data["id"] == "attitude"
+
     def test_decode_missing_args(self):
         result = subprocess.run(
             [*CLI_MODULE, "decode"],
@@ -64,6 +79,27 @@ class TestCliDecode:
             capture_output=True, text=True, timeout=10
         )
         assert result.returncode == 0
+        assert result.stdout.strip() == ""
+
+    def test_decode_file_candump1(self, tmp_path):
+        frame_file = tmp_path / "candump1.txt"
+        frame_file.write_text(CANDUMP1_FRAME + "\n")
+        result = subprocess.run(
+            [*CLI_MODULE, "decode", "--file", str(frame_file)],
+            capture_output=True, text=True, timeout=10
+        )
+        assert result.returncode == 0
+        assert result.stdout.strip() == ""
+
+    def test_decode_file_pdgy_debug_reports_error(self, tmp_path):
+        frame_file = tmp_path / "pdgy-debug.txt"
+        frame_file.write_text(PDGY_DEBUG_FRAME + "\n")
+        result = subprocess.run(
+            [*CLI_MODULE, "decode", "--file", str(frame_file)],
+            capture_output=True, text=True, timeout=10
+        )
+        assert result.returncode == 0
+        assert "PDGY debug lines are not supported" in result.stdout
 
 
 class TestCliEncode:
