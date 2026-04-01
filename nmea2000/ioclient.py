@@ -17,6 +17,34 @@ from .encoder import NMEA2000Encoder
 from .input_formats import N2KFormat
 from .message import NMEA2000Message
 
+
+def _configure_tcp_keepalive(sock: socket.socket) -> None:
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+
+    idle_opt = getattr(socket, "TCP_KEEPIDLE", None)
+    if idle_opt is None:
+        idle_opt = getattr(socket, "TCP_KEEPALIVE", None)
+    if idle_opt is not None:
+        try:
+            sock.setsockopt(socket.IPPROTO_TCP, idle_opt, 30)
+        except OSError:
+            pass
+
+    interval_opt = getattr(socket, "TCP_KEEPINTVL", None)
+    if interval_opt is not None:
+        try:
+            sock.setsockopt(socket.IPPROTO_TCP, interval_opt, 10)
+        except OSError:
+            pass
+
+    count_opt = getattr(socket, "TCP_KEEPCNT", None)
+    if count_opt is not None:
+        try:
+            sock.setsockopt(socket.IPPROTO_TCP, count_opt, 5)
+        except OSError:
+            pass
+
+
 class State(Enum):
     """Connection states for NMEA2000 clients.
     
@@ -373,10 +401,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
         # Get the underlying socket
         sock = self.writer.get_extra_info("socket")
         if sock:
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 30)  # Idle time before keepalive probes (Linux/macOS)
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
+            _configure_tcp_keepalive(sock)
         self.logger.info(f"Connected to {self.host}:{self.port}")
 
     async def _receive_impl(self):
@@ -468,10 +493,7 @@ class TextNmea2000Gateway(AsyncIOClient):
         # Get the underlying socket
         sock = self.writer.get_extra_info("socket")
         if sock:
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 30)  # Idle time before keepalive probes (Linux/macOS)
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
+            _configure_tcp_keepalive(sock)
         self.logger.info(f"Connected to {self.host}:{self.port}")
 
     async def _receive_impl(self):
