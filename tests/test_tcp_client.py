@@ -15,6 +15,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("test_tcp_client")
 
+
+async def _wait_for_server_client(server: NMEA2000TestServer, timeout: float = 1.0) -> None:
+    deadline = asyncio.get_running_loop().time() + timeout
+    while not server.clients and asyncio.get_running_loop().time() < deadline:
+        await asyncio.sleep(0.01)
+    assert server.clients, "Test server did not register a client connection"
+
+
 def _create_server_client(type: Type):
     # Create a queue and a signal
     receive_queue = asyncio.Queue()
@@ -48,6 +56,7 @@ async def test_single_message_EBYTE():
     server,client, receive_signal, receive_queue = _create_server_client(Type.EBYTE)
     await server.start()
     await client.connect()
+    await _wait_for_server_client(server)
     
     # Wait for the signal that a message was received
     try:
@@ -67,6 +76,7 @@ async def test_single_message_ACTISENSE_1():
     server,client, receive_signal, receive_queue = _create_server_client(Type.ACTISENSE)
     await server.start()
     await client.connect()
+    await _wait_for_server_client(server)
     
     # Wait for the signal that a message was received
     try:
@@ -85,6 +95,7 @@ async def test_single_message_ACTISENSE_2():
     server,client, receive_signal, receive_queue = _create_server_client(Type.ACTISENSE)
     await server.start()
     await client.connect()
+    await _wait_for_server_client(server)
     
     # Wait for the signal that a message was received
     try:
@@ -103,6 +114,7 @@ async def test_single_message_YACHT_DEVICES():
     server,client, receive_signal, receive_queue = _create_server_client(Type.YACHT_DEVICES)
     await server.start()
     await client.connect()
+    await _wait_for_server_client(server)
     
     # Wait for the signal that a message was received
     try:

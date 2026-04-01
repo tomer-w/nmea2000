@@ -7,6 +7,7 @@ from typing import List
 from nmea2000.ioclient import Type
 from nmea2000.message import NMEA2000Message, NMEA2000Field
 from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.input_formats import N2KFormat
 from nmea2000.consts import PhysicalQuantities, FieldTypes
 
 # Configure logging
@@ -32,7 +33,7 @@ class NMEA2000TestServer:
         self.server = None
         self.clients: List[asyncio.StreamWriter] = []
         self.running = False
-        self.encoder = NMEA2000Encoder()
+        self.encoder = NMEA2000Encoder(output_format=N2KFormat.TCP)
 
     async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         """Handle a new client connection."""
@@ -79,7 +80,7 @@ class NMEA2000TestServer:
             message = self._generate_test_message()
 
             # Encode the message using the NMEA2000Encoder
-            tcp_data = self.encoder.encode_ebyte(message)[0]
+            tcp_data = self.encoder.encode(message)[0]
             logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
         elif self.type == Type.ACTISENSE:
             tcp_data = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')

@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import socket
 from enum import Enum
@@ -14,7 +13,36 @@ from .consts import PhysicalQuantities
 from .utils import calculate_canbus_checksum
 from .decoder import NMEA2000Decoder, InvalidFrameError
 from .encoder import NMEA2000Encoder
+from .input_formats import N2KFormat
 from .message import NMEA2000Message
+
+
+def _configure_tcp_keepalive(sock: socket.socket) -> None:
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
+
+    idle_opt = getattr(socket, "TCP_KEEPIDLE", None)
+    if idle_opt is None:
+        idle_opt = getattr(socket, "TCP_KEEPALIVE", None)
+    if idle_opt is not None:
+        try:
+            sock.setsockopt(socket.IPPROTO_TCP, idle_opt, 30)  # Idle time before keepalive probes (Linux/macOS)
+        except OSError:
+            pass
+
+    interval_opt = getattr(socket, "TCP_KEEPINTVL", None)
+    if interval_opt is not None:
+        try:
+            sock.setsockopt(socket.IPPROTO_TCP, interval_opt, 10)  # Interval between keepalive probes
+        except OSError:
+            pass
+
+    count_opt = getattr(socket, "TCP_KEEPCNT", None)
+    if count_opt is not None:
+        try:
+            sock.setsockopt(socket.IPPROTO_TCP, count_opt, 5)  # Number of failed probes before dropping connection
+        except OSError:
+            pass
+
 
 class State(Enum):
     """Connection states for NMEA2000 clients.
@@ -372,10 +400,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
         # Get the underlying socket
         sock = self.writer.get_extra_info("socket")
         if sock:
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 30)  # Idle time before keepalive probes (Linux/macOS)
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
+            _configure_tcp_keepalive(sock)
         self.logger.info(f"Connected to {self.host}:{self.port}")
 
     async def _receive_impl(self):
@@ -393,7 +418,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
             await asyncio.sleep(30)
             raise Exception("Gateway busy. reconnecting.")
         try:
-            message = self.decoder.decode_tcp(data)
+            message = self.decoder.decode(data)
         except Exception as e:
             self.logger.warning(f"decoding failed. text: {data}, bytes: {data.hex()}. Error: {e}", exc_info=True)
             return
@@ -408,7 +433,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode_ebyte(nmea2000Message)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.TCP)
     
 class TextNmea2000Gateway(AsyncIOClient):
     """TCP implementation of AsyncIOClient for NMEA2000 Actisense gateways.
@@ -467,10 +492,7 @@ class TextNmea2000Gateway(AsyncIOClient):
         # Get the underlying socket
         sock = self.writer.get_extra_info("socket")
         if sock:
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 30)  # Idle time before keepalive probes (Linux/macOS)
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)  # Interval between keepalive probes
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)  # Number of failed probes before dropping connection
+            _configure_tcp_keepalive(sock)
         self.logger.info(f"Connected to {self.host}:{self.port}")
 
     async def _receive_impl(self):
@@ -484,10 +506,7 @@ class TextNmea2000Gateway(AsyncIOClient):
         self.logger.debug(f"Received: {data.hex()}")
         line = data.decode('utf-8', errors='ignore').strip()
         try:
-            if self.type == Type.ACTISENSE:
-                message = self.decoder.decode_actisense_string(line)
-            elif self.type == Type.YACHT_DEVICES:
-                message = self.decoder.decode_yacht_devices_string(line)
+            message = self.decoder.decode(line)
         except Exception as e:
             self.logger.warning(f"decoding failed. text: {line}, bytes: {data.hex()}. Error: {e}", exc_info=True)
             return
@@ -588,7 +607,7 @@ class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode_yacht_devices(nmea2000Message)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.YACHT_DEVICES)
 
 class WaveShareNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.
@@ -709,7 +728,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             # Process the packet
             message = None
             try:
-                message = self.decoder.decode_usb(packet)
+                message = self.decoder.decode(packet)
             except InvalidFrameError as e:
                 self.logger.debug("Invalid frame, resyncing: %s", e)
                 # Skip past this false aa55 marker to find the next valid packet start
@@ -731,7 +750,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode_usb(nmea2000Message)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.USB)
 
 class PythonCanAsyncIOClient(AsyncIOClient):
     """AsyncIOClient implementation for python-can supported devices.
@@ -789,7 +808,7 @@ class PythonCanAsyncIOClient(AsyncIOClient):
             self.logger.debug("Received: %s", msg)
             decoded_frame = None
             try:
-                decoded_frame = self.decoder.decode_python_can(msg)
+                decoded_frame = self.decoder.decode(msg)
             except Exception as e:
                 self.logger.warning("decoding failed. message: %s. Error: %s", msg, e, exc_info=True)
 
@@ -799,4 +818,4 @@ class PythonCanAsyncIOClient(AsyncIOClient):
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list:
         """Encode a NMEA2000 message for python-can device."""
-        return self.encoder.encode_python_can(nmea2000Message)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.PYTHON_CAN)
