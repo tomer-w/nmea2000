@@ -14,6 +14,7 @@ from .consts import PhysicalQuantities
 from .utils import calculate_canbus_checksum
 from .decoder import NMEA2000Decoder, InvalidFrameError
 from .encoder import NMEA2000Encoder
+from .input_formats import N2KFormat
 from .message import NMEA2000Message
 
 class State(Enum):
@@ -393,7 +394,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
             await asyncio.sleep(30)
             raise Exception("Gateway busy. reconnecting.")
         try:
-            message = self.decoder.decode_tcp(data)
+            message = self.decoder.decode(data)
         except Exception as e:
             self.logger.warning(f"decoding failed. text: {data}, bytes: {data.hex()}. Error: {e}", exc_info=True)
             return
@@ -408,7 +409,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode_ebyte(nmea2000Message)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.TCP)
     
 class TextNmea2000Gateway(AsyncIOClient):
     """TCP implementation of AsyncIOClient for NMEA2000 Actisense gateways.
@@ -484,10 +485,7 @@ class TextNmea2000Gateway(AsyncIOClient):
         self.logger.debug(f"Received: {data.hex()}")
         line = data.decode('utf-8', errors='ignore').strip()
         try:
-            if self.type == Type.ACTISENSE:
-                message = self.decoder.decode_actisense_string(line)
-            elif self.type == Type.YACHT_DEVICES:
-                message = self.decoder.decode_yacht_devices_string(line)
+            message = self.decoder.decode(line)
         except Exception as e:
             self.logger.warning(f"decoding failed. text: {line}, bytes: {data.hex()}. Error: {e}", exc_info=True)
             return
@@ -588,7 +586,7 @@ class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode_yacht_devices(nmea2000Message)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.YACHT_DEVICES)
 
 class WaveShareNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.
@@ -709,7 +707,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             # Process the packet
             message = None
             try:
-                message = self.decoder.decode_usb(packet)
+                message = self.decoder.decode(packet)
             except InvalidFrameError as e:
                 self.logger.debug("Invalid frame, resyncing: %s", e)
                 # Skip past this false aa55 marker to find the next valid packet start
@@ -731,7 +729,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode_usb(nmea2000Message)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.USB)
 
 class PythonCanAsyncIOClient(AsyncIOClient):
     """AsyncIOClient implementation for python-can supported devices.
@@ -789,7 +787,7 @@ class PythonCanAsyncIOClient(AsyncIOClient):
             self.logger.debug("Received: %s", msg)
             decoded_frame = None
             try:
-                decoded_frame = self.decoder.decode_python_can(msg)
+                decoded_frame = self.decoder.decode(msg)
             except Exception as e:
                 self.logger.warning("decoding failed. message: %s. Error: %s", msg, e, exc_info=True)
 
@@ -799,4 +797,4 @@ class PythonCanAsyncIOClient(AsyncIOClient):
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list:
         """Encode a NMEA2000 message for python-can device."""
-        return self.encoder.encode_python_can(nmea2000Message)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.PYTHON_CAN)
