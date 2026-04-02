@@ -50,19 +50,22 @@ class DecoderStaticsMixin:
         Extract PGN, source ID, destination, and priority from a 29-bit CAN frame ID.
 
         Returns a tuple of `(pgn_id, source_id, dest, priority)`.
+        based on the 29 bits (ID0 - ID28) in https://canboat.github.io/canboat/canboat.html
         """
-        source_id = frame_id_int & 0xFF
-        pgn_id_raw = (frame_id_int >> 8) & 0x3FFFF
-        priority = (frame_id_int >> 26) & 0x07
+        source_id = frame_id_int & 0xFF             # bits 0-7 = 8 bits
+        pgn_id_raw = (frame_id_int >> 8) & 0x3FFFF  # bits 8-25 = 18 bits
+        priority = (frame_id_int >> 26) & 0x07      # bits 26-28 = 3 bits
 
-        dp = (pgn_id_raw >> 16) & 0x3
-        pf = (pgn_id_raw >> 8) & 0xFF
-        ps = pgn_id_raw & 0xFF
+        dp = (pgn_id_raw >> 16) & 0x3    # bits 16-17
+        pf = (pgn_id_raw >> 8) & 0xFF    # bits 8-15
+        ps = pgn_id_raw & 0xFF           # bits 0-7
 
         if pf < 0xF0:
+            # PDU1 format: PS is destination address
             dest = ps
             pgn_id = (dp << 16) | (pf << 8)
         else:
+            # PDU2 format: broadcast, destination is always 255
             dest = 255
             pgn_id = (dp << 16) | (pf << 8) | ps
 
@@ -230,6 +233,8 @@ class DecoderBase(DecoderStaticsMixin):
 
         if frame_counter == 0 and sequence_counter != fast_pgn.sequence_counter:
             total_bytes = can_data[-2]
+
+            # Start a new pgn hass structure
             fast_pgn.payload_length = total_bytes
             fast_pgn.sequence_counter = sequence_counter
             fast_pgn.bytes_stored = 0
@@ -246,6 +251,7 @@ class DecoderBase(DecoderStaticsMixin):
             if frame_counter in fast_pgn.frames:
                 logger.debug("Frame %s for PGN %s is already stored.", frame_counter, pgn)
                 return None
+            # For subsequent frames, exclude the last byte from the payload
             data_payload = can_data[:-1]
 
         byte_length = len(data_payload)
@@ -260,6 +266,8 @@ class DecoderBase(DecoderStaticsMixin):
 
         if fast_pgn.bytes_stored >= fast_pgn.payload_length:
             logger.debug("All Fast packet frames collected for PGN: %d", pgn)
+
+            # All data for this PGN has been received, proceed to publish
             combined_payload = bytes(
                 [b for idx in sorted(fast_pgn.frames) for b in fast_pgn.frames[idx][::-1]]
             )[::-1]
@@ -302,7 +310,8 @@ class DecoderBase(DecoderStaticsMixin):
     ) -> NMEA2000Message | None:
         """Decode a single PGN message."""
         source_iso_name = None
-        if pgn != ISO_CLAIM_PGN:
+        # Check if the PGN should be excluded or included
+        if pgn != ISO_CLAIM_PGN:  # The ISO_CLAIM_PGN should bypass this check so we can build the map later
             if pgn in self.exclude_pgns:
                 logger.debug("Excluding PGN: %s", pgn)
                 return None
@@ -442,6 +451,7 @@ class DecoderBase(DecoderStaticsMixin):
         )
         nmea2000_message.apply_preferred_units(self.preferred_units)
 
+        # Handle dump to file
         if (
             self.dump_file is not None
             and (

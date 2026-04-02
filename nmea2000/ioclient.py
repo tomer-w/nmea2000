@@ -19,28 +19,28 @@ from .message import NMEA2000Message
 
 
 def _configure_tcp_keepalive(sock: socket.socket) -> None:
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Enable keepalive
 
     idle_opt = getattr(socket, "TCP_KEEPIDLE", None)
     if idle_opt is None:
         idle_opt = getattr(socket, "TCP_KEEPALIVE", None)
     if idle_opt is not None:
         try:
-            sock.setsockopt(socket.IPPROTO_TCP, idle_opt, 30)
+            sock.setsockopt(socket.IPPROTO_TCP, idle_opt, 30)  # Idle time before keepalive probes (Linux/macOS)
         except OSError:
             pass
 
     interval_opt = getattr(socket, "TCP_KEEPINTVL", None)
     if interval_opt is not None:
         try:
-            sock.setsockopt(socket.IPPROTO_TCP, interval_opt, 10)
+            sock.setsockopt(socket.IPPROTO_TCP, interval_opt, 10)  # Interval between keepalive probes
         except OSError:
             pass
 
     count_opt = getattr(socket, "TCP_KEEPCNT", None)
     if count_opt is not None:
         try:
-            sock.setsockopt(socket.IPPROTO_TCP, count_opt, 5)
+            sock.setsockopt(socket.IPPROTO_TCP, count_opt, 5)  # Number of failed probes before dropping connection
         except OSError:
             pass
 

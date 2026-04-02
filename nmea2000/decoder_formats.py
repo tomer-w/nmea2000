@@ -43,15 +43,20 @@ class ActisenseDecoder(DecoderBase, DecoderInterface):
         single_line: bool = False,
     ) -> NMEA2000Message | None:
         del single_line
+        # Split the Actisense string by spaces
         actisense_string = _as_text(data)
         parts = actisense_string.split()
 
         if len(parts) == 4 and parts[0].startswith("A"):
+            # Extract the timestamp from the first part
             seconds, milliseconds = map(int, parts[0][1:].split("."))
             offset = timedelta(seconds=seconds, milliseconds=milliseconds)
             timestamp = datetime.now() + offset
+            # Extract the priority, destination, and source from the second part
             n = int(parts[1], 16)
+            # Extract the PGN from the third part
             pgn = int(parts[2], 16)
+            # Extract the CAN data from the remaining parts
             bytes_data = bytes.fromhex(parts[3])
         elif len(parts) == 3:
             timestamp = datetime.now()
@@ -64,8 +69,11 @@ class ActisenseDecoder(DecoderBase, DecoderInterface):
         priority = n & 0xF
         dest = (n >> 4) & 0xFF
         src = (n >> 12) & 0xFF
+        # Convert to bytes
+        # Reverse the byte order
         reversed_bytes = bytes_data[::-1]
 
+        # Log the extracted information
         logger.debug(
             "Priority: %s, Destination: %s, Source: %s, PGN: %s, CAN Data: %s",
             priority,
@@ -86,21 +94,25 @@ class BasicStringDecoder(DecoderBase, DecoderInterface):
         data: N2KInput,
         single_line: bool = False,
     ) -> NMEA2000Message | None:
+        # Split the Actisense string by spaces
         basic_string = _as_text(data)
         parts = basic_string.split(",")
 
-        if len(parts) < 7:
+        if len(parts) < 7:  # should have at least one data bytes probably
             raise ValueError("Invalid string format")
 
+        # Extract the fields
         timestamp = _parse_basic_timestamp(parts[0])
         priority = int(parts[1])
         pgn_id = int(parts[2])
         src = int(parts[3])
         dest = int(parts[4])
         length = int(parts[5])
+        # Extract the CAN data from the remaining parts
         can_data = parts[6 : 6 + length][::-1]
         can_data_bytes = [int(byte, 16) for byte in can_data]
 
+        # Log the extracted information
         logger.debug(
             "Priority: %s, Destination: %s, Source: %s, PGN: %s, CAN Data: %s",
             priority,
@@ -110,6 +122,7 @@ class BasicStringDecoder(DecoderBase, DecoderInterface):
             can_data_bytes,
         )
 
+        # not calling _decode as in this format the fast frames are already combined
         return self._decode(
             pgn_id,
             priority,
@@ -131,11 +144,14 @@ class YachtDevicesDecoder(DecoderBase, DecoderInterface):
         single_line: bool = False,
     ) -> NMEA2000Message | None:
         del single_line
+        # Split the Actisense string by spaces
         yd_string = _as_text(data)
         parts = yd_string.split()
 
         if len(parts) >= 4 and parts[1] in ["R", "T"]:
+            # Extract the timestamp from the first part
             timestamp = datetime.strptime(parts[0], "%H:%M:%S.%f")
+            # Extract the PGN, priority, destination, and source from the second part
             msgid = int(parts[2], 16)
             can_data_parts = parts[3:]
         elif len(parts) >= 2:
@@ -146,9 +162,11 @@ class YachtDevicesDecoder(DecoderBase, DecoderInterface):
             raise ValueError("Invalid Yacht Devices string format")
 
         pgn_id, source_id, dest, priority = type(self).extract_header(msgid)
+        # Extract the CAN data from the remaining parts
         can_data = can_data_parts[::-1]
         can_data_bytes = [int(byte, 16) for byte in can_data]
 
+        # Log the extracted information
         logger.debug(
             "Priority: %s, Destination: %s, Source: %s, PGN: %s, CAN Data: %s",
             priority,
@@ -174,16 +192,22 @@ class TcpDecoder(DecoderBase, DecoderInterface):
         if len(packet) < 6:
             raise ValueError("Packet is too short")
 
+        # First byte has the data length in the lowest 4 bits
         type_byte = packet[0]
-        data_length = type_byte & 0x0F
+        data_length = type_byte & 0x0F  # last 4 bits represent the data length
         if len(packet) != 5 + data_length:
             raise ValueError(f"Invalid TCP packet length: {packet.hex()}")
 
+        # Extract the frame ID
         frame_id = packet[1:5]
+        # Convert frame_id bytes to an integer
         frame_id_int = int.from_bytes(frame_id, byteorder="big")
+        # Parse it
         pgn_id, source_id, dest, priority = type(self).extract_header(frame_id_int)
+        # Extract and reverse the CAN data
         can_data = packet[5 : 5 + data_length][::-1]
 
+        # Log the extracted information including the combined string
         logger.debug(
             "PGN ID: %s, Frame ID: %s, CAN Data: %s, Source ID: %s",
             pgn_id,
@@ -211,8 +235,11 @@ class UsbDecoder(DecoderBase, DecoderInterface):
         if len(packet) != 20:
             raise InvalidFrameError(f"Packet is not 20 bytes long: {packet.hex()}")
 
+        # Extract the frame ID
         frame_id = packet[5:9]
+        # Convert frame_id bytes to an integer
         frame_id_int = int.from_bytes(frame_id, byteorder="little")
+        # Parse it
         pgn_id, source_id, dest, priority = type(self).extract_header(frame_id_int)
 
         checksum = calculate_canbus_checksum(packet)
@@ -224,8 +251,10 @@ class UsbDecoder(DecoderBase, DecoderInterface):
             )
 
         data_length = packet[9]
+        # Extract and reverse the CAN data
         can_data = packet[10 : 10 + data_length][::-1]
 
+        # Log the extracted information including the combined string
         logger.debug(
             "Got valid packet. PGN ID: %s, source: %s, dest: %s, priority: %s, CAN Data: %s",
             pgn_id,
@@ -251,6 +280,7 @@ class PythonCanDecoder(DecoderBase, DecoderInterface):
             raise ValueError("Input must be a python-can Message")
 
         pgn_id, source_id, dest, priority = type(self).extract_header(data.arbitration_id)
+        # python-can data is already in network byte order; reverse to match internal convention
         can_data = bytes(data.data)[::-1]
         timestamp = datetime.fromtimestamp(data.timestamp) if data.timestamp else datetime.now()
         return self._decode(pgn_id, priority, source_id, dest, timestamp, can_data, data.data)

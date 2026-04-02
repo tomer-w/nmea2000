@@ -32,6 +32,7 @@ class EncoderBase:
     """Shared encoder mechanics used by concrete format handlers."""
 
     def __init__(self, output_format: N2KFormat | str = N2KFormat.ACTISENSE) -> None:
+        # Sequence counter (3 bits)
         self.sequence_counter = 0
         self.output_format = self._normalize_output_format(output_format)
 
