@@ -13,7 +13,7 @@ from .message import NMEA2000Message
 from . import pgns as pgns_module
 
 
-N2KEncoded: TypeAlias = str | list[bytes] | list[can.message.Message]
+N2KEncoded: TypeAlias = str | list[str] | list[bytes] | list[can.message.Message]
 
 
 class EncoderInterface(ABC):

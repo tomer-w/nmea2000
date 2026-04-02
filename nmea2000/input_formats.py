@@ -9,14 +9,32 @@ import can.message
 
 class N2KFormat(StrEnum):
     ACTISENSE = "actisense"
+    ACTISENSE_N2K_ASCII = "actisense_n2k_ascii"
     BASIC_STRING = "basic_string"
     YACHT_DEVICES = "yacht_devices"
+    YDRAW = "ydraw"
+    YDRAW_OUT = "ydraw_out"
+    PCDIN = "pcdin"
+    MXPGN = "mxpgn"
+    PDGY = "pdgy"
+    PDGY_DEBUG = "pdgy_debug"
+    CANDUMP1 = "candump1"
+    CANDUMP2 = "candump2"
+    CANDUMP3 = "candump3"
     TCP = "tcp"
     USB = "usb"
     PYTHON_CAN = "python_can"
 
 
-N2KInput: TypeAlias = str | bytes | bytearray | memoryview | can.message.Message
+N2KInput: TypeAlias = (
+    str
+    | list[str]
+    | list[bytes]
+    | bytes
+    | bytearray
+    | memoryview
+    | can.message.Message
+)
 
 _ACTISENSE_ASCII_RE = re.compile(
     r"^A\d+\.\d+\s+[0-9A-Fa-f]{5}\s+[0-9A-Fa-f]{5,6}\s+[0-9A-Fa-f]+$"
@@ -34,6 +52,41 @@ _YACHT_DEVICES_RE = re.compile(
 _YACHT_DEVICES_PACKET_RE = re.compile(
     r"^[0-9A-Fa-f]{8}(?:\s+[0-9A-Fa-f]{2})+$"
 )
+_CANDUMP1_RE = re.compile(
+    r"^<0x[0-9A-Fa-f]+>\s+\[\d+\](?:\s+[0-9A-Fa-f]{2})+\s*$"
+)
+_CANDUMP2_RE = re.compile(
+    r"^[A-Za-z][A-Za-z0-9_-]*\s+[0-9A-Fa-f]{8}\s+\[\d+\](?:\s+[0-9A-Fa-f]{2})+\s*$"
+)
+_CANDUMP3_RE = re.compile(
+    r"^\([^)]+\)\s+\S+\s+[0-9A-Fa-f]{8}#[0-9A-Fa-f]+\s*$"
+)
+
+
+def _get_0183_sentence(line: str) -> str:
+    if line.startswith("\\"):
+        parts = line.split("\\")
+        if len(parts) >= 3:
+            return parts[2]
+    return line
+
+
+def _first_text_line(data: str | list[str] | list[bytes]) -> str:
+    if isinstance(data, str):
+        candidates = data.splitlines() if "\n" in data else [data]
+    else:
+        candidates = data
+
+    for candidate in candidates:
+        if isinstance(candidate, (bytes, bytearray, memoryview)):
+            candidate = bytes(candidate).decode("utf-8")
+        elif not isinstance(candidate, str):
+            raise ValueError("Input list must contain only strings or bytes")
+        stripped = candidate.strip()
+        if stripped:
+            return stripped
+
+    raise ValueError("Input must contain at least one non-empty string")
 
 
 def _is_actisense(line: str) -> bool:
@@ -46,6 +99,34 @@ def _is_basic_string(line: str) -> bool:
 
 def _is_yacht_devices(line: str) -> bool:
     return bool(_YACHT_DEVICES_RE.match(line) or _YACHT_DEVICES_PACKET_RE.match(line))
+
+
+def _is_pcdin(line: str) -> bool:
+    return _get_0183_sentence(line).startswith("$PCDIN,")
+
+
+def _is_mxpgn(line: str) -> bool:
+    return _get_0183_sentence(line).startswith("$MXPGN,")
+
+
+def _is_pdgy(line: str) -> bool:
+    return line.startswith("!PDGY,")
+
+
+def _is_pdgy_debug(line: str) -> bool:
+    return line.startswith("$PDGY,")
+
+
+def _is_candump1(line: str) -> bool:
+    return bool(_CANDUMP1_RE.match(line))
+
+
+def _is_candump2(line: str) -> bool:
+    return bool(_CANDUMP2_RE.match(line))
+
+
+def _is_candump3(line: str) -> bool:
+    return bool(_CANDUMP3_RE.match(line))
 
 
 def _is_usb(packet: bytes) -> bool:
@@ -73,14 +154,28 @@ def detect_format(data: N2KInput) -> N2KFormat:
     if isinstance(data, can.message.Message):
         return N2KFormat.PYTHON_CAN
 
-    if isinstance(data, str):
-        line = data.strip()
+    if isinstance(data, (str, list)):
+        line = _first_text_line(data)
         if _is_actisense(line):
             return N2KFormat.ACTISENSE
         if _is_basic_string(line):
             return N2KFormat.BASIC_STRING
         if _is_yacht_devices(line):
             return N2KFormat.YACHT_DEVICES
+        if _is_pcdin(line):
+            return N2KFormat.PCDIN
+        if _is_mxpgn(line):
+            return N2KFormat.MXPGN
+        if _is_pdgy(line):
+            return N2KFormat.PDGY
+        if _is_pdgy_debug(line):
+            return N2KFormat.PDGY_DEBUG
+        if _is_candump1(line):
+            return N2KFormat.CANDUMP1
+        if _is_candump2(line):
+            return N2KFormat.CANDUMP2
+        if _is_candump3(line):
+            return N2KFormat.CANDUMP3
         raise ValueError(f"Parser not found for input: {line}")
 
     if isinstance(data, (bytes, bytearray, memoryview)):
@@ -92,7 +187,7 @@ def detect_format(data: N2KInput) -> N2KFormat:
         raise ValueError(f"Parser not found for binary input: {packet.hex()}")
 
     raise ValueError(
-        "Input must be a string, bytes-like object, or python-can Message"
+        "Input must be a string, list of strings or bytes, bytes-like object, or python-can Message"
     )
 
 
