@@ -214,13 +214,18 @@ class DecoderBase(DecoderStaticsMixin):
         """Parse a fast packet message and store the data until all frames are received."""
         fast_packet_key = f"{pgn}_{src}_{dest}"
 
+        # Check if this PGN already has a storage structure; if not, create one
         if self.data.get(fast_packet_key) is None:
             self.data[fast_packet_key] = FastPgnMetadata()
 
         fast_pgn = self.data[fast_packet_key]
+
+        # the last byte has the sequence_counter and frame_counter
         last_byte = can_data[-1]
-        sequence_counter = (last_byte >> 5) & 0b111
-        frame_counter = last_byte & 0b11111
+
+        # Extract the sequence counter (high 3 bits) and frame counter (low 5 bits) from the last byte
+        sequence_counter = (last_byte >> 5) & 0b111  # Extract high 3 bits
+        frame_counter = last_byte & 0b11111  # Extract low 5 bits
         total_bytes = None
 
         if frame_counter != 0 and fast_pgn.payload_length == 0:
@@ -231,14 +236,18 @@ class DecoderBase(DecoderStaticsMixin):
             )
             return None
 
+        # if this is the first frame of new sequence we will start over
         if frame_counter == 0 and sequence_counter != fast_pgn.sequence_counter:
+            # Extract the total number of frames from the second-to-last byte
             total_bytes = can_data[-2]
 
             # Start a new pgn hass structure
             fast_pgn.payload_length = total_bytes
             fast_pgn.sequence_counter = sequence_counter
-            fast_pgn.bytes_stored = 0
-            fast_pgn.frames.clear()
+            fast_pgn.bytes_stored = 0  # Reset bytes stored for a new message
+            fast_pgn.frames.clear()  # Clear previous frames
+
+            # For the first frame, exclude the last 4 hex characters (2 bytes) from the payload
             data_payload = can_data[:-2]
         else:
             if sequence_counter != fast_pgn.sequence_counter:
@@ -255,15 +264,19 @@ class DecoderBase(DecoderStaticsMixin):
             data_payload = can_data[:-1]
 
         byte_length = len(data_payload)
-        fast_pgn.frames[frame_counter] = data_payload
-        fast_pgn.bytes_stored += byte_length
 
+        # Store the frame data
+        fast_pgn.frames[frame_counter] = data_payload
+        fast_pgn.bytes_stored += byte_length  # Update the count of bytes stored
+
+        # Log the extracted values
         logger.debug("Sequence Counter: %s, Frame Counter: %s", sequence_counter, frame_counter)
         if total_bytes is not None:
             logger.debug("Total Payload Bytes: %s", total_bytes)
         logger.debug("Orig Payload (hex): %s, Data Payload (hex): %s", can_data, data_payload)
         logger.debug("PGN Data: %s", fast_pgn)
 
+        # Check if all expected bytes have been stored
         if fast_pgn.bytes_stored >= fast_pgn.payload_length:
             logger.debug("All Fast packet frames collected for PGN: %d", pgn)
 
@@ -286,6 +299,7 @@ class DecoderBase(DecoderStaticsMixin):
                     raw_can_data,
                 )
 
+            # Reset the structure for this PGN
             del self.data[fast_packet_key]
             return nmea
 
@@ -335,6 +349,7 @@ class DecoderBase(DecoderStaticsMixin):
                 )
 
             if source_iso_name is not None and source_iso_name.manufacturer_code is not None:
+                # Check if the PGN should be excluded or included based on manufacturer
                 manufacturer_code = source_iso_name.manufacturer_code.lower()
                 if manufacturer_code in self.exclude_manufacturer_code:
                     logger.debug(
@@ -414,7 +429,9 @@ class DecoderBase(DecoderStaticsMixin):
             logger.debug("No sub-decoding function found for PGN: %s", pgn)
             return None
 
+        # Handle ISO Address Claim messages and enrichment
         if nmea2000_message.PGN == ISO_CLAIM_PGN:
+            # In this message the data is a 64 bit unique NAME which is stable between network restarts
             old_source = self.source_to_iso_name.get(src, None)
             if old_source is not None and old_source.name == data_int:
                 logger.debug("Using existing ISO_CLAIM_PGN for source %s", src)
@@ -427,6 +444,7 @@ class DecoderBase(DecoderStaticsMixin):
                 logger.debug("Excluding ISO_CLAIM_PGN")
                 return None
 
+        # Check if the PGN should be excluded or included by ID
         msg_id = nmea2000_message.id.lower()
         if msg_id in self.exclude_pgns_ids:
             logger.debug("Excluding PGN by id: %s", nmea2000_message.id)

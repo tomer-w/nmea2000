@@ -70,6 +70,7 @@ class EncoderBase:
             None,
         )
 
+        #if we have multiple functions we need to use the ID as well
         if not encode_func:
             encode_func_name = f"encode_pgn_{nmea200_message.PGN}_{nmea200_message.id}"
             encode_func = getattr(pgns_module, encode_func_name, None)
