@@ -17,3 +17,25 @@ ManufacturerCodes: List[str] = [
     "{{ manufacturer.Name }}",
 {%- endfor %}]
 
+IndirectLookupEncodeMaps = {
+{%- for lookup in data['LookupIndirectEnumerations'] %}
+    "{{ lookup.Name }}": {
+    {%- set value1_groups = namespace(groups={}) %}
+    {%- for item in lookup.EnumValues %}
+        {%- if item.Value1 in value1_groups.groups %}
+            {%- set _ = value1_groups.groups[item.Value1].append(item) %}
+        {%- else %}
+            {%- set _ = value1_groups.groups.update({item.Value1: [item]}) %}
+        {%- endif %}
+    {%- endfor %}
+    {%- for value1, items in value1_groups.groups.items() %}
+        {{ value1 }}: {
+        {%- for item in items %}
+            "{{ item.Name }}": {{ item.Value2 }},
+        {%- endfor %}
+        },
+    {%- endfor %}
+    },
+{%- endfor %}
+}
+

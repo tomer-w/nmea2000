@@ -297,6 +297,7 @@ class DecoderBase(DecoderStaticsMixin):
                     combined_payload,
                     source_iso_name,
                     raw_can_data,
+                    fast_pgn.payload_length * 8,
                 )
 
             # Reset the structure for this PGN
@@ -408,9 +409,10 @@ class DecoderBase(DecoderStaticsMixin):
         data: bytes,
         source_iso_name: IsoName | None,
         raw_can_data: bytes | str,
+        data_length_bits: int | None = None,
     ) -> NMEA2000Message | None:
         decode_func_name = f"decode_pgn_{pgn}"
-        decode_func: Callable[[int], NMEA2000Message] | None = getattr(
+        decode_func: Callable[..., NMEA2000Message | None] | None = getattr(
             pgns_module,
             decode_func_name,
             None,
@@ -424,7 +426,11 @@ class DecoderBase(DecoderStaticsMixin):
             return None
 
         data_int = int.from_bytes(data, "big")
-        nmea2000_message: NMEA2000Message | None = decode_func(data_int)  # pylint: disable=not-callable
+        payload_length_bits = data_length_bits if data_length_bits is not None else len(data) * 8
+        nmea2000_message: NMEA2000Message | None = decode_func(  # pylint: disable=not-callable
+            data_int,
+            payload_length_bits,
+        )
         if nmea2000_message is None:
             logger.debug("No sub-decoding function found for PGN: %s", pgn)
             return None
