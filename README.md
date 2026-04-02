@@ -62,7 +62,7 @@ decoder = NMEA2000Decoder()
 
 # Decode a frame
 frame_str = "09FF7 0FF00 3F9FDCFFFFFFFFFF"
-decoded_frame = decoder.decode_actisense_string(frame_str)
+decoded_frame = decoder.decode(frame_str)
 
 # Print decoded frame
 print(decoded_frame)
@@ -82,7 +82,7 @@ bus = can.interface.Bus(interface='slcan', channel="/dev/ttyUSB0", bitrate=25000
 
 # Decode frames
 for msg in bus:
-    decoded_frame = decoder.decode_python_can(msg)
+    decoded_frame = decoder.decode(msg)
 
     # Print decoded frame when ready (fast data intermediate frames return None)
     if decoded_frame is not None:
@@ -136,9 +136,10 @@ output:
 #### Example Code
 ```python
 from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.input_formats import N2KFormat
 
 # Initialize encoder
-encoder = NMEA2000Encoder()
+encoder = NMEA2000Encoder(output_format=N2KFormat.TCP)
 
 # Data to encode: vessel heading message (PGN 127250)
    message = NMEA2000Message(
@@ -174,7 +175,7 @@ encoder = NMEA2000Encoder()
         ]
     )
 
-msg_bytes = encoder.encode_ebyte(_generate_test_message())
+msg_bytes = encoder.encode(_generate_test_message())
 print(msg_bytes)
 ```
 
@@ -299,4 +300,3 @@ This project is licensed under the Apache 2.0 license - see the [LICENSE](LICENS
 
 - This library leverages the [canboat](https://github.com/canboat/canboat) as the source for all PGN data.
 - Special thanks to Rob from [Smart Boat Innovations](https://github.com/SmartBoatInnovations/). His code was the initial inspiration for this project. Some of the code here may still be based on his latest open-source version.
-

@@ -9,6 +9,7 @@ from .message import NMEA2000Message
 from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, Type, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway, PythonCanAsyncIOClient
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
+from .input_formats import N2KFormat
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +73,7 @@ def parse(filename: str, decoder: NMEA2000Decoder, single_line: bool):
                 line = line.strip()
                 logger.info(f'Processing: {line}')
                 try:
-                    decoder.decode_basic_string(line, single_line)
+                    decoder.decode(line, single_line)
                 except Exception as e:
                     print(f"Error: {e}")
     except KeyboardInterrupt:
@@ -92,12 +93,12 @@ async def async_main():
     decode_parser.add_argument(
         "--frame", 
         type=str, 
-        help="Hex-encoded NMEA 2000 frame (optional if file is provided)"
+        help="NMEA 2000 frame in any supported existing input format (optional if file is provided)"
     )
     decode_parser.add_argument(
         "--file", 
         type=str, 
-        help="Path to a file containing a Hex-encoded NMEA 2000 frame"
+        help="Path to a file containing supported NMEA 2000 frames"
     )
     decode_parser.add_argument(
         "--single_line", 
@@ -211,7 +212,7 @@ async def async_main():
 
         # Decode from a frame string if provided
         if args.frame:
-            decoded = decoder.decode_actisense_string(args.frame)
+            decoded = decoder.decode(args.frame, args.single_line)
             if decoded is not None:
                 print(decoded.to_json())
 
@@ -223,20 +224,20 @@ async def async_main():
             exit(1)
 
     elif args.command == "encode":
-        encoder = NMEA2000Encoder()
+        encoder = NMEA2000Encoder(output_format=N2KFormat.ACTISENSE)
 
         # Encode from a frame json
         if args.frame:
             frame_str = args.frame
             print(f"Encoding frame: {frame_str}")
-            encoded = encoder.encode_actisense(NMEA2000Message.from_json(args.frame))
+            encoded = encoder.encode(NMEA2000Message.from_json(args.frame))
             print(encoded)
 
         # Encode from a json file
         elif args.file:
             with open(args.file, 'r') as file:
                 json_string = file.read()
-            encoded = encoder.encode_actisense(NMEA2000Message.from_json(json_string))
+            encoded = encoder.encode(NMEA2000Message.from_json(json_string))
             print(encoded)
         else:
             print("Error: You must provide either a frame or a file to encode.")
@@ -274,4 +275,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
