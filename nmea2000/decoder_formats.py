@@ -131,7 +131,12 @@ def _decode_combined_payload(
 
 
 class ActisenseDecoder(DecoderBase, DecoderInterface):
-    """Decoder for Actisense ASCII output format."""
+    """Decoder for Actisense ASCII output format.
+
+    Examples:
+        ``A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF``
+        ``09FF7 0FF00 3F9FDCFFFFFFFFFF``
+    """
 
     def _decode_text(self, actisense_string: str) -> NMEA2000Message | None:
         # Split the Actisense string by spaces
@@ -194,7 +199,11 @@ class ActisenseDecoder(DecoderBase, DecoderInterface):
 
 
 class BasicStringDecoder(DecoderBase, DecoderInterface):
-    """Decoder for the basic CSV string format."""
+    """Decoder for the basic CSV string format.
+
+    Example:
+        ``2016-04-09T16:41:09.078Z,3,127257,17,255,8,00,ff,7f,52,00,21,fe,ff``
+    """
 
     def _decode_text(
         self,
@@ -252,7 +261,12 @@ class BasicStringDecoder(DecoderBase, DecoderInterface):
 
 
 class YachtDevicesDecoder(DecoderBase, DecoderInterface):
-    """Decoder for Yacht Devices text format."""
+    """Decoder for Yacht Devices text format.
+
+    Examples:
+        ``00:01:54.330 R 15FD0A10 00 00 00 68 65 0F 00 FF``
+        ``01F010B3 FF FF 0C 4F 70 BE 3E 33``
+    """
 
     def _decode_text(self, yd_string: str) -> NMEA2000Message | None:
         # Split the YD string by spaces
@@ -306,7 +320,11 @@ class YachtDevicesDecoder(DecoderBase, DecoderInterface):
 
 
 class Candump1Decoder(DecoderBase, DecoderInterface):
-    """Decoder for candump1 text."""
+    """Decoder for candump1 text.
+
+    Example:
+        ``<0x18EEFF01> [8] 05 A0 BE 1C 00 A0 A0 C0``
+    """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
         parts = line.split()
@@ -332,7 +350,11 @@ class Candump1Decoder(DecoderBase, DecoderInterface):
 
 
 class Candump2Decoder(DecoderBase, DecoderInterface):
-    """Decoder for candump2 text."""
+    """Decoder for candump2 text.
+
+    Example:
+        ``can0  18EEFF01   [8]  05 A0 BE 1C 00 A0 A0 C0``
+    """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
         parts = line.split()
@@ -358,7 +380,11 @@ class Candump2Decoder(DecoderBase, DecoderInterface):
 
 
 class Candump3Decoder(DecoderBase, DecoderInterface):
-    """Decoder for candump3 text."""
+    """Decoder for candump3 text.
+
+    Example:
+        ``(1502979132.106111) slcan0 18EEFF01#05A0BE1C00A0A0C0``
+    """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
         timestamp_str, _, can_frame = line.split(maxsplit=2)
@@ -381,7 +407,11 @@ class Candump3Decoder(DecoderBase, DecoderInterface):
 
 
 class PcdinDecoder(DecoderBase, DecoderInterface):
-    """Decoder for PCDIN sentences."""
+    """Decoder for PCDIN sentences.
+
+    Example:
+        ``$PCDIN,01F119,00000000,0F,2AAF00D1067414FF*59``
+    """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
         sentence = _strip_checksum(_get_0183_sentence(line))
@@ -412,7 +442,11 @@ class PcdinDecoder(DecoderBase, DecoderInterface):
 
 
 class MxpgnDecoder(DecoderBase, DecoderInterface):
-    """Decoder for MXPGN sentences."""
+    """Decoder for MXPGN sentences.
+
+    Example:
+        ``$MXPGN,01F801,2801,C1308AC40C5DE343*19``
+    """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
         sentence = _strip_checksum(_get_0183_sentence(line))
@@ -448,7 +482,11 @@ class MxpgnDecoder(DecoderBase, DecoderInterface):
 
 
 class PdgyDecoder(DecoderBase, DecoderInterface):
-    """Decoder for PDGY sentences."""
+    """Decoder for PDGY sentences.
+
+    Example:
+        ``!PDGY,127257,3,17,255,0.563,AP9/UgAh/v8=``
+    """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
         parts = line.split(",")
@@ -488,7 +526,11 @@ class PdgyDecoder(DecoderBase, DecoderInterface):
 
 
 class PdgyDebugDecoder(DecoderBase, DecoderInterface):
-    """Decoder for explicitly unsupported PDGY debug lines."""
+    """Decoder for explicitly unsupported PDGY debug lines.
+
+    Example:
+        ``$PDGY,000000,4,,5,482,1,0``
+    """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
         del line
