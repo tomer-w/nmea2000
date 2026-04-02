@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nmea2000"
-version = "2026.3.4"
+version = "2026.4.0"
 description = "NMEA 2000 encoder and decoder"
 readme = "README.md"
 license = "Apache-2.0"
