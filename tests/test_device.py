@@ -210,6 +210,31 @@ async def test_device_conflict_increments_address_when_it_loses(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_device_conflict_keeps_address_when_it_wins(tmp_path):
+    client = FakeClient()
+    device = N2KDevice(
+        client,
+        unique_number=1,
+        persistence_path=tmp_path / "device.json",
+        address_claim_startup_delay=0,
+        address_claim_detection_time=0.01,
+        heartbeat_interval=3600,
+    )
+
+    await device.start()
+    await device.wait_ready(timeout=1)
+    assert device.address == 100
+
+    await client.emit(_build_address_claim(100, unique_number=10))
+    await asyncio.sleep(0.05)
+
+    assert device.address == 100
+    resent_messages = [message for message in client.sent_messages if message.source == 100]
+    assert [message.PGN for message in resent_messages[-2:]] == [60928, 126996]
+    assert not any(message.PGN == 60928 and message.source == 101 for message in client.sent_messages)
+
+
+@pytest.mark.asyncio
 async def test_device_responds_with_iso_nak_and_group_function_ack(tmp_path):
     client = FakeClient()
     device = N2KDevice(

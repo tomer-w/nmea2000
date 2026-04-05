@@ -32,6 +32,8 @@ DEFAULT_TRANSMIT_PGNS = (59904, 60928, 126464, 126993, 126996, 126998)
 
 @dataclass
 class DiscoveredDevice:
+    """State tracked for another device observed on the NMEA 2000 bus."""
+
     source: int
     last_seen: datetime | None = None
     address_claim: NMEA2000Message | None = None
@@ -40,19 +42,21 @@ class DiscoveredDevice:
 
 
 class N2KDevice:
+    """High-level async NMEA 2000 device wrapper with address-claim handling."""
+
     def __init__(
         self,
         client: AsyncIOClient,
         *,
-        preferred_address: int = 100,
-        unique_number: int | None = None,
-        manufacturer_code: int = 999,
-        device_function: int = 130,
-        device_class: int = 25,
+        preferred_address: int = 100, # A commonly unused address
+        unique_number: int | None = None, 
+        manufacturer_code: int = 999, # A nonexistent manufacturer code
+        device_function: int = 130, # PC Gateway
+        device_class: int = 25, # Inter/Intra Network Device
         device_instance_lower: int = 0,
         device_instance_upper: int = 0,
         system_instance: int = 0,
-        industry_group: int = 4,
+        industry_group: int = 4, # Marine
         arbitrary_address_capable: bool = True,
         product_code: int = 667,
         nmea2000_version: int = 1300,
@@ -73,6 +77,7 @@ class N2KDevice:
         persistence_key: str = "default",
         disable_naks: bool = False,
     ):
+        """Create a device around an async transport client and local device identity."""
         self.client = client
         self.client.set_receive_callback(self._handle_client_message)
         self.client.set_status_callback(self._handle_client_status)
@@ -108,6 +113,7 @@ class N2KDevice:
         self.system_instance = system_instance
         self.industry_group = industry_group
         self.arbitrary_address_capable = arbitrary_address_capable
+        self._own_name = IsoName.pack_name_from_message(self._build_address_claim_message())
 
         self.product_code = product_code
         self.nmea2000_version = nmea2000_version
@@ -126,19 +132,24 @@ class N2KDevice:
 
     @property
     def state(self) -> State:
+        """Return the current connection state of the underlying client."""
         return self.client.state
 
     @property
     def ready(self) -> bool:
+        """Return ``True`` once the device has claimed an address and is ready to send."""
         return self._ready
 
     def set_receive_callback(self, callback: Optional[MessageCallback]) -> None:
+        """Register a callback for non-management messages delivered to this device."""
         self._receive_callback = callback
 
     def set_raw_receive_callback(self, callback: Optional[MessageCallback]) -> None:
+        """Register a callback for every received message before management handling."""
         self._raw_receive_callback = callback
 
     def set_status_callback(self, callback: Optional[StatusCallback]) -> None:
+        """Register a callback for underlying client state changes."""
         self._status_callback = callback
 
     @classmethod
@@ -150,6 +161,7 @@ class N2KDevice:
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
     ) -> "N2KDevice":
+        """Create a device that communicates through an EByte TCP gateway."""
         client = EByteNmea2000Gateway(host, port, **cls._prepare_client_options(client_options))
         return cls(client, **device_options)
 
@@ -162,6 +174,7 @@ class N2KDevice:
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
     ) -> "N2KDevice":
+        """Create a device that communicates through a Yacht Devices gateway."""
         client = YachtDevicesNmea2000Gateway(host, port, **cls._prepare_client_options(client_options))
         return cls(client, **device_options)
 
@@ -173,6 +186,7 @@ class N2KDevice:
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
     ) -> "N2KDevice":
+        """Create a device that communicates through a Waveshare USB-CAN gateway."""
         client = WaveShareNmea2000Gateway(port, **cls._prepare_client_options(client_options))
         return cls(client, **device_options)
 
@@ -185,6 +199,7 @@ class N2KDevice:
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
     ) -> "N2KDevice":
+        """Create a device that communicates through a ``python-can`` interface."""
         client_kwargs = cls._prepare_client_options(client_options)
         client = PythonCanAsyncIOClient(interface, channel, **client_kwargs)
         return cls(client, **device_options)
@@ -198,14 +213,17 @@ class N2KDevice:
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
     ) -> "N2KDevice":
+        """Create a device that communicates through an Actisense TCP gateway."""
         client = ActisenseNmea2000Gateway(host, port, **cls._prepare_client_options(client_options))
         return cls(client, **device_options)
 
     async def start(self) -> None:
+        """Connect the client and begin the device startup/address-claim sequence."""
         self._started = True
         await self.client.connect()
 
     async def close(self) -> None:
+        """Stop background tasks, mark the device not ready, and close the client."""
         self._closing = True
         self._started = False
         self._set_not_ready()
@@ -215,6 +233,7 @@ class N2KDevice:
         await self.client.close()
 
     async def wait_ready(self, timeout: float | None = None) -> bool:
+        """Wait until the device has successfully claimed an address."""
         if timeout is None:
             await self._ready_event.wait()
             return True
@@ -222,6 +241,7 @@ class N2KDevice:
         return True
 
     async def send(self, nmea2000_message: NMEA2000Message) -> None:
+        """Send a message, substituting the claimed source address when ``source`` is ``0``."""
         if not self.ready:
             raise RuntimeError("Device has not claimed an address yet")
         if nmea2000_message.source == 0:
@@ -293,7 +313,7 @@ class N2KDevice:
         self._set_not_ready()
         await self._cancel_task(self._claim_ready_task)
         await self._cancel_task(self._heartbeat_task)
-        await self._send_internal_message(self._build_iso_request_message(60928, source=254))
+        await self.client.send(self._build_iso_request_message(60928, source=254))
         if self.address_claim_startup_delay > 0:
             await asyncio.sleep(self.address_claim_startup_delay)
         await self._send_address_claim()
@@ -302,7 +322,7 @@ class N2KDevice:
         if self._address_is_occupied(self.address):
             self._increase_address()
 
-        await self._send_internal_message(self._build_address_claim_message())
+        await self.client.send(self._build_address_claim_message())
         await self._cancel_task(self._claim_ready_task)
         self._claim_ready_task = asyncio.create_task(self._mark_ready_after_claim())
 
@@ -318,9 +338,9 @@ class N2KDevice:
             self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
 
     async def _announce_startup_messages(self) -> None:
-        await self._send_internal_message(self._build_product_information_message())
+        await self.client.send(self._build_product_information_message())
         if self._has_configuration_information():
-            await self._send_internal_message(self._build_configuration_information_message())
+            await self.client.send(self._build_configuration_information_message())
 
     async def _heartbeat_loop(self) -> None:
         while self._started and not self._closing:
@@ -328,24 +348,24 @@ class N2KDevice:
             if not self._started or self._closing:
                 return
             if self.ready:
-                await self._send_internal_message(self._build_heartbeat_message())
+                await self.client.send(self._build_heartbeat_message())
 
     async def _handle_iso_request(self, message: NMEA2000Message) -> None:
         requested_pgn = message.get_field_int_value_by_id("pgn")
         if requested_pgn == 60928:
-            await self._send_internal_message(self._build_address_claim_message())
+            await self.client.send(self._build_address_claim_message())
             return
         if requested_pgn == 126996:
-            await self._send_internal_message(self._build_product_information_message())
+            await self.client.send(self._build_product_information_message())
             return
         if requested_pgn == 126998 and self._has_configuration_information():
-            await self._send_internal_message(self._build_configuration_information_message())
+            await self.client.send(self._build_configuration_information_message())
             return
         if requested_pgn == 126464:
-            await self._send_internal_message(self._build_pgn_list_message(message.source))
+            await self.client.send(self._build_pgn_list_message(message.source))
             return
         if not self.disable_naks:
-            await self._send_internal_message(self._build_iso_nak_message(message.source, requested_pgn))
+            await self.client.send(self._build_iso_nak_message(message.source, requested_pgn))
 
     async def _handle_group_function(self, message: NMEA2000Message) -> None:
         if self.disable_naks:
@@ -353,21 +373,21 @@ class N2KDevice:
         if message.id not in {"nmeaRequestGroupFunction", "nmeaCommandGroupFunction"}:
             return
         requested_pgn = message.get_field_int_value_by_id("pgn")
-        await self._send_internal_message(self._build_group_function_ack_message(message.source, requested_pgn))
+        await self.client.send(self._build_group_function_ack_message(message.source, requested_pgn))
 
     async def _handle_iso_address_claim(self, message: NMEA2000Message) -> None:
         source = message.source
-        discovered = self._get_or_create_discovered_device(source)
-        discovered.address_claim = message
-
         if not self.ready or source != self.address:
+            discovered = self._get_or_create_discovered_device(source)
+            discovered.address_claim = message
             return
 
-        received_name = self._name_value_from_message(message)
-        own_name = self._own_name_value()
-        if own_name < received_name:
+        received_name = IsoName.pack_name_from_message(message)
+        if self._own_name < received_name:
             await self._send_address_claim()
-        elif own_name > received_name:
+        elif self._own_name > received_name:
+            discovered = self._get_or_create_discovered_device(source)
+            discovered.address_claim = message
             self._increase_address()
             await self._send_address_claim()
 
@@ -389,7 +409,7 @@ class N2KDevice:
         discovered = self.devices.get(address)
         if discovered is None or discovered.address_claim is None:
             return False
-        return self._name_value_from_message(discovered.address_claim) != self._own_name_value()
+        return IsoName.pack_name_from_message(discovered.address_claim) != self._own_name
 
     def _increase_address(self) -> None:
         start_address = self.address
@@ -397,15 +417,6 @@ class N2KDevice:
             self.address = (self.address + 1) % 253
             if self.address == start_address or not self._address_is_occupied(self.address):
                 return
-
-    def _own_name_value(self) -> int:
-        return self._name_value_from_message(self._build_address_claim_message())
-
-    def _name_value_from_message(self, message: NMEA2000Message) -> int:
-        return IsoName.pack_name_from_message(message)
-
-    async def _send_internal_message(self, message: NMEA2000Message) -> None:
-        await self.client.send(message)
 
     def _set_not_ready(self) -> None:
         self._ready = False
