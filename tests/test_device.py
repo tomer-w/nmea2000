@@ -101,6 +101,15 @@ def _build_group_function_request(source: int, requested_pgn: int, destination: 
     )
 
 
+def _transmit_pgns_from_message(message: NMEA2000Message) -> list[int]:
+    payload = message.get_field_by_id("data").raw_value
+    assert isinstance(payload, bytes)
+    return [
+        int.from_bytes(payload[index : index + 3], byteorder="little", signed=False)
+        for index in range(0, len(payload), 3)
+    ]
+
+
 @pytest.mark.asyncio
 async def test_device_start_claims_address_and_filters_management_messages(tmp_path):
     client = FakeClient()
@@ -315,3 +324,32 @@ async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
     assert product_information.PGN == 126996
     assert version_field.value == pytest.approx(1.3)
     assert version_field.raw_value == 1300
+
+
+@pytest.mark.asyncio
+async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
+    client = FakeClient()
+    device = N2KDevice(
+        client,
+        persistence_path=tmp_path / "device.json",
+        transmit_pgns=[127250],
+        address_claim_startup_delay=0,
+        address_claim_detection_time=0.01,
+        heartbeat_interval=3600,
+    )
+
+    try:
+        await device.start()
+        await device.wait_ready(timeout=1)
+        await client.emit(_build_iso_request(126464, source=31, destination=255))
+    finally:
+        await device.close()
+
+    pgn_list_message = client.sent_messages[-1]
+    advertised_pgns = set(_transmit_pgns_from_message(pgn_list_message))
+
+    assert pgn_list_message.PGN == 126464
+    assert 127250 in advertised_pgns
+    assert {59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998}.issubset(
+        advertised_pgns
+    )

@@ -27,7 +27,6 @@ MessageCallback = Callable[[NMEA2000Message], Awaitable[None]]
 StatusCallback = Callable[[State], Awaitable[None]]
 
 MANAGEMENT_PGNS = frozenset({59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998})
-DEFAULT_TRANSMIT_PGNS = (59904, 60928, 126464, 126993, 126996, 126998)
 
 
 @dataclass
@@ -126,7 +125,7 @@ class N2KDevice:
         self.installation_description1 = installation_description1
         self.installation_description2 = installation_description2
         self.manufacturer_information = manufacturer_information
-        self.transmit_pgns = sorted(set(transmit_pgns or DEFAULT_TRANSMIT_PGNS))
+        self.transmit_pgns = sorted(set(transmit_pgns or ()).union(MANAGEMENT_PGNS))
 
         self._persist(unique_number=self.unique_number)
 
