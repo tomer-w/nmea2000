@@ -823,6 +823,7 @@ class PythonCanAsyncIOClient(AsyncIOClient):
         self.send_retry_count = send_retry_count
         self.send_retry_delay = send_retry_delay
         self.can_options = kwargs
+        self.bus: can.interface.Bus | None = None
 
     async def _connect_impl(self):
         """Connect to the CAN device via python-can."""
@@ -878,14 +879,13 @@ class PythonCanAsyncIOClient(AsyncIOClient):
         if not isinstance(encoded_message, can.message.Message):
             raise TypeError("python-can transport requires can.Message objects.")
 
-        bus = getattr(self, "bus", None)
-        if bus is None:
+        if self.bus is None:
             raise RuntimeError("Client is not connected to a CAN bus.")
 
         attempts = self.send_retry_count + 1
         for attempt in range(1, attempts + 1):
             try:
-                bus.send(encoded_message, timeout=self.send_timeout)
+                self.bus.send(encoded_message, timeout=self.send_timeout)
                 return
             except can.CanOperationError as error:
                 if not self._is_transient_send_error(error) or attempt == attempts:
@@ -901,9 +901,8 @@ class PythonCanAsyncIOClient(AsyncIOClient):
                 await asyncio.sleep(self.send_retry_delay)
 
     async def close(self):
-        bus = getattr(self, "bus", None)
         try:
             await super().close()
         finally:
-            if bus is not None:
-                bus.shutdown()
+            if self.bus is not None:
+                self.bus.shutdown()
