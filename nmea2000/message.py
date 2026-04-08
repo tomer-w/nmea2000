@@ -5,15 +5,18 @@ from datetime import date, datetime, time, timedelta
 from dataclasses import dataclass, field
 import hashlib
 import logging
-from typing import Any, TypedDict
+from typing import Any, Dict, List, Optional, Union, TypedDict
+
 import orjson
+from typing_extensions import TypeAlias
+
 from .consts import PhysicalQuantities, FieldTypes
 from .utils import kelvin_to_celsius, kelvin_to_fahrenheit, mps_to_knots, pascal_to_bar, pascal_to_PSI, radians_to_degrees
 
 logger = logging.getLogger(__name__)
 
-type FieldScalarValue = str | int | float | bytes | time | date | None
-type FieldRawValue = int | float | str | bytes | None
+FieldScalarValue: TypeAlias = Union[str, int, float, bytes, time, date, None]
+FieldRawValue: TypeAlias = Union[int, float, str, bytes, None]
 
 
 class RepeatingFieldValueWrapper(TypedDict, total=False):
@@ -21,9 +24,13 @@ class RepeatingFieldValueWrapper(TypedDict, total=False):
     raw_value: FieldRawValue
 
 
-type RepeatingFieldEntryValue = FieldScalarValue | RepeatingFieldValueWrapper | NMEA2000Field
-type RepeatingFieldEntry = dict[str, RepeatingFieldEntryValue]
-type FieldValue = FieldScalarValue | list[RepeatingFieldEntry]
+RepeatingFieldEntryValue: TypeAlias = Union[
+    FieldScalarValue,
+    "RepeatingFieldValueWrapper",
+    "NMEA2000Field",
+]
+RepeatingFieldEntry: TypeAlias = Dict[str, RepeatingFieldEntryValue]
+FieldValue: TypeAlias = Union[FieldScalarValue, List[RepeatingFieldEntry]]
 
 # Helper function
 def int_to_bytes(value):

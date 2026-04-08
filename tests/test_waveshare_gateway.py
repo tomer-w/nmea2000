@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import List
 
 import pytest
 
@@ -15,7 +16,7 @@ logging.basicConfig(
 class MockSerialReader:
     """Mock serial reader that yields pre-loaded data chunks."""
 
-    def __init__(self, chunks: list[bytes]):
+    def __init__(self, chunks: List[bytes]):
         self._chunks = list(chunks)
 
     async def read(self, n: int) -> bytes:

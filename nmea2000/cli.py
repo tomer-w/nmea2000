@@ -3,7 +3,10 @@ import asyncio
 import sys
 import logging
 
-import can.cli
+try:
+    import can.cli as can_cli
+except ImportError:
+    can_cli = None
 
 from .message import NMEA2000Message
 from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, Type, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway, PythonCanAsyncIOClient
@@ -12,6 +15,40 @@ from .encoder import NMEA2000Encoder
 from .input_formats import N2KFormat
 
 logger = logging.getLogger(__name__)
+
+
+async def _to_thread(func, /, *args, **kwargs):
+    """Compatibility wrapper for ``asyncio.to_thread`` on Python 3.8."""
+    try:
+        to_thread = asyncio.to_thread
+    except AttributeError:
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(None, lambda: func(*args, **kwargs))
+    return await to_thread(func, *args, **kwargs)
+
+
+def _add_python_can_bus_arguments(parser: argparse.ArgumentParser) -> None:
+    if can_cli is not None:
+        can_cli.add_bus_arguments(parser)
+        return
+
+    parser.add_argument(
+        "--interface",
+        type=str,
+        required=True,
+        help="python-can interface name, for example slcan or socketcan",
+    )
+    parser.add_argument(
+        "--channel",
+        type=str,
+        required=True,
+        help="CAN channel, for example /dev/ttyUSB0 or can0",
+    )
+    parser.add_argument(
+        "--bitrate",
+        type=int,
+        help="Optional CAN bitrate passed through to python-can",
+    )
 
 # Define receive callback as a standalone function
 async def handle_received_message(message: NMEA2000Message):
@@ -39,7 +76,7 @@ async def interactive_client(client: AsyncIOClient, json_output: bool = False):
 
     try:
         while True:
-            line = await asyncio.to_thread(sys.stdin.readline)
+            line = await _to_thread(sys.stdin.readline)
             if not line:
                 break
                 
@@ -197,7 +234,7 @@ async def async_main():
         "--dump_pgns", type=str, help="Record only specific pgns, comma seperated")
     python_can_client_parser.add_argument(
         "--json", action="store_true", help="Output received messages as JSON, one per line")
-    can.cli.add_bus_arguments(python_can_client_parser)
+    _add_python_can_bus_arguments(python_can_client_parser)
 
     # Parse arguments
     args = parser.parse_args()

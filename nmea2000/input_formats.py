@@ -1,8 +1,15 @@
 from __future__ import annotations
 
 import re
-from enum import StrEnum
-from typing import TypeAlias
+import sys
+from typing import List, Union
+
+if sys.version_info >= (3, 11):
+    from enum import StrEnum
+else:
+    from backports.strenum import StrEnum
+
+from typing_extensions import TypeAlias
 
 import can.message
 
@@ -26,15 +33,15 @@ class N2KFormat(StrEnum):
     PYTHON_CAN = "python_can"
 
 
-N2KInput: TypeAlias = (
-    str
-    | list[str]
-    | list[bytes]
-    | bytes
-    | bytearray
-    | memoryview
-    | can.message.Message
-)
+N2KInput: TypeAlias = Union[
+    str,
+    List[str],
+    List[bytes],
+    bytes,
+    bytearray,
+    memoryview,
+    can.message.Message,
+]
 
 _ACTISENSE_ASCII_RE = re.compile(
     r"^A\d+\.\d+\s+[0-9A-Fa-f]{5}\s+[0-9A-Fa-f]{5,6}\s+[0-9A-Fa-f]+$"

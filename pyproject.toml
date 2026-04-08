@@ -11,12 +11,13 @@ license = "Apache-2.0"
 authors = [
     { name = "Tomer-w" },
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.8"
 dependencies = [
     "orjson>=3.10,<4.0",
     "pyserial-asyncio>=0.6",
     "tenacity>=9.0.0",
-    "python-can>=4.6.0",
+    "python-can>=4.5.0",
+    "backports-strenum>=1.2.4; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]

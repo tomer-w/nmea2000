@@ -216,8 +216,9 @@ class YdrawEncoder(EncoderInterface, EncoderBase):
         self._assert_output_format(output_format)
         time_token = _format_time_of_day(nmea200_message.timestamp)
         lines = [
-            f"{time_token} R {frame.decode('utf-8').rstrip('\r\n')}"
+            f"{time_token} R {decoded_frame}"
             for frame in _encode_yacht_devices_packets(self, nmea200_message)
+            for decoded_frame in [frame.decode("utf-8").rstrip("\r\n")]
         ]
         return _match_text_output(lines)
 

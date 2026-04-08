@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import asyncio
 import logging
 import socket
 from enum import Enum
-from typing import Callable, Awaitable, Optional, Sequence
+from typing import Awaitable, Callable, Optional, Sequence, Union
 import serial_asyncio
-import can.cli
 import can.interface
 import can.message
 from tenacity import stop_never, wait_exponential, retry_if_exception_type
@@ -18,7 +19,7 @@ from .encoder import NMEA2000Encoder
 from .input_formats import N2KFormat
 from .message import NMEA2000Message
 
-EncodedMessage = bytes | can.message.Message
+EncodedMessage = Union[bytes, can.message.Message]
 
 
 def _configure_tcp_keepalive(sock: socket.socket) -> None:

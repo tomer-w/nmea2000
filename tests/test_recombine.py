@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import date, time
 from nmea2000.decoder import NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder

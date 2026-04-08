@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+from typing import List
 
 import pytest
 
@@ -101,7 +102,7 @@ def _build_group_function_request(source: int, requested_pgn: int, destination: 
     )
 
 
-def _transmit_pgns_from_message(message: NMEA2000Message) -> list[int]:
+def _transmit_pgns_from_message(message: NMEA2000Message) -> List[int]:
     payload = message.get_field_by_id("data").raw_value
     assert isinstance(payload, bytes)
     return [

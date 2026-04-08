@@ -3,7 +3,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from importlib import import_module
-from typing import Callable, TypeAlias
+from typing import Callable, List, Union
+
+from typing_extensions import TypeAlias
 
 import can.message
 
@@ -13,7 +15,12 @@ from .message import NMEA2000Message
 from . import pgns as pgns_module
 
 
-N2KEncoded: TypeAlias = str | list[str] | list[bytes] | list[can.message.Message]
+N2KEncoded: TypeAlias = Union[
+    str,
+    List[str],
+    List[bytes],
+    List[can.message.Message],
+]
 
 
 class EncoderInterface(ABC):
