@@ -89,6 +89,63 @@ for msg in bus:
         print(decoded_frame)
 ```
 
+### Simple `N2KDevice` example
+
+If you want to behave like a small NMEA 2000 device instead of just reading frames, `N2KDevice` wraps the transport client, handles address claiming, and lets you send/receive `NMEA2000Message` objects directly:
+
+```python
+import asyncio
+
+from nmea2000.device import N2KDevice
+from nmea2000.message import NMEA2000Field, NMEA2000Message
+
+
+async def handle_received(message: NMEA2000Message) -> None:
+    print(f"received PGN {message.PGN} from source {message.source}")
+
+
+async def main() -> None:
+    device = N2KDevice.for_python_can(
+        interface="socketcan",
+        channel="can0",
+        preferred_address=25,
+        model_id="Python demo device",
+        manufacturer_information="nmea2000 README example",
+    )
+    device.set_receive_callback(handle_received)
+
+    try:
+        await device.start()
+        await device.wait_ready(timeout=5)
+
+        await device.send(
+            NMEA2000Message(
+                PGN=127250,
+                id="vesselHeading",
+                priority=2,
+                source=0,  # 0 means "use the address claimed by this device"
+                destination=255,
+                fields=[
+                    NMEA2000Field(id="sid", raw_value=0),
+                    NMEA2000Field(id="heading", value=1.0),
+                    NMEA2000Field(id="deviation", raw_value=0),
+                    NMEA2000Field(id="variation", raw_value=0),
+                    NMEA2000Field(id="reference", raw_value=0),
+                    NMEA2000Field(id="reserved_58", raw_value=0),
+                ],
+            )
+        )
+
+        await asyncio.sleep(10)
+    finally:
+        await device.close()
+
+
+asyncio.run(main())
+```
+
+Use `N2KDevice.for_ebyte(...)`, `N2KDevice.for_yacht_devices(...)`, `N2KDevice.for_waveshare(...)`, or `N2KDevice.for_actisense(...)` if you are connecting through one of those gateways instead of `python-can`.
+
 ### TCP Client CLI
 
 ```bash

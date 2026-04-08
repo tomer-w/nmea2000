@@ -2,10 +2,11 @@ import asyncio
 import logging
 import socket
 from enum import Enum
-from typing import Callable, Awaitable, Optional
+from typing import Callable, Awaitable, Optional, Sequence
 import serial_asyncio
 import can.cli
 import can.interface
+import can.message
 from tenacity import stop_never, wait_exponential, retry_if_exception_type
 from tenacity.asyncio import AsyncRetrying
 from abc import ABC, abstractmethod
@@ -16,6 +17,8 @@ from .decoder import NMEA2000Decoder, InvalidFrameError
 from .encoder import NMEA2000Encoder
 from .input_formats import N2KFormat
 from .message import NMEA2000Message
+
+EncodedMessage = bytes | can.message.Message
 
 
 def _configure_tcp_keepalive(sock: socket.socket) -> None:
@@ -83,9 +86,25 @@ class AsyncIOClient(ABC):
         pass
 
     @abstractmethod
-    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> Sequence[EncodedMessage]:
         """Subclasses must implement."""
         pass
+
+    async def _send_impl(self, encoded_message: EncodedMessage):
+        """Send an already encoded message using the transport's native writer."""
+        if not isinstance(encoded_message, bytes):
+            raise TypeError("Stream transports must encode messages as bytes.")
+
+        writer = self.writer
+        if writer is None:
+            raise RuntimeError("Client is not connected to a writable stream.")
+
+        writer.write(encoded_message)
+        await writer.drain()
+
+    def _should_reconnect_on_send_error(self, error: Exception) -> bool:
+        """Whether a send failure should trigger reconnect handling."""
+        return True
 
     def __init__(self, 
                  exclude_pgns:list[int | str], 
@@ -272,20 +291,27 @@ class AsyncIOClient(ABC):
             nmea2000Message: The NMEA2000Message object to send.
         """
         try:
-            msgs = self._encode_impl(nmea2000Message)
-            assert self.writer is not None
-            for msg in msgs:
-                self.writer.write(msg)
-                await self.writer.drain()
-                self.logger.debug(f"Sent: {msg.hex()}")
-
+            msgs = tuple(self._encode_impl(nmea2000Message))
         except ValueError as ve:
-                self.logger.warning(f"Failed to encode message. Error {ve}")
+            self.logger.warning("Failed to encode message. Error %s", ve)
+            return
+
+        try:
+            for msg in msgs:
+                await self._send_impl(msg)
+                if isinstance(msg, bytes):
+                    self.logger.debug("Sent: %s", msg.hex())
+                else:
+                    self.logger.debug("Sent: %s", msg)
         except Exception as ex:
             if self._state != State.CLOSED:
-                self.logger.error(f"Connection lost while sending. Error {ex}. Reconnecting...", exc_info=True)
-                await self._update_state(State.DISCONNECTED)
-                asyncio.create_task(self.connect())
+                if self._should_reconnect_on_send_error(ex):
+                    self.logger.error("Connection lost while sending. Error %s. Reconnecting...", ex, exc_info=True)
+                    await self._update_state(State.DISCONNECTED)
+                    asyncio.create_task(self.connect())
+                else:
+                    self.logger.warning("Send failed without reconnecting. Error %s", ex, exc_info=True)
+            raise
 
     async def close(self):
         """Close the connection and terminate the client.
@@ -770,6 +796,9 @@ class PythonCanAsyncIOClient(AsyncIOClient):
                  dump_to_file: str | None = None,
                  dump_pgns: list[int | str] = [],
                  build_network_map: bool = False,
+                 send_timeout: float = 0.1,
+                 send_retry_count: int = 3,
+                 send_retry_delay: float = 0.05,
                  **kwargs):
         """Initialize a python-can NMEA2000 client.
 
@@ -790,7 +819,11 @@ class PythonCanAsyncIOClient(AsyncIOClient):
             seed_network_map=True)
         self.interface = interface
         self.channel = channel
+        self.send_timeout = send_timeout
+        self.send_retry_count = send_retry_count
+        self.send_retry_delay = send_retry_delay
         self.can_options = kwargs
+        self.bus: can.interface.Bus | None = None
 
     async def _connect_impl(self):
         """Connect to the CAN device via python-can."""
@@ -801,10 +834,12 @@ class PythonCanAsyncIOClient(AsyncIOClient):
 
     async def _receive_impl(self):
         """Receive data from the CAN device using non-blocking poll."""
+        received_any = False
         while True:
             msg = self.bus.recv(timeout=0)
             if msg is None:
                 break
+            received_any = True
 
             self.logger.debug("Received: %s", msg)
             decoded_frame = None
@@ -817,6 +852,57 @@ class PythonCanAsyncIOClient(AsyncIOClient):
             if decoded_frame is not None:
                 await self.queue.put(decoded_frame)
 
+        await asyncio.sleep(0 if received_any else 0.01)
+
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list:
         """Encode a NMEA2000 message for python-can device."""
         return self.encoder.encode(nmea2000Message, output_format=N2KFormat.PYTHON_CAN)
+
+    @staticmethod
+    def _is_transient_send_error(error: Exception) -> bool:
+        if not isinstance(error, can.CanOperationError):
+            return False
+
+        error_text = str(error).lower()
+        return (
+            error.error_code == 105
+            or "no buffer space available" in error_text
+            or "transmit buffer full" in error_text
+            or "buffer full" in error_text
+        )
+
+    def _should_reconnect_on_send_error(self, error: Exception) -> bool:
+        return not self._is_transient_send_error(error)
+
+    async def _send_impl(self, encoded_message: EncodedMessage):
+        """Send an encoded python-can message over the CAN bus."""
+        if not isinstance(encoded_message, can.message.Message):
+            raise TypeError("python-can transport requires can.Message objects.")
+
+        if self.bus is None:
+            raise RuntimeError("Client is not connected to a CAN bus.")
+
+        attempts = self.send_retry_count + 1
+        for attempt in range(1, attempts + 1):
+            try:
+                self.bus.send(encoded_message, timeout=self.send_timeout)
+                return
+            except can.CanOperationError as error:
+                if not self._is_transient_send_error(error) or attempt == attempts:
+                    raise
+
+                self.logger.warning(
+                    "python-can transmit queue full, retrying send (%s/%s) in %.2fs",
+                    attempt,
+                    attempts,
+                    self.send_retry_delay,
+                    exc_info=error
+                )
+                await asyncio.sleep(self.send_retry_delay)
+
+    async def close(self):
+        try:
+            await super().close()
+        finally:
+            if self.bus is not None:
+                self.bus.shutdown()

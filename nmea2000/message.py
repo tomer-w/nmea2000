@@ -148,6 +148,32 @@ class NMEA2000Message:
         if not isinstance(field.value, str):
             raise ValueError(f"PGN: {self.id}: Field with id '{id}' is not a string. It is {type(field.value).__name__}.")
         return field.value
+
+    def get_field_raw_int_by_id(self, id: str, default_value: int | None = None) -> int:
+        field = self.get_field_by_id(id)
+        if isinstance(field.raw_value, int):
+            return field.raw_value
+        if isinstance(field.value, int):
+            return field.value
+        if default_value is not None:
+            return default_value
+        raise ValueError(
+            f"PGN: {self.id}: Field with id '{id}' does not have an integer raw value."
+        )
+
+    def get_field_display_string_by_id(self, id: str) -> str:
+        field = self.get_field_by_id(id)
+        if isinstance(field.value, str):
+            return field.value
+        if isinstance(field.raw_value, str):
+            return field.raw_value
+        if isinstance(field.raw_value, int):
+            return str(field.raw_value)
+        if isinstance(field.value, int):
+            return str(field.value)
+        raise ValueError(
+            f"PGN: {self.id}: Field with id '{id}' does not have a string display value."
+        )
     
 # NMEA2000Field class represents a single NMEA 2000 field
 @dataclass
@@ -206,25 +232,64 @@ class IsoName:
     arbitrary_address_capable: bool
     name: int
 
-    def __init__(self, message: NMEA2000Message, name: int):
+    def __init__(self, message: NMEA2000Message, name: int | None = None):
         """
         Initialize an IsoName object from an NMEA2000Message.
 
         Args:
             message: An NMEA2000Message object containing the NAME field data.
-            name: The 64-bit NAME field value as an integer.
+            name: The optional 64-bit NAME field value as an integer. When omitted,
+                the NAME is packed from the message fields.
         """
-        self.name = name
-        self.unique_number = message.get_field_int_value_by_id('uniqueNumber', 0)
-        self.manufacturer_code = message.get_field_str_value_by_id('manufacturerCode')  # type: ignore
+        self.name = self.pack_name_from_message(message) if name is None else name
+        self.unique_number = message.get_field_raw_int_by_id("uniqueNumber", 0)
+        self.manufacturer_code = message.get_field_display_string_by_id("manufacturerCode")
         self.device_instance = (
-            message.get_field_int_value_by_id('deviceInstanceUpper', 0) << 3
-        ) | message.get_field_int_value_by_id('deviceInstanceLower', 0)
-        self.device_function = message.get_field_str_value_by_id('deviceFunction')  # type: ignore
-        self.device_class = message.get_field_str_value_by_id('deviceClass')  # type: ignore
-        self.system_instance = message.get_field_int_value_by_id('systemInstance', 0)
-        self.industry_group = message.get_field_str_value_by_id('industryGroup')  # type: ignore
-        self.arbitrary_address_capable = message.get_field_str_value_by_id('arbitraryAddressCapable') == "Yes"
+            message.get_field_raw_int_by_id("deviceInstanceUpper", 0) << 3
+        ) | message.get_field_raw_int_by_id("deviceInstanceLower", 0)
+        self.device_function = message.get_field_display_string_by_id("deviceFunction")
+        self.device_class = message.get_field_display_string_by_id("deviceClass")
+        self.system_instance = message.get_field_raw_int_by_id("systemInstance", 0)
+        self.industry_group = message.get_field_display_string_by_id("industryGroup")
+        self.arbitrary_address_capable = bool(
+            message.get_field_raw_int_by_id("arbitraryAddressCapable", 0)
+        )
+
+    @staticmethod
+    def _pack_name_field(value: int, bit_length: int, bit_offset: int, field_name: str) -> int:
+        if value < 0:
+            raise ValueError(f"IsoName field '{field_name}' cannot be negative.")
+        max_value = (1 << bit_length) - 1
+        if value > max_value:
+            raise ValueError(
+                f"IsoName field '{field_name}' value {value} exceeds {bit_length} bits."
+            )
+        return (value & max_value) << bit_offset
+
+    @classmethod
+    def pack_name_from_message(cls, message: NMEA2000Message) -> int:
+        """Pack the ISO Address Claim fields into the canonical 64-bit NAME integer."""
+        return (
+            cls._pack_name_field(message.get_field_raw_int_by_id("uniqueNumber", 0), 21, 0, "uniqueNumber")
+            | cls._pack_name_field(message.get_field_raw_int_by_id("manufacturerCode", 0), 11, 21, "manufacturerCode")
+            | cls._pack_name_field(message.get_field_raw_int_by_id("deviceInstanceLower", 0), 3, 32, "deviceInstanceLower")
+            | cls._pack_name_field(message.get_field_raw_int_by_id("deviceInstanceUpper", 0), 5, 35, "deviceInstanceUpper")
+            | cls._pack_name_field(message.get_field_raw_int_by_id("deviceFunction", 0), 8, 40, "deviceFunction")
+            | cls._pack_name_field(message.get_field_raw_int_by_id("spare", 0), 1, 48, "spare")
+            | cls._pack_name_field(message.get_field_raw_int_by_id("deviceClass", 0), 7, 49, "deviceClass")
+            | cls._pack_name_field(message.get_field_raw_int_by_id("systemInstance", 0), 4, 56, "systemInstance")
+            | cls._pack_name_field(message.get_field_raw_int_by_id("industryGroup", 0), 3, 60, "industryGroup")
+            | cls._pack_name_field(
+                message.get_field_raw_int_by_id("arbitraryAddressCapable", 0),
+                1,
+                63,
+                "arbitraryAddressCapable",
+            )
+        )
+
+    def to_int(self) -> int:
+        """Return the canonical 64-bit ISO NAME integer."""
+        return self.name
 
     def __str__(self) -> str:
         return (
