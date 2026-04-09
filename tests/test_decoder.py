@@ -1,9 +1,10 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 import json
 import os
 import uuid
 
 import pytest
+import nmea2000.decoder_formats as decoder_formats
 from nmea2000.consts import PhysicalQuantities, FieldTypes
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message, InvalidFrameError
 from nmea2000.encoder import NMEA2000Encoder
@@ -78,6 +79,24 @@ def test_yacht_devices_decode():
     assert msg.fields[3].physical_quantities == PhysicalQuantities.PRESSURE
     assert msg.fields[4].name == "Reserved"
     assert msg.fields[4].value == 255
+
+
+def test_yacht_devices_decode_uses_current_date(monkeypatch):
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            current = cls(2026, 4, 9, 12, 0, 0)
+            if tz is not None:
+                return current.astimezone(tz)
+            return current
+
+    monkeypatch.setattr(decoder_formats, "datetime", FrozenDateTime)
+
+    decoder = _get_decoder()
+    msg = decoder.decode("01:20:16.311 R 09F11307 FF F3 3F 00 00 FF FF FF")
+
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.timestamp == datetime(2026, 4, 9, 1, 20, 16, 311000)
 
 def test_bitlookup_parse():
     decoder = _get_decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C"})
