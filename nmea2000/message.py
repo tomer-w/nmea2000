@@ -5,7 +5,7 @@ from datetime import date, datetime, time, timedelta
 from dataclasses import dataclass, field
 import hashlib
 import logging
-from typing import Any, Dict, List, Optional, Union, TypedDict
+from typing import Any, Dict, List, Union, TypedDict
 
 import orjson
 from typing_extensions import TypeAlias
