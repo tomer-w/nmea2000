@@ -17,6 +17,7 @@ dependencies = [
     "tenacity>=9.0.0",
     "python-can>=4.5.0",
     "backports-strenum>=1.2.4; python_version < '3.11'",
+    "typing-extensions>=4.13.2",
 ]
 
 [project.optional-dependencies]
