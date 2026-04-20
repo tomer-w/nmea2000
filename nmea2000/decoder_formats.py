@@ -274,7 +274,8 @@ class YachtDevicesDecoder(DecoderBase, DecoderInterface):
 
         if len(parts) >= 4 and parts[1] in ["R", "T"]:
             # Extract the timestamp from the first part
-            timestamp = datetime.strptime(parts[0], "%H:%M:%S.%f")
+            parsed_time = datetime.strptime(parts[0], "%H:%M:%S.%f").time()
+            timestamp = datetime.combine(datetime.now().date(), parsed_time)
             # Extract the PGN, priority, destination, and source from the second part
             msgid = int(parts[2], 16)
             can_data_parts = parts[3:]

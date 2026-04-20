@@ -244,6 +244,7 @@ class TestCliTcpClientJson:
             data = json.loads(decoded)
             assert data["PGN"] == 127257
             assert data["description"] == "Attitude"
+            assert not data["timestamp"].startswith("1900-01-01")
             assert isinstance(data["fields"], list)
         finally:
             proc.terminate()
