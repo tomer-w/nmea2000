@@ -1,6 +1,6 @@
 from datetime import date, time
 import pytest
-from nmea2000.utils import decode_decimal, encode_decimal, decode_float, encode_float, decode_date, encode_date, decode_time, encode_time
+from nmea2000.utils import decode_decimal, encode_decimal, decode_float, encode_float, decode_date, encode_date, decode_time, encode_time, decode_number
 
 def test_decode_decimal_single_byte():
     assert decode_decimal(0x12) == 12
@@ -97,3 +97,13 @@ def test_encode_decode_time():
     test_times = [(14, 30, 15), (0, 0, 0), (23, 59, 59)]
     for hour, minute, second in test_times:
         assert decode_time(encode_time(time(hour, minute, second), 16)) == time(hour, minute, second)
+
+def test_decode_number_8bit_not_available_sentinels():
+    # 8-bit unsigned fields reserve 0xFF and 0xFE as not available/error values.
+    assert decode_number(0xFF, 0, 8, False, 1, 0, 252) is None
+    assert decode_number(0xFE, 0, 8, False, 1, 0, 252) is None
+
+def test_decode_number_16bit_not_available_sentinels_with_resolution():
+    # 16-bit unsigned fields reserve 0xFFFF and 0xFFFE as not available/error values.
+    assert decode_number(0xFFFF, 0, 16, False, 60, 0, 3931920) is None
+    assert decode_number(0xFFFE, 0, 16, False, 60, 0, 3931920) is None
