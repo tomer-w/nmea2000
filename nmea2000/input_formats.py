@@ -21,6 +21,7 @@ class N2KFormat(StrEnum):
     CANDUMP1 = "candump1"
     CANDUMP2 = "candump2"
     CANDUMP3 = "candump3"
+    BST_D0 = "bst_d0"
     TCP = "tcp"
     USB = "usb"
     PYTHON_CAN = "python_can"
@@ -150,6 +151,14 @@ def _is_tcp(packet: bytes) -> bool:
     return len(packet) == 5 + data_length
 
 
+def _is_bst_d0(packet: bytes) -> bool:
+    if len(packet) < 14 or packet[0] != 0xD0:
+        return False
+    length = int.from_bytes(packet[1:3], byteorder="little")
+    # Length field = 13 + data_length; total with checksum = length + 1
+    return length >= 13 and len(packet) == length + 1
+
+
 def detect_format(data: N2KInput) -> N2KFormat:
     if isinstance(data, can.message.Message):
         return N2KFormat.PYTHON_CAN
@@ -182,6 +191,8 @@ def detect_format(data: N2KInput) -> N2KFormat:
         packet = bytes(data)
         if _looks_like_usb(packet):
             return N2KFormat.USB
+        if _is_bst_d0(packet):
+            return N2KFormat.BST_D0
         if _is_tcp(packet):
             return N2KFormat.TCP
         raise ValueError(f"Parser not found for binary input: {packet.hex()}")

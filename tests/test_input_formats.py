@@ -27,6 +27,7 @@ CANDUMP3_FRAME = "(1502979132.106111) slcan0 18EEFF01#05A0BE1C00A0A0C0"
 PDGY_DEBUG_FRAME = "$PDGY,000000,4,,5,482,1,0"
 TCP_PACKET = bytes.fromhex("881cff00093f9fdcffffffffff")
 USB_PACKET = bytes.fromhex("aa550102010900ff1c083f9fdcffffffffff00e5")
+BST_D0_PACKET = bytes.fromhex("d01500ff0900ff1c00000000003f9fdcffffffffff43")
 
 _FAST_PACKET_FIXTURE = Path(__file__).with_name("recombine-frames-1.in")
 _GNSS_PRECISION_TOLERANCES = {
@@ -101,6 +102,7 @@ def _prepare_roundtrip_message(
         (CANDUMP3_FRAME, N2KFormat.CANDUMP3),
         (TCP_PACKET, N2KFormat.TCP),
         (USB_PACKET, N2KFormat.USB),
+        (BST_D0_PACKET, N2KFormat.BST_D0),
     ],
 )
 def test_detect_format_supported_inputs(input_data, expected_format: N2KFormat):
@@ -144,6 +146,7 @@ def test_detect_format_rejects_unknown_input():
         (CANDUMP3_FRAME, 60928),
         (TCP_PACKET, 65280),
         (USB_PACKET, 65280),
+        (BST_D0_PACKET, 65280),
     ],
 )
 def test_decoder_decode_autosenses_supported_inputs(input_data, expected_pgn: int):

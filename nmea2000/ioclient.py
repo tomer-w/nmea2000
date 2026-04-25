@@ -906,3 +906,140 @@ class PythonCanAsyncIOClient(AsyncIOClient):
         finally:
             if self.bus is not None:
                 self.bus.shutdown()
+
+
+# BDTP (Binary Data Transfer Protocol) framing constants
+_DLE = 0x10
+_STX = 0x02
+_ETX = 0x03
+
+
+def bdtp_unwrap(buffer: bytearray) -> tuple[bytes | None, int]:
+    """Extract one BDTP frame from a byte buffer.
+
+    Returns ``(payload, consumed)`` where *payload* is the un-escaped data
+    block (or ``None`` if no complete frame is available yet) and *consumed*
+    is the number of bytes to discard from the front of *buffer*.
+    """
+    # Find DLE STX
+    start = -1
+    for i in range(len(buffer) - 1):
+        if buffer[i] == _DLE and buffer[i + 1] == _STX:
+            start = i
+            break
+    if start == -1:
+        # No frame start found; discard everything except possibly a trailing DLE
+        return None, max(0, len(buffer) - 1)
+
+    # Scan for DLE ETX while un-escaping DLE DLE
+    result = bytearray()
+    i = start + 2  # skip past DLE STX
+    while i < len(buffer):
+        if buffer[i] == _DLE:
+            if i + 1 >= len(buffer):
+                # Need more data to decide
+                return None, start
+            if buffer[i + 1] == _ETX:
+                # End of frame
+                return bytes(result), i + 2
+            if buffer[i + 1] == _DLE:
+                # Escaped DLE
+                result.append(_DLE)
+                i += 2
+                continue
+            if buffer[i + 1] == _STX:
+                # Unexpected new frame start — discard current and restart
+                return None, i
+            # Unknown DLE escape — discard frame
+            return None, i + 2
+        else:
+            result.append(buffer[i])
+            i += 1
+
+    # Incomplete frame — need more data
+    return None, start
+
+
+def bdtp_wrap(data: bytes) -> bytes:
+    """Wrap a data block in BDTP framing (DLE/STX ... DLE/ETX)."""
+    escaped = bytearray()
+    for byte in data:
+        if byte == _DLE:
+            escaped.append(_DLE)
+        escaped.append(byte)
+    return bytes([_DLE, _STX]) + bytes(escaped) + bytes([_DLE, _ETX])
+
+
+class ActisenseBstNmea2000Gateway(AsyncIOClient):
+    """TCP client for Actisense devices using BST D0 over BDTP framing.
+
+    Suitable for devices like the PRO-NDC-1E2K in "CAN Actisense" mode.
+    """
+
+    def __init__(self,
+                 host: str,
+                 port: int,
+                 exclude_pgns: list[int | str] = [],
+                 include_pgns: list[int | str] = [],
+                 exclude_manufacturer_code: list[str] = [],
+                 include_manufacturer_code: list[str] = [],
+                 preferred_units: dict[PhysicalQuantities, str] = {},
+                 dump_to_file: str | None = None,
+                 dump_pgns: list[int | str] = [],
+                 build_network_map: bool = False):
+        super().__init__(
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+            seed_network_map=True)
+        self.host = host
+        self.port = port
+        self._buffer: bytearray | None = None
+
+    async def _connect_impl(self):
+        self.logger.info("Connecting to %s:%s (BST D0/BDTP)", self.host, self.port)
+        self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+        sock = self.writer.get_extra_info("socket")
+        if sock:
+            _configure_tcp_keepalive(sock)
+        self._buffer = bytearray()
+        self.logger.info("Connected to %s:%s", self.host, self.port)
+
+    async def _receive_impl(self):
+        data = await self.reader.read(4096)
+        if not data:
+            raise ConnectionError("Connection closed by remote host")
+        self.logger.debug("Received %d bytes: %s", len(data), data.hex())
+        assert self._buffer is not None
+        self._buffer.extend(data)
+
+        while True:
+            payload, consumed = bdtp_unwrap(self._buffer)
+            if payload is None:
+                self._buffer = self._buffer[consumed:]
+                break
+            self._buffer = self._buffer[consumed:]
+
+            if not payload or payload[0] != 0xD0:
+                self.logger.debug("Skipping non-D0 BST message: %s",
+                                  payload.hex() if payload else "(empty)")
+                continue
+
+            try:
+                message = self.decoder.decode(payload)
+            except Exception as e:
+                self.logger.warning("BST D0 decode failed: %s. Data: %s",
+                                    e, payload.hex(), exc_info=True)
+                continue
+
+            if message is not None:
+                await self.queue.put(message)
+
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+        bst_data = self.encoder.encode(nmea2000Message, output_format=N2KFormat.BST_D0)
+        return [bdtp_wrap(bst_data)]

@@ -682,6 +682,73 @@ class PythonCanDecoder(DecoderBase, DecoderInterface):
         )
 
 
+class BstD0Decoder(DecoderBase, DecoderInterface):
+    """Decoder for Actisense BST D0 binary format.
+
+    This is the newer binary format used in devices like the PRO-NDC-1E2K.
+    Messages are pre-assembled (fast packets and transport protocol messages
+    are already decoded by the device).
+    """
+
+    def decode(
+        self,
+        data: N2KInput,
+        single_line: bool = False,
+    ) -> NMEA2000Message | None:
+        del single_line
+        packet = _as_bytes(data)
+        if len(packet) < 14:
+            raise ValueError("BST D0 packet too short")
+        if packet[0] != 0xD0:
+            raise ValueError(f"Not a BST D0 message: ID byte 0x{packet[0]:02X}")
+
+        length = int.from_bytes(packet[1:3], byteorder="little")
+        if len(packet) != length + 1:
+            raise ValueError(
+                f"BST D0 length mismatch: header says {length}, "
+                f"packet is {len(packet)} bytes (expected {length + 1})"
+            )
+
+        # Verify zero-sum checksum
+        if sum(packet) & 0xFF != 0:
+            raise ValueError("BST D0 checksum failed")
+
+        dest = packet[3]
+        source = packet[4]
+        pdus = packet[5]
+        pduf = packet[6]
+        dpp = packet[7]
+
+        data_page = dpp & 0x03
+        priority = (dpp >> 2) & 0x07
+
+        if pduf >= 240:
+            pgn = (data_page << 16) | (pduf << 8) | pdus
+        else:
+            pgn = (data_page << 16) | (pduf << 8)
+
+        timestamp_ms = int.from_bytes(packet[9:13], byteorder="little")
+        timestamp = datetime.now()  # BST D0 timestamp is relative; use wall clock
+
+        payload = packet[13:-1]  # exclude checksum
+
+        logger.debug(
+            "BST D0: PGN=%d, src=%d, dst=%d, pri=%d, ts_ms=%d, payload=%s",
+            pgn, source, dest, priority, timestamp_ms, payload.hex(),
+        )
+
+        return _decode_combined_payload(
+            self,
+            pgn,
+            priority,
+            source,
+            dest,
+            payload,
+            packet,
+            timestamp,
+        )
+
+
 NMEA2000Decoder.add_handler(N2KFormat.ACTISENSE, ActisenseDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.ACTISENSE_N2K_ASCII, ActisenseDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.BASIC_STRING, BasicStringDecoder)
@@ -698,3 +765,4 @@ NMEA2000Decoder.add_handler(N2KFormat.CANDUMP3, Candump3Decoder)
 NMEA2000Decoder.add_handler(N2KFormat.TCP, TcpDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.USB, UsbDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.PYTHON_CAN, PythonCanDecoder)
+NMEA2000Decoder.add_handler(N2KFormat.BST_D0, BstD0Decoder)

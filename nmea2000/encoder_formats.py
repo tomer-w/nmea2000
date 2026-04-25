@@ -432,6 +432,60 @@ class PythonCanEncoder(EncoderInterface, EncoderBase):
         return _encode_python_can_messages(self, nmea200_message)
 
 
+def _compute_bst_d0_checksum(data: bytes) -> int:
+    """Compute BST D0 zero-sum checksum: (256 - sum(data)) % 256."""
+    return (256 - (sum(data) % 256)) % 256
+
+
+class BstD0Encoder(EncoderInterface, EncoderBase):
+    """Encoder for Actisense BST D0 binary format."""
+
+    def encode(
+        self,
+        nmea200_message: NMEA2000Message,
+        output_format: N2KFormat | str | None = None,
+    ) -> bytes:
+        self._assert_output_format(output_format)
+        payload = self._call_encode_function(nmea200_message)
+
+        pgn = nmea200_message.PGN
+        pf = (pgn >> 8) & 0xFF
+        if pf >= 240:
+            pduf = pf
+            pdus = pgn & 0xFF
+        else:
+            pduf = pf
+            pdus = nmea200_message.destination
+
+        data_page = (pgn >> 16) & 0x03
+        priority = nmea200_message.priority & 0x07
+        dpp = (priority << 2) | data_page
+
+        # Control byte: message type 0 (single packet), direction 0 (received)
+        control = 0x00
+
+        # Timestamp: use 0 for encoding
+        timestamp_bytes = (0).to_bytes(4, byteorder="little")
+
+        length = 13 + len(payload)
+
+        header = bytes([
+            0xD0,
+            length & 0xFF,
+            (length >> 8) & 0xFF,
+            nmea200_message.destination & 0xFF,
+            nmea200_message.source & 0xFF,
+            pdus,
+            pduf,
+            dpp,
+            control,
+        ]) + timestamp_bytes
+
+        message = header + payload
+        checksum = _compute_bst_d0_checksum(message)
+        return message + bytes([checksum])
+
+
 NMEA2000Encoder.add_handler(N2KFormat.ACTISENSE, ActisenseEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.ACTISENSE_N2K_ASCII, ActisenseN2kAsciiEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.BASIC_STRING, BasicStringEncoder)
@@ -448,3 +502,4 @@ NMEA2000Encoder.add_handler(N2KFormat.CANDUMP3, Candump3Encoder)
 NMEA2000Encoder.add_handler(N2KFormat.TCP, TcpEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.USB, UsbEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.PYTHON_CAN, PythonCanEncoder)
+NMEA2000Encoder.add_handler(N2KFormat.BST_D0, BstD0Encoder)
