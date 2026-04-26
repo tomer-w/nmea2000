@@ -18,6 +18,7 @@ from .ioclient import (
     TextNmea2000Gateway,
     WaveShareNmea2000Gateway,
 )
+from .input_formats import N2KFormat
 from .message import IsoName, NMEA2000Field, NMEA2000Message
 
 logger = logging.getLogger(__name__)
