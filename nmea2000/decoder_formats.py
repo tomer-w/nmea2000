@@ -16,38 +16,14 @@ from .utils import calculate_canbus_checksum
 logger = logging.getLogger(__name__)
 
 
-def _text_lines(data: N2KInput) -> list[str]:
-    if isinstance(data, str):
-        lines = [line.strip() for line in data.splitlines() if line.strip()]
-        if lines:
-            return lines
-        raise ValueError("Input must contain at least one non-empty string")
-
-    if isinstance(data, list):
-        lines: list[str] = []
-        for line in data:
-            if isinstance(line, (bytes, bytearray, memoryview)):
-                line = bytes(line).decode("utf-8")
-            elif not isinstance(line, str):
-                raise ValueError("Input list must contain only strings or bytes")
-            stripped = line.strip()
-            if stripped:
-                lines.append(stripped)
-        if lines:
-            return lines
-        raise ValueError("Input list must contain at least one non-empty string")
-
-    raise ValueError("Input must be a string or a list of strings or bytes")
-
-
-def _decode_text_lines(
-    lines: list[str],
+def _decode_text_input(
+    data: N2KInput,
     decode_line: Callable[[str], NMEA2000Message | None],
 ) -> NMEA2000Message | None:
-    decoded: NMEA2000Message | None = None
-    for line in lines:
-        decoded = decode_line(line)
-    return decoded
+    """Decode a single text line."""
+    if not isinstance(data, str):
+        raise ValueError(f"Unsupported input type: {type(data)}")
+    return decode_line(data.strip())
 
 
 def _as_bytes(data: N2KInput) -> bytes:
@@ -192,10 +168,8 @@ class N2kAsciiDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
-        return _decode_text_lines(_text_lines(data), self._decode_text)
+        return _decode_text_input(data, self._decode_text)
 
 
 class BasicStringDecoder(DecoderBase, DecoderInterface):
@@ -252,12 +226,10 @@ class BasicStringDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        lines = _text_lines(data)
-        if single_line and len(lines) == 1:
-            return self._decode_text(lines[0], True)
-        return _decode_text_lines(lines, self._decode_text)
+        if self.already_combined and isinstance(data, str):
+            return self._decode_text(data.strip(), True)
+        return _decode_text_input(data, self._decode_text)
 
 
 class CanFrameAsciiDecoder(DecoderBase, DecoderInterface):
@@ -314,10 +286,8 @@ class CanFrameAsciiDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
-        return _decode_text_lines(_text_lines(data), self._decode_text)
+        return _decode_text_input(data, self._decode_text)
 
 
 class Candump1Decoder(DecoderBase, DecoderInterface):
@@ -344,10 +314,8 @@ class Candump1Decoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
-        return _decode_text_lines(_text_lines(data), self._decode_text)
+        return _decode_text_input(data, self._decode_text)
 
 
 class Candump2Decoder(DecoderBase, DecoderInterface):
@@ -374,10 +342,8 @@ class Candump2Decoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
-        return _decode_text_lines(_text_lines(data), self._decode_text)
+        return _decode_text_input(data, self._decode_text)
 
 
 class Candump3Decoder(DecoderBase, DecoderInterface):
@@ -401,10 +367,8 @@ class Candump3Decoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
-        return _decode_text_lines(_text_lines(data), self._decode_text)
+        return _decode_text_input(data, self._decode_text)
 
 
 class PcdinDecoder(DecoderBase, DecoderInterface):
@@ -436,10 +400,8 @@ class PcdinDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
-        return _decode_text_lines(_text_lines(data), self._decode_text)
+        return _decode_text_input(data, self._decode_text)
 
 
 class MxpgnDecoder(DecoderBase, DecoderInterface):
@@ -476,10 +438,8 @@ class MxpgnDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
-        return _decode_text_lines(_text_lines(data), self._decode_text)
+        return _decode_text_input(data, self._decode_text)
 
 
 class PdgyDecoder(DecoderBase, DecoderInterface):
@@ -520,10 +480,8 @@ class PdgyDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
-        return _decode_text_lines(_text_lines(data), self._decode_text)
+        return _decode_text_input(data, self._decode_text)
 
 
 class PdgyDebugDecoder(DecoderBase, DecoderInterface):
@@ -540,10 +498,8 @@ class PdgyDebugDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
-        return _decode_text_lines(_text_lines(data), self._decode_text)
+        return _decode_text_input(data, self._decode_text)
 
 
 class TcpDecoder(DecoderBase, DecoderInterface):
@@ -552,9 +508,7 @@ class TcpDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
         packet = _as_bytes(data)
         if len(packet) < 6:
             raise ValueError("Packet is too short")
@@ -600,9 +554,7 @@ class UsbDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
         packet = _as_bytes(data)
 
         if packet[0] != 0xAA or packet[1] != 0x55:
@@ -657,9 +609,7 @@ class PythonCanDecoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
         if not isinstance(data, can.message.Message):
             raise ValueError("Input must be a python-can Message")
 
@@ -693,9 +643,7 @@ class BstD0Decoder(DecoderBase, DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
-        del single_line
         packet = _as_bytes(data)
         if len(packet) < 14:
             raise ValueError("BST D0 packet too short")

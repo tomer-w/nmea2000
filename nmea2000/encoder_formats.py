@@ -444,7 +444,7 @@ class BstD0Encoder(EncoderInterface, EncoderBase):
         self,
         nmea200_message: NMEA2000Message,
         output_format: N2KFormat | str | None = None,
-    ) -> bytes:
+    ) -> list[bytes]:
         self._assert_output_format(output_format)
         payload = self._call_encode_function(nmea200_message)
 
@@ -483,7 +483,7 @@ class BstD0Encoder(EncoderInterface, EncoderBase):
 
         message = header + payload
         checksum = _compute_bst_d0_checksum(message)
-        return message + bytes([checksum])
+        return [message + bytes([checksum])]
 
 
 NMEA2000Encoder.add_handler(N2KFormat.N2K_ASCII_RAW, N2kAsciiRawEncoder)

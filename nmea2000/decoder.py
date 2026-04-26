@@ -107,7 +107,6 @@ class DecoderInterface(DecoderStaticsMixin, ABC):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
         """Decode the input data and return an NMEA2000Message object."""
 
@@ -139,6 +138,7 @@ class DecoderBase(DecoderStaticsMixin):
         build_network_map: bool = False,
         bound_format: N2KFormat | None = None,
         started_at: datetime | None = None,
+        already_combined: bool = False,
     ) -> None:
         if exclude_pgns is None:
             exclude_pgns = []
@@ -154,6 +154,7 @@ class DecoderBase(DecoderStaticsMixin):
             dump_pgns = []
 
         self.bound_format = bound_format
+        self.already_combined = already_combined
         self.data: dict[str, FastPgnMetadata] = {}
         self.dump_file = None
         self.build_network_map = build_network_map
@@ -544,12 +545,11 @@ class NMEA2000Decoder(DecoderInterface):
     def decode(
         self,
         data: N2KInput,
-        single_line: bool = False,
     ) -> NMEA2000Message | None:
         if self._delegate is not None:
-            return self._delegate.decode(data, single_line)
+            return self._delegate.decode(data)
         input_format = detect_format(data)
-        return self._bind_delegate(input_format).decode(data, single_line)
+        return self._bind_delegate(input_format).decode(data)
 
     def close(self):
         if self._delegate:

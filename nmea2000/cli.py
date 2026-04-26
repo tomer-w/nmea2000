@@ -61,7 +61,7 @@ async def interactive_client(client: AsyncIOClient, json_output: bool = False):
         await client.close()
         print("Connection closed.")
 
-def parse(filename: str, decoder: NMEA2000Decoder, single_line: bool):
+def parse(filename: str, decoder: NMEA2000Decoder):
     try:
         with open(filename, 'r') as file:
             while True:
@@ -73,7 +73,7 @@ def parse(filename: str, decoder: NMEA2000Decoder, single_line: bool):
                 line = line.strip()
                 logger.info(f'Processing: {line}')
                 try:
-                    decoder.decode(line, single_line)
+                    decoder.decode(line)
                 except Exception as e:
                     print(f"Error: {e}")
     except KeyboardInterrupt:
@@ -208,17 +208,17 @@ async def async_main():
         root_logger.addHandler(logging.StreamHandler())
 
     if args.command == "decode":
-        decoder = NMEA2000Decoder()
+        decoder = NMEA2000Decoder(already_combined=args.single_line)
 
         # Decode from a frame string if provided
         if args.frame:
-            decoded = decoder.decode(args.frame, args.single_line)
+            decoded = decoder.decode(args.frame)
             if decoded is not None:
                 print(decoded.to_json())
 
         # Decode from a file if provided
         elif args.file:
-            parse(args.file, decoder, args.single_line)
+            parse(args.file, decoder)
         else:
             print("Error: You must provide either a frame or a file to decode.")
             exit(1)

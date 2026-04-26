@@ -104,12 +104,14 @@ class TestBstD0Encoder:
 
         encoder = NMEA2000Encoder(output_format=N2KFormat.BST_D0)
         encoded = encoder.encode(original)
-        assert isinstance(encoded, bytes)
-        assert encoded[0] == 0xD0
+        assert isinstance(encoded, list) and len(encoded) == 1
+        packet = encoded[0]
+        assert isinstance(packet, bytes)
+        assert packet[0] == 0xD0
         # Checksum must be valid
-        assert sum(encoded) & 0xFF == 0
+        assert sum(packet) & 0xFF == 0
 
-        redecoded = _get_decoder().decode(encoded)
+        redecoded = _get_decoder().decode(packet)
         assert isinstance(redecoded, NMEA2000Message)
         assert redecoded.PGN == original.PGN
         assert redecoded.source == original.source
@@ -121,10 +123,12 @@ class TestBstD0Encoder:
         original = _load_fast_packet_message()
         encoder = NMEA2000Encoder(output_format=N2KFormat.BST_D0)
         encoded = encoder.encode(original)
-        assert isinstance(encoded, bytes)
-        assert sum(encoded) & 0xFF == 0
+        assert isinstance(encoded, list) and len(encoded) == 1
+        packet = encoded[0]
+        assert isinstance(packet, bytes)
+        assert sum(packet) & 0xFF == 0
 
-        redecoded = _get_decoder().decode(encoded)
+        redecoded = _get_decoder().decode(packet)
         assert isinstance(redecoded, NMEA2000Message)
         assert redecoded.PGN == original.PGN
 

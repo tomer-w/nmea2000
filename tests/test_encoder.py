@@ -52,6 +52,17 @@ def _assert_semantic_roundtrip(
             assert other.raw_value == field.raw_value
 
 
+def _decode_list_input(data: list) -> NMEA2000Message:
+    """Decode a list of frames (fast-packet reassembly) by feeding them one at a time."""
+    decoder = _get_decoder()
+    msg: NMEA2000Message | None = None
+    for item in data:
+        line = item.decode("utf-8") if isinstance(item, (bytes, bytearray, memoryview)) else item
+        msg = decoder.decode(line)
+    assert isinstance(msg, NMEA2000Message)
+    return msg
+
+
 def _assert_payload_roundtrip(
     expected_input: str | list[str],
     encoder: NMEA2000Encoder,
@@ -62,19 +73,23 @@ def _assert_payload_roundtrip(
     output_format = (
         N2KFormat.BASIC_STRING
         if allow_basic_string_canonicalization
-        else detect_format(expected_input)
+        else detect_format(expected_input if isinstance(expected_input, str) else expected_input[0])
     )
     actual_output = encoder.encode(msg, output_format=output_format)
-    redecoded = _get_decoder().decode(
-        actual_output,
-        output_format == N2KFormat.BASIC_STRING and isinstance(actual_output, str),
-    )
+    already_combined = output_format == N2KFormat.BASIC_STRING and isinstance(actual_output, str)
+    if isinstance(actual_output, list):
+        redecoded = _decode_list_input(actual_output)
+    else:
+        redecoded = _get_decoder(already_combined=already_combined).decode(actual_output)
     assert isinstance(redecoded, NMEA2000Message)
     _assert_semantic_roundtrip(msg, redecoded)
 
 
 def _decode_roundtrip_case(case: dict) -> NMEA2000Message:
-    msg = _get_decoder().decode(case["input"], True)
+    data = case["input"]
+    if isinstance(data, list):
+        return _decode_list_input(data)
+    msg = _get_decoder(already_combined=True).decode(data)
     assert isinstance(msg, NMEA2000Message)
     return msg
 

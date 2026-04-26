@@ -62,8 +62,6 @@ class N2KFormat(StrEnum):
 
 N2KInput: TypeAlias = (
     str
-    | list[str]
-    | list[bytes]
     | bytes
     | bytearray
     | memoryview
@@ -103,24 +101,6 @@ def _get_0183_sentence(line: str) -> str:
         if len(parts) >= 3:
             return parts[2]
     return line
-
-
-def _first_text_line(data: str | list[str] | list[bytes]) -> str:
-    if isinstance(data, str):
-        candidates = data.splitlines() if "\n" in data else [data]
-    else:
-        candidates = data
-
-    for candidate in candidates:
-        if isinstance(candidate, (bytes, bytearray, memoryview)):
-            candidate = bytes(candidate).decode("utf-8")
-        elif not isinstance(candidate, str):
-            raise ValueError("Input list must contain only strings or bytes")
-        stripped = candidate.strip()
-        if stripped:
-            return stripped
-
-    raise ValueError("Input must contain at least one non-empty string")
 
 
 def _is_n2k_ascii(line: str) -> bool:
@@ -196,8 +176,10 @@ def detect_format(data: N2KInput) -> N2KFormat:
     if isinstance(data, can.message.Message):
         return N2KFormat.PYTHON_CAN
 
-    if isinstance(data, (str, list)):
-        line = _first_text_line(data)
+    if isinstance(data, str):
+        line = data.strip()
+        if not line:
+            raise ValueError("Input must contain a non-empty string")
         if _is_n2k_ascii(line):
             return N2KFormat.N2K_ASCII_RAW
         if _is_basic_string(line):

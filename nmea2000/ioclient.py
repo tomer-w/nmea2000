@@ -953,5 +953,5 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
                 await self.queue.put(message)
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
-        bst_data = self.encoder.encode(nmea2000Message, output_format=N2KFormat.BST_D0)
-        return [bdtp_wrap(bst_data)]
+        bst_packets = self.encoder.encode(nmea2000Message, output_format=N2KFormat.BST_D0)
+        return [bdtp_wrap(pkt) for pkt in bst_packets]

@@ -120,11 +120,6 @@ def test_detect_format_supports_python_can_messages():
     assert detect_format(can_msg) == N2KFormat.PYTHON_CAN
 
 
-def test_detect_format_supports_lists_and_multiline_strings():
-    assert detect_format([CANDUMP2_FRAME]) == N2KFormat.CANDUMP2
-    assert detect_format(f"{CANDUMP2_FRAME}\n{CANDUMP2_FRAME}") == N2KFormat.CANDUMP2
-
-
 def test_detect_format_rejects_unknown_input():
     with pytest.raises(ValueError, match="Parser not found"):
         detect_format("foo bar baz")
@@ -251,7 +246,11 @@ def test_encoder_roundtrips_fast_packet_text_output_lists(output_format: N2KForm
     encoded = NMEA2000Encoder(output_format=output_format).encode(original)
     assert isinstance(encoded, list)
 
-    redecoded = _get_decoder().decode(encoded)
+    decoder = _get_decoder()
+    redecoded: NMEA2000Message | None = None
+    for item in encoded:
+        line = item.decode("utf-8") if isinstance(item, (bytes, bytearray, memoryview)) else item
+        redecoded = decoder.decode(line)
     assert isinstance(redecoded, NMEA2000Message)
     _assert_semantic_roundtrip(original, redecoded)
 
