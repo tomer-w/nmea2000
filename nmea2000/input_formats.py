@@ -8,23 +8,56 @@ import can.message
 
 
 class N2KFormat(StrEnum):
-    ACTISENSE = "actisense"
-    ACTISENSE_N2K_ASCII = "actisense_n2k_ascii"
-    BASIC_STRING = "basic_string"
-    YACHT_DEVICES = "yacht_devices"
-    YDRAW = "ydraw"
-    YDRAW_OUT = "ydraw_out"
-    PCDIN = "pcdin"
-    MXPGN = "mxpgn"
-    PDGY = "pdgy"
-    PDGY_DEBUG = "pdgy_debug"
-    CANDUMP1 = "candump1"
-    CANDUMP2 = "candump2"
-    CANDUMP3 = "candump3"
-    BST_D0 = "bst_d0"
-    TCP = "tcp"
-    USB = "usb"
-    PYTHON_CAN = "python_can"
+    """Supported NMEA 2000 wire formats.
+
+    Naming convention
+    -----------------
+    Names describe *what the data looks like on the wire*, not which vendor
+    originated the format.  The two main axes are:
+
+    1. **CAN_FRAME vs N2K** — whether the format carries raw 8-byte CAN frames
+       (requiring fast-packet reassembly by the receiver) or fully reassembled
+       NMEA 2000 messages (no reassembly needed).
+    2. **ASCII vs binary** — self-explanatory.
+
+    The ``_RAW`` suffix means the format omits the timestamp / direction
+    wrapper that the full variant includes.
+
+    Formats named after an NMEA 0183 sentence identifier (``PCDIN``, ``MXPGN``,
+    ``PDGY``) or a well-known tool (``CANDUMP*``) keep those established names,
+    since they already refer to the wire format rather than to a single vendor.
+    """
+
+    # -- Reassembled N2K messages, ASCII ---------------------------------
+    N2K_ASCII_RAW = "n2k_ascii_raw"    # ``09FF7 0FF00 3F9FDCFF…``
+    N2K_ASCII = "n2k_ascii"            # ``A173321.107 23FF7 1F513 012F…``
+
+    # -- CSV / basic string ----------------------------------------------
+    BASIC_STRING = "basic_string"      # ``2016-04-09T16:41:09.078Z,3,127257,…``
+
+    # -- Raw CAN frames, ASCII -------------------------------------------
+    CAN_FRAME_ASCII = "can_frame_ascii"              # ``17:33:21.107 R 19F51323 01 2F…``
+    CAN_FRAME_ASCII_RAW = "can_frame_ascii_raw"      # ``19F51323 01 2F 30 70…`` (no timestamp)
+    CAN_FRAME_ASCII_RAW_OUT = "can_frame_ascii_raw_out"  # output-only variant
+
+    # -- NMEA 0183 sentence formats --------------------------------------
+    PCDIN = "pcdin"            # ``$PCDIN,…``  (SeaSmart)
+    MXPGN = "mxpgn"            # ``$MXPGN,…``  (Shipmodul)
+    PDGY = "pdgy"              # ``!PDGY,…``   (Digital Yacht)
+    PDGY_DEBUG = "pdgy_debug"  # ``$PDGY,…``   (debug, decode-only)
+
+    # -- Linux can-utils log formats -------------------------------------
+    CANDUMP1 = "candump1"      # ``<0x18EEFF01> [8] 05 A0…``
+    CANDUMP2 = "candump2"      # ``can0  18EEFF01   [8]  05 A0…``
+    CANDUMP3 = "candump3"      # ``(1502979132.106111) slcan0 18EEFF01#05A0…``
+
+    # -- Binary formats --------------------------------------------------
+    BST_D0 = "bst_d0"          # Actisense BST D0 (reassembled N2K, binary, BDTP-framed)
+    EBYTE = "ebyte"            # https://www.cdebyte.com/products/ECAN-E01
+    WAVESHARE = "waveshare"    # https://www.waveshare.com/wiki/USB-CAN-A
+
+    # -- Library-level ---------------------------------------------------
+    PYTHON_CAN = "python_can"  # python-can ``can.message.Message`` objects
 
 
 N2KInput: TypeAlias = (
@@ -37,20 +70,20 @@ N2KInput: TypeAlias = (
     | can.message.Message
 )
 
-_ACTISENSE_ASCII_RE = re.compile(
+_N2K_ASCII_RE = re.compile(
     r"^A\d+\.\d+\s+[0-9A-Fa-f]{5}\s+[0-9A-Fa-f]{5,6}\s+[0-9A-Fa-f]+$"
 )
-_ACTISENSE_PACKET_RE = re.compile(
+_N2K_ASCII_RAW_RE = re.compile(
     r"^[0-9A-Fa-f]{5}\s+[0-9A-Fa-f]{5,6}\s+[0-9A-Fa-f]+$"
 )
 _BASIC_STRING_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}\.\d+Z?|\-\d{2}:\d{2}:\d{2}\.\d+)"
     r"(?:,\d+){5}(?:,[0-9A-Fa-f]{2})+$"
 )
-_YACHT_DEVICES_RE = re.compile(
+_CAN_FRAME_ASCII_RE = re.compile(
     r"^\d{2}:\d{2}:\d{2}\.\d+\s+[RT]\s+[0-9A-Fa-f]{8}(?:\s+[0-9A-Fa-f]{2})+$"
 )
-_YACHT_DEVICES_PACKET_RE = re.compile(
+_CAN_FRAME_ASCII_RAW_RE = re.compile(
     r"^[0-9A-Fa-f]{8}(?:\s+[0-9A-Fa-f]{2})+$"
 )
 _CANDUMP1_RE = re.compile(
@@ -90,16 +123,16 @@ def _first_text_line(data: str | list[str] | list[bytes]) -> str:
     raise ValueError("Input must contain at least one non-empty string")
 
 
-def _is_actisense(line: str) -> bool:
-    return bool(_ACTISENSE_ASCII_RE.match(line) or _ACTISENSE_PACKET_RE.match(line))
+def _is_n2k_ascii(line: str) -> bool:
+    return bool(_N2K_ASCII_RE.match(line) or _N2K_ASCII_RAW_RE.match(line))
 
 
 def _is_basic_string(line: str) -> bool:
     return bool(_BASIC_STRING_RE.match(line))
 
 
-def _is_yacht_devices(line: str) -> bool:
-    return bool(_YACHT_DEVICES_RE.match(line) or _YACHT_DEVICES_PACKET_RE.match(line))
+def _is_can_frame_ascii(line: str) -> bool:
+    return bool(_CAN_FRAME_ASCII_RE.match(line) or _CAN_FRAME_ASCII_RAW_RE.match(line))
 
 
 def _is_pcdin(line: str) -> bool:
@@ -165,12 +198,12 @@ def detect_format(data: N2KInput) -> N2KFormat:
 
     if isinstance(data, (str, list)):
         line = _first_text_line(data)
-        if _is_actisense(line):
-            return N2KFormat.ACTISENSE
+        if _is_n2k_ascii(line):
+            return N2KFormat.N2K_ASCII_RAW
         if _is_basic_string(line):
             return N2KFormat.BASIC_STRING
-        if _is_yacht_devices(line):
-            return N2KFormat.YACHT_DEVICES
+        if _is_can_frame_ascii(line):
+            return N2KFormat.CAN_FRAME_ASCII
         if _is_pcdin(line):
             return N2KFormat.PCDIN
         if _is_mxpgn(line):
@@ -190,11 +223,11 @@ def detect_format(data: N2KInput) -> N2KFormat:
     if isinstance(data, (bytes, bytearray, memoryview)):
         packet = bytes(data)
         if _looks_like_usb(packet):
-            return N2KFormat.USB
+            return N2KFormat.WAVESHARE
         if _is_bst_d0(packet):
             return N2KFormat.BST_D0
         if _is_tcp(packet):
-            return N2KFormat.TCP
+            return N2KFormat.EBYTE
         raise ValueError(f"Parser not found for binary input: {packet.hex()}")
 
     raise ValueError(

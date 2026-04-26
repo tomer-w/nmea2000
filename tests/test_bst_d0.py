@@ -1,11 +1,9 @@
 """Tests for BST D0 format support (Actisense PRO-NDC-1E2K)."""
 
-import copy
 from pathlib import Path
 
 import pytest
 
-from nmea2000.decoder import NMEA2000Decoder
 from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.encoder_formats import _compute_bst_d0_checksum
 from nmea2000.input_formats import N2KFormat, detect_format
@@ -51,8 +49,8 @@ class TestBstD0FormatDetection:
         """USB and TCP detection must still work."""
         tcp_packet = bytes.fromhex("881cff00093f9fdcffffffffff")
         usb_packet = bytes.fromhex("aa550102010900ff1c083f9fdcffffffffff00e5")
-        assert detect_format(tcp_packet) == N2KFormat.TCP
-        assert detect_format(usb_packet) == N2KFormat.USB
+        assert detect_format(tcp_packet) == N2KFormat.EBYTE
+        assert detect_format(usb_packet) == N2KFormat.WAVESHARE
 
 
 # --- Decoder ---

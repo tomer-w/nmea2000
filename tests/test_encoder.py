@@ -116,7 +116,7 @@ def _generate_test_message() -> NMEA2000Message:
 
 
 def test_tcp_encode():
-    encoder = NMEA2000Encoder(output_format=N2KFormat.TCP)
+    encoder = NMEA2000Encoder(output_format=N2KFormat.EBYTE)
     msg_bytes = encoder.encode(_generate_test_message())[0]
     decoder = _get_decoder(preferred_units={PhysicalQuantities.ANGLE: "deg"})
     msg = decoder.decode(msg_bytes)
@@ -126,7 +126,7 @@ def test_tcp_encode():
 
 def test_tcp_encode_2():
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder(output_format=N2KFormat.TCP)
+    encoder = NMEA2000Encoder(output_format=N2KFormat.EBYTE)
     msg = decoder.decode(bytes.fromhex("8800ff00093f9fdcffffffffff"))
     assert isinstance(msg, NMEA2000Message)
     msg_bytes_hex = encoder.encode(msg)[0].hex()
@@ -135,7 +135,7 @@ def test_tcp_encode_2():
 
 def test_usb_encode():
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder(output_format=N2KFormat.USB)
+    encoder = NMEA2000Encoder(output_format=N2KFormat.WAVESHARE)
     msg = decoder.decode(bytes.fromhex("aa550102010113f10908fffac2ffffffffff00d0"))
     assert isinstance(msg, NMEA2000Message)
     msg_bytes_hex = encoder.encode(msg)[0].hex()
@@ -144,7 +144,7 @@ def test_usb_encode():
 
 def test_yacht_devices_encode():
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder(output_format=N2KFormat.YACHT_DEVICES)
+    encoder = NMEA2000Encoder(output_format=N2KFormat.CAN_FRAME_ASCII)
     msg = decoder.decode("21:31:42.671 T 01F010B3 FF FF 0C 4F 70 BE 3E 33")
     assert isinstance(msg, NMEA2000Message)
     msg_bytes = encoder.encode(msg)[0]

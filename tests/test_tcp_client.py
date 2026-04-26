@@ -2,7 +2,8 @@ import logging
 
 import pytest
 from nmea2000.consts import PhysicalQuantities
-from nmea2000.ioclient import ActisenseNmea2000Gateway, EByteNmea2000Gateway, State, Type, YachtDevicesNmea2000Gateway
+from nmea2000.ioclient import EByteNmea2000Gateway, State, TextNmea2000Gateway
+from nmea2000.input_formats import N2KFormat
 from nmea2000.message import NMEA2000Message
 from tests.test_decoder import _validate_130842_message, _validate_65280_message
 from .NMEA2000TestServer import NMEA2000TestServer
@@ -23,7 +24,7 @@ async def _wait_for_server_client(server: NMEA2000TestServer, timeout: float = 1
     assert server.clients, "Test server did not register a client connection"
 
 
-def _create_server_client(type: Type):
+def _create_server_client(type: N2KFormat):
     # Create a queue and a signal
     receive_queue = asyncio.Queue()
     receive_signal = asyncio.Event()
@@ -40,12 +41,12 @@ def _create_server_client(type: Type):
         print(f"Connection status: {state}")
 
     server = NMEA2000TestServer("127.0.0.1", 8881, type)
-    if type == Type.EBYTE:
+    if type == N2KFormat.EBYTE:
         client = EByteNmea2000Gateway("127.0.0.1", 8881)
-    elif type == Type.ACTISENSE:
-        client = ActisenseNmea2000Gateway("127.0.0.1", 8881)            
-    elif type == Type.YACHT_DEVICES:
-        client = YachtDevicesNmea2000Gateway("127.0.0.1", 8881)            
+    elif type == N2KFormat.N2K_ASCII_RAW:
+        client = TextNmea2000Gateway("127.0.0.1", 8881, format=type, seed_network_map=False)
+    elif type == N2KFormat.CAN_FRAME_ASCII:
+        client = TextNmea2000Gateway("127.0.0.1", 8881, format=type)            
     client.set_receive_callback(handle_received_message)
     client.set_status_callback(handle_status_change)
 
@@ -53,7 +54,7 @@ def _create_server_client(type: Type):
 
 @pytest.mark.asyncio
 async def test_single_message_EBYTE():
-    server,client, receive_signal, receive_queue = _create_server_client(Type.EBYTE)
+    server,client, receive_signal, receive_queue = _create_server_client(N2KFormat.EBYTE)
     await server.start()
     await client.connect()
     await _wait_for_server_client(server)
@@ -72,8 +73,8 @@ async def test_single_message_EBYTE():
     await server.stop()
 
 @pytest.mark.asyncio
-async def test_single_message_ACTISENSE_1():
-    server,client, receive_signal, receive_queue = _create_server_client(Type.ACTISENSE)
+async def test_single_message_N2K_ASCII_RAW_1():
+    server,client, receive_signal, receive_queue = _create_server_client(N2KFormat.N2K_ASCII_RAW)
     await server.start()
     await client.connect()
     await _wait_for_server_client(server)
@@ -91,8 +92,8 @@ async def test_single_message_ACTISENSE_1():
     await server.stop()
 
 @pytest.mark.asyncio
-async def test_single_message_ACTISENSE_2():
-    server,client, receive_signal, receive_queue = _create_server_client(Type.ACTISENSE)
+async def test_single_message_N2K_ASCII_RAW_2():
+    server,client, receive_signal, receive_queue = _create_server_client(N2KFormat.N2K_ASCII_RAW)
     await server.start()
     await client.connect()
     await _wait_for_server_client(server)
@@ -110,8 +111,8 @@ async def test_single_message_ACTISENSE_2():
     await server.stop()
 
 @pytest.mark.asyncio
-async def test_single_message_YACHT_DEVICES():
-    server,client, receive_signal, receive_queue = _create_server_client(Type.YACHT_DEVICES)
+async def test_single_message_CAN_FRAME_ASCII():
+    server,client, receive_signal, receive_queue = _create_server_client(N2KFormat.CAN_FRAME_ASCII)
     await server.start()
     await client.connect()
     await _wait_for_server_client(server)

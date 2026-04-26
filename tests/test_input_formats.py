@@ -11,13 +11,13 @@ from nmea2000.message import NMEA2000Message
 from .test_decoder import _get_decoder
 
 
-ACTISENSE_FRAME = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF"
-ACTISENSE_PACKET = "09FF7 0FF00 3F9FDCFFFFFFFFFF"
+N2K_ASCII_FRAME = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF"
+N2K_ASCII_RAW_PACKET = "09FF7 0FF00 3F9FDCFFFFFFFFFF"
 BASIC_STRING_FRAME = (
     "2016-04-09T16:41:09.078Z,3,127257,17,255,8,00,ff,7f,52,00,21,fe,ff"
 )
-YACHT_DEVICES_FRAME = "00:01:54.330 R 15FD0A10 00 00 00 68 65 0F 00 FF"
-YACHT_DEVICES_PACKET = "01F010B3 FF FF 0C 4F 70 BE 3E 33"
+CAN_FRAME_ASCII_FRAME = "00:01:54.330 R 15FD0A10 00 00 00 68 65 0F 00 FF"
+CAN_FRAME_ASCII_RAW_PACKET = "01F010B3 FF FF 0C 4F 70 BE 3E 33"
 PCDIN_FRAME = "$PCDIN,01F119,00000000,0F,2AAF00D1067414FF*59"
 MXPGN_FRAME = "$MXPGN,01F801,2801,C1308AC40C5DE343*19"
 PDGY_FRAME = "!PDGY,127257,3,17,255,0.563,AP9/UgAh/v8="
@@ -88,11 +88,11 @@ def _prepare_roundtrip_message(
 @pytest.mark.parametrize(
     ("input_data", "expected_format"),
     [
-        (ACTISENSE_FRAME, N2KFormat.ACTISENSE),
-        (ACTISENSE_PACKET, N2KFormat.ACTISENSE),
+        (N2K_ASCII_FRAME, N2KFormat.N2K_ASCII_RAW),
+        (N2K_ASCII_RAW_PACKET, N2KFormat.N2K_ASCII_RAW),
         (BASIC_STRING_FRAME, N2KFormat.BASIC_STRING),
-        (YACHT_DEVICES_FRAME, N2KFormat.YACHT_DEVICES),
-        (YACHT_DEVICES_PACKET, N2KFormat.YACHT_DEVICES),
+        (CAN_FRAME_ASCII_FRAME, N2KFormat.CAN_FRAME_ASCII),
+        (CAN_FRAME_ASCII_RAW_PACKET, N2KFormat.CAN_FRAME_ASCII),
         (PCDIN_FRAME, N2KFormat.PCDIN),
         (MXPGN_FRAME, N2KFormat.MXPGN),
         (PDGY_FRAME, N2KFormat.PDGY),
@@ -100,8 +100,8 @@ def _prepare_roundtrip_message(
         (CANDUMP1_FRAME, N2KFormat.CANDUMP1),
         (CANDUMP2_FRAME, N2KFormat.CANDUMP2),
         (CANDUMP3_FRAME, N2KFormat.CANDUMP3),
-        (TCP_PACKET, N2KFormat.TCP),
-        (USB_PACKET, N2KFormat.USB),
+        (TCP_PACKET, N2KFormat.EBYTE),
+        (USB_PACKET, N2KFormat.WAVESHARE),
         (BST_D0_PACKET, N2KFormat.BST_D0),
     ],
 )
@@ -111,7 +111,7 @@ def test_detect_format_supported_inputs(input_data, expected_format: N2KFormat):
 
 def test_detect_format_supports_python_can_messages():
     decoder = _get_decoder()
-    msg = decoder.decode(ACTISENSE_FRAME)
+    msg = decoder.decode(N2K_ASCII_FRAME)
     assert isinstance(msg, NMEA2000Message)
 
     can_encoder = NMEA2000Encoder(output_format=N2KFormat.PYTHON_CAN)
@@ -133,11 +133,11 @@ def test_detect_format_rejects_unknown_input():
 @pytest.mark.parametrize(
     ("input_data", "expected_pgn"),
     [
-        (ACTISENSE_FRAME, 65280),
-        (ACTISENSE_PACKET, 65280),
+        (N2K_ASCII_FRAME, 65280),
+        (N2K_ASCII_RAW_PACKET, 65280),
         (BASIC_STRING_FRAME, 127257),
-        (YACHT_DEVICES_FRAME, 130314),
-        (YACHT_DEVICES_PACKET, 126992),
+        (CAN_FRAME_ASCII_FRAME, 130314),
+        (CAN_FRAME_ASCII_RAW_PACKET, 126992),
         (PCDIN_FRAME, 127257),
         (MXPGN_FRAME, 129025),
         (PDGY_FRAME, 127257),
@@ -158,7 +158,7 @@ def test_decoder_decode_autosenses_supported_inputs(input_data, expected_pgn: in
 
 def test_decoder_decode_autosenses_python_can_messages():
     decoder = _get_decoder()
-    msg = decoder.decode(ACTISENSE_FRAME)
+    msg = decoder.decode(N2K_ASCII_FRAME)
     assert isinstance(msg, NMEA2000Message)
 
     encoder = NMEA2000Encoder(output_format=N2KFormat.PYTHON_CAN)
@@ -174,24 +174,24 @@ def test_decoder_decode_rejects_pdgy_debug():
         _get_decoder().decode(PDGY_DEBUG_FRAME)
 
 
-def test_encoder_encode_defaults_to_actisense_packet_output():
+def test_encoder_encode_defaults_to_n2k_ascii_raw_output():
     decoder = _get_decoder()
-    msg = decoder.decode(ACTISENSE_FRAME)
+    msg = decoder.decode(N2K_ASCII_FRAME)
     assert isinstance(msg, NMEA2000Message)
 
     encoded = NMEA2000Encoder().encode(msg)
-    assert encoded == ACTISENSE_PACKET
+    assert encoded == N2K_ASCII_RAW_PACKET
 
 
-def test_encoder_can_roundtrip_yacht_devices_packets_via_generic_api():
-    original = _get_decoder().decode(YACHT_DEVICES_FRAME)
+def test_encoder_can_roundtrip_can_frame_ascii_packets_via_generic_api():
+    original = _get_decoder().decode(CAN_FRAME_ASCII_FRAME)
     assert isinstance(original, NMEA2000Message)
 
-    encoder = NMEA2000Encoder(output_format=N2KFormat.YACHT_DEVICES)
+    encoder = NMEA2000Encoder(output_format=N2KFormat.CAN_FRAME_ASCII)
     encoded = encoder.encode(original)
     assert isinstance(encoded, list)
     encoded_packet = encoded[0].decode().strip()
-    assert detect_format(encoded_packet) == N2KFormat.YACHT_DEVICES
+    assert detect_format(encoded_packet) == N2KFormat.CAN_FRAME_ASCII
 
     redecoded = _get_decoder().decode(encoded_packet)
     assert isinstance(redecoded, NMEA2000Message)
@@ -202,9 +202,9 @@ def test_encoder_can_roundtrip_yacht_devices_packets_via_generic_api():
 @pytest.mark.parametrize(
     "output_format",
     [
-        N2KFormat.ACTISENSE_N2K_ASCII,
-        N2KFormat.YDRAW,
-        N2KFormat.YDRAW_OUT,
+        N2KFormat.N2K_ASCII,
+        N2KFormat.CAN_FRAME_ASCII_RAW,
+        N2KFormat.CAN_FRAME_ASCII_RAW_OUT,
         N2KFormat.PCDIN,
         N2KFormat.MXPGN,
         N2KFormat.PDGY,
@@ -238,8 +238,8 @@ def test_encoder_rejects_pdgy_debug_output():
 @pytest.mark.parametrize(
     "output_format",
     [
-        N2KFormat.YDRAW,
-        N2KFormat.YDRAW_OUT,
+        N2KFormat.CAN_FRAME_ASCII_RAW,
+        N2KFormat.CAN_FRAME_ASCII_RAW_OUT,
         N2KFormat.CANDUMP1,
         N2KFormat.CANDUMP2,
         N2KFormat.CANDUMP3,
@@ -259,7 +259,7 @@ def test_encoder_roundtrips_fast_packet_text_output_lists(output_format: N2KForm
 @pytest.mark.parametrize(
     "output_format",
     [
-        N2KFormat.ACTISENSE_N2K_ASCII,
+        N2KFormat.N2K_ASCII,
         N2KFormat.PCDIN,
         N2KFormat.MXPGN,
         N2KFormat.PDGY,

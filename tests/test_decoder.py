@@ -460,7 +460,7 @@ def test_iso_request_decode():
     decoder = _get_decoder()
     msg = decoder.decode("2012-06-17-15:02:11.000,6,59904,0,255,3,14,f0,01")
     assert isinstance(msg, NMEA2000Message)
-    encoder = NMEA2000Encoder(output_format=N2KFormat.USB)
+    encoder = NMEA2000Encoder(output_format=N2KFormat.WAVESHARE)
     msg_bytes = encoder.encode(msg)[0]
     assert isinstance(msg_bytes, bytes)
     msg2 = _get_decoder().decode(msg_bytes)

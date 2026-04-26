@@ -4,10 +4,9 @@ import argparse
 import time
 import math
 from typing import List
-from nmea2000.ioclient import Type
+from nmea2000.input_formats import N2KFormat
 from nmea2000.message import NMEA2000Message, NMEA2000Field
 from nmea2000.encoder import NMEA2000Encoder
-from nmea2000.input_formats import N2KFormat
 from nmea2000.consts import PhysicalQuantities, FieldTypes
 
 # Configure logging
@@ -20,7 +19,7 @@ logger = logging.getLogger("NMEA2000TestServer")
 class NMEA2000TestServer:
     """Test TCP server that simulates a NMEA2000 gateway."""
 
-    def __init__(self, host, port: int, type: Type):
+    def __init__(self, host, port: int, type: N2KFormat):
         """Initialize the test server.
 
         Args:
@@ -33,7 +32,7 @@ class NMEA2000TestServer:
         self.server = None
         self.clients: List[asyncio.StreamWriter] = []
         self.running = False
-        self.encoder = NMEA2000Encoder(output_format=N2KFormat.TCP)
+        self.encoder = NMEA2000Encoder(output_format=N2KFormat.EBYTE)
 
     async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         """Handle a new client connection."""
@@ -76,15 +75,15 @@ class NMEA2000TestServer:
 
     async def send_single_message(self):
         # Generate a test message
-        if self.type == Type.EBYTE:
+        if self.type == N2KFormat.EBYTE:
             message = self._generate_test_message()
 
             # Encode the message using the NMEA2000Encoder
             tcp_data = self.encoder.encode(message)[0]
             logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
-        elif self.type == Type.ACTISENSE:
+        elif self.type == N2KFormat.N2K_ASCII_RAW:
             tcp_data = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
-        elif self.type == Type.YACHT_DEVICES:
+        elif self.type == N2KFormat.CAN_FRAME_ASCII:
             tcp_data = "00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n".encode('utf-8')
         else:
             raise Exception ("Type not supported")
@@ -243,7 +242,7 @@ async def main():
     parser = argparse.ArgumentParser(description='NMEA2000 Test TCP Server')
     parser.add_argument('--host', type=str, default='127.0.0.1', help='Host address to bind to')
     parser.add_argument('--port', type=int, default=8881, help='Port to listen on')
-    parser.add_argument("--type", type=lambda s: Type[s.upper()], default=Type.ACTISENSE, help="Type of TCP server (e.g. EBYTE or ACTISENSE)")
+    parser.add_argument("--type", type=lambda s: N2KFormat[s.upper()], default=N2KFormat.N2K_ASCII_RAW, help="Type of TCP server (e.g. EBYTE or N2K_ASCII_RAW)")
     args = parser.parse_args()
 
     server = NMEA2000TestServer(host=args.host, port=args.port, type=args.type)

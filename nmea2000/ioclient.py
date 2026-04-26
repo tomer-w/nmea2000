@@ -60,12 +60,6 @@ class State(Enum):
     CONNECTED = 1
     CLOSED = 2
 
-class Type(Enum):
-    EBYTE = 0
-    ACTISENSE = 1
-    YACHT_DEVICES = 2
-    PYTHON_CAN = 3
-
 class AsyncIOClient(ABC):
     """Base class for asynchronous NMEA2000 clients.
     
@@ -116,6 +110,7 @@ class AsyncIOClient(ABC):
                  dump_pgns:list[int | str],
                  build_network_map: bool,
                  seed_network_map: bool,
+                 bound_format: N2KFormat | None = None,
                  ):
         """Initialize the AsyncIOClient.
         
@@ -133,6 +128,7 @@ class AsyncIOClient(ABC):
         self.status_callback = None
         self.queue = asyncio.Queue()
         self.decoder = NMEA2000Decoder(
+            bound_format=bound_format,
             exclude_pgns=exclude_pgns,
             include_pgns=include_pgns,
             exclude_manufacturer_code = exclude_manufacturer_code,
@@ -381,6 +377,7 @@ class EByteNmea2000Gateway(AsyncIOClient):
     
     This class implements a TCP client for connecting to NMEA2000 networks
     through TCP-based gateways like ECAN-E01 or ECAN-W01.
+    https://www.cdebyte.com/products/ECAN-E01
     """
     def __init__(self,
                  host: str,
@@ -410,7 +407,8 @@ class EByteNmea2000Gateway(AsyncIOClient):
             dump_to_file = dump_to_file,
             dump_pgns = dump_pgns,
             build_network_map = build_network_map,
-            seed_network_map = True)
+            seed_network_map = True,
+            bound_format = N2KFormat.EBYTE)
         self.host = host
         self.port = port
         self.lock = asyncio.Lock()
@@ -460,38 +458,39 @@ class EByteNmea2000Gateway(AsyncIOClient):
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.TCP)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.EBYTE)
     
 class TextNmea2000Gateway(AsyncIOClient):
-    """TCP implementation of AsyncIOClient for NMEA2000 Actisense gateways.
-    
-    This class implements a TCP client for connecting to NMEA2000 networks
-    through TCP-based gateways like Actisense W2K-1 or Yacht Devices YDEN-02.
+    """TCP client for text/line-based NMEA 2000 gateways.
+
+    Connects to any gateway that sends line-delimited ASCII frames over TCP
+    (e.g. Actisense W2K-1, Yacht Devices YDEN-02, Actisense PRO-NDC-1E2K in
+    CAN ASCII mode).  The ``format`` parameter selects how lines are parsed
+    and how outgoing messages are encoded.
     """
     def __init__(self,
                  host: str,
                  port: int, 
-                 type: Type,
-                 exclude_pgns:list[int | str], 
-                 include_pgns:list[int | str],
-                 exclude_manufacturer_code:list[str],
-                 include_manufacturer_code:list[str],
-                 preferred_units:dict[PhysicalQuantities, str],
-                 dump_to_file: str | None,
-                 dump_pgns:list[int | str],
-                 build_network_map: bool,
-                 seed_netwrok_map: bool):
+                 format: N2KFormat,
+                 exclude_pgns:list[int | str]=[],
+                 include_pgns:list[int | str]=[],
+                 exclude_manufacturer_code:list[str]=[],
+                 include_manufacturer_code:list[str]=[],
+                 preferred_units:dict[PhysicalQuantities, str]={},
+                 dump_to_file: str | None = None,
+                 dump_pgns:list[int | str]=[],
+                 build_network_map: bool = False,
+                 seed_network_map: bool = True):
         """Initialize a TCP NMEA2000 gateway client.
         
         Args:
             host: Server hostname or IP address.
             port: Server port number.
+            format: The N2KFormat used by this gateway for parsing and encoding.
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
+            seed_network_map: Whether to seed the network map on connect.
         """
-        if type != Type.ACTISENSE and type != Type.YACHT_DEVICES:
-            raise ValueError(f"Invalid type: {type}. Must be either ACTISENSE or YACHT_DEVICES.")
-        
         super().__init__(
             exclude_pgns = exclude_pgns,
             include_pgns = include_pgns,
@@ -501,34 +500,24 @@ class TextNmea2000Gateway(AsyncIOClient):
             dump_to_file = dump_to_file,
             dump_pgns = dump_pgns,
             build_network_map = build_network_map,
-            seed_network_map = seed_netwrok_map)
+            seed_network_map = seed_network_map,
+            bound_format = format)
         self.host = host
         self.port = port
-        self.type = type    
+        self.format = format
         self.lock = asyncio.Lock()
 
     async def _connect_impl(self):
-        """Connect to the TCP server.
-        
-        This method establishes a TCP connection to the server and configures
-        TCP keepalive to detect dropped connections. It's called by the
-        connect() method.
-        """
+        """Connect to the TCP server."""
         self.logger.info(f"Connecting to {self.host}:{self.port}")
         self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
-        # Get the underlying socket
         sock = self.writer.get_extra_info("socket")
         if sock:
             _configure_tcp_keepalive(sock)
         self.logger.info(f"Connected to {self.host}:{self.port}")
 
     async def _receive_impl(self):
-        """Receive data from the TCP connection.
-        
-        This method reads exactly 13 bytes from the TCP connection (the size of
-        a standard NMEA2000 message) and processes it. It's called repeatedly
-        by the _receive_loop() method.
-        """
+        """Receive a single text line from the TCP connection and decode it."""
         data = await self.reader.readline()
         self.logger.debug(f"Received: {data.hex()}")
         line = data.decode('utf-8', errors='ignore').strip()
@@ -542,105 +531,16 @@ class TextNmea2000Gateway(AsyncIOClient):
         if message is not None:
             await self.queue.put(message)
 
-class ActisenseNmea2000Gateway(TextNmea2000Gateway):
-    """TCP implementation of AsyncIOClient for NMEA2000 Actisense gateways.
-    
-    This class implements a TCP client for connecting to NMEA2000 networks
-    through TCP-based gateways like Actisense W2K-1.
-    """
-    def __init__(self,
-                host: str,
-                port: int, 
-                exclude_pgns:list[int | str]=[], 
-                include_pgns:list[int | str]=[],
-                exclude_manufacturer_code:list[str]=[],
-                include_manufacturer_code:list[str]=[],
-                preferred_units:dict[PhysicalQuantities, str]={},
-                dump_to_file: str | None = None,
-                dump_pgns:list[int | str]=[],
-                build_network_map: bool = False):
-        """Initialize a TCP NMEA2000 gateway client.
-        
-        Args:
-            host: Server hostname or IP address.
-            port: Server port number.
-            exclude_pgns: List of PGNs to exclude from processing.
-            include_pgns: List of PGNs to include for processing.
-        """        
-        super().__init__(
-            host = host,
-            port = port,
-            type = Type.ACTISENSE,
-            exclude_pgns = exclude_pgns,
-            include_pgns = include_pgns,
-            exclude_manufacturer_code = exclude_manufacturer_code,
-            include_manufacturer_code = include_manufacturer_code,
-            preferred_units = preferred_units,
-            dump_to_file = dump_to_file,
-            dump_pgns = dump_pgns,
-            build_network_map = build_network_map,
-            seed_netwrok_map = False)
-
-    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
-        """Encode a NMEA2000 message over the TCP connection.
-        
-        Args:
-            nmea2000Message: The NMEA2000Message object to encode.
-        """
-        raise NotImplementedError("Actisense encoding not implemented yet.")
-
-class YachtDevicesNmea2000Gateway(TextNmea2000Gateway):
-    """TCP implementation of AsyncIOClient for NMEA2000 Yacht Devices gateways.
-    
-    This class implements a TCP client for connecting to NMEA2000 networks
-    through TCP-based gateways like Yacht Devices YDEN-02.
-    """
-    def __init__(self,
-                 host: str,
-                 port: int, 
-                 exclude_pgns:list[int | str]=[], 
-                 include_pgns:list[int | str]=[],
-                 exclude_manufacturer_code:list[str]=[],
-                 include_manufacturer_code:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={},
-                 dump_to_file: str | None = None,
-                 dump_pgns:list[int | str]=[],
-                 build_network_map: bool = False):
-        """Initialize a TCP NMEA2000 gateway client.
-        
-        Args:
-            host: Server hostname or IP address.
-            port: Server port number.
-            exclude_pgns: List of PGNs to exclude from processing.
-            include_pgns: List of PGNs to include for processing.
-        """        
-        super().__init__(
-            host = host,
-            port = port,
-            type = Type.YACHT_DEVICES,
-            exclude_pgns = exclude_pgns,
-            include_pgns = include_pgns,
-            exclude_manufacturer_code = exclude_manufacturer_code,
-            include_manufacturer_code = include_manufacturer_code,
-            preferred_units = preferred_units,
-            dump_to_file = dump_to_file,
-            dump_pgns = dump_pgns,
-            build_network_map = build_network_map,
-            seed_netwrok_map = True)
-
-    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
-        """Encode a NMEA2000 message over the TCP connection.
-        
-        Args:
-            nmea2000Message: The NMEA2000Message object to encode.
-        """
-        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.YACHT_DEVICES)
+    def _encode_impl(self, nmea2000Message: NMEA2000Message):
+        """Encode a NMEA2000 message using the bound format."""
+        return self.encoder.encode(nmea2000Message, output_format=self.format)
 
 class WaveShareNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.
     
     This class implements a USB/Serial client for connecting to NMEA2000 networks
-    through serial-based gateways like ECAN-E01 or ECAN-W01.
+    through serial-based gateways like Waveshare USB-CAN-A
+    https://www.waveshare.com/wiki/USB-CAN-A
     """
     def __init__(self,
                  port: str,
@@ -668,7 +568,8 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             dump_to_file = dump_to_file,
             dump_pgns = dump_pgns,
             build_network_map = build_network_map,
-            seed_network_map = True)
+            seed_network_map = True,
+            bound_format = N2KFormat.WAVESHARE)
         self.port = port
         self._buffer = None
 
@@ -777,7 +678,7 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.USB)
+        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.WAVESHARE)
 
 class PythonCanAsyncIOClient(AsyncIOClient):
     """AsyncIOClient implementation for python-can supported devices.
@@ -816,7 +717,8 @@ class PythonCanAsyncIOClient(AsyncIOClient):
             dump_to_file=dump_to_file,
             dump_pgns=dump_pgns,
             build_network_map=build_network_map,
-            seed_network_map=True)
+            seed_network_map=True,
+            bound_format=N2KFormat.PYTHON_CAN)
         self.interface = interface
         self.channel = channel
         self.send_timeout = send_timeout
@@ -996,7 +898,8 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
             dump_to_file=dump_to_file,
             dump_pgns=dump_pgns,
             build_network_map=build_network_map,
-            seed_network_map=True)
+            seed_network_map=True,
+            bound_format=N2KFormat.BST_D0)
         self.host = host
         self.port = port
         self._buffer: bytearray | None = None

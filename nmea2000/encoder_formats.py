@@ -47,7 +47,7 @@ def _format_candump3_timestamp(timestamp: datetime) -> str:
     return f"({timestamp.timestamp():.6f})"
 
 
-def _encode_yacht_devices_packets(
+def _encode_can_frame_packets(
     encoder: EncoderBase,
     nmea200_message: NMEA2000Message,
 ) -> list[bytes]:
@@ -105,8 +105,8 @@ def _encode_python_can_messages(
     return result
 
 
-class ActisenseEncoder(EncoderInterface, EncoderBase):
-    """Encoder for Actisense packet strings."""
+class N2kAsciiRawEncoder(EncoderInterface, EncoderBase):
+    """Encoder for N2K ASCII raw (no timestamp) packet strings."""
 
     def _encode_packet(self, nmea200_message: NMEA2000Message) -> str:
         # Extract necessary fields
@@ -126,9 +126,9 @@ class ActisenseEncoder(EncoderInterface, EncoderBase):
         can_data_part = can_data_bytes.hex().upper()
 
         # Construct the final Actisense string
-        actisense_string = f"{first_part} {pgn_part} {can_data_part}"
-        logger.debug("Encoded Actisense string: %s", actisense_string)
-        return actisense_string
+        n2k_string = f"{first_part} {pgn_part} {can_data_part}"
+        logger.debug("Encoded N2K ASCII string: %s", n2k_string)
+        return n2k_string
 
     def encode(
         self,
@@ -139,8 +139,8 @@ class ActisenseEncoder(EncoderInterface, EncoderBase):
         return self._encode_packet(nmea200_message)
 
 
-class ActisenseN2kAsciiEncoder(ActisenseEncoder):
-    """Encoder for Actisense N2K ASCII output."""
+class N2kAsciiEncoder(N2kAsciiRawEncoder):
+    """Encoder for N2K ASCII output with timestamp."""
 
     def encode(
         self,
@@ -177,8 +177,8 @@ class BasicStringEncoder(EncoderInterface, EncoderBase):
         )
 
 
-class YachtDevicesEncoder(EncoderInterface, EncoderBase):
-    """Encoder for Yacht Devices packet strings."""
+class CanFrameAsciiEncoder(EncoderInterface, EncoderBase):
+    """Encoder for CAN Frame ASCII packet strings."""
 
     def encode(
         self,
@@ -186,11 +186,11 @@ class YachtDevicesEncoder(EncoderInterface, EncoderBase):
         output_format: N2KFormat | str | None = None,
     ) -> list[bytes]:
         self._assert_output_format(output_format)
-        return _encode_yacht_devices_packets(self, nmea200_message)
+        return _encode_can_frame_packets(self, nmea200_message)
 
 
-class YdrawOutEncoder(EncoderInterface, EncoderBase):
-    """Encoder for YDRAW output text."""
+class CanFrameAsciiRawOutEncoder(EncoderInterface, EncoderBase):
+    """Encoder for CAN Frame ASCII raw output text (no timestamp)."""
 
     def encode(
         self,
@@ -200,13 +200,13 @@ class YdrawOutEncoder(EncoderInterface, EncoderBase):
         self._assert_output_format(output_format)
         lines = [
             frame.decode("utf-8").rstrip("\r\n")
-            for frame in _encode_yacht_devices_packets(self, nmea200_message)
+            for frame in _encode_can_frame_packets(self, nmea200_message)
         ]
         return _match_text_output(lines)
 
 
-class YdrawEncoder(EncoderInterface, EncoderBase):
-    """Encoder for timestamped Yacht Devices text."""
+class CanFrameAsciiRawEncoder(EncoderInterface, EncoderBase):
+    """Encoder for timestamped CAN Frame ASCII text."""
 
     def encode(
         self,
@@ -217,7 +217,7 @@ class YdrawEncoder(EncoderInterface, EncoderBase):
         time_token = _format_time_of_day(nmea200_message.timestamp)
         lines = [
             f"{time_token} R {frame_text}"
-            for frame in _encode_yacht_devices_packets(self, nmea200_message)
+            for frame in _encode_can_frame_packets(self, nmea200_message)
             for frame_text in [frame.decode("utf-8").rstrip("\r\n")]
         ]
         return _match_text_output(lines)
@@ -486,12 +486,12 @@ class BstD0Encoder(EncoderInterface, EncoderBase):
         return message + bytes([checksum])
 
 
-NMEA2000Encoder.add_handler(N2KFormat.ACTISENSE, ActisenseEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.ACTISENSE_N2K_ASCII, ActisenseN2kAsciiEncoder)
+NMEA2000Encoder.add_handler(N2KFormat.N2K_ASCII_RAW, N2kAsciiRawEncoder)
+NMEA2000Encoder.add_handler(N2KFormat.N2K_ASCII, N2kAsciiEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.BASIC_STRING, BasicStringEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.YACHT_DEVICES, YachtDevicesEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.YDRAW, YdrawEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.YDRAW_OUT, YdrawOutEncoder)
+NMEA2000Encoder.add_handler(N2KFormat.CAN_FRAME_ASCII, CanFrameAsciiEncoder)
+NMEA2000Encoder.add_handler(N2KFormat.CAN_FRAME_ASCII_RAW, CanFrameAsciiRawEncoder)
+NMEA2000Encoder.add_handler(N2KFormat.CAN_FRAME_ASCII_RAW_OUT, CanFrameAsciiRawOutEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.PCDIN, PcdinEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.MXPGN, MxpgnEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.PDGY, PdgyEncoder)
@@ -499,7 +499,7 @@ NMEA2000Encoder.add_handler(N2KFormat.PDGY_DEBUG, PdgyDebugEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.CANDUMP1, Candump1Encoder)
 NMEA2000Encoder.add_handler(N2KFormat.CANDUMP2, Candump2Encoder)
 NMEA2000Encoder.add_handler(N2KFormat.CANDUMP3, Candump3Encoder)
-NMEA2000Encoder.add_handler(N2KFormat.TCP, TcpEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.USB, UsbEncoder)
+NMEA2000Encoder.add_handler(N2KFormat.EBYTE, TcpEncoder)
+NMEA2000Encoder.add_handler(N2KFormat.WAVESHARE, UsbEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.PYTHON_CAN, PythonCanEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.BST_D0, BstD0Encoder)

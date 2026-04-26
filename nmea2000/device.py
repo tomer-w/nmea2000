@@ -11,13 +11,12 @@ from pathlib import Path
 from typing import Any, Awaitable, Callable, Optional
 
 from .ioclient import (
-    ActisenseNmea2000Gateway,
     AsyncIOClient,
     EByteNmea2000Gateway,
     PythonCanAsyncIOClient,
     State,
+    TextNmea2000Gateway,
     WaveShareNmea2000Gateway,
-    YachtDevicesNmea2000Gateway,
 )
 from .message import IsoName, NMEA2000Field, NMEA2000Message
 
@@ -165,16 +164,23 @@ class N2KDevice:
         return cls(client, **device_options)
 
     @classmethod
-    def for_yacht_devices(
+    def for_text_gateway(
         cls,
         host: str,
         port: int,
+        format: "N2KFormat",
         *,
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
     ) -> "N2KDevice":
-        """Create a device that communicates through a Yacht Devices gateway."""
-        client = YachtDevicesNmea2000Gateway(host, port, **cls._prepare_client_options(client_options))
+        """Create a device that communicates through a text/line-based TCP gateway.
+
+        Args:
+            host: Server hostname or IP address.
+            port: Server port number.
+            format: The N2KFormat used by the gateway (e.g. CAN_FRAME_ASCII, N2K_ASCII_RAW).
+        """
+        client = TextNmea2000Gateway(host, port, format=format, **cls._prepare_client_options(client_options))
         return cls(client, **device_options)
 
     @classmethod
@@ -204,7 +210,7 @@ class N2KDevice:
         return cls(client, **device_options)
 
     @classmethod
-    def for_actisense(
+    def for_n2k_ascii(
         cls,
         host: str,
         port: int,
@@ -212,9 +218,10 @@ class N2KDevice:
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
     ) -> "N2KDevice":
-        """Create a device that communicates through an Actisense TCP gateway."""
-        client = ActisenseNmea2000Gateway(host, port, **cls._prepare_client_options(client_options))
-        return cls(client, **device_options)
+        """Convenience shortcut for ``for_text_gateway`` with N2K_ASCII_RAW format."""
+        from .input_formats import N2KFormat
+        return cls.for_text_gateway(host, port, N2KFormat.N2K_ASCII_RAW,
+                                    client_options=client_options, **device_options)
 
     async def start(self) -> None:
         """Connect the client and begin the device startup/address-claim sequence."""

@@ -504,11 +504,14 @@ class NMEA2000Decoder(DecoderInterface):
 
     def __init__(
         self,
+        bound_format: N2KFormat | None = None,
         **kwargs,
     ) -> None:
         self._handler_init_kwargs = kwargs
         self._delegate: DecoderInterface | None = None
         self._bound_format: N2KFormat | None = None
+        if bound_format is not None:
+            self._bind_delegate(bound_format)
 
     @classmethod
     def add_handler(cls, input_format: N2KFormat, handler_cls: type[DecoderInterface]) -> None:
@@ -543,6 +546,8 @@ class NMEA2000Decoder(DecoderInterface):
         data: N2KInput,
         single_line: bool = False,
     ) -> NMEA2000Message | None:
+        if self._delegate is not None:
+            return self._delegate.decode(data, single_line)
         input_format = detect_format(data)
         return self._bind_delegate(input_format).decode(data, single_line)
 

@@ -6,7 +6,7 @@ import sys
 import os
 
 import pytest
-from nmea2000.ioclient import Type
+from nmea2000.input_formats import N2KFormat
 from tests.NMEA2000TestServer import NMEA2000TestServer
 
 logging.basicConfig(
@@ -18,7 +18,7 @@ logger = logging.getLogger("test_cli")
 CLI_MODULE = [sys.executable, "-m", "nmea2000.cli"]
 
 
-ACTISENSE_FRAME = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF"
+N2K_ASCII_FRAME = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF"
 
 
 class TestCliDecode:
@@ -26,7 +26,7 @@ class TestCliDecode:
 
     def test_decode_frame(self):
         result = subprocess.run(
-            [*CLI_MODULE, "decode", "--frame", ACTISENSE_FRAME],
+            [*CLI_MODULE, "decode", "--frame", N2K_ASCII_FRAME],
             capture_output=True, text=True, timeout=10
         )
         assert result.returncode == 0
@@ -40,7 +40,7 @@ class TestCliDecode:
 
     def test_decode_frame_fields(self):
         result = subprocess.run(
-            [*CLI_MODULE, "decode", "--frame", ACTISENSE_FRAME],
+            [*CLI_MODULE, "decode", "--frame", N2K_ASCII_FRAME],
             capture_output=True, text=True, timeout=10
         )
         data = json.loads(result.stdout.strip())
@@ -58,7 +58,7 @@ class TestCliDecode:
 
     def test_decode_file(self, tmp_path):
         frame_file = tmp_path / "frames.txt"
-        frame_file.write_text(ACTISENSE_FRAME + "\n")
+        frame_file.write_text(N2K_ASCII_FRAME + "\n")
         result = subprocess.run(
             [*CLI_MODULE, "decode", "--file", str(frame_file)],
             capture_output=True, text=True, timeout=10
@@ -102,21 +102,21 @@ class TestCliTcpClientJson:
 
     @pytest.fixture
     async def actisense_server(self):
-        server = NMEA2000TestServer("127.0.0.1", 18881, Type.ACTISENSE)
+        server = NMEA2000TestServer("127.0.0.1", 18881, N2KFormat.N2K_ASCII_RAW)
         await server.start()
         yield server
         await server.stop()
 
     @pytest.fixture
     async def ebyte_server(self):
-        server = NMEA2000TestServer("127.0.0.1", 18882, Type.EBYTE)
+        server = NMEA2000TestServer("127.0.0.1", 18882, N2KFormat.EBYTE)
         await server.start()
         yield server
         await server.stop()
 
     @pytest.fixture
     async def yacht_devices_server(self):
-        server = NMEA2000TestServer("127.0.0.1", 18883, Type.YACHT_DEVICES)
+        server = NMEA2000TestServer("127.0.0.1", 18883, N2KFormat.CAN_FRAME_ASCII)
         await server.start()
         yield server
         await server.stop()
@@ -127,7 +127,7 @@ class TestCliTcpClientJson:
         proc = await asyncio.create_subprocess_exec(
             *CLI_MODULE, "tcp_client",
             "--server", "127.0.0.1", "--port", "18881",
-            "--type", "ACTISENSE", "--json",
+            "--type", "N2K_ASCII_RAW", "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
@@ -213,7 +213,7 @@ class TestCliTcpClientJson:
         proc = await asyncio.create_subprocess_exec(
             *CLI_MODULE, "tcp_client",
             "--server", "127.0.0.1", "--port", "18883",
-            "--type", "YACHT_DEVICES", "--json",
+            "--type", "CAN_FRAME_ASCII", "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
@@ -258,7 +258,7 @@ class TestCliTcpClientJson:
         proc = await asyncio.create_subprocess_exec(
             *CLI_MODULE, "tcp_client",
             "--server", "127.0.0.1", "--port", "18881",
-            "--type", "ACTISENSE",
+            "--type", "N2K_ASCII_RAW",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
@@ -303,7 +303,7 @@ class TestCliTcpClientJson:
         proc = await asyncio.create_subprocess_exec(
             *CLI_MODULE, "tcp_client",
             "--server", "127.0.0.1", "--port", "18881",
-            "--type", "ACTISENSE", "--json",
+            "--type", "N2K_ASCII_RAW", "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
@@ -352,7 +352,7 @@ class TestCliTcpClientJson:
         proc = await asyncio.create_subprocess_exec(
             *CLI_MODULE, "tcp_client",
             "--server", "127.0.0.1", "--port", "18881",
-            "--type", "ACTISENSE", "--json",
+            "--type", "N2K_ASCII_RAW", "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,

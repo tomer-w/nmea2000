@@ -6,7 +6,7 @@ import logging
 import can.cli
 
 from .message import NMEA2000Message
-from .ioclient import ActisenseNmea2000Gateway, AsyncIOClient, EByteNmea2000Gateway, State, Type, WaveShareNmea2000Gateway, YachtDevicesNmea2000Gateway, PythonCanAsyncIOClient
+from .ioclient import AsyncIOClient, EByteNmea2000Gateway, State, WaveShareNmea2000Gateway, TextNmea2000Gateway, PythonCanAsyncIOClient
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
 from .input_formats import N2KFormat
@@ -148,16 +148,16 @@ async def async_main():
 
     def parse_type(value):
         try:
-            return Type[value.upper()]
+            return N2KFormat[value.upper()]
         except KeyError:
-            valid = ", ".join(t.name for t in Type)
+            valid = ", ".join(f.name for f in N2KFormat)
             raise argparse.ArgumentTypeError(f"Invalid type: {value}. Valid options are: {valid}.")
 
     tcp_client_parser.add_argument(
         "--type",
         type=parse_type,
         required=True,
-        help="Type of TCP server (EBYTE, ACTISENSE, or YACHT_DEVICES)"
+        help="Type of TCP server (EBYTE, N2K_ASCII_RAW, or CAN_FRAME_ASCII)"
     )
     tcp_client_parser.add_argument(
         "--json",
@@ -224,7 +224,7 @@ async def async_main():
             exit(1)
 
     elif args.command == "encode":
-        encoder = NMEA2000Encoder(output_format=N2KFormat.ACTISENSE)
+        encoder = NMEA2000Encoder(output_format=N2KFormat.N2K_ASCII_RAW)
 
         # Encode from a frame json
         if args.frame:
@@ -245,15 +245,12 @@ async def async_main():
             
     elif args.command == "tcp_client":
         # Create TCP client passing callbacks in constructor
-        if args.type == Type.EBYTE:
+        if args.type == N2KFormat.EBYTE:
             logger.info("Using EByteNmea2000Gateway with server: %s, port: %d", args.server, args.port)
             client = EByteNmea2000Gateway(args.server, args.port)
-        elif args.type == Type.ACTISENSE:
-            logger.info("Using ActisenseNmea2000Gateway with server: %s, port: %d", args.server, args.port)
-            client = ActisenseNmea2000Gateway(args.server, args.port)            
-        elif args.type == Type.YACHT_DEVICES:
-            logger.info("Using YachtDevicesNmea2000Gateway with server: %s, port: %d", args.server, args.port)
-            client = YachtDevicesNmea2000Gateway(args.server, args.port)            
+        else:
+            logger.info("Using TextNmea2000Gateway (%s) with server: %s, port: %d", args.type, args.server, args.port)
+            client = TextNmea2000Gateway(args.server, args.port, format=args.type)            
         await interactive_client(client, json_output=args.json)
     elif args.command == "usb_client":
         # Create USB client passing callbacks in constructor

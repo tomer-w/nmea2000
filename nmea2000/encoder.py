@@ -31,7 +31,7 @@ class EncoderInterface(ABC):
 class EncoderBase:
     """Shared encoder mechanics used by concrete format handlers."""
 
-    def __init__(self, output_format: N2KFormat | str = N2KFormat.ACTISENSE) -> None:
+    def __init__(self, output_format: N2KFormat | str = N2KFormat.N2K_ASCII_RAW) -> None:
         # Sequence counter (3 bits)
         self.sequence_counter = 0
         self.output_format = self._normalize_output_format(output_format)
@@ -160,7 +160,7 @@ class NMEA2000Encoder(EncoderInterface):
 
     HANDLERS: dict[N2KFormat, type[EncoderInterface]] = {}
 
-    def __init__(self, output_format: N2KFormat | str = N2KFormat.ACTISENSE):
+    def __init__(self, output_format: N2KFormat | str = N2KFormat.N2K_ASCII_RAW):
         self.output_format = EncoderBase._normalize_output_format(output_format)
         self._delegate: EncoderInterface | None = None
 

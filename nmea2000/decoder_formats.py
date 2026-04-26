@@ -130,17 +130,17 @@ def _decode_combined_payload(
     )
 
 
-class ActisenseDecoder(DecoderBase, DecoderInterface):
-    """Decoder for Actisense ASCII output format.
+class N2kAsciiDecoder(DecoderBase, DecoderInterface):
+    """Decoder for N2K ASCII output format.
 
     Examples:
         ``A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF``
         ``09FF7 0FF00 3F9FDCFFFFFFFFFF``
     """
 
-    def _decode_text(self, actisense_string: str) -> NMEA2000Message | None:
-        # Split the Actisense string by spaces
-        parts = actisense_string.split()
+    def _decode_text(self, n2k_ascii_string: str) -> NMEA2000Message | None:
+        # Split the N2K ASCII string by spaces
+        parts = n2k_ascii_string.split()
 
         if len(parts) == 4 and parts[0].startswith("A"):
             # Extract the timestamp from the first part
@@ -159,7 +159,7 @@ class ActisenseDecoder(DecoderBase, DecoderInterface):
             pgn = int(parts[1], 16)
             bytes_data = bytes.fromhex(parts[2])
         else:
-            raise ValueError("Invalid Actisense string format")
+            raise ValueError("Invalid N2K ASCII string format")
 
         priority = n & 0xF
         dest = (n >> 4) & 0xFF
@@ -260,17 +260,17 @@ class BasicStringDecoder(DecoderBase, DecoderInterface):
         return _decode_text_lines(lines, self._decode_text)
 
 
-class YachtDevicesDecoder(DecoderBase, DecoderInterface):
-    """Decoder for Yacht Devices text format.
+class CanFrameAsciiDecoder(DecoderBase, DecoderInterface):
+    """Decoder for CAN Frame ASCII text format.
 
     Examples:
         ``00:01:54.330 R 15FD0A10 00 00 00 68 65 0F 00 FF``
         ``01F010B3 FF FF 0C 4F 70 BE 3E 33``
     """
 
-    def _decode_text(self, yd_string: str) -> NMEA2000Message | None:
-        # Split the YD string by spaces
-        parts = yd_string.split()
+    def _decode_text(self, can_frame_line: str) -> NMEA2000Message | None:
+        # Split the CAN Frame ASCII string by spaces
+        parts = can_frame_line.split()
 
         if len(parts) >= 4 and parts[1] in ["R", "T"]:
             # Extract the timestamp from the first part
@@ -284,7 +284,7 @@ class YachtDevicesDecoder(DecoderBase, DecoderInterface):
             msgid = int(parts[0], 16)
             can_data_parts = parts[1:]
         else:
-            raise ValueError("Invalid Yacht Devices string format")
+            raise ValueError("Invalid CAN Frame ASCII string format")
 
         pgn_id, source_id, dest, priority = type(self).extract_header(msgid)
         # Extract the CAN data from the remaining parts
@@ -308,7 +308,7 @@ class YachtDevicesDecoder(DecoderBase, DecoderInterface):
             dest,
             timestamp,
             bytes(can_data_bytes),
-            yd_string,
+            can_frame_line,
         )
 
     def decode(
@@ -749,12 +749,12 @@ class BstD0Decoder(DecoderBase, DecoderInterface):
         )
 
 
-NMEA2000Decoder.add_handler(N2KFormat.ACTISENSE, ActisenseDecoder)
-NMEA2000Decoder.add_handler(N2KFormat.ACTISENSE_N2K_ASCII, ActisenseDecoder)
+NMEA2000Decoder.add_handler(N2KFormat.N2K_ASCII_RAW, N2kAsciiDecoder)
+NMEA2000Decoder.add_handler(N2KFormat.N2K_ASCII, N2kAsciiDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.BASIC_STRING, BasicStringDecoder)
-NMEA2000Decoder.add_handler(N2KFormat.YACHT_DEVICES, YachtDevicesDecoder)
-NMEA2000Decoder.add_handler(N2KFormat.YDRAW, YachtDevicesDecoder)
-NMEA2000Decoder.add_handler(N2KFormat.YDRAW_OUT, YachtDevicesDecoder)
+NMEA2000Decoder.add_handler(N2KFormat.CAN_FRAME_ASCII, CanFrameAsciiDecoder)
+NMEA2000Decoder.add_handler(N2KFormat.CAN_FRAME_ASCII_RAW, CanFrameAsciiDecoder)
+NMEA2000Decoder.add_handler(N2KFormat.CAN_FRAME_ASCII_RAW_OUT, CanFrameAsciiDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.PCDIN, PcdinDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.MXPGN, MxpgnDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.PDGY, PdgyDecoder)
@@ -762,7 +762,7 @@ NMEA2000Decoder.add_handler(N2KFormat.PDGY_DEBUG, PdgyDebugDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.CANDUMP1, Candump1Decoder)
 NMEA2000Decoder.add_handler(N2KFormat.CANDUMP2, Candump2Decoder)
 NMEA2000Decoder.add_handler(N2KFormat.CANDUMP3, Candump3Decoder)
-NMEA2000Decoder.add_handler(N2KFormat.TCP, TcpDecoder)
-NMEA2000Decoder.add_handler(N2KFormat.USB, UsbDecoder)
+NMEA2000Decoder.add_handler(N2KFormat.EBYTE, TcpDecoder)
+NMEA2000Decoder.add_handler(N2KFormat.WAVESHARE, UsbDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.PYTHON_CAN, PythonCanDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.BST_D0, BstD0Decoder)
