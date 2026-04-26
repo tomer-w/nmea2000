@@ -150,8 +150,85 @@ async def test_single_message_CAN_FRAME_ASCII():
     await client.close()
     await server.stop()
 
-# @pytest.mark.asyncio
-# async def test_server():
-#     server = NMEA2000TestServer("127.0.0.1", 8881, Type.YACHT_DEVICES)
-#     await server.start()
-#     await server.broadcast_test_messages()
+
+@pytest.mark.asyncio
+async def test_auto_sense_decodes_n2k_ascii():
+    """TextNmea2000Gateway with format=None should auto-detect N2K ASCII."""
+    receive_queue = asyncio.Queue()
+    receive_signal = asyncio.Event()
+
+    async def on_message(message: NMEA2000Message):
+        await receive_queue.put(message)
+        receive_signal.set()
+
+    server = NMEA2000TestServer("127.0.0.1", 8881, N2KFormat.N2K_ASCII_RAW)
+    client = TextNmea2000Gateway("127.0.0.1", 8881, format=None, seed_network_map=False)
+    client.set_receive_callback(on_message)
+
+    await server.start()
+    await client.connect()
+    await _wait_for_server_client(server)
+
+    try:
+        await server.send_to_clients(
+            "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode("utf-8")
+        )
+        await asyncio.wait_for(receive_signal.wait(), timeout=10)
+    except asyncio.TimeoutError:
+        raise AssertionError("Timed out waiting for auto-sensed message")
+
+    msg = await receive_queue.get()
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 65280
+
+    await client.close()
+    await server.stop()
+
+
+@pytest.mark.asyncio
+async def test_auto_sense_decodes_can_frame_ascii():
+    """TextNmea2000Gateway with format=None should auto-detect CAN Frame ASCII."""
+    receive_queue = asyncio.Queue()
+    receive_signal = asyncio.Event()
+
+    async def on_message(message: NMEA2000Message):
+        await receive_queue.put(message)
+        receive_signal.set()
+
+    server = NMEA2000TestServer("127.0.0.1", 8881, N2KFormat.CAN_FRAME_ASCII)
+    client = TextNmea2000Gateway("127.0.0.1", 8881, format=None, seed_network_map=False)
+    client.set_receive_callback(on_message)
+
+    await server.start()
+    await client.connect()
+    await _wait_for_server_client(server)
+
+    try:
+        await server.send_to_clients(
+            "00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n".encode("utf-8")
+        )
+        await asyncio.wait_for(receive_signal.wait(), timeout=10)
+    except asyncio.TimeoutError:
+        raise AssertionError("Timed out waiting for auto-sensed message")
+
+    msg = await receive_queue.get()
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 127257
+
+    await client.close()
+    await server.stop()
+
+
+@pytest.mark.asyncio
+async def test_auto_sense_encode_raises():
+    """Encoding must fail when format=None (auto-sense mode)."""
+    from nmea2000.ioclient import TextNmea2000Gateway as _TG
+    client = _TG("127.0.0.1", 8881, format=None, seed_network_map=False)
+    dummy_msg = NMEA2000Message.from_json(
+        '{"PGN":59904,"id":"isoRequest","description":"ISO Request",'
+        '"fields":[{"id":"pgn","name":"PGN","value":60928,"raw_value":60928}],'
+        '"source":0,"destination":255,"priority":6,'
+        '"timestamp":"2012-06-17T15:02:11"}'
+    )
+    with pytest.raises(ValueError, match="auto-sense"):
+        client._encode_impl(dummy_msg)

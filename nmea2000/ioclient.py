@@ -466,12 +466,14 @@ class TextNmea2000Gateway(AsyncIOClient):
     Connects to any gateway that sends line-delimited ASCII frames over TCP
     (e.g. Actisense W2K-1, Yacht Devices YDEN-02, Actisense PRO-NDC-1E2K in
     CAN ASCII mode).  The ``format`` parameter selects how lines are parsed
-    and how outgoing messages are encoded.
+    and how outgoing messages are encoded.  When ``format`` is ``None`` the
+    gateway auto-detects the format from the first received message; encoding
+    is not available in that mode.
     """
     def __init__(self,
                  host: str,
                  port: int, 
-                 format: N2KFormat,
+                 format: N2KFormat | None = None,
                  exclude_pgns:list[int | str]=[],
                  include_pgns:list[int | str]=[],
                  exclude_manufacturer_code:list[str]=[],
@@ -487,6 +489,8 @@ class TextNmea2000Gateway(AsyncIOClient):
             host: Server hostname or IP address.
             port: Server port number.
             format: The N2KFormat used by this gateway for parsing and encoding.
+                When ``None``, the format is auto-detected from the first
+                received message (encoding is disabled in this mode).
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
             seed_network_map: Whether to seed the network map on connect.
@@ -533,6 +537,11 @@ class TextNmea2000Gateway(AsyncIOClient):
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message):
         """Encode a NMEA2000 message using the bound format."""
+        if self.format is None:
+            raise ValueError(
+                "Cannot encode: this gateway was created with format=None "
+                "(auto-sense mode). Specify an explicit format to enable encoding."
+            )
         return self.encoder.encode(nmea2000Message, output_format=self.format)
 
 class WaveShareNmea2000Gateway(AsyncIOClient):
