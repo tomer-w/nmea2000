@@ -13,7 +13,7 @@ This package is the backend for the Home Assistant [NMEA 2000 Integration](https
      - **Text** — any line-based ASCII TCP gateway with auto-sensing or explicit format selection (e.g. [Actisense W2K-1](https://actisense.com/products/w2k-1-nmea-2000-wifi-gateway/), [Yacht Devices YDEN-02](https://yachtdevicesus.com/products/nmea-2000-ethernet-gateway-yden-02), [Actisense PRO-NDC-1E2K](https://actisense.com/products/pro-ndc-1e2k/) in CAN ASCII mode)
      - **Actisense BST** — Actisense devices using the [BST binary protocol](https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/BST.md) over TCP, supporting both [BST-95](https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/bst-detail/BST-95-can-frame.md) (raw CAN frames) and [BST-D0](https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/bst-detail/BST-D0.md) (pre-assembled N2K). Compatible with the [PRO-NDC-1E2K](https://actisense.com/products/pro-ndc-1e2k/) and [W2K-1](https://actisense.com/products/w2k-1-nmea-2000-wifi-gateway/) in CAN Actisense mode
      - **WaveShare** — USB serial devices like [Waveshare USB-CAN-A](https://www.waveshare.com/wiki/USB-CAN-A)
-     - **python-can** — any generic USB or SocketCAN device supported by the python-can library
+     - **python-can** — any generic USB or SocketCAN device [supported by the python-can library](https://python-can.readthedocs.io/en/stable/interfaces.html)
 - **PGN-specific parsing**: Handle various PGNs with specific parsing rules based on [canboat](https://canboat.github.io/canboat/canboat.html).
 - **Stateful decoder**: The decoder supports NMEA 2000 fast messages, which are split across multiple CANBUS messages.
 - **CLI support**: Built-in command-line interface for encoding and decoding frames.
