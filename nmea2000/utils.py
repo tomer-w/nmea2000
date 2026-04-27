@@ -1,9 +1,13 @@
 # Standard Library Imports
 
 from datetime import date, timedelta
+import logging
 import struct
 import math
 from datetime import time
+
+logger = logging.getLogger(__name__)
+
 
 def kelvin_to_fahrenheit(kelvin: float | None) -> float | None:
     """
@@ -13,9 +17,9 @@ def kelvin_to_fahrenheit(kelvin: float | None) -> float | None:
     """
     if kelvin is None:
         return None
-    
+
     # Convert Kelvin to Fahrenheit
-    fahrenheit = round((kelvin - 273.15) * (9/5) + 32,0)
+    fahrenheit = round((kelvin - 273.15) * (9 / 5) + 32, 0)
 
     return fahrenheit
 
@@ -30,9 +34,10 @@ def kelvin_to_celsius(kelvin: float | None) -> float | None:
         return None
 
     # Convert Kelvin to Celsius
-    celsius = round(kelvin - 273.15,2)
+    celsius = round(kelvin - 273.15, 2)
 
     return celsius
+
 
 def pascal_to_bar(pascal: float | None) -> float | None:
     if pascal is None:
@@ -43,6 +48,7 @@ def pascal_to_bar(pascal: float | None) -> float | None:
 
     return bar
 
+
 def pascal_to_PSI(pascal: float | None) -> float | None:
     if pascal is None:
         return None
@@ -52,6 +58,7 @@ def pascal_to_PSI(pascal: float | None) -> float | None:
 
     return PSI
 
+
 def mps_to_knots(mps: float | None) -> float | None:
     """
     Converts speed from meters per second (m/s) to nautical knots.
@@ -60,10 +67,10 @@ def mps_to_knots(mps: float | None) -> float | None:
     """
     if mps is None:
         return None
-    
+
     # Conversion factor from m/s to knots
     conversion_factor = 3600 / 1852
-    
+
     # Convert m/s to knots and round to one decimal place
     knots = round(mps * conversion_factor, 1)
 
@@ -83,6 +90,7 @@ def radians_to_degrees(radians: float | None) -> float | None:
     degrees = round(math.degrees(radians), 0)
     return degrees
 
+
 def decode_int(data_raw: int, bit_offset: int, bit_length: int) -> int:
     data_raw = data_raw >> bit_offset
     # Create a mask with the desired number of bits set to 1
@@ -91,24 +99,26 @@ def decode_int(data_raw: int, bit_offset: int, bit_length: int) -> int:
     result = data_raw & mask
     return result
 
+
 def decode_date(days_since_epoch: int | float | None) -> date | None:
     """
     Decodes an integer representing the number of days since 1970-01-01 (UNIX epoch)
     """
     if days_since_epoch is None:
         return None
-    
+
     # Ensure the input is treated as an integer
     days_since_epoch = int(days_since_epoch)
-    
+
     # Define the start date as 1970-01-01
     start_date = date(1970, 1, 1)
-    
+
     # Calculate the decoded date by adding the days to the start date
     decoded_date = start_date + timedelta(days=days_since_epoch)
 
     # Format and return the date string
     return decoded_date
+
 
 def encode_date(decoded_date: date | None, bit_length: int = 16) -> int:
     """
@@ -119,7 +129,7 @@ def encode_date(decoded_date: date | None, bit_length: int = 16) -> int:
 
     # Define the start date as 1970-01-01
     start_date = date(1970, 1, 1)
-    
+
     # Calculate the number of days since the start date
     days_since_epoch = (decoded_date - start_date).days
 
@@ -148,6 +158,7 @@ def decode_time(seconds_since_midnight: int | float | None) -> time | None:
 
     return time(hour=hours, minute=minutes, second=seconds)
 
+
 def encode_time(time: time | None, bit_length: int) -> int:
     """
     Encodes a time object into an integer representing the number of seconds since midnight.
@@ -162,7 +173,6 @@ def encode_time(time: time | None, bit_length: int) -> int:
     seconds_since_midnight = time.hour * 3600 + time.minute * 60 + time.second
 
     return seconds_since_midnight
-
 
 
 def decode_decimal(number_int: int | None) -> int | None:
@@ -183,6 +193,7 @@ def decode_decimal(number_int: int | None) -> int | None:
 
     return decimal_value
 
+
 def encode_decimal(decimal_value: int | float | None) -> int | None:
     """
     Encodes a numeric value into BCD format where each byte represents 2 decimal digits.
@@ -196,13 +207,16 @@ def encode_decimal(decimal_value: int | float | None) -> int | None:
     while decimal_value > 0:
         two_digits = int(decimal_value % 100)
         bcd_byte = ((two_digits // 10) << 4) | (two_digits % 10)
-        number_int |= (bcd_byte << shift)
+        number_int |= bcd_byte << shift
         decimal_value //= 100
         shift += 8
 
     return number_int
 
-def decode_float(data_raw: int, bit_offset: int, bit_length: int, min_value: float, max_value: float) -> float:
+
+def decode_float(
+    data_raw: int, bit_offset: int, bit_length: int, min_value: float, max_value: float
+) -> float | None:
     """
     Decodes a 32-bit integer representing an IEEE-754 floating-point number in little endian format into a Python float.
     """
@@ -212,17 +226,22 @@ def decode_float(data_raw: int, bit_offset: int, bit_length: int, min_value: flo
         return 0
 
     # Convert the integer to bytes. The '<I' format specifies little-endian unsigned 32-bit integer.
-    bytes_data = struct.pack('<I', number_int)
+    bytes_data = struct.pack("<I", number_int)
 
     # Unpack the bytes to a float using the '<f' format which specifies little-endian 32-bit floating point.
-    decoded_float, = struct.unpack('<f', bytes_data)
+    (decoded_float,) = struct.unpack("<f", bytes_data)
 
-    if decoded_float < min_value:
-        raise ValueError("Value below minimum allowed")
-    if decoded_float > max_value:
-        raise ValueError("Value above maximum allowed")
+    if decoded_float < min_value or decoded_float > max_value:
+        logger.info(
+            "Float value %s out of range [%s, %s], treating as unavailable",
+            decoded_float,
+            min_value,
+            max_value,
+        )
+        return None
 
     return decoded_float
+
 
 def encode_float(float_number: float | None) -> int:
     """
@@ -232,15 +251,23 @@ def encode_float(float_number: float | None) -> int:
         raise ValueError("Cannot encode None as a float")
 
     # Pack the float into bytes using the '<f' format which specifies little-endian 32-bit floating point.
-    bytes_data = struct.pack('<f', float_number)
+    bytes_data = struct.pack("<f", float_number)
 
     # Unpack the bytes to an integer using the '<I' format which specifies little-endian unsigned 32-bit integer.
-    encoded_int, = struct.unpack('<I', bytes_data)
+    (encoded_int,) = struct.unpack("<I", bytes_data)
 
     return encoded_int
 
 
-def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool, resolution: float, min_value: float, max_value: float) -> float | None:
+def decode_number(
+    data_raw: int,
+    bit_offset: int,
+    bit_length: int,
+    signed: bool,
+    resolution: float,
+    min_value: float,
+    max_value: float,
+) -> float | None:
     """
     The function follows specific decoding rules based on the bit length of the number:
     - For numbers using 2 or 3 bits, the maximum value indicates the field is not present (None is returned).
@@ -252,31 +279,35 @@ def decode_number(data_raw: int, bit_offset: int, bit_length: int, signed: bool,
     if signed:
         signed_mask = 1 << (bit_length - 1)
         if number_int & signed_mask != 0:
-            number_int -= (1 << bit_length)
+            number_int -= 1 << bit_length
 
     if bit_length <= 3:
         if number_int == (1 << bit_length) - 1:
             return None
     elif bit_length >= 4:
-        max_positive_value = (1 << bit_length) - 1 if not signed else (1 << (bit_length - 1)) - 1
+        max_positive_value = (
+            (1 << bit_length) - 1 if not signed else (1 << (bit_length - 1)) - 1
+        )
         if number_int in (max_positive_value, max_positive_value - 1):
             return None
 
     # adjust resolution
     number_int *= resolution
 
-    if number_int < min_value:
-        raise ValueError("Value below minimum allowed")
-    if number_int > max_value:
-        raise ValueError("Value above maximum allowed")
+    if number_int < min_value or number_int > max_value:
+        logger.info(
+            "Number value %s out of range [%s, %s], treating as unavailable",
+            number_int,
+            min_value,
+            max_value,
+        )
+        return None
 
     return number_int
 
+
 def encode_number(
-    value: float | None,
-    bit_length: int,
-    signed: bool,
-    resolution: float
+    value: float | None, bit_length: int, signed: bool, resolution: float
 ) -> int:
     """
     Encodes a number into a bitfield within an integer.
@@ -315,7 +346,9 @@ def encode_number(
     return number_int
 
 
-def encode_number_raw(raw_value: int | float | None, bit_length: int, signed: bool) -> int:
+def encode_number_raw(
+    raw_value: int | float | None, bit_length: int, signed: bool
+) -> int:
     if raw_value is None:
         return encode_number(None, bit_length, signed, 1)
 
@@ -343,7 +376,9 @@ def encode_number_raw(raw_value: int | float | None, bit_length: int, signed: bo
     return raw_value
 
 
-def raw_number_matches_value(raw_value: int | float | None, value: float | None, resolution: float) -> bool:
+def raw_number_matches_value(
+    raw_value: int | float | None, value: float | None, resolution: float
+) -> bool:
     if not isinstance(raw_value, int):
         return False
     if value is None:
@@ -355,63 +390,73 @@ def raw_number_matches_value(raw_value: int | float | None, value: float | None,
         abs_tol=max(abs(resolution) * 50, 1e-3),
     )
 
+
 def decode_bit_lookup(data_raw: int, bit_lookup_dict: dict) -> str:
     bit = 0
     flags = []
-    while data_raw !=0:
+    while data_raw != 0:
         if data_raw & 1 == 1:
             str = bit_lookup_dict.get(bit, None)
             if str is not None:
                 flags.append(str)
-        bit +=1
+        bit += 1
         data_raw >>= 1
-    return ', '.join(flags)
+    return ", ".join(flags)
+
 
 def decode_string_fix(data_raw: int, bit_offset: int, bit_length: int) -> str:
     decoded_str, _ = decode_string_fix_raw(data_raw, bit_offset, bit_length)
     return decoded_str
 
 
-def decode_string_fix_raw(data_raw: int, bit_offset: int, bit_length: int) -> tuple[str, bytes]:
+def decode_string_fix_raw(
+    data_raw: int, bit_offset: int, bit_length: int
+) -> tuple[str, bytes]:
     number_int = decode_int(data_raw, bit_offset, bit_length)
     num_bytes = (bit_length + 7) // 8
-    byte_arr = number_int.to_bytes(num_bytes, 'little')
-    decoded_str = byte_arr.decode('utf-8', errors='ignore')
-    decoded_str = decoded_str.split('\x00', 1)[0]
-    decoded_str = decoded_str.split('\xff', 1)[0]
-    decoded_str = decoded_str.split('@', 1)[0]
+    byte_arr = number_int.to_bytes(num_bytes, "little")
+    decoded_str = byte_arr.decode("utf-8", errors="ignore")
+    decoded_str = decoded_str.split("\x00", 1)[0]
+    decoded_str = decoded_str.split("\xff", 1)[0]
+    decoded_str = decoded_str.split("@", 1)[0]
     decoded_str = decoded_str.strip()
     return decoded_str, byte_arr
-    
+
+
 def decode_string_lz(data_raw: int, bit_offset: int) -> str:
     data_raw = data_raw >> bit_offset
     byte_arr = data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
     str_len = byte_arr[0]
     byte_arr_str = byte_arr[1 : 1 + str_len]
-    decoded_str = byte_arr_str.decode('utf-8', errors='ignore')
+    decoded_str = byte_arr_str.decode("utf-8", errors="ignore")
     return decoded_str
-    
+
+
 def decode_string_lau(data_raw: int, bit_offset: int) -> tuple[str | None, int]:
     data_raw = data_raw >> bit_offset
-    byte_arr = data_raw.to_bytes(((data_raw.bit_length() + 7) // 8)+1, byteorder='little')
+    byte_arr = data_raw.to_bytes(
+        ((data_raw.bit_length() + 7) // 8) + 1, byteorder="little"
+    )
     if len(byte_arr) < 2:
         return None, len(byte_arr)
     str_len = byte_arr[0]
     is_asci = byte_arr[1]
-    byte_arr_str = byte_arr[2 : str_len]
+    byte_arr_str = byte_arr[2:str_len]
     if is_asci:
-        decoded_str = byte_arr_str.decode('utf-8', errors='ignore')
+        decoded_str = byte_arr_str.decode("utf-8", errors="ignore")
     else:
-        decoded_str = byte_arr_str.decode('utf-16', errors='ignore')
-    return decoded_str, str_len*8
-    
+        decoded_str = byte_arr_str.decode("utf-16", errors="ignore")
+    return decoded_str, str_len * 8
+
 
 def calculate_canbus_checksum(data) -> int:
     checksum = sum(data[2:19])
-    return checksum & 0xff
+    return checksum & 0xFF
 
 
-def encode_string_fix(value: str | bytes | bytearray | memoryview | None, bit_length: int) -> int:
+def encode_string_fix(
+    value: str | bytes | bytearray | memoryview | None, bit_length: int
+) -> int:
     if value is None:
         encoded = b""
     elif isinstance(value, memoryview):
@@ -427,7 +472,9 @@ def encode_string_fix(value: str | bytes | bytearray | memoryview | None, bit_le
     if len(encoded) > byte_length:
         raise ValueError(f"STRING_FIX value is too long for {byte_length} bytes")
 
-    return int.from_bytes(encoded.ljust(byte_length, b"\x00"), byteorder="little", signed=False)
+    return int.from_bytes(
+        encoded.ljust(byte_length, b"\x00"), byteorder="little", signed=False
+    )
 
 
 def encode_string_lz(value: str | bytes | bytearray | memoryview | None) -> bytes:
@@ -539,4 +586,3 @@ def encode_iso_name(value) -> int:
         raise ValueError("ISO_NAME cannot be negative")
 
     return value
-
