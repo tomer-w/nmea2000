@@ -15,7 +15,7 @@ from .consts import PhysicalQuantities
 from .utils import calculate_canbus_checksum
 from .decoder import NMEA2000Decoder, InvalidFrameError
 from .encoder import NMEA2000Encoder
-from .input_formats import N2KFormat
+from .input_formats import N2KFormat, TEXT_FORMATS
 from .message import NMEA2000Message
 
 EncodedMessage = bytes | can.message.Message
@@ -491,10 +491,20 @@ class TextNmea2000Gateway(AsyncIOClient):
             format: The N2KFormat used by this gateway for parsing and encoding.
                 When ``None``, the format is auto-detected from the first
                 received message (encoding is disabled in this mode).
+                Must be a text/line-based format from ``TEXT_FORMATS``.
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
             seed_network_map: Whether to seed the network map on connect.
+
+        Raises:
+            ValueError: If *format* is not ``None`` and not in ``TEXT_FORMATS``.
         """
+        if format is not None and format not in TEXT_FORMATS:
+            valid = ", ".join(sorted(f.name for f in TEXT_FORMATS))
+            raise ValueError(
+                f"TextNmea2000Gateway does not support format {format.name!r}. "
+                f"Valid text formats are: {valid}."
+            )
         super().__init__(
             exclude_pgns = exclude_pgns,
             include_pgns = include_pgns,

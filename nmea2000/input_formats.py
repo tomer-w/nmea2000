@@ -60,6 +60,21 @@ class N2KFormat(StrEnum):
     PYTHON_CAN = "python_can"  # python-can ``can.message.Message`` objects
 
 
+TEXT_FORMATS: frozenset[N2KFormat] = frozenset({
+    N2KFormat.N2K_ASCII_RAW,
+    N2KFormat.N2K_ASCII,
+    N2KFormat.BASIC_STRING,
+    N2KFormat.CAN_FRAME_ASCII,
+    N2KFormat.CAN_FRAME_ASCII_RAW,
+    N2KFormat.PCDIN,
+    N2KFormat.MXPGN,
+    N2KFormat.PDGY,
+    N2KFormat.PDGY_DEBUG,
+    N2KFormat.CANDUMP1,
+    N2KFormat.CANDUMP2,
+    N2KFormat.CANDUMP3,
+})
+
 N2KInput: TypeAlias = (
     str
     | bytes
@@ -217,4 +232,4 @@ def detect_format(data: N2KInput) -> N2KFormat:
     )
 
 
-__all__ = ["N2KFormat", "N2KInput", "detect_format"]
+__all__ = ["N2KFormat", "N2KInput", "TEXT_FORMATS", "detect_format"]

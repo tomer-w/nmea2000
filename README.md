@@ -8,13 +8,12 @@ This package is the backend for the Home Assistant [NMEA 2000 Integration](https
 
 - **Decode NMEA 2000 frames**: Parse and interpret raw NMEA 2000 data.
 - **Encode NMEA 2000 frames**: Convert structured data back into the NMEA 2000 frame format.
-- **USB client**: Send and receive NMEA 2000 data over CANBUS USB devices like [Waveshare USB-CAN-A](https://www.waveshare.com/wiki/USB-CAN-A)
-- **python-can client**: Send and receive NMEA 2000 data over any generic USB or SocketCAN device supported by python-can
-- **TCP client**: Send and receive NMEA 2000 data over CANBUS TCP devices like:
-     - [EBYTE ECAN-W01S](https://www.cdebyte.com/products/ECAN-W01S)
-     - [EBYTE ECAN-E01](https://www.cdebyte.com/products/ECAN-E01)
-     - [Actisense W2K-1](https://actisense.com/products/w2k-1-nmea-2000-wifi-gateway/)
-     - [Yacht Devices YDEN-02](https://yachtdevicesus.com/products/nmea-2000-ethernet-gateway-yden-02)
+- **Gateway clients**: Send and receive NMEA 2000 data through various hardware gateways:
+     - **EByte** — binary TCP gateways like [ECAN-E01](https://www.cdebyte.com/products/ECAN-E01) and [ECAN-W01S](https://www.cdebyte.com/products/ECAN-W01S)
+     - **Text** — any line-based ASCII TCP gateway with auto-sensing or explicit format selection (e.g. [Actisense W2K-1](https://actisense.com/products/w2k-1-nmea-2000-wifi-gateway/), [Yacht Devices YDEN-02](https://yachtdevicesus.com/products/nmea-2000-ethernet-gateway-yden-02))
+     - **Actisense BST** — Actisense devices using BST-D0/BDTP binary framing over TCP
+     - **WaveShare** — USB serial devices like [Waveshare USB-CAN-A](https://www.waveshare.com/wiki/USB-CAN-A)
+     - **python-can** — any generic USB or SocketCAN device supported by the python-can library
 - **PGN-specific parsing**: Handle various PGNs with specific parsing rules based on [canboat](https://canboat.github.io/canboat/canboat.html).
 - **Stateful decoder**: The decoder supports NMEA 2000 fast messages, which are split across multiple CANBUS messages.
 - **CLI support**: Built-in command-line interface for encoding and decoding frames.
@@ -146,21 +145,39 @@ asyncio.run(main())
 
 Use `N2KDevice.for_ebyte(...)`, `N2KDevice.for_yacht_devices(...)`, `N2KDevice.for_waveshare(...)`, or `N2KDevice.for_actisense(...)` if you are connecting through one of those gateways instead of `python-can`.
 
-### TCP Client CLI
+### Gateway Client CLI
+
+Each gateway type has its own subcommand:
 
 ```bash
-nmea2000-cli tcp_client --server 192.168.0.46 --port 8881 --type actisense
+# EByte binary TCP gateway
+nmea2000-cli ebyte --server 192.168.0.46 --port 8881
+
+# Text/line-based TCP gateway (auto-sensing format)
+nmea2000-cli text --server 192.168.0.46 --port 8881
+
+# Text gateway with explicit format
+nmea2000-cli text --server 192.168.0.46 --port 8881 --format N2K_ASCII_RAW
+
+# Actisense BST-D0/BDTP over TCP
+nmea2000-cli actisense_bst --server 192.168.0.46 --port 8881
+
+# WaveShare USB-CAN-A serial
+nmea2000-cli waveshare --port /dev/ttyUSB0
+
+# Generic python-can adapter
+nmea2000-cli can --interface slcan --channel /dev/ttyUSB0 --bitrate 250000
 ```
 
 Use `--json` to output received messages as JSON (one object per line), useful for piping into other tools:
 
 ```bash
-nmea2000-cli tcp_client --server 192.168.0.46 --port 8881 --type actisense --json
+nmea2000-cli text --server 192.168.0.46 --port 8881 --json
 ```
 
-The `--json` flag is also available for `usb_client` and `can_client`.
+The `--json` flag is available on all gateway subcommands. Use `--dump_file` to record raw frames to a file.
 
-### TCP Client code
+### Gateway Client code
 
 ```python
 async def handle_received_data(message: NMEA2000Message):
@@ -243,7 +260,7 @@ You can stream decoded NMEA 2000 data into [Node-RED](https://nodered.org/) usin
 ### Setup
 
 1. **Exec node** — add an `exec` node and configure:
-   - **Command**: `nmea2000-cli tcp_client --server 192.168.1.100 --port 8881 --type EBYTE --json`
+   - **Command**: `nmea2000-cli ebyte --server 192.168.1.100 --port 8881 --json`
    - **Output**: select **"when stdout has data"** so it emits a message for each line (not on process exit)
    - **Use spawn mode**: enable `Use spawn() instead of exec()`  
    - **Timeout**: leave blank (this is a long-running process)
@@ -268,7 +285,7 @@ Copy and import this JSON into Node-RED (Menu → Import → Clipboard):
         "id": "nmea2000_exec",
         "type": "exec",
         "name": "NMEA2000 Stream",
-        "command": "nmea2000-cli tcp_client --server 192.168.1.100 --port 8881 --type EBYTE --json",
+        "command": "nmea2000-cli ebyte --server 192.168.1.100 --port 8881 --json",
         "addpay": "",
         "append": "",
         "useSpawn": "true",
@@ -315,7 +332,7 @@ Each received NMEA 2000 message arrives as a parsed JSON object:
 }
 ```
 
-> **Tip:** Replace `tcp_client` with `usb_client` or `can_client` depending on your gateway hardware. All client commands support the `--json` flag.
+> **Tip:** Replace `ebyte` with `text`, `actisense_bst`, `waveshare`, or `can` depending on your gateway hardware. All gateway subcommands support the `--json` flag.
 
 ## Development
 

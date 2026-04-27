@@ -6,12 +6,24 @@ import logging
 import can.cli
 
 from .message import NMEA2000Message
-from .ioclient import AsyncIOClient, EByteNmea2000Gateway, State, WaveShareNmea2000Gateway, TextNmea2000Gateway, PythonCanAsyncIOClient
+from .ioclient import (
+    AsyncIOClient,
+    EByteNmea2000Gateway,
+    State,
+    WaveShareNmea2000Gateway,
+    TextNmea2000Gateway,
+    ActisenseBstNmea2000Gateway,
+    PythonCanAsyncIOClient,
+)
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
-from .input_formats import N2KFormat
+from .input_formats import N2KFormat, TEXT_FORMATS
 
 logger = logging.getLogger(__name__)
+
+# Stable sorted list of text formats for CLI help display
+_TEXT_FORMATS_SORTED = sorted(TEXT_FORMATS, key=lambda f: f.name)
+
 
 # Define receive callback as a standalone function
 async def handle_received_message(message: NMEA2000Message):
@@ -80,6 +92,19 @@ def parse(filename: str, decoder: NMEA2000Decoder):
         sys.stdout.flush()
         pass
 
+
+def _add_common_client_args(sub: argparse.ArgumentParser):
+    """Add arguments shared by all gateway client subcommands."""
+    sub.add_argument(
+        "--dump_file", type=str, help="Record frames to a given file")
+    sub.add_argument(
+        "--dump_pgns", type=str,
+        help="Record only specific PGNs, comma separated")
+    sub.add_argument(
+        "--json", action="store_true",
+        help="Output received messages as JSON, one per line")
+
+
 async def async_main():
     logging.basicConfig(filename='parser.log', level=logging.NOTSET)
     parser = argparse.ArgumentParser(description="NMEA 2000 CLI Tool")
@@ -121,83 +146,75 @@ async def async_main():
         help="Path to a file containing a JSON NMEA 2000 frame"
     )
 
-    # TCP client command
-    tcp_client_parser = subparsers.add_parser("tcp_client", help="start TCP client to CANBUS gateway (for example, ECAN-E01 or ECAN-W01)")
-    tcp_client_parser.add_argument(
-        "--server", 
-        type=str,
-        required=True, 
-        help="Server IP address"
-    )
-    tcp_client_parser.add_argument(
-        "--port", 
-        type=int, 
-        required=True, 
-        help="Server port number"
-    )
-    tcp_client_parser.add_argument(
-        "--dump_file", 
-        type=str, 
-        help="Record frames to a given file"
-    )
-    tcp_client_parser.add_argument(
-        "--dump_pgns", 
-        type=str, 
-        help="Record only specific pgns, comma seperated"
-    )
+    # --- Gateway client subcommands (one per AsyncIOClient) ---
 
-    def parse_type(value):
+    # EByte binary TCP gateway
+    ebyte_parser = subparsers.add_parser(
+        "ebyte",
+        help="Connect to an EByte ECAN-E01/W01 TCP gateway")
+    ebyte_parser.add_argument(
+        "--server", type=str, required=True, help="Server IP address")
+    ebyte_parser.add_argument(
+        "--port", type=int, required=True, help="Server port number")
+    _add_common_client_args(ebyte_parser)
+
+    # Text / line-based TCP gateway (auto-sense or explicit format)
+    text_parser = subparsers.add_parser(
+        "text",
+        help="Connect to a text/line-based TCP gateway (e.g. Actisense W2K-1, Yacht Devices YDEN-02)")
+
+    def parse_text_format(value):
+        val_upper = value.upper()
+        if val_upper == "AUTO":
+            return None
         try:
-            return N2KFormat[value.upper()]
+            fmt = N2KFormat[val_upper]
         except KeyError:
-            valid = ", ".join(f.name for f in N2KFormat)
-            raise argparse.ArgumentTypeError(f"Invalid type: {value}. Valid options are: {valid}.")
+            valid = ", ".join(f.name for f in _TEXT_FORMATS)
+            raise argparse.ArgumentTypeError(
+                f"Invalid format: {value}. Valid options are: AUTO, {valid}.")
+        if fmt not in TEXT_FORMATS:
+            valid = ", ".join(f.name for f in _TEXT_FORMATS_SORTED)
+            raise argparse.ArgumentTypeError(
+                f"{value} is not a text format. Valid options are: AUTO, {valid}.")
+        return fmt
 
-    tcp_client_parser.add_argument(
-        "--type",
-        type=parse_type,
-        required=True,
-        help="Type of TCP server (EBYTE, N2K_ASCII_RAW, or CAN_FRAME_ASCII)"
-    )
-    tcp_client_parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Output received messages as JSON, one per line"
-    )
+    text_parser.add_argument(
+        "--server", type=str, required=True, help="Server IP address")
+    text_parser.add_argument(
+        "--port", type=int, required=True, help="Server port number")
+    text_parser.add_argument(
+        "--format",
+        type=parse_text_format,
+        default=None,
+        help="Parser format (default: AUTO). Options: AUTO, "
+             + ", ".join(f.name for f in _TEXT_FORMATS_SORTED))
+    _add_common_client_args(text_parser)
 
-    # USB client command
-    usb_client_parser = subparsers.add_parser("usb_client", help="start USB client to CANBUS gateway (for example, Waveshare USB-CAN-A)")
-    usb_client_parser.add_argument(
-        "--port", 
-        type=str, 
-        required=True, 
-        help="Serial port"
-    )
-    usb_client_parser.add_argument(
-        "--dump_file", 
-        type=str, 
-        help="Record frames to a given file"
-    )
-    usb_client_parser.add_argument(
-        "--dump_pgns", 
-        type=str, 
-        help="Record only specific pgns, comma seperated"
-    )
-    usb_client_parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Output received messages as JSON, one per line"
-    )
+    # Actisense BST-D0 binary TCP gateway
+    actisense_bst_parser = subparsers.add_parser(
+        "actisense_bst",
+        help="Connect to an Actisense device using BST-D0/BDTP framing over TCP")
+    actisense_bst_parser.add_argument(
+        "--server", type=str, required=True, help="Server IP address")
+    actisense_bst_parser.add_argument(
+        "--port", type=int, required=True, help="Server port number")
+    _add_common_client_args(actisense_bst_parser)
 
-    python_can_client_parser = subparsers.add_parser(
-        "can_client", help="Connect generic CAN adapter using the python-can library")
-    python_can_client_parser.add_argument(
-        "--dump_file", type=str, help="Record frames to a given file")
-    python_can_client_parser.add_argument(
-        "--dump_pgns", type=str, help="Record only specific pgns, comma seperated")
-    python_can_client_parser.add_argument(
-        "--json", action="store_true", help="Output received messages as JSON, one per line")
-    can.cli.add_bus_arguments(python_can_client_parser)
+    # WaveShare USB-CAN-A serial gateway
+    waveshare_parser = subparsers.add_parser(
+        "waveshare",
+        help="Connect to a WaveShare USB-CAN-A serial gateway")
+    waveshare_parser.add_argument(
+        "--port", type=str, required=True, help="Serial port (e.g. /dev/ttyUSB0 or COM3)")
+    _add_common_client_args(waveshare_parser)
+
+    # python-can generic CAN adapter
+    can_parser = subparsers.add_parser(
+        "can",
+        help="Connect to a generic CAN adapter using the python-can library")
+    _add_common_client_args(can_parser)
+    can.cli.add_bus_arguments(can_parser)
 
     # Parse arguments
     args = parser.parse_args()
@@ -242,26 +259,46 @@ async def async_main():
         else:
             print("Error: You must provide either a frame or a file to encode.")
             exit(1)
-            
-    elif args.command == "tcp_client":
-        # Create TCP client passing callbacks in constructor
-        if args.type == N2KFormat.EBYTE:
-            logger.info("Using EByteNmea2000Gateway with server: %s, port: %d", args.server, args.port)
-            client = EByteNmea2000Gateway(args.server, args.port)
-        else:
-            logger.info("Using TextNmea2000Gateway (%s) with server: %s, port: %d", args.type, args.server, args.port)
-            client = TextNmea2000Gateway(args.server, args.port, format=args.type)            
+
+    elif args.command == "ebyte":
+        logger.info("Using EByteNmea2000Gateway with server: %s, port: %d",
+                     args.server, args.port)
+        client = EByteNmea2000Gateway(
+            args.server, args.port,
+            dump_to_file=args.dump_file, dump_pgns=args.dump_pgns)
         await interactive_client(client, json_output=args.json)
-    elif args.command == "usb_client":
-        # Create USB client passing callbacks in constructor
+
+    elif args.command == "text":
+        fmt_label = args.format.name if args.format else "AUTO"
+        logger.info("Using TextNmea2000Gateway (%s) with server: %s, port: %d",
+                     fmt_label, args.server, args.port)
+        client = TextNmea2000Gateway(
+            args.server, args.port, format=args.format,
+            dump_to_file=args.dump_file, dump_pgns=args.dump_pgns)
+        await interactive_client(client, json_output=args.json)
+
+    elif args.command == "actisense_bst":
+        logger.info("Using ActisenseBstNmea2000Gateway with server: %s, port: %d",
+                     args.server, args.port)
+        client = ActisenseBstNmea2000Gateway(
+            args.server, args.port,
+            dump_to_file=args.dump_file, dump_pgns=args.dump_pgns)
+        await interactive_client(client, json_output=args.json)
+
+    elif args.command == "waveshare":
         logger.info("Using WaveShareNmea2000Gateway with port: %s", args.port)
-        client = WaveShareNmea2000Gateway(port=args.port, dump_to_file=args.dump_file, dump_pgns=args.dump_pgns)
+        client = WaveShareNmea2000Gateway(
+            port=args.port,
+            dump_to_file=args.dump_file, dump_pgns=args.dump_pgns)
         await interactive_client(client, json_output=args.json)
-    elif args.command == "can_client":
+
+    elif args.command == "can":
         logger.info("Using PythonCanAsyncIOClient with interface: %s", args.interface)
-        consumed = ["command"]
+        consumed = ["command", "dump_file", "dump_pgns", "json", "verbose"]
         kwargs = {k: v for (k, v) in args.__dict__.items() if k not in consumed}
-        client = PythonCanAsyncIOClient(**kwargs)
+        client = PythonCanAsyncIOClient(
+            dump_to_file=args.dump_file, dump_pgns=args.dump_pgns,
+            **kwargs)
         await interactive_client(client, json_output=args.json)
 
 def main():

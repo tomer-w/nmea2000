@@ -98,7 +98,7 @@ class TestCliEncode:
 
 
 class TestCliTcpClientJson:
-    """Tests for the CLI tcp_client --json flag using a fake NMEA2000 server."""
+    """Tests for the CLI gateway client --json flag using a fake NMEA2000 server."""
 
     @pytest.fixture
     async def actisense_server(self):
@@ -123,11 +123,11 @@ class TestCliTcpClientJson:
 
     @pytest.mark.asyncio
     async def test_tcp_client_json_actisense(self, actisense_server):
-        """tcp_client --json should output valid JSON lines for Actisense."""
+        """text --json should output valid JSON lines for Actisense."""
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "tcp_client",
+            *CLI_MODULE, "text",
             "--server", "127.0.0.1", "--port", "18881",
-            "--type", "N2K_ASCII_RAW", "--json",
+            "--format", "N2K_ASCII_RAW", "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
@@ -170,11 +170,11 @@ class TestCliTcpClientJson:
 
     @pytest.mark.asyncio
     async def test_tcp_client_json_ebyte(self, ebyte_server):
-        """tcp_client --json should output valid JSON for EBYTE gateway."""
+        """ebyte --json should output valid JSON for EBYTE gateway."""
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "tcp_client",
+            *CLI_MODULE, "ebyte",
             "--server", "127.0.0.1", "--port", "18882",
-            "--type", "EBYTE", "--json",
+            "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
@@ -209,11 +209,11 @@ class TestCliTcpClientJson:
 
     @pytest.mark.asyncio
     async def test_tcp_client_json_yacht_devices(self, yacht_devices_server):
-        """tcp_client --json should output valid JSON for Yacht Devices gateway."""
+        """text --json should output valid JSON for Yacht Devices gateway."""
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "tcp_client",
+            *CLI_MODULE, "text",
             "--server", "127.0.0.1", "--port", "18883",
-            "--type", "CAN_FRAME_ASCII", "--json",
+            "--format", "CAN_FRAME_ASCII", "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
@@ -256,9 +256,9 @@ class TestCliTcpClientJson:
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "tcp_client",
+            *CLI_MODULE, "text",
             "--server", "127.0.0.1", "--port", "18881",
-            "--type", "N2K_ASCII_RAW",
+            "--format", "N2K_ASCII_RAW",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
@@ -301,9 +301,9 @@ class TestCliTcpClientJson:
     async def test_tcp_client_json_multiple_messages(self, actisense_server):
         """Multiple messages should each produce a separate JSON line."""
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "tcp_client",
+            *CLI_MODULE, "text",
             "--server", "127.0.0.1", "--port", "18881",
-            "--type", "N2K_ASCII_RAW", "--json",
+            "--format", "N2K_ASCII_RAW", "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
@@ -350,9 +350,9 @@ class TestCliTcpClientJson:
         from nmea2000.message import NMEA2000Message
 
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "tcp_client",
+            *CLI_MODULE, "text",
             "--server", "127.0.0.1", "--port", "18881",
-            "--type", "N2K_ASCII_RAW", "--json",
+            "--format", "N2K_ASCII_RAW", "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
