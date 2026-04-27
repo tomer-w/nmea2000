@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from nmea2000.encoder import NMEA2000Encoder
-from nmea2000.encoder_formats import _compute_bst_d0_checksum
+from nmea2000.encoder_formats import _compute_bst_checksum
 from nmea2000.input_formats import N2KFormat, detect_format
 from nmea2000.ioclient import bdtp_wrap, bdtp_unwrap
 from nmea2000.message import NMEA2000Message
@@ -134,7 +134,7 @@ class TestBstD0Encoder:
 
     def test_checksum_helper(self):
         data = bytes([0xD0, 0x15, 0x00])
-        cs = _compute_bst_d0_checksum(data)
+        cs = _compute_bst_checksum(data)
         assert (sum(data) + cs) & 0xFF == 0
 
 

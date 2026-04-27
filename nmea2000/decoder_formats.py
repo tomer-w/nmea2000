@@ -638,6 +638,8 @@ class BstD0Decoder(DecoderBase, DecoderInterface):
     This is the newer binary format used in devices like the PRO-NDC-1E2K.
     Messages are pre-assembled (fast packets and transport protocol messages
     are already decoded by the device).
+
+    See https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/bst-detail/BST-D0.md
     """
 
     def decode(
@@ -657,7 +659,6 @@ class BstD0Decoder(DecoderBase, DecoderInterface):
                 f"packet is {len(packet)} bytes (expected {length + 1})"
             )
 
-        # Verify zero-sum checksum
         if sum(packet) & 0xFF != 0:
             raise ValueError("BST D0 checksum failed")
 
@@ -675,14 +676,12 @@ class BstD0Decoder(DecoderBase, DecoderInterface):
         else:
             pgn = (data_page << 16) | (pduf << 8)
 
-        timestamp_ms = int.from_bytes(packet[9:13], byteorder="little")
         timestamp = datetime.now()  # BST D0 timestamp is relative; use wall clock
-
         payload = packet[13:-1]  # exclude checksum
 
         logger.debug(
-            "BST D0: PGN=%d, src=%d, dst=%d, pri=%d, ts_ms=%d, payload=%s",
-            pgn, source, dest, priority, timestamp_ms, payload.hex(),
+            "BST D0: PGN=%d, src=%d, dst=%d, pri=%d, payload=%s",
+            pgn, source, dest, priority, payload.hex(),
         )
 
         return _decode_combined_payload(
@@ -694,6 +693,73 @@ class BstD0Decoder(DecoderBase, DecoderInterface):
             payload,
             packet,
             timestamp,
+        )
+
+
+class Bst95Decoder(DecoderBase, DecoderInterface):
+    """Decoder for Actisense BST 95 binary CAN frame format.
+
+    BST 95 carries raw CAN frames (up to 8 data bytes) wrapped in BDTP
+    framing.  Fast-packet and transport-protocol PGNs require reassembly,
+    which is handled by the inherited :class:`DecoderBase` logic.
+
+    See https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/bst-detail/BST-95-can-frame.md
+    """
+
+    def decode(
+        self,
+        data: N2KInput,
+    ) -> NMEA2000Message | None:
+        packet = _as_bytes(data)
+        if len(packet) < 8:
+            raise ValueError("BST 95 packet too short")
+        if packet[0] != 0x95:
+            raise ValueError(f"Not a BST 95 message: ID byte 0x{packet[0]:02X}")
+
+        length = packet[1]
+        expected_len = length + 3  # BSTID(1) + L(1) + payload(L) + checksum(1)
+        if len(packet) != expected_len:
+            raise ValueError(
+                f"BST 95 length mismatch: header says {length}, "
+                f"packet is {len(packet)} bytes (expected {expected_len})"
+            )
+
+        if sum(packet) & 0xFF != 0:
+            raise ValueError("BST 95 checksum failed")
+
+        source = packet[4]
+        pdus = packet[5]
+        pduf = packet[6]
+        dppc = packet[7]
+
+        data_page = dppc & 0x03
+        priority = (dppc >> 2) & 0x07
+
+        if pduf >= 240:
+            pgn = (data_page << 16) | (pduf << 8) | pdus
+        else:
+            pgn = (data_page << 16) | (pduf << 8)
+
+        if pduf < 240:
+            dest = pdus
+        else:
+            dest = 255
+
+        can_data = packet[8:-1]  # between DPPC and checksum
+
+        logger.debug(
+            "BST 95: PGN=%d, src=%d, dst=%d, pri=%d, payload=%s",
+            pgn, source, dest, priority, can_data.hex(),
+        )
+
+        return self._decode(
+            pgn,
+            priority,
+            source,
+            dest,
+            datetime.now(),
+            can_data[::-1],
+            packet,
         )
 
 
@@ -714,3 +780,4 @@ NMEA2000Decoder.add_handler(N2KFormat.EBYTE, TcpDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.WAVESHARE, UsbDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.PYTHON_CAN, PythonCanDecoder)
 NMEA2000Decoder.add_handler(N2KFormat.BST_D0, BstD0Decoder)
+NMEA2000Decoder.add_handler(N2KFormat.BST_95, Bst95Decoder)

@@ -53,6 +53,7 @@ class N2KFormat(StrEnum):
 
     # -- Binary formats --------------------------------------------------
     BST_D0 = "bst_d0"          # Actisense BST D0 (reassembled N2K, binary, BDTP-framed)
+    BST_95 = "bst_95"          # Actisense BST 95 (raw CAN frames, binary, BDTP-framed)
     EBYTE = "ebyte"            # https://www.cdebyte.com/products/ECAN-E01
     WAVESHARE = "waveshare"    # https://www.waveshare.com/wiki/USB-CAN-A
 
@@ -187,6 +188,14 @@ def _is_bst_d0(packet: bytes) -> bool:
     return length >= 13 and len(packet) == length + 1
 
 
+def _is_bst_95(packet: bytes) -> bool:
+    if len(packet) < 8 or packet[0] != 0x95:
+        return False
+    length = packet[1]
+    # Total packet = 2 (header) + length + 1 (checksum)
+    return length >= 6 and len(packet) == length + 3
+
+
 def detect_format(data: N2KInput) -> N2KFormat:
     if isinstance(data, can.message.Message):
         return N2KFormat.PYTHON_CAN
@@ -223,6 +232,8 @@ def detect_format(data: N2KInput) -> N2KFormat:
             return N2KFormat.WAVESHARE
         if _is_bst_d0(packet):
             return N2KFormat.BST_D0
+        if _is_bst_95(packet):
+            return N2KFormat.BST_95
         if _is_tcp(packet):
             return N2KFormat.EBYTE
         raise ValueError(f"Parser not found for binary input: {packet.hex()}")

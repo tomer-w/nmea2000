@@ -432,8 +432,8 @@ class PythonCanEncoder(EncoderInterface, EncoderBase):
         return _encode_python_can_messages(self, nmea200_message)
 
 
-def _compute_bst_d0_checksum(data: bytes) -> int:
-    """Compute BST D0 zero-sum checksum: (256 - sum(data)) % 256."""
+def _compute_bst_checksum(data: bytes) -> int:
+    """Compute BST zero-sum checksum: (256 - sum(data)) % 256."""
     return (256 - (sum(data) % 256)) % 256
 
 
@@ -461,12 +461,8 @@ class BstD0Encoder(EncoderInterface, EncoderBase):
         priority = nmea200_message.priority & 0x07
         dpp = (priority << 2) | data_page
 
-        # Control byte: message type 0 (single packet), direction 0 (received)
         control = 0x00
-
-        # Timestamp: use 0 for encoding
         timestamp_bytes = (0).to_bytes(4, byteorder="little")
-
         length = 13 + len(payload)
 
         header = bytes([
@@ -482,8 +478,54 @@ class BstD0Encoder(EncoderInterface, EncoderBase):
         ]) + timestamp_bytes
 
         message = header + payload
-        checksum = _compute_bst_d0_checksum(message)
+        checksum = _compute_bst_checksum(message)
         return [message + bytes([checksum])]
+
+
+class Bst95Encoder(EncoderInterface, EncoderBase):
+    """Encoder for Actisense BST 95 binary CAN frame format.
+
+    Produces raw CAN frames wrapped in BST 95 framing.  Fast-packet PGNs
+    are split into multiple 8-byte frames automatically.
+    """
+
+    def encode(
+        self,
+        nmea200_message: NMEA2000Message,
+        output_format: N2KFormat | str | None = None,
+    ) -> list[bytes]:
+        self._assert_output_format(output_format)
+        can_frames = self._encode(nmea200_message)
+        result: list[bytes] = []
+
+        pgn = nmea200_message.PGN
+        pf = (pgn >> 8) & 0xFF
+        if pf >= 240:
+            pduf = pf
+            pdus = pgn & 0xFF
+        else:
+            pduf = pf
+            pdus = nmea200_message.destination
+
+        data_page = (pgn >> 16) & 0x03
+        priority = nmea200_message.priority & 0x07
+        dppc = (priority << 2) | data_page
+
+        for can_data in can_frames:
+            length = 6 + len(can_data)
+            message = bytes([
+                0x95,
+                length,
+                0x00, 0x00,  # timestamp
+                nmea200_message.source & 0xFF,
+                pdus,
+                pduf,
+                dppc,
+            ]) + can_data
+            checksum = _compute_bst_checksum(message)
+            result.append(message + bytes([checksum]))
+
+        return result
 
 
 NMEA2000Encoder.add_handler(N2KFormat.N2K_ASCII_RAW, N2kAsciiRawEncoder)
@@ -503,3 +545,4 @@ NMEA2000Encoder.add_handler(N2KFormat.EBYTE, TcpEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.WAVESHARE, UsbEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.PYTHON_CAN, PythonCanEncoder)
 NMEA2000Encoder.add_handler(N2KFormat.BST_D0, BstD0Encoder)
+NMEA2000Encoder.add_handler(N2KFormat.BST_95, Bst95Encoder)

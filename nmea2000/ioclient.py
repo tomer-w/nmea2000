@@ -888,10 +888,16 @@ def bdtp_wrap(data: bytes) -> bytes:
 
 
 class ActisenseBstNmea2000Gateway(AsyncIOClient):
-    """TCP client for Actisense devices using BST D0 over BDTP framing.
+    """TCP client for Actisense devices using BST protocol over BDTP framing.
 
-    Suitable for devices like the PRO-NDC-1E2K in "CAN Actisense" mode.
+    Supports both BST D0 (pre-assembled N2K messages) and BST 95 (raw CAN
+    frames).  The device mode determines which format is received; both are
+    decoded transparently.
+
+    Suitable for devices like the PRO-NDC-1E2K.
     """
+
+    _SUPPORTED_BST_CMDS = {0xD0, 0x95}
 
     def __init__(self,
                  host: str,
@@ -914,13 +920,13 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
             dump_pgns=dump_pgns,
             build_network_map=build_network_map,
             seed_network_map=True,
-            bound_format=N2KFormat.BST_D0)
+            bound_format=None)
         self.host = host
         self.port = port
         self._buffer: bytearray | None = None
 
     async def _connect_impl(self):
-        self.logger.info("Connecting to %s:%s (BST D0/BDTP)", self.host, self.port)
+        self.logger.info("Connecting to %s:%s (BST/BDTP)", self.host, self.port)
         self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
         sock = self.writer.get_extra_info("socket")
         if sock:
@@ -943,15 +949,15 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
                 break
             self._buffer = self._buffer[consumed:]
 
-            if not payload or payload[0] != 0xD0:
-                self.logger.debug("Skipping non-D0 BST message: %s",
+            if not payload or payload[0] not in self._SUPPORTED_BST_CMDS:
+                self.logger.debug("Skipping unsupported BST message: %s",
                                   payload.hex() if payload else "(empty)")
                 continue
 
             try:
                 message = self.decoder.decode(payload)
             except Exception as e:
-                self.logger.warning("BST D0 decode failed: %s. Data: %s",
+                self.logger.warning("BST decode failed: %s. Data: %s",
                                     e, payload.hex(), exc_info=True)
                 continue
 
@@ -959,5 +965,5 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
                 await self.queue.put(message)
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
-        bst_packets = self.encoder.encode(nmea2000Message, output_format=N2KFormat.BST_D0)
+        bst_packets = self.encoder.encode(nmea2000Message, output_format=N2KFormat.BST_95)
         return [bdtp_wrap(pkt) for pkt in bst_packets]
