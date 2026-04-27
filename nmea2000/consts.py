@@ -239,6 +239,7 @@ ManufacturerCodes: List[str] = [
     "Kobelt Manufacturing Co. Ltd",
     "Blue Ocean IOT",
     "Xenta Systems",
+    "Signal K",
     "Ultraflex SpA",
     "Lintest SmartBoat",
     "Soundmax",

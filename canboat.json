@@ -4,8 +4,8 @@
     "Comment":"See https://github.com/canboat/canboat for the full source code",
     "CreatorCode":"Canboat NMEA2000 Analyzer",
     "License":"Apache License Version 2.0",
-    "Version":"6.1.7",
-    "Copyright":"CANboat version v6.1.7\n\n(C) 2009-2025, Kees Verruijt, Harlingen, The Netherlands.\nFor more information see https://github.com/canboat/canboat\n\nThis file is part of CANboat.\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n\n\n",
+    "Version":"6.1.8",
+    "Copyright":"CANboat version v6.1.8\n\n(C) 2009-2025, Kees Verruijt, Harlingen, The Netherlands.\nFor more information see https://github.com/canboat/canboat\n\nThis file is part of CANboat.\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n\n\n",
     "PhysicalQuantities":[
     {
         "Name":"ELECTRICAL_CURRENT",
@@ -606,6 +606,7 @@
           {"Name":"Kobelt Manufacturing Co. Ltd", "Value":981},
           {"Name":"Blue Ocean IOT", "Value":992},
           {"Name":"Xenta Systems", "Value":997},
+          {"Name":"Signal K", "Value":999},
           {"Name":"Ultraflex SpA", "Value":1004},
           {"Name":"Lintest SmartBoat", "Value":1008},
           {"Name":"Soundmax", "Value":1011},
@@ -1359,7 +1360,29 @@
           {"Name":"Seatalk1", "Value":129},
           {"Name":"Hull Type", "Value":22},
           {"Name":"Auto Turn", "Value":38},
-          {"Name":"Settings", "Value":12}
+          {"Name":"Settings", "Value":12},
+          {"Name":"Rudder Limit", "Value":2},
+          {"Name":"Rudder Damping", "Value":3},
+          {"Name":"Rudder Offset", "Value":4},
+          {"Name":"Reverse Rudder Reference", "Value":6},
+          {"Name":"Cruise Speed", "Value":8},
+          {"Name":"Power Steer Mode", "Value":11},
+          {"Name":"Wind Type", "Value":15},
+          {"Name":"Auto Turn", "Value":17},
+          {"Name":"Calibration Lock", "Value":18},
+          {"Name":"Gybe Inhibit", "Value":20},
+          {"Name":"Compass Offset", "Value":21},
+          {"Name":"Drive Type", "Value":23},
+          {"Name":"Response Level", "Value":25},
+          {"Name":"Max Compass Deviation", "Value":26},
+          {"Name":"Hard Over Time", "Value":27},
+          {"Name":"Debug Level", "Value":29},
+          {"Name":"Compass Lock", "Value":33},
+          {"Name":"Speed Input", "Value":34},
+          {"Name":"Compass Linearisation Progress", "Value":35},
+          {"Name":"ACU Debug Level", "Value":36},
+          {"Name":"Wind Shift Alarm", "Value":37},
+          {"Name":"Auto Turn Timeout", "Value":39}
         ]
       },
       {
@@ -9377,7 +9400,10 @@
             "BitOffset":16,
             "BitStart":0,
             "Resolution":1,
-            "FieldType":"BINARY"
+            "Signed":false,
+            "RangeMin":0,
+            "RangeMax":252,
+            "FieldType":"NUMBER"
           },
           {
             "Order":5,
@@ -13611,7 +13637,10 @@
             "BitOffset":16,
             "BitStart":0,
             "Resolution":1,
-            "FieldType":"BINARY"
+            "Signed":false,
+            "RangeMin":0,
+            "RangeMax":252,
+            "FieldType":"NUMBER"
           },
           {
             "Order":5,
@@ -13717,7 +13746,10 @@
             "BitOffset":16,
             "BitStart":0,
             "Resolution":1,
-            "FieldType":"BINARY"
+            "Signed":false,
+            "RangeMin":0,
+            "RangeMax":252,
+            "FieldType":"NUMBER"
           },
           {
             "Order":5,
@@ -27471,7 +27503,10 @@
             "BitOffset":0,
             "BitStart":0,
             "Resolution":1,
-            "FieldType":"BINARY"
+            "Signed":false,
+            "RangeMin":0,
+            "RangeMax":252,
+            "FieldType":"NUMBER"
           },
           {
             "Order":2,
@@ -27587,7 +27622,10 @@
             "BitOffset":0,
             "BitStart":0,
             "Resolution":1,
-            "FieldType":"BINARY"
+            "Signed":false,
+            "RangeMin":0,
+            "RangeMax":252,
+            "FieldType":"NUMBER"
           },
           {
             "Order":2,
