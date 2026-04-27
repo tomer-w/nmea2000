@@ -9,7 +9,6 @@ from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.encoder_formats import _compute_bst_checksum
 from nmea2000.input_formats import N2KFormat, detect_format
 from nmea2000.ioclient import bdtp_wrap, bdtp_unwrap
-from nmea2000.message import NMEA2000Message
 
 from .test_decoder import _get_decoder
 
