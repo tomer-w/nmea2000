@@ -1,7 +1,7 @@
 
 # NMEA 2000 Python Library
 
-A Python library for encoding and decoding NMEA 2000 frames. The encoding and decoding is based on the extensive [canboat](https://canboat.github.io/canboat/canboat.html) database. It also supports inexpensive CANBUS USB and TCP devices as gateways between your NMEA 2000 boat network and any Python code that wants to receive or send these messages.  
+A Python library for encoding and decoding NMEA 2000 frames. The encoding and decoding is based on the extensive [canboat](https://canboat.github.io/canboat/canboat.html) database. It also supports inexpensive CANBUS USB and TCP devices as gateways between your NMEA 2000 boat network and any Python code that wants to receive or send these messages.
 This package is the backend for the Home Assistant [NMEA 2000 Integration](https://github.com/tomer-w/ha-nmea2000).
 
 ## Features
@@ -10,8 +10,8 @@ This package is the backend for the Home Assistant [NMEA 2000 Integration](https
 - **Encode NMEA 2000 frames**: Convert structured data back into the NMEA 2000 frame format.
 - **Gateway clients**: Send and receive NMEA 2000 data through various hardware gateways:
      - **EByte** — binary TCP gateways like [ECAN-E01](https://www.cdebyte.com/products/ECAN-E01) and [ECAN-W01S](https://www.cdebyte.com/products/ECAN-W01S)
-     - **Text** — any line-based ASCII TCP gateway with auto-sensing or explicit format selection (e.g. [Actisense W2K-1](https://actisense.com/products/w2k-1-nmea-2000-wifi-gateway/), [Yacht Devices YDEN-02](https://yachtdevicesus.com/products/nmea-2000-ethernet-gateway-yden-02))
-     - **Actisense BST** — Actisense devices using BST-D0/BDTP binary framing over TCP
+     - **Text** — any line-based ASCII TCP gateway with auto-sensing or explicit format selection (e.g. [Actisense W2K-1](https://actisense.com/products/w2k-1-nmea-2000-wifi-gateway/), [Yacht Devices YDEN-02](https://yachtdevicesus.com/products/nmea-2000-ethernet-gateway-yden-02), [Actisense PRO-NDC-1E2K](https://actisense.com/products/pro-ndc-1e2k/) in CAN ASCII mode)
+     - **Actisense BST** — Actisense devices using the [BST binary protocol](https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/BST.md) over TCP, supporting both [BST-95](https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/bst-detail/BST-95-can-frame.md) (raw CAN frames) and [BST-D0](https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/bst-detail/BST-D0.md) (pre-assembled N2K). Compatible with the [PRO-NDC-1E2K](https://actisense.com/products/pro-ndc-1e2k/) and [W2K-1](https://actisense.com/products/w2k-1-nmea-2000-wifi-gateway/) in CAN Actisense mode
      - **WaveShare** — USB serial devices like [Waveshare USB-CAN-A](https://www.waveshare.com/wiki/USB-CAN-A)
      - **python-can** — any generic USB or SocketCAN device supported by the python-can library
 - **PGN-specific parsing**: Handle various PGNs with specific parsing rules based on [canboat](https://canboat.github.io/canboat/canboat.html).
@@ -153,13 +153,13 @@ Each gateway type has its own subcommand:
 # EByte binary TCP gateway
 nmea2000-cli ebyte --server 192.168.0.46 --port 8881
 
-# Text/line-based TCP gateway (auto-sensing format)
+# Text/line-based TCP gateway with auto-sensing (W2K-1, YDEN-02, PRO-NDC-1E2K in CAN ASCII mode)
 nmea2000-cli text --server 192.168.0.46 --port 8881
 
 # Text gateway with explicit format
 nmea2000-cli text --server 192.168.0.46 --port 8881 --format N2K_ASCII_RAW
 
-# Actisense BST-D0/BDTP over TCP
+# Actisense BST over TCP (PRO-NDC-1E2K / W2K-1 in CAN Actisense mode)
 nmea2000-cli actisense_bst --server 192.168.0.46 --port 8881
 
 # WaveShare USB-CAN-A serial
@@ -183,7 +183,7 @@ The `--json` flag is available on all gateway subcommands. Use `--dump_file` to 
 async def handle_received_data(message: NMEA2000Message):
     """User-defined callback function for received data."""
     print(f"Callback: Received {message}")
-    
+
 client = EByteNmea2000Gateway(ip, port)
 client.set_receive_callback(handle_received_data)  # Register callback
 ```
@@ -193,7 +193,7 @@ You can also encode data into NMEA 2000 frames using the `encode` command:
 
 ```bash
 nmea2000-cli encode --data "your_data_to_encode"
-``` 
+```
 
 
 #### Example:
@@ -262,7 +262,7 @@ You can stream decoded NMEA 2000 data into [Node-RED](https://nodered.org/) usin
 1. **Exec node** — add an `exec` node and configure:
    - **Command**: `nmea2000-cli ebyte --server 192.168.1.100 --port 8881 --json`
    - **Output**: select **"when stdout has data"** so it emits a message for each line (not on process exit)
-   - **Use spawn mode**: enable `Use spawn() instead of exec()`  
+   - **Use spawn mode**: enable `Use spawn() instead of exec()`
    - **Timeout**: leave blank (this is a long-running process)
    - **Append msg.payload**: uncheck
 
