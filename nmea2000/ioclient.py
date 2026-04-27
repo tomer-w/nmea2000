@@ -755,25 +755,21 @@ class PythonCanAsyncIOClient(AsyncIOClient):
 
     async def _receive_impl(self):
         """Receive data from the CAN device using non-blocking poll."""
-        received_any = False
-        while True:
-            msg = self.bus.recv(timeout=0)
-            if msg is None:
-                break
-            received_any = True
+        msg = self.bus.recv(timeout=0)
+        if msg is None:
+            await asyncio.sleep(0.01)
+            return
 
-            self.logger.debug("Received: %s", msg)
-            decoded_frame = None
-            try:
-                decoded_frame = self.decoder.decode(msg)
-            except Exception as e:
-                self.logger.warning("decoding failed. message: %s. Error: %s", msg, e, exc_info=True)
+        self.logger.debug("Received: %s", msg)
+        try:
+            decoded_frame = self.decoder.decode(msg)
+        except Exception as e:
+            self.logger.warning("decoding failed. message: %s. Error: %s", msg, e, exc_info=True)
+            return
 
-            self.logger.debug("Received message: %s", decoded_frame)
-            if decoded_frame is not None:
-                await self.queue.put(decoded_frame)
-
-        await asyncio.sleep(0 if received_any else 0.01)
+        self.logger.debug("Received message: %s", decoded_frame)
+        if decoded_frame is not None:
+            await self.queue.put(decoded_frame)
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list:
         """Encode a NMEA2000 message for python-can device."""
