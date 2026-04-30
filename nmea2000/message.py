@@ -5,10 +5,17 @@ from datetime import date, datetime, time, timedelta
 from dataclasses import dataclass, field
 import hashlib
 import logging
-from typing import Any, TypeAlias, TypedDict
+from typing import Any, TypeAlias
 import orjson
 from .consts import PhysicalQuantities, FieldTypes
-from .utils import kelvin_to_celsius, kelvin_to_fahrenheit, mps_to_knots, pascal_to_bar, pascal_to_PSI, radians_to_degrees
+from .utils import (
+    kelvin_to_celsius,
+    kelvin_to_fahrenheit,
+    mps_to_knots,
+    pascal_to_bar,
+    pascal_to_PSI,
+    radians_to_degrees,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -16,14 +23,9 @@ FieldScalarValue: TypeAlias = str | int | float | bytes | time | date | None
 FieldRawValue: TypeAlias = int | float | str | bytes | None
 
 
-class RepeatingFieldValueWrapper(TypedDict, total=False):
-    value: FieldScalarValue
-    raw_value: FieldRawValue
-
-
-RepeatingFieldEntryValue: TypeAlias = "FieldScalarValue | RepeatingFieldValueWrapper | NMEA2000Field"
-RepeatingFieldEntry: TypeAlias = "dict[str, RepeatingFieldEntryValue]"
+RepeatingFieldEntry: TypeAlias = "dict[str, NMEA2000Field]"
 FieldValue: TypeAlias = "FieldScalarValue | list[RepeatingFieldEntry]"
+
 
 # Helper function
 def int_to_bytes(value):
@@ -31,12 +33,13 @@ def int_to_bytes(value):
     byte_length = (value.bit_length() + 8) // 8 or 1
     return value.to_bytes(byte_length, byteorder="big", signed=False)
 
+
 # NMEA2000Message class represents a single NMEA 2000 PGN
 @dataclass
 class NMEA2000Message:
     PGN: int
-    id: str = ''
-    description: str = ''
+    id: str = ""
+    description: str = ""
     ttl: timedelta | None = None
     fields: list[NMEA2000Field] = field(default_factory=list)
     source: int = 0
@@ -47,7 +50,16 @@ class NMEA2000Message:
     hash: str | None = None
     raw_can_data: bytes | str | None = None
 
-    def add_data(self, src:int, dest: int, priority:int, timestamp: datetime, source_iso_name: IsoName | None, build_network_map: bool, raw_can_data: bytes | str):
+    def add_data(
+        self,
+        src: int,
+        dest: int,
+        priority: int,
+        timestamp: datetime,
+        source_iso_name: IsoName | None,
+        build_network_map: bool,
+        raw_can_data: bytes | str,
+    ):
         self.source = src
         self.destination = dest
         self.priority = priority
@@ -59,14 +71,15 @@ class NMEA2000Message:
         if build_network_map:
             # Using MD5 as we don't need secure hashing and speed matters
             # For now, we will NOT include the ISO name in the primary key
-            #primary_key = f"{self.id}_{self.source_iso_name.name if self.source_iso_name else '#'}"
+            # primary_key = f"{self.id}_{self.source_iso_name.name if self.source_iso_name else '#'}"
             primary_key = f"{self.id}"
             for nmea_field in self.fields:
                 if nmea_field.part_of_primary_key:
                     primary_key += "_" + str(nmea_field.raw_value)
-            logger.debug("primary key: %s. iso name: %s", primary_key, self.source_iso_name)
+            logger.debug(
+                "primary key: %s. iso name: %s", primary_key, self.source_iso_name
+            )
             self.hash = hashlib.md5(primary_key.encode()).hexdigest()
-
 
     def apply_preferred_units(self, preferred_units: dict[PhysicalQuantities, str]):
         if len(preferred_units) == 0:
@@ -74,7 +87,9 @@ class NMEA2000Message:
 
         for f in self.fields:
             if f.physical_quantities == PhysicalQuantities.TEMPERATURE:
-                requested_unit = preferred_units.get(PhysicalQuantities.TEMPERATURE, None)
+                requested_unit = preferred_units.get(
+                    PhysicalQuantities.TEMPERATURE, None
+                )
                 if requested_unit == "c":
                     f.unit_of_measurement = "C"
                     f.value = kelvin_to_celsius(f.value)
@@ -107,7 +122,7 @@ class NMEA2000Message:
         return self.__str__()
 
     def to_string_test_style(self):
-        fields_str = ', '.join([field.to_string_test_style() for field in self.fields])
+        fields_str = ", ".join([field.to_string_test_style() for field in self.fields])
         return f"{self.PGN} {self.description}: {fields_str}"
 
     def to_json(self):
@@ -117,6 +132,7 @@ class NMEA2000Message:
             if isinstance(obj, timedelta):
                 return obj.total_seconds()
             raise TypeError
+
         return orjson.dumps(self.__dict__, default=default).decode()
 
     @staticmethod
@@ -125,28 +141,39 @@ class NMEA2000Message:
         msg = NMEA2000Message(**data)
         msg.fields = [NMEA2000Field(**field) for field in data.get("fields", [])]
         return msg
-    
+
     def get_field_by_id(self, id: str) -> NMEA2000Field:
         field = next((f for f in self.fields if f.id == id), None)
         if field is None:
             raise ValueError(f"PGN: {self.id}: Field with id '{id}' is missing.")
         return field
 
-    def get_field_int_value_by_id(self, id: str, default_value: int | None = None) -> int:
+    def get_field_int_value_by_id(
+        self, id: str, default_value: int | None = None
+    ) -> int:
         field = self.get_field_by_id(id)
         if not isinstance(field.value, int):
             if default_value is not None:
                 return default_value
-            raise ValueError(f"PGN: {self.id}: Field with id '{id}' is not an integer. It is {type(field.value).__name__}.")
+            raise ValueError(
+                f"PGN: {self.id}: Field with id '{id}' is not an integer. It is {type(field.value).__name__}."
+            )
         return field.value
 
     def get_field_str_value_by_id(self, id: str) -> str | None:
         field = self.get_field_by_id(id)
         if field.value is None:
-            logger.warning("PGN: %s: Field with id '%s' is None. Raw value is: %s", self.id, id, field.raw_value)
+            logger.warning(
+                "PGN: %s: Field with id '%s' is None. Raw value is: %s",
+                self.id,
+                id,
+                field.raw_value,
+            )
             return None
         if not isinstance(field.value, str):
-            raise ValueError(f"PGN: {self.id}: Field with id '{id}' is not a string. It is {type(field.value).__name__}.")
+            raise ValueError(
+                f"PGN: {self.id}: Field with id '{id}' is not a string. It is {type(field.value).__name__}."
+            )
         return field.value
 
     def get_field_raw_int_by_id(self, id: str, default_value: int | None = None) -> int:
@@ -174,7 +201,8 @@ class NMEA2000Message:
         raise ValueError(
             f"PGN: {self.id}: Field with id '{id}' does not have a string display value."
         )
-    
+
+
 # NMEA2000Field class represents a single NMEA 2000 field
 @dataclass
 class NMEA2000Field:
@@ -193,7 +221,7 @@ class NMEA2000Field:
 
     def __repr__(self):
         return self.__str__()
-    
+
     def to_string_test_style(self):
         if isinstance(self.raw_value, int):
             # Convert integer to bytes (big-endian)
@@ -203,7 +231,8 @@ class NMEA2000Field:
         else:
             raw_value_hex = self.raw_value
         return f'{self.name} = {self.value} (bytes = "{raw_value_hex}")'
-    
+
+
 class LookupFieldTypeEnumeration:
     name: str
     field_type: FieldTypes
@@ -212,13 +241,22 @@ class LookupFieldTypeEnumeration:
     bits: int
     lookup_enumeration: str | None
 
-    def __init__(self, name: str, field_type: FieldTypes, resolution: float | None, unit: str | None, bits: int, lookup_enumeration: str | None):
+    def __init__(
+        self,
+        name: str,
+        field_type: FieldTypes,
+        resolution: float | None,
+        unit: str | None,
+        bits: int,
+        lookup_enumeration: str | None,
+    ):
         self.name = name
         self.field_type = field_type
         self.resolution = resolution
         self.unit = unit
         self.bits = bits
         self.lookup_enumeration = lookup_enumeration
+
 
 @dataclass
 class IsoName:
@@ -243,7 +281,9 @@ class IsoName:
         """
         self.name = self.pack_name_from_message(message) if name is None else name
         self.unique_number = message.get_field_raw_int_by_id("uniqueNumber", 0)
-        self.manufacturer_code = message.get_field_display_string_by_id("manufacturerCode")
+        self.manufacturer_code = message.get_field_display_string_by_id(
+            "manufacturerCode"
+        )
         self.device_instance = (
             message.get_field_raw_int_by_id("deviceInstanceUpper", 0) << 3
         ) | message.get_field_raw_int_by_id("deviceInstanceLower", 0)
@@ -256,7 +296,9 @@ class IsoName:
         )
 
     @staticmethod
-    def _pack_name_field(value: int, bit_length: int, bit_offset: int, field_name: str) -> int:
+    def _pack_name_field(
+        value: int, bit_length: int, bit_offset: int, field_name: str
+    ) -> int:
         if value < 0:
             raise ValueError(f"IsoName field '{field_name}' cannot be negative.")
         max_value = (1 << bit_length) - 1
@@ -270,15 +312,54 @@ class IsoName:
     def pack_name_from_message(cls, message: NMEA2000Message) -> int:
         """Pack the ISO Address Claim fields into the canonical 64-bit NAME integer."""
         return (
-            cls._pack_name_field(message.get_field_raw_int_by_id("uniqueNumber", 0), 21, 0, "uniqueNumber")
-            | cls._pack_name_field(message.get_field_raw_int_by_id("manufacturerCode", 0), 11, 21, "manufacturerCode")
-            | cls._pack_name_field(message.get_field_raw_int_by_id("deviceInstanceLower", 0), 3, 32, "deviceInstanceLower")
-            | cls._pack_name_field(message.get_field_raw_int_by_id("deviceInstanceUpper", 0), 5, 35, "deviceInstanceUpper")
-            | cls._pack_name_field(message.get_field_raw_int_by_id("deviceFunction", 0), 8, 40, "deviceFunction")
-            | cls._pack_name_field(message.get_field_raw_int_by_id("spare", 0), 1, 48, "spare")
-            | cls._pack_name_field(message.get_field_raw_int_by_id("deviceClass", 0), 7, 49, "deviceClass")
-            | cls._pack_name_field(message.get_field_raw_int_by_id("systemInstance", 0), 4, 56, "systemInstance")
-            | cls._pack_name_field(message.get_field_raw_int_by_id("industryGroup", 0), 3, 60, "industryGroup")
+            cls._pack_name_field(
+                message.get_field_raw_int_by_id("uniqueNumber", 0),
+                21,
+                0,
+                "uniqueNumber",
+            )
+            | cls._pack_name_field(
+                message.get_field_raw_int_by_id("manufacturerCode", 0),
+                11,
+                21,
+                "manufacturerCode",
+            )
+            | cls._pack_name_field(
+                message.get_field_raw_int_by_id("deviceInstanceLower", 0),
+                3,
+                32,
+                "deviceInstanceLower",
+            )
+            | cls._pack_name_field(
+                message.get_field_raw_int_by_id("deviceInstanceUpper", 0),
+                5,
+                35,
+                "deviceInstanceUpper",
+            )
+            | cls._pack_name_field(
+                message.get_field_raw_int_by_id("deviceFunction", 0),
+                8,
+                40,
+                "deviceFunction",
+            )
+            | cls._pack_name_field(
+                message.get_field_raw_int_by_id("spare", 0), 1, 48, "spare"
+            )
+            | cls._pack_name_field(
+                message.get_field_raw_int_by_id("deviceClass", 0), 7, 49, "deviceClass"
+            )
+            | cls._pack_name_field(
+                message.get_field_raw_int_by_id("systemInstance", 0),
+                4,
+                56,
+                "systemInstance",
+            )
+            | cls._pack_name_field(
+                message.get_field_raw_int_by_id("industryGroup", 0),
+                3,
+                60,
+                "industryGroup",
+            )
             | cls._pack_name_field(
                 message.get_field_raw_int_by_id("arbitraryAddressCapable", 0),
                 1,
@@ -303,6 +384,6 @@ class IsoName:
             f"arbitrary_address_capable={self.arbitrary_address_capable}, "
             f"name={self.name})"
         )
-    
+
     def __repr__(self):
         return self.__str__()

@@ -9,14 +9,32 @@ from nmea2000.consts import PhysicalQuantities, FieldTypes
 from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message, InvalidFrameError
 from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.input_formats import N2KFormat
-from nmea2000.message import IsoName
+from nmea2000.message import IsoName, NMEA2000Field
 
 
 dump_to_file = None
-#dump_to_file = './dumps/pgn_dump.jsonl'
+# dump_to_file = './dumps/pgn_dump.jsonl'
 
-def _get_decoder(exclude_pgns = [], include_pgns = [], preferred_units = {}, build_network_map = False, exclude_manufacturer_code = {}, already_combined = False):
-    return NMEA2000Decoder(exclude_pgns = exclude_pgns, include_pgns = include_pgns, exclude_manufacturer_code = exclude_manufacturer_code, preferred_units = preferred_units, dump_to_file=dump_to_file, build_network_map = build_network_map, already_combined = already_combined)
+
+def _get_decoder(
+    exclude_pgns=[],
+    include_pgns=[],
+    preferred_units={},
+    build_network_map=False,
+    exclude_manufacturer_code={},
+    already_combined=False,
+):
+    return NMEA2000Decoder(
+        exclude_pgns=exclude_pgns,
+        include_pgns=include_pgns,
+        exclude_manufacturer_code=exclude_manufacturer_code,
+        preferred_units=preferred_units,
+        dump_to_file=dump_to_file,
+        build_network_map=build_network_map,
+        already_combined=already_combined,
+    )
+
+
 def _validate_65280_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 65280
@@ -40,10 +58,12 @@ def _validate_65280_message(msg: NMEA2000Message | None):
     assert not msg.fields[3].part_of_primary_key
     assert msg.get_field_str_value_by_id("industryCode") == "Marine Industry"
 
+
 def test_single_parse():
     decoder = _get_decoder()
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
+
 
 def test_single_parse_with_json():
     filename = f"./dumps/pgn_dump_{uuid.uuid4().hex[:8]}.jsonl"
@@ -55,6 +75,7 @@ def test_single_parse_with_json():
         lines = f.read().splitlines()
         assert len(lines) == 1
     os.remove(filename)
+
 
 def test_yacht_devices_decode():
     decoder = _get_decoder()
@@ -98,9 +119,14 @@ def test_yacht_devices_decode_uses_current_date(monkeypatch):
     assert isinstance(msg, NMEA2000Message)
     assert msg.timestamp == datetime(2026, 4, 9, 1, 20, 16, 311000)
 
+
 def test_bitlookup_parse():
-    decoder = _get_decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C"}, already_combined=True)
-    msg = decoder.decode("2016-04-09T16:41:39.628Z,2,127489,16,255,26,00,2f,06,ff,ff,e3,73,65,05,ff,7f,72,10,00,00,ff,ff,ff,ff,ff,06,00,00,00,7f,7f")
+    decoder = _get_decoder(
+        preferred_units={PhysicalQuantities.TEMPERATURE: "C"}, already_combined=True
+    )
+    msg = decoder.decode(
+        "2016-04-09T16:41:39.628Z,2,127489,16,255,26,00,2f,06,ff,ff,e3,73,65,05,ff,7f,72,10,00,00,ff,ff,ff,ff,ff,06,00,00,00,7f,7f"
+    )
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 127489
     assert msg.priority == 2
@@ -139,9 +165,18 @@ def test_bitlookup_parse():
     assert msg.fields[13].name == "Engine Torque"
     assert msg.fields[13].value is None
 
+
 def test_bitlookup_parse2():
-    decoder = _get_decoder(preferred_units = {PhysicalQuantities.TEMPERATURE:"C", PhysicalQuantities.PRESSURE:"Bar"}, already_combined=True)
-    msg = decoder.decode("1970-01-01T16:41:39.628Z,2,127489,16,255,26,00,2f,06,10,20,e3,73,65,05,65,04,72,10,00,00,10,20,30,40,ff,06,00,ff,00,30,18")
+    decoder = _get_decoder(
+        preferred_units={
+            PhysicalQuantities.TEMPERATURE: "C",
+            PhysicalQuantities.PRESSURE: "Bar",
+        },
+        already_combined=True,
+    )
+    msg = decoder.decode(
+        "1970-01-01T16:41:39.628Z,2,127489,16,255,26,00,2f,06,10,20,e3,73,65,05,65,04,72,10,00,00,10,20,30,40,ff,06,00,ff,00,30,18"
+    )
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 127489
     assert msg.priority == 2
@@ -176,7 +211,10 @@ def test_bitlookup_parse2():
     assert msg.fields[10].name == "Discrete Status 1"
     assert msg.fields[10].value == "Over Temperature, Low Oil Pressure"
     assert msg.fields[11].name == "Discrete Status 2"
-    assert msg.fields[11].value == "Warning Level 1, Warning Level 2, Power Reduction, Maintenance Needed, Engine Comm Error, Sub or Secondary Throttle, Neutral Start Protect, Engine Shutting Down"
+    assert (
+        msg.fields[11].value
+        == "Warning Level 1, Warning Level 2, Power Reduction, Maintenance Needed, Engine Comm Error, Sub or Secondary Throttle, Neutral Start Protect, Engine Shutting Down"
+    )
     assert msg.fields[12].name == "Engine Load"
     assert msg.fields[12].value == 48
     assert msg.fields[12].unit_of_measurement == "%"
@@ -184,9 +222,12 @@ def test_bitlookup_parse2():
     assert msg.fields[13].value == 24
     assert msg.fields[13].unit_of_measurement == "%"
 
+
 def test_INDIRECT_LOOKUP_parse():
     decoder = _get_decoder(already_combined=True)
-    msg = decoder.decode("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0")
+    msg = decoder.decode(
+        "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
+    )
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 60928
     assert msg.priority == 6
@@ -211,11 +252,14 @@ def test_INDIRECT_LOOKUP_parse():
     assert msg.fields[8].name == "Industry Group"
     assert msg.fields[8].value == "Marine Industry"
     assert msg.fields[9].name == "Arbitrary address capable"
-    assert msg.fields[9].value == 'Yes'
+    assert msg.fields[9].value == "Yes"
+
 
 def test_STRING_FIX_parse():
     decoder = _get_decoder(already_combined=True)
-    msg = decoder.decode("2011-04-25-06:25:02.017,6,126996,60,255,134,ba,04,96,26,4d,61,73,74,65,72,42,75,73,20,4e,4d,45,41,20,49,6e,74,65,72,66,61,63,65,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,58,44,31,38,41,30,30,31,39,00,00,00,00,00,00,00,00,4e,4d,45,41,32,30,30,30,00,00,00,00,00,00,00,03,00")
+    msg = decoder.decode(
+        "2011-04-25-06:25:02.017,6,126996,60,255,134,ba,04,96,26,4d,61,73,74,65,72,42,75,73,20,4e,4d,45,41,20,49,6e,74,65,72,66,61,63,65,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,58,44,31,38,41,30,30,31,39,00,00,00,00,00,00,00,00,4e,4d,45,41,32,30,30,30,00,00,00,00,00,00,00,03,00"
+    )
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 126996
     assert msg.priority == 6
@@ -228,63 +272,70 @@ def test_STRING_FIX_parse():
     assert msg.fields[1].name == "Product Code"
     assert msg.fields[1].value == 9878
     assert msg.fields[2].name == "Model ID"
-    assert msg.fields[2].value == 'MasterBus NMEA Interface'
+    assert msg.fields[2].value == "MasterBus NMEA Interface"
     assert msg.fields[3].name == "Software Version Code"
-    assert msg.fields[3].value == '1.00'
+    assert msg.fields[3].value == "1.00"
     assert msg.fields[4].name == "Model Version"
-    assert msg.fields[4].value == '1.00'
+    assert msg.fields[4].value == "1.00"
     assert msg.fields[5].name == "Model Serial Code"
-    assert msg.fields[5].value == 'XD18A0019'
+    assert msg.fields[5].value == "XD18A0019"
     assert msg.fields[6].name == "Certification Level"
     assert msg.fields[6].raw_value == 3
     assert msg.fields[7].name == "Load Equivalency"
     assert msg.fields[7].value == 0
 
+
 def test_STRING_LZ_parse():
     decoder = _get_decoder(already_combined=True)
-    msg = decoder.decode("2020-08-22T13:52:52.054Z,7,130820,49,255,20,a3,99,0b,80,01,02,00,c6,3e,05,c7,08,41,56,52,4f,54,52,4f,53")
+    msg = decoder.decode(
+        "2020-08-22T13:52:52.054Z,7,130820,49,255,20,a3,99,0b,80,01,02,00,c6,3e,05,c7,08,41,56,52,4f,54,52,4f,53"
+    )
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 130820
     assert msg.priority == 7
     assert msg.source == 49
     assert msg.destination == 255
-    assert msg.description == 'Fusion: Tuner'
+    assert msg.description == "Fusion: Tuner"
     assert len(msg.fields) == 9
-    assert msg.fields[0].name == 'Manufacturer Code'
-    assert msg.fields[0].value == 'Fusion Electronics'
-    assert msg.fields[3].name == 'Message ID'
-    assert msg.fields[3].value == 'Tuner'
-    assert msg.fields[4].name == 'Source ID'
-    assert msg.fields[4].value == 'FM'
-    assert msg.fields[6].name == 'Frequency'
+    assert msg.fields[0].name == "Manufacturer Code"
+    assert msg.fields[0].value == "Fusion Electronics"
+    assert msg.fields[3].name == "Message ID"
+    assert msg.fields[3].value == "Tuner"
+    assert msg.fields[4].name == "Source ID"
+    assert msg.fields[4].value == "FM"
+    assert msg.fields[6].name == "Frequency"
     assert msg.fields[6].value == 88000000
-    assert msg.fields[6].unit_of_measurement == 'Hz'
+    assert msg.fields[6].unit_of_measurement == "Hz"
     assert msg.fields[6].physical_quantities == PhysicalQuantities.FREQUENCY
-    assert msg.fields[8].name == 'Track'
-    assert msg.fields[8].value == 'AVROTROS'
+    assert msg.fields[8].name == "Track"
+    assert msg.fields[8].value == "AVROTROS"
+
 
 def test_STRING_LAU_parse():
     decoder = _get_decoder(already_combined=True)
-    msg = decoder.decode("2021-01-30-20:43:21.684,6,126998,1,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00")
+    msg = decoder.decode(
+        "2021-01-30-20:43:21.684,6,126998,1,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00"
+    )
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 126998
     assert msg.priority == 6
     assert msg.source == 1
     assert msg.destination == 255
-    assert msg.description == 'Configuration Information'
+    assert msg.description == "Configuration Information"
     assert len(msg.fields) == 3
-    assert msg.fields[0].name == 'Installation Description #1'
-    assert msg.fields[0].value == 'hello'
-    assert msg.fields[1].name == 'Installation Description #2'
-    assert msg.fields[1].value == 'wórld'
-    assert msg.fields[2].name == 'Manufacturer Information'
+    assert msg.fields[0].name == "Installation Description #1"
+    assert msg.fields[0].value == "hello"
+    assert msg.fields[1].name == "Installation Description #2"
+    assert msg.fields[1].value == "wórld"
+    assert msg.fields[2].name == "Manufacturer Information"
     assert msg.fields[2].value is None
+
 
 def test_json():
     decoder = _get_decoder()
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert isinstance(msg, NMEA2000Message)
-    json_msg=msg.to_json()
+    json_msg = msg.to_json()
     data = json.loads(json_msg)
     assert data["PGN"] == msg.PGN
     assert data["priority"] == msg.priority
@@ -316,6 +367,7 @@ def test_json():
         assert field2.value == field.value
         assert field2.raw_value == field.raw_value
 
+
 def _validate_130842_message(msg: NMEA2000Message | None):
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 130842
@@ -323,7 +375,7 @@ def _validate_130842_message(msg: NMEA2000Message | None):
     assert msg.source == 9
     assert msg.destination == 255
     assert msg.description == "Furuno: Six Degrees Of Freedom Movement"
-    assert len(msg.fields) == 12  
+    assert len(msg.fields) == 12
     assert msg.fields[3].id == "a"
     assert msg.fields[3].value == 36
     assert msg.fields[4].id == "b"
@@ -346,65 +398,101 @@ def _validate_130842_message(msg: NMEA2000Message | None):
 
 
 def test_iso_address_parse():
-    decoder = _get_decoder(build_network_map = True, already_combined=True)
-    msg_60928 = decoder.decode("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0")
+    decoder = _get_decoder(build_network_map=True, already_combined=True)
+    msg_60928 = decoder.decode(
+        "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
+    )
     assert isinstance(msg_60928, NMEA2000Message)
     assert msg_60928.source_iso_name is not None
-    msg_126998 = decoder.decode("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00")
+    msg_126998 = decoder.decode(
+        "2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00"
+    )
     assert isinstance(msg_126998, NMEA2000Message)
     assert msg_126998.PGN == 126998
     assert msg_126998.source_iso_name is not None
     assert msg_126998.source_iso_name == msg_60928.source_iso_name
     # hash with ISO name is commented out for now
-    #assert msg_126998.hash == "027d58d31145159c43becc14347a9c7d"
+    # assert msg_126998.hash == "027d58d31145159c43becc14347a9c7d"
     assert msg_126998.hash == "4dbb7cdd4fdd29c2e269665a1faaff00"
-    msg_126998_2 = decoder.decode("2021-01-30-20:43:21.684,6,126998,4,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00")
+    msg_126998_2 = decoder.decode(
+        "2021-01-30-20:43:21.684,6,126998,4,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00"
+    )
     assert msg_126998_2 is None
+
 
 def test_iso_address_parse_zero():
     decoder = _get_decoder(already_combined=True)
-    msg_60928 = decoder.decode("2000-09-10T12:10:16.614Z,6,60928,5,255,8,f5,01,c0,2c,ef,aa,46,c0")
+    msg_60928 = decoder.decode(
+        "2000-09-10T12:10:16.614Z,6,60928,5,255,8,f5,01,c0,2c,ef,aa,46,c0"
+    )
     assert isinstance(msg_60928, NMEA2000Message)
     assert msg_60928.source_iso_name is not None
 
+
 def test_iso_name_pack_name_from_message():
     decoder = _get_decoder(already_combined=True)
-    msg_60928 = decoder.decode("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0")
+    msg_60928 = decoder.decode(
+        "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
+    )
     assert isinstance(msg_60928, NMEA2000Message)
     assert msg_60928.source_iso_name is not None
     assert IsoName.pack_name_from_message(msg_60928) == msg_60928.source_iso_name.name
 
+
 def test_iso_address_parse_exclude():
     decoder = _get_decoder(exclude_pgns=[60928], already_combined=True)
-    msg_60928 = decoder.decode("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0")
+    msg_60928 = decoder.decode(
+        "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
+    )
     assert msg_60928 is None
-    msg_126998 = decoder.decode("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00")
+    msg_126998 = decoder.decode(
+        "2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00"
+    )
     assert isinstance(msg_126998, NMEA2000Message)
     assert msg_126998.PGN == 126998
     assert isinstance(msg_126998.source_iso_name, IsoName)
     assert msg_126998.source_iso_name.name == 13857746478299126779
+
 
 def test_iso_address_parse_exclude_2():
     decoder = _get_decoder(exclude_pgns=["isoAddressClaim"], already_combined=True)
-    msg_60928 = decoder.decode("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0")
+    msg_60928 = decoder.decode(
+        "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
+    )
     assert msg_60928 is None
-    msg_126998 = decoder.decode("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00")
+    msg_126998 = decoder.decode(
+        "2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00"
+    )
     assert isinstance(msg_126998, NMEA2000Message)
     assert msg_126998.PGN == 126998
     assert isinstance(msg_126998.source_iso_name, IsoName)
     assert msg_126998.source_iso_name.name == 13857746478299126779
 
+
 def test_exclude_manufacturer_code():
-    decoder = _get_decoder(exclude_pgns=[60928], exclude_manufacturer_code=["Navico"], build_network_map=True, already_combined=True)
-    msg_60928 = decoder.decode("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0")
+    decoder = _get_decoder(
+        exclude_pgns=[60928],
+        exclude_manufacturer_code=["Navico"],
+        build_network_map=True,
+        already_combined=True,
+    )
+    msg_60928 = decoder.decode(
+        "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
+    )
     assert msg_60928 is None
-    msg_126998 = decoder.decode("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00")
+    msg_126998 = decoder.decode(
+        "2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00"
+    )
     assert msg_126998 is None
+
 
 def test_fast_parse():
     decoder = _get_decoder()
-    msg = decoder.decode("A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000")
+    msg = decoder.decode(
+        "A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000"
+    )
     _validate_130842_message(msg)
+
 
 def test_encode():
     decoder = _get_decoder()
@@ -412,49 +500,64 @@ def test_encode():
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert isinstance(msg, NMEA2000Message)
     nmea_str = encoder.encode(msg)
-    assert  nmea_str == "09FF7 0FF00 3F9FDCFFFFFFFFFF"
+    assert nmea_str == "09FF7 0FF00 3F9FDCFFFFFFFFFF"
+
 
 def test_exclude():
     decoder = _get_decoder(exclude_pgns=[65280])
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert msg is None
 
+
 def test_include():
     decoder = _get_decoder(include_pgns=[65280])
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
 
+
 def test_include_with_network_map():
-    decoder = _get_decoder(include_pgns=[126998], build_network_map=True, already_combined=True)
-    msg_60928 = decoder.decode("2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0")
+    decoder = _get_decoder(
+        include_pgns=[126998], build_network_map=True, already_combined=True
+    )
+    msg_60928 = decoder.decode(
+        "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
+    )
     assert msg_60928 is None
-    msg_126998 = decoder.decode("2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00")
+    msg_126998 = decoder.decode(
+        "2021-01-30-20:43:21.684,6,126998,5,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00"
+    )
     assert isinstance(msg_126998, NMEA2000Message)
+
 
 def test_tcp_bytes():
     decoder = _get_decoder()
     msg = decoder.decode(bytes.fromhex("881cff00093f9fdcffffffffff"))
     _validate_65280_message(msg)
 
+
 def test_usb_bytes():
     decoder = _get_decoder()
     msg = decoder.decode(bytes.fromhex("aa550102010900ff1c083f9fdcffffffffff00e5"))
     _validate_65280_message(msg)
+
 
 def test_usb_bytes_invalid_checksum():
     decoder = _get_decoder()
     with pytest.raises(InvalidFrameError, match="Invalid checksum"):
         decoder.decode(bytes.fromhex("aa550102010900ff1c083f9fdcffffffffff00ff"))
 
+
 def test_usb_bytes_invalid_header():
     decoder = _get_decoder()
     with pytest.raises(InvalidFrameError, match="prefix"):
         decoder.decode(bytes.fromhex("bb550102010900ff1c083f9fdcffffffffff00e5"))
 
+
 def test_usb_bytes_invalid_length():
     decoder = _get_decoder()
     with pytest.raises(InvalidFrameError, match="not 20 bytes"):
         decoder.decode(bytes.fromhex("aa550102010900ff1c08"))
+
 
 def test_iso_request_decode():
     decoder = _get_decoder()
@@ -473,36 +576,43 @@ def test_iso_request_decode():
     assert msg3.PGN == 59904
     assert msg3.fields[0].raw_value == msg.fields[0].raw_value
 
+
 def test_decode_yacht_devices_receive():
     decoder = _get_decoder()
     msg = decoder.decode("21:31:42.671 T 01F010B3 FF FF 0C 4F 70 BE 3E 33")
     assert isinstance(msg, NMEA2000Message)
+
 
 def test_decode_yacht_devices_receive_2():
     decoder = _get_decoder()
     msg = decoder.decode("21:31:42.520 T 01F119B3 57 00 00 8D 0B FA FE FF")
     assert isinstance(msg, NMEA2000Message)
 
+
 def test_decode_speed():
-    decoder = _get_decoder(preferred_units = {PhysicalQuantities.SPEED:"kts"})
+    decoder = _get_decoder(preferred_units={PhysicalQuantities.SPEED: "kts"})
     msg = decoder.decode("A000057.067 22FF2 1FD02 075101744CFAFFFF")
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 130306
     assert msg.priority == 2
     assert msg.source == 34
     assert msg.destination == 255
-    assert msg.description == 'Wind Data'
+    assert msg.description == "Wind Data"
     assert len(msg.fields) == 5
-    assert msg.fields[1].name == 'Wind Speed'
-    assert msg.fields[1].unit_of_measurement == 'kts'
-    assert msg.fields[1].raw_value == 3.37 #m/s
+    assert msg.fields[1].name == "Wind Speed"
+    assert msg.fields[1].unit_of_measurement == "kts"
+    assert msg.fields[1].raw_value == 3.37  # m/s
     assert msg.fields[1].value == 6.6
+
 
 def test_fusion():
     decoder = _get_decoder(already_combined=True)
-    msg = decoder.decode("2025-06-20T19:33:12.240Z,7,126720,0,255,11,a3,99,09,00,0b,07,00,00,00,02,02")
+    msg = decoder.decode(
+        "2025-06-20T19:33:12.240Z,7,126720,0,255,11,a3,99,09,00,0b,07,00,00,00,02,02"
+    )
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 126720
+
 
 def test_python_can_decode():
     """Test decoding a python-can Message object."""
@@ -526,6 +636,7 @@ def test_python_can_decode():
 
 # ===== Tests for newly supported field types =====
 # Sample data sourced from https://github.com/canboat/canboat
+
 
 def test_field_index_and_variable_decode():
     """Test decoding FIELD_INDEX and VARIABLE field types via PGN 126208 Request group function."""
@@ -622,6 +733,175 @@ def test_iso_name_decode():
     assert msg.get_field_by_id("alertType").value == "Emergency Alarm"
     assert msg.get_field_by_id("alertCategory").value == "Navigational"
     assert msg.get_field_by_id("alertId").raw_value == 63488
+
+
+# Sample data from canboat/canboat samples/pgn127504.raw
+PGN_127503_SAMPLE = "2021-07-29-09:00:42.386,6,127503,1,255,20,00,01,f0,00,05,2c,01,88,13,e8,03,80,15,00,00,80,15,00,00,64"
+PGN_127503_UNAVAILABLE = "2021-07-29-09:00:43.386,6,127503,1,255,20,00,01,f5,00,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,7f"
+PGN_127504_SAMPLE = "2021-07-29-09:00:45.386,6,127504,1,255,20,00,01,e1,00,05,2c,01,88,13,e8,03,80,15,00,00,80,15,00,00,64"
+
+
+def test_pgn_127503_repeating_fields_are_nmea2000field():
+    """Test that PGN 127503 repeating field entries contain NMEA2000Field objects with full metadata."""
+    decoder = _get_decoder(already_combined=True)
+    msg = decoder.decode(PGN_127503_SAMPLE)
+
+    assert msg.PGN == 127503
+    assert len(msg.fields) == 3
+    assert msg.get_field_by_id("instance").value == 0
+    assert msg.get_field_by_id("numberOfLines").value == 1
+
+    list_field = msg.get_field_by_id("list")
+    assert list_field.type == FieldTypes.VARIABLE
+    assert isinstance(list_field.value, list)
+    assert len(list_field.value) == 1
+
+    entry = list_field.value[0]
+
+    # All values in the entry should be NMEA2000Field objects
+    for key, field in entry.items():
+        assert isinstance(field, NMEA2000Field), (
+            f"Entry '{key}' should be NMEA2000Field, got {type(field)}"
+        )
+
+    # Validate field metadata
+    assert entry["voltage"].value == 12.8
+    assert entry["voltage"].unit_of_measurement == "V"
+    assert entry["voltage"].type == FieldTypes.NUMBER
+    assert (
+        entry["voltage"].physical_quantities == PhysicalQuantities.POTENTIAL_DIFFERENCE
+    )
+
+    assert entry["current"].value == 30.0
+    assert entry["current"].unit_of_measurement == "A"
+
+    assert entry["frequency"].value == 50.0
+    assert entry["frequency"].unit_of_measurement == "Hz"
+
+    assert entry["breakerSize"].value == 100.0
+    assert entry["realPower"].value == 5504
+    assert entry["reactivePower"].value == 5504
+    assert entry["powerFactor"].value == 1.0
+
+    assert entry["line"].type == FieldTypes.LOOKUP
+    assert entry["line"].value == "Line 1"
+
+    assert entry["reserved_20"].type == FieldTypes.RESERVED
+
+
+def test_pgn_127503_unavailable_fields():
+    """Test that PGN 127503 with unavailable field values decodes None correctly."""
+    decoder = _get_decoder(already_combined=True)
+    msg = decoder.decode(PGN_127503_UNAVAILABLE)
+
+    entry = msg.get_field_by_id("list").value[0]
+
+    # These fields have 0xFFFF raw values — should decode as None
+    assert entry["current"].value is None
+    assert entry["frequency"].value is None
+    assert entry["breakerSize"].value is None
+    assert entry["realPower"].value is None
+    assert entry["reactivePower"].value is None
+
+    # But line/acceptability should still have values
+    assert entry["line"].value == "Line 2"
+    assert entry["acceptability"].value == "Bad frequency"
+
+
+def test_pgn_127504_repeating_fields_are_nmea2000field():
+    """Test that PGN 127504 (AC Output Status) repeating fields are also NMEA2000Field."""
+    decoder = _get_decoder(already_combined=True)
+    msg = decoder.decode(PGN_127504_SAMPLE)
+
+    assert msg.PGN == 127504
+    list_field = msg.get_field_by_id("list")
+    assert list_field.type == FieldTypes.VARIABLE
+    assert len(list_field.value) == 1
+
+    entry = list_field.value[0]
+    for key, field in entry.items():
+        assert isinstance(field, NMEA2000Field), (
+            f"Entry '{key}' should be NMEA2000Field, got {type(field)}"
+        )
+
+    assert entry["voltage"].value == 12.8
+    assert entry["voltage"].unit_of_measurement == "V"
+    assert entry["frequency"].value == 50.0
+    assert entry["frequency"].unit_of_measurement == "Hz"
+    assert entry["waveform"].type == FieldTypes.LOOKUP
+    assert entry["waveform"].value == "Sine wave"
+
+
+def test_pgn_127503_multiple_lines():
+    """Test that PGN 127503 with multiple AC lines creates multiple list entries."""
+    from nmea2000.pgns import decode_pgn_127503
+
+    # Construct a 2-line payload: instance=0, numberOfLines=2, then two repeating sets
+    line1 = bytes(
+        [
+            0x00,  # line=0 (2b), acceptability=0 (2b), reserved=0 (4b)
+            0x05,
+            0x00,  # voltage=5 -> 0.05V
+            0x2C,
+            0x01,  # current=300 -> 30.0A
+            0x88,
+            0x13,  # frequency=5000 -> 50.0Hz
+            0xE8,
+            0x03,  # breakerSize=1000 -> 100.0A
+            0x00,
+            0x00,
+            0x00,
+            0x00,  # realPower=0
+            0x00,
+            0x00,
+            0x00,
+            0x00,  # reactivePower=0
+            0x64,  # powerFactor=100 -> 1.0
+        ]
+    )
+    line2 = bytes(
+        [
+            0x01,  # line=1 (2b), acceptability=0 (2b), reserved=0 (4b)
+            0x0A,
+            0x00,  # voltage=10 -> 0.10V
+            0x58,
+            0x02,  # current=600 -> 60.0A
+            0x10,
+            0x27,  # frequency=10000 -> 100.0Hz
+            0xD0,
+            0x07,  # breakerSize=2000 -> 200.0A
+            0x00,
+            0x00,
+            0x00,
+            0x00,  # realPower=0
+            0x00,
+            0x00,
+            0x00,
+            0x00,  # reactivePower=0
+            0x32,  # powerFactor=50 -> 0.5
+        ]
+    )
+    header = bytes([0x00, 0x02])  # instance=0, numberOfLines=2
+    payload = header + line1 + line2
+    data_raw = int.from_bytes(payload, byteorder="little")
+    data_length_bits = len(payload) * 8
+
+    msg = decode_pgn_127503(data_raw, data_length_bits)
+
+    list_field = msg.get_field_by_id("list")
+    assert len(list_field.value) == 2
+
+    entry0 = list_field.value[0]
+    assert entry0["voltage"].value == pytest.approx(0.05)
+    assert entry0["current"].value == 30.0
+    assert entry0["frequency"].value == 50.0
+    assert entry0["powerFactor"].value == 1.0
+
+    entry1 = list_field.value[1]
+    assert entry1["voltage"].value == pytest.approx(0.10)
+    assert entry1["current"].value == 60.0
+    assert entry1["frequency"].value == 100.0
+    assert entry1["powerFactor"].value == 0.5
 
 
 def test_dynamic_field_decode():

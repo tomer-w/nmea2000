@@ -38,14 +38,6 @@ def _optional_message_field(nmea2000Message: NMEA2000Message, field_id: str) -> 
     return next((field for field in nmea2000Message.fields if field.id == field_id), None)
 
 
-def _coerce_repeating_field(field_id: str, value) -> NMEA2000Field:
-    if isinstance(value, NMEA2000Field):
-        return value
-    if isinstance(value, dict):
-        return NMEA2000Field(field_id, value=value.get('value'), raw_value=value.get('raw_value'))
-    return NMEA2000Field(field_id, value=value, raw_value=None)
-
-
 def _get_repeating_entries(
     nmea2000Message: NMEA2000Message,
     list_field_id: str,
@@ -65,7 +57,10 @@ def _get_repeating_entries(
             entry: dict[str, NMEA2000Field] = {}
             for field_id in field_ids:
                 if field_id in item:
-                    entry[field_id] = _coerce_repeating_field(field_id, item[field_id])
+                    val = item[field_id]
+                    if not isinstance(val, NMEA2000Field):
+                        raise ValueError(f"Repeating field '{field_id}' must be an NMEA2000Field, got {type(val).__name__}")
+                    entry[field_id] = val
             entries.append(entry)
         return entries
 
@@ -75,12 +70,6 @@ def _get_repeating_entries(
         if field is not None:
             entry[field_id] = field
     return [entry] if entry else []
-
-
-def _repeating_entry_value(value, raw_value):
-    if value is None and raw_value is not None:
-        return {"value": value, "raw_value": raw_value}
-    return value
 
 
 def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnumeration], lookup_name: str) -> int:
@@ -528,7 +517,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
         {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
             {%- set repeating_field_name = generate_field_python_name(repeating_field.Name, repeating_field.FieldType, repeating_field.BitOffset) %}
 {{ emit_repeating_decode_value(repeating_field, repeating_field_name) | indent(4, true) }}
-        repeating_entry["{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}"] = _repeating_entry_value({{ repeating_field_name }}, {{ repeating_field_name }}_raw)
+        repeating_entry["{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}"] = NMEA2000Field('{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}', '{{ repeating_field.Name }}', {% if repeating_field.Description is defined -%}"{{repeating_field.Description}}"{%- else -%}None{%- endif -%}, {% if repeating_field.Unit is defined -%}'{{repeating_field.Unit}}'{%- else -%}None{%- endif -%}, {{ repeating_field_name }}, {{ repeating_field_name }}_raw, {% if repeating_field.PhysicalQuantity is defined -%}PhysicalQuantities.{{repeating_field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{repeating_field.FieldType}}, {% if repeating_field.PartOfPrimaryKey is defined -%}{{repeating_field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%})
         {%- endfor %}
         repeating_field_set_1_entries.append(repeating_entry)
     if repeating_field_set_1_entries:

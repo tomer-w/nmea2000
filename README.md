@@ -67,6 +67,43 @@ decoded_frame = decoder.decode(frame_str)
 print(decoded_frame)
 ```
 
+### Repeating Fields
+
+Some PGNs (e.g. AC Input/Output Status) contain repeating field sets — for example, one set of measurements per AC line. These are exposed as a `list` field whose value is a list of dicts, where each dict maps field IDs to `NMEA2000Field` objects:
+
+```python
+from nmea2000.decoder import NMEA2000Decoder
+from nmea2000.consts import FieldTypes
+
+decoder = NMEA2000Decoder(already_combined=True)
+msg = decoder.decode(
+    "2021-07-29-09:00:42.386,6,127503,1,255,20,"
+    "00,01,f0,00,05,2c,01,88,13,e8,03,80,15,00,00,80,15,00,00,64"
+)
+
+for field in msg.fields:
+    if field.type == FieldTypes.VARIABLE and isinstance(field.value, list):
+        for idx, entry in enumerate(field.value):
+            print(f"AC Line {idx}:")
+            for field_id, sub_field in entry.items():
+                print(f"  {sub_field.name}: {sub_field.value} {sub_field.unit_of_measurement or ''}")
+```
+
+Output:
+```
+AC Line 0:
+  Line: Line 1
+  Acceptability: Bad level
+  Reserved: 15
+  Voltage: 12.8 V
+  Current: 30.0 A
+  Frequency: 50.0 Hz
+  Breaker Size: 100.0 A
+  Real Power: 5504 W
+  Reactive Power: 5504 VAR
+  Power factor: 1.0 Cos Phi
+```
+
 ### Example reading packets using python-can
 
 ```python

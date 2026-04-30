@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nmea2000"
-version = "2026.4.4"
+version = "2026.4.5"
 description = "NMEA 2000 encoder and decoder"
 readme = "README.md"
 license = "Apache-2.0"
@@ -41,7 +41,8 @@ nmea2000-cli = "nmea2000.cli:main"
 include = ["nmea2000*"]
 
 [tool.ruff]
-extend-exclude = [ "nmea2000/pgns.py" ]
+extend-exclude = [ "nmea2000/pgns.py", "nmea2000/consts.py" ]
+force-exclude = true
 
 [tool.pylint.messages_control]
 disable = ["line-too-long"]
