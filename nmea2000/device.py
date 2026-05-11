@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Awaitable, Callable, Optional
 
 from .ioclient import (
+    ActisenseBstNmea2000Gateway,
     AsyncIOClient,
     EByteNmea2000Gateway,
     PythonCanAsyncIOClient,
@@ -26,7 +27,9 @@ logger = logging.getLogger(__name__)
 MessageCallback = Callable[[NMEA2000Message], Awaitable[None]]
 StatusCallback = Callable[[State], Awaitable[None]]
 
-MANAGEMENT_PGNS = frozenset({59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998})
+MANAGEMENT_PGNS = frozenset(
+    {59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998}
+)
 
 
 @dataclass
@@ -47,15 +50,15 @@ class N2KDevice:
         self,
         client: AsyncIOClient,
         *,
-        preferred_address: int = 100, # A commonly unused address
-        unique_number: int | None = None, 
-        manufacturer_code: int = 999, # A nonexistent manufacturer code
-        device_function: int = 130, # PC Gateway
-        device_class: int = 25, # Inter/Intra Network Device
+        preferred_address: int = 100,  # A commonly unused address
+        unique_number: int | None = None,
+        manufacturer_code: int = 999,  # A nonexistent manufacturer code
+        device_function: int = 130,  # PC Gateway
+        device_class: int = 25,  # Inter/Intra Network Device
         device_instance_lower: int = 0,
         device_instance_upper: int = 0,
         system_instance: int = 0,
-        industry_group: int = 4, # Marine
+        industry_group: int = 4,  # Marine
         arbitrary_address_capable: bool = True,
         product_code: int = 667,
         nmea2000_version: int = 1300,
@@ -99,9 +102,15 @@ class N2KDevice:
         self.heartbeat_counter = 0
         self.devices: dict[int, DiscoveredDevice] = {}
 
-        self.persistence_path = self._resolve_persistence_path(persistence_path, persistence_key)
+        self.persistence_path = self._resolve_persistence_path(
+            persistence_path, persistence_key
+        )
         persisted = self._load_persistence_data()
-        self.unique_number = unique_number if unique_number is not None else int(persisted.get("uniqueNumber", self._generate_unique_number()))
+        self.unique_number = (
+            unique_number
+            if unique_number is not None
+            else int(persisted.get("uniqueNumber", self._generate_unique_number()))
+        )
         self.address = int(persisted.get("lastAddress", preferred_address))
 
         self.manufacturer_code = manufacturer_code
@@ -112,14 +121,18 @@ class N2KDevice:
         self.system_instance = system_instance
         self.industry_group = industry_group
         self.arbitrary_address_capable = arbitrary_address_capable
-        self._own_name = IsoName.pack_name_from_message(self._build_address_claim_message())
+        self._own_name = IsoName.pack_name_from_message(
+            self._build_address_claim_message()
+        )
 
         self.product_code = product_code
         self.nmea2000_version = nmea2000_version
         self.model_id = model_id
         self.model_version = model_version
         self.model_serial_code = model_serial_code or str(self.unique_number)
-        self.software_version_code = software_version_code or self._get_package_version()
+        self.software_version_code = (
+            software_version_code or self._get_package_version()
+        )
         self.certification_level = certification_level
         self.load_equivalency = load_equivalency
         self.installation_description1 = installation_description1
@@ -161,7 +174,9 @@ class N2KDevice:
         **device_options: Any,
     ) -> "N2KDevice":
         """Create a device that communicates through an EByte TCP gateway."""
-        client = EByteNmea2000Gateway(host, port, **cls._prepare_client_options(client_options))
+        client = EByteNmea2000Gateway(
+            host, port, **cls._prepare_client_options(client_options)
+        )
         return cls(client, **device_options)
 
     @classmethod
@@ -181,7 +196,9 @@ class N2KDevice:
             port: Server port number.
             format: The N2KFormat used by the gateway (e.g. CAN_FRAME_ASCII, N2K_ASCII_RAW).
         """
-        client = TextNmea2000Gateway(host, port, format=format, **cls._prepare_client_options(client_options))
+        client = TextNmea2000Gateway(
+            host, port, format=format, **cls._prepare_client_options(client_options)
+        )
         return cls(client, **device_options)
 
     @classmethod
@@ -193,7 +210,9 @@ class N2KDevice:
         **device_options: Any,
     ) -> "N2KDevice":
         """Create a device that communicates through a Waveshare USB-CAN gateway."""
-        client = WaveShareNmea2000Gateway(port, **cls._prepare_client_options(client_options))
+        client = WaveShareNmea2000Gateway(
+            port, **cls._prepare_client_options(client_options)
+        )
         return cls(client, **device_options)
 
     @classmethod
@@ -211,6 +230,21 @@ class N2KDevice:
         return cls(client, **device_options)
 
     @classmethod
+    def for_actisense(
+        cls,
+        host: str,
+        port: int,
+        *,
+        client_options: dict[str, Any] | None = None,
+        **device_options: Any,
+    ) -> "N2KDevice":
+        """Create a device that communicates through an Actisense BST TCP gateway."""
+        client = ActisenseBstNmea2000Gateway(
+            host, port, **cls._prepare_client_options(client_options)
+        )
+        return cls(client, **device_options)
+
+    @classmethod
     def for_n2k_ascii(
         cls,
         host: str,
@@ -221,8 +255,14 @@ class N2KDevice:
     ) -> "N2KDevice":
         """Convenience shortcut for ``for_text_gateway`` with N2K_ASCII_RAW format."""
         from .input_formats import N2KFormat
-        return cls.for_text_gateway(host, port, N2KFormat.N2K_ASCII_RAW,
-                                    client_options=client_options, **device_options)
+
+        return cls.for_text_gateway(
+            host,
+            port,
+            N2KFormat.N2K_ASCII_RAW,
+            client_options=client_options,
+            **device_options,
+        )
 
     async def start(self) -> None:
         """Connect the client and begin the device startup/address-claim sequence."""
@@ -295,11 +335,15 @@ class N2KDevice:
             return
 
         if message.PGN == 126996:
-            self._get_or_create_discovered_device(message.source).product_information = message
+            self._get_or_create_discovered_device(
+                message.source
+            ).product_information = message
             return
 
         if message.PGN == 126998:
-            self._get_or_create_discovered_device(message.source).configuration_information = message
+            self._get_or_create_discovered_device(
+                message.source
+            ).configuration_information = message
             return
 
         if not self._should_process_management_message(message):
@@ -372,7 +416,9 @@ class N2KDevice:
             await self.client.send(self._build_pgn_list_message(message.source))
             return
         if not self.disable_naks:
-            await self.client.send(self._build_iso_nak_message(message.source, requested_pgn))
+            await self.client.send(
+                self._build_iso_nak_message(message.source, requested_pgn)
+            )
 
     async def _handle_group_function(self, message: NMEA2000Message) -> None:
         if self.disable_naks:
@@ -380,7 +426,9 @@ class N2KDevice:
         if message.id not in {"nmeaRequestGroupFunction", "nmeaCommandGroupFunction"}:
             return
         requested_pgn = message.get_field_int_value_by_id("pgn")
-        await self.client.send(self._build_group_function_ack_message(message.source, requested_pgn))
+        await self.client.send(
+            self._build_group_function_ack_message(message.source, requested_pgn)
+        )
 
     async def _handle_iso_address_claim(self, message: NMEA2000Message) -> None:
         source = message.source
@@ -399,7 +447,9 @@ class N2KDevice:
             await self._send_address_claim()
 
     def _should_process_management_message(self, message: NMEA2000Message) -> bool:
-        return message.destination == 255 or (self.ready and message.destination == self.address)
+        return message.destination == 255 or (
+            self.ready and message.destination == self.address
+        )
 
     def _remember_device(self, message: NMEA2000Message) -> None:
         discovered = self._get_or_create_discovered_device(message.source)
@@ -416,20 +466,26 @@ class N2KDevice:
         discovered = self.devices.get(address)
         if discovered is None or discovered.address_claim is None:
             return False
-        return IsoName.pack_name_from_message(discovered.address_claim) != self._own_name
+        return (
+            IsoName.pack_name_from_message(discovered.address_claim) != self._own_name
+        )
 
     def _increase_address(self) -> None:
         start_address = self.address
         while True:
             self.address = (self.address + 1) % 253
-            if self.address == start_address or not self._address_is_occupied(self.address):
+            if self.address == start_address or not self._address_is_occupied(
+                self.address
+            ):
                 return
 
     def _set_not_ready(self) -> None:
         self._ready = False
         self._ready_event.clear()
 
-    def _build_iso_request_message(self, requested_pgn: int, *, source: int | None = None, destination: int = 255) -> NMEA2000Message:
+    def _build_iso_request_message(
+        self, requested_pgn: int, *, source: int | None = None, destination: int = 255
+    ) -> NMEA2000Message:
         return NMEA2000Message(
             PGN=59904,
             id="isoRequest",
@@ -450,16 +506,48 @@ class N2KDevice:
             destination=255,
             priority=6,
             fields=[
-                NMEA2000Field("uniqueNumber", value=self.unique_number, raw_value=self.unique_number),
-                NMEA2000Field("manufacturerCode", value=self.manufacturer_code, raw_value=self.manufacturer_code),
-                NMEA2000Field("deviceInstanceLower", value=self.device_instance_lower, raw_value=self.device_instance_lower),
-                NMEA2000Field("deviceInstanceUpper", value=self.device_instance_upper, raw_value=self.device_instance_upper),
-                NMEA2000Field("deviceFunction", value=self.device_function, raw_value=self.device_function),
+                NMEA2000Field(
+                    "uniqueNumber",
+                    value=self.unique_number,
+                    raw_value=self.unique_number,
+                ),
+                NMEA2000Field(
+                    "manufacturerCode",
+                    value=self.manufacturer_code,
+                    raw_value=self.manufacturer_code,
+                ),
+                NMEA2000Field(
+                    "deviceInstanceLower",
+                    value=self.device_instance_lower,
+                    raw_value=self.device_instance_lower,
+                ),
+                NMEA2000Field(
+                    "deviceInstanceUpper",
+                    value=self.device_instance_upper,
+                    raw_value=self.device_instance_upper,
+                ),
+                NMEA2000Field(
+                    "deviceFunction",
+                    value=self.device_function,
+                    raw_value=self.device_function,
+                ),
                 NMEA2000Field("spare", value=1, raw_value=1),
-                NMEA2000Field("deviceClass", value=self.device_class, raw_value=self.device_class),
-                NMEA2000Field("systemInstance", value=self.system_instance, raw_value=self.system_instance),
-                NMEA2000Field("industryGroup", value=self.industry_group, raw_value=self.industry_group),
-                NMEA2000Field("arbitraryAddressCapable", value=yes_no, raw_value=yes_no),
+                NMEA2000Field(
+                    "deviceClass", value=self.device_class, raw_value=self.device_class
+                ),
+                NMEA2000Field(
+                    "systemInstance",
+                    value=self.system_instance,
+                    raw_value=self.system_instance,
+                ),
+                NMEA2000Field(
+                    "industryGroup",
+                    value=self.industry_group,
+                    raw_value=self.industry_group,
+                ),
+                NMEA2000Field(
+                    "arbitraryAddressCapable", value=yes_no, raw_value=yes_no
+                ),
             ],
         )
 
@@ -473,8 +561,16 @@ class N2KDevice:
             destination=255,
             priority=6,
             fields=[
-                NMEA2000Field("dataTransmitOffset", value=self.heartbeat_interval, raw_value=self.heartbeat_interval),
-                NMEA2000Field("sequenceCounter", value=self.heartbeat_counter, raw_value=self.heartbeat_counter),
+                NMEA2000Field(
+                    "dataTransmitOffset",
+                    value=self.heartbeat_interval,
+                    raw_value=self.heartbeat_interval,
+                ),
+                NMEA2000Field(
+                    "sequenceCounter",
+                    value=self.heartbeat_counter,
+                    raw_value=self.heartbeat_counter,
+                ),
                 NMEA2000Field("controller1State", value=None, raw_value=3),
                 NMEA2000Field("controller2State", value=None, raw_value=3),
                 NMEA2000Field("equipmentStatus", value=0, raw_value=0),
@@ -496,13 +592,35 @@ class N2KDevice:
                     value=self.nmea2000_version / 1000,
                     raw_value=self.nmea2000_version,
                 ),
-                NMEA2000Field("productCode", value=self.product_code, raw_value=self.product_code),
+                NMEA2000Field(
+                    "productCode", value=self.product_code, raw_value=self.product_code
+                ),
                 NMEA2000Field("modelId", value=self.model_id, raw_value=self.model_id),
-                NMEA2000Field("softwareVersionCode", value=self.software_version_code, raw_value=self.software_version_code),
-                NMEA2000Field("modelVersion", value=self.model_version, raw_value=self.model_version),
-                NMEA2000Field("modelSerialCode", value=self.model_serial_code, raw_value=self.model_serial_code),
-                NMEA2000Field("certificationLevel", value=self.certification_level, raw_value=self.certification_level),
-                NMEA2000Field("loadEquivalency", value=self.load_equivalency, raw_value=self.load_equivalency),
+                NMEA2000Field(
+                    "softwareVersionCode",
+                    value=self.software_version_code,
+                    raw_value=self.software_version_code,
+                ),
+                NMEA2000Field(
+                    "modelVersion",
+                    value=self.model_version,
+                    raw_value=self.model_version,
+                ),
+                NMEA2000Field(
+                    "modelSerialCode",
+                    value=self.model_serial_code,
+                    raw_value=self.model_serial_code,
+                ),
+                NMEA2000Field(
+                    "certificationLevel",
+                    value=self.certification_level,
+                    raw_value=self.certification_level,
+                ),
+                NMEA2000Field(
+                    "loadEquivalency",
+                    value=self.load_equivalency,
+                    raw_value=self.load_equivalency,
+                ),
             ],
         )
 
@@ -515,13 +633,27 @@ class N2KDevice:
             destination=255,
             priority=6,
             fields=[
-                NMEA2000Field("installationDescription1", value=self.installation_description1, raw_value=self.installation_description1),
-                NMEA2000Field("installationDescription2", value=self.installation_description2, raw_value=self.installation_description2),
-                NMEA2000Field("manufacturerInformation", value=self.manufacturer_information, raw_value=self.manufacturer_information),
+                NMEA2000Field(
+                    "installationDescription1",
+                    value=self.installation_description1,
+                    raw_value=self.installation_description1,
+                ),
+                NMEA2000Field(
+                    "installationDescription2",
+                    value=self.installation_description2,
+                    raw_value=self.installation_description2,
+                ),
+                NMEA2000Field(
+                    "manufacturerInformation",
+                    value=self.manufacturer_information,
+                    raw_value=self.manufacturer_information,
+                ),
             ],
         )
 
-    def _build_iso_nak_message(self, destination: int, requested_pgn: int) -> NMEA2000Message:
+    def _build_iso_nak_message(
+        self, destination: int, requested_pgn: int
+    ) -> NMEA2000Message:
         return NMEA2000Message(
             PGN=59392,
             id="isoAcknowledgement",
@@ -537,7 +669,9 @@ class N2KDevice:
             ],
         )
 
-    def _build_group_function_ack_message(self, destination: int, requested_pgn: int) -> NMEA2000Message:
+    def _build_group_function_ack_message(
+        self, destination: int, requested_pgn: int
+    ) -> NMEA2000Message:
         return NMEA2000Message(
             PGN=126208,
             id="nmeaAcknowledgeGroupFunction",
@@ -548,14 +682,19 @@ class N2KDevice:
             fields=[
                 NMEA2000Field("pgn", value=requested_pgn, raw_value=requested_pgn),
                 NMEA2000Field("pgnErrorCode", value=1, raw_value=1),
-                NMEA2000Field("transmissionIntervalPriorityErrorCode", value=0, raw_value=0),
+                NMEA2000Field(
+                    "transmissionIntervalPriorityErrorCode", value=0, raw_value=0
+                ),
                 NMEA2000Field("numberOfParameters", value=0, raw_value=0),
                 NMEA2000Field("parameter", value=0, raw_value=0),
             ],
         )
 
     def _build_pgn_list_message(self, destination: int) -> NMEA2000Message:
-        payload = b"".join(pgn.to_bytes(3, byteorder="little", signed=False) for pgn in self.transmit_pgns)
+        payload = b"".join(
+            pgn.to_bytes(3, byteorder="little", signed=False)
+            for pgn in self.transmit_pgns
+        )
         return NMEA2000Message(
             PGN=126464,
             id="pgnListTransmitAndReceive",
@@ -578,7 +717,9 @@ class N2KDevice:
             ]
         )
 
-    def _resolve_persistence_path(self, persistence_path: str | Path | None, persistence_key: str) -> Path:
+    def _resolve_persistence_path(
+        self, persistence_path: str | Path | None, persistence_key: str
+    ) -> Path:
         if persistence_path is not None:
             return Path(persistence_path)
         return Path.home() / ".nmea2000" / f"{persistence_key}.json"
@@ -589,14 +730,18 @@ class N2KDevice:
         try:
             return json.loads(self.persistence_path.read_text(encoding="utf-8"))
         except Exception as exc:
-            logger.warning("Failed to read persistence file %s: %s", self.persistence_path, exc)
+            logger.warning(
+                "Failed to read persistence file %s: %s", self.persistence_path, exc
+            )
             return {}
 
     def _persist(self, **values: Any) -> None:
         current = self._load_persistence_data()
         current.update(values)
         self.persistence_path.parent.mkdir(parents=True, exist_ok=True)
-        self.persistence_path.write_text(json.dumps(current, indent=2, sort_keys=True), encoding="utf-8")
+        self.persistence_path.write_text(
+            json.dumps(current, indent=2, sort_keys=True), encoding="utf-8"
+        )
 
     def _generate_unique_number(self) -> int:
         return random.randint(0, 2097151)
@@ -618,7 +763,9 @@ class N2KDevice:
             return
 
     @staticmethod
-    def _prepare_client_options(client_options: dict[str, Any] | None) -> dict[str, Any]:
+    def _prepare_client_options(
+        client_options: dict[str, Any] | None,
+    ) -> dict[str, Any]:
         options = dict(client_options or {})
         include_pgns = list(options.get("include_pgns", []))
         exclude_pgns = list(options.get("exclude_pgns", []))
