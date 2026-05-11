@@ -28,6 +28,8 @@ class PhysicalQuantities(Enum):
     PRESSURE = auto(), # Pascal (Pa)
     PRESSURE_RATE = auto(), # Pascal per hour (Pa/hr)
     CONCENTRATION = auto(), # parts per million (ppm)
+    DIMENSIONLESS_RATIO = auto(), # ratio (ratio)
+    SQUARE_ROOT_LENGTH = auto(), # sqrt(m) (sqrt(m))
     SIGNAL_STRENGTH = auto(), # decibel (dB)
     SIGNAL_TO_NOISE_RATIO = auto(), # decibel (dB)
 
@@ -86,18 +88,18 @@ ManufacturerCodes: List[str] = [
     "Nobletec",
     "Mystic Valley Communications",
     "Actia",
-    "Honda Marine",
+    "Honda Marine 2",
     "Disenos Y Technologia",
     "Digital Switching Systems",
     "Xintex/Atena",
     "EMMI NETWORK S.L.",
-    "Honda Marine",
+    "Honda Marine 3",
     "ZF",
     "Garmin",
     "Yacht Monitoring Solutions",
     "Sailormade Marine Telemetry/Tetra Technology LTD",
     "Eride",
-    "Honda Marine",
+    "Honda Marine 4",
     "Honda Motor Company LTD",
     "Groco",
     "Actisense",
@@ -106,7 +108,7 @@ ManufacturerCodes: List[str] = [
     "Hamilton Jet",
     "Sea Recovery",
     "Coelmo SRL Italy",
-    "BEP Marine",
+    "BEP Marine 2",
     "Empir Bus",
     "NovAtel",
     "Sleipner Motor AS",
@@ -151,7 +153,7 @@ ManufacturerCodes: List[str] = [
     "SI-TEX Marine Electronics",
     "Sea Cross Marine AB",
     "GME aka Standard Communications Pty LTD",
-    "Humminbird Marine Electronics",
+    "Humminbird Marine Electronics 2",
     "Ocean Sat BV",
     "Chetco Digitial Instruments",
     "Watcheye",
@@ -184,7 +186,7 @@ ManufacturerCodes: List[str] = [
     "Bavaria Yacts",
     "Diverse Yacht Services",
     "Wema U.S.A dba KUS",
-    "Garmin",
+    "Garmin 2",
     "Shenzhen Jiuzhou Himunication",
     "Rockford Corp",
     "Harman International",
