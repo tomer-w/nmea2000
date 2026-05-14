@@ -427,7 +427,7 @@
         "src": 0,
         "timestamp": "2020-04-19T00:35:55.571Z",
         "fields": {
-          "list": [
+          "##list##": [
             {
               "parameter": 2,
               "value": "YD:VOLUME 60",
@@ -455,7 +455,7 @@
         "prio": 3,
         "src": 0,
         "fields": {
-          "list": [
+          "##list##": [
             {
               "parameter": 1,
               "parameterId": "manufacturerCode",
@@ -582,14 +582,14 @@
           "uniqueId": 0,
           "numberOfSelectionPairs": 1,
           "numberOfParameters": 1,
-          "list": [
+          "##list##": [
             {
               "selectionParameter": 1,
               "parameterId": "instance",
               "selectionValue": 102
             }
           ],
-          "list2": [
+          "##list2##": [
             {
               "parameter": 1,
               "parameterId": "instance",
@@ -613,7 +613,7 @@
         "pgn": 126464,
         "description": "PGN List (Transmit and Receive)",
         "fields": {
-          "list": [
+          "##list##": [
             {
               "pgn": 60928
             },
@@ -885,7 +885,7 @@
         "pgn": 126720,
         "description": "Airmar: Calibrate Speed",
         "fields": {
-          "list": [
+          "##list##": [
             {
               "inputFrequency": 2.3,
               "outputSpeed": 0.51
@@ -1487,7 +1487,7 @@
         "pgn": 129029,
         "description": "GNSS Position Data",
         "fields": {
-          "list": [],
+          "##list##": [],
           "sid": 155,
           "date": "2017.04.15",
           "time": "14:57:56.89500",
@@ -1526,7 +1526,7 @@
         "dst": 255,
         "pgn": 129029,
         "fields": {
-          "list": [],
+          "##list##": [],
           "sid": 126,
           "date": "2020.03.09",
           "time": "17:47:47.80000",
@@ -1559,7 +1559,7 @@
         "src": 5,
         "timestamp": "2023-07-22T15:25:03.923Z",
         "fields": {
-          "list": [],
+          "##list##": [],
           "date": "2023.07.22",
           "gnssType": "GPS+SBAS/WAAS+GLONASS",
           "method": "GNSS fix",
@@ -1821,7 +1821,7 @@
         "timestamp": "2017-04-15T16:16:45.897Z",
         "fields": {
           "nitems": 3,
-          "list": [
+          "##list##": [
             {
               "wpId": 3,
               "wpName": "ORIGIN",
@@ -1882,7 +1882,7 @@
         "time": "17:29:52.266",
         "fields": {
           "nitems": 3,
-          "list": [
+          "##list##": [
             {
               "wpId": 1,
               "wpName": "Waypoint 717",
@@ -1974,7 +1974,7 @@
         "pgn": 129540,
         "description": "GNSS Sats in View",
         "fields": {
-          "list": [
+          "##list##": [
             {
               "prn": 3,
               "elevation": 0.5585,
@@ -2180,7 +2180,7 @@
         "src": 1,
         "timestamp": "2020-08-16T09:00:00.364Z",
         "fields": {
-          "list": [
+          "##list##": [
             {
               "prn": 7,
               "elevation": 0.2443,

@@ -553,7 +553,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
                 {%- endfor %}
             }
         ]
-        nmea2000Message.fields.append(NMEA2000Field('list', 'List', None, None, repeating_field_set_1_entries, None, None, FieldTypes.VARIABLE, False))
+        nmea2000Message.fields.append(NMEA2000Field('##list##', 'List', None, None, repeating_field_set_1_entries, None, None, FieldTypes.VARIABLE, False))
     {%- elif pgn.RepeatingFieldSet1Size is defined and ns_repeating.set1_has_dynamic_field == true %}
     running_bit_offset = _repeating_field_set_1_offset
     repeating_field_set_1_entries = []
@@ -610,7 +610,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
                 {%- endfor %}
             }
         ]
-        nmea2000Message.fields.append(NMEA2000Field('list', 'List', None, None, repeating_field_set_1_entries, None, None, FieldTypes.VARIABLE, False))
+        nmea2000Message.fields.append(NMEA2000Field('##list##', 'List', None, None, repeating_field_set_1_entries, None, None, FieldTypes.VARIABLE, False))
     {%- endif %}
     return nmea2000Message
 
@@ -620,14 +620,14 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes
     running_bit_offset = 0
     payload_bit_length = 0
     {%- if pgn.RepeatingFieldSet1Size is defined %}
-    repeating_field_set_1_entries = _get_repeating_entries(nmea2000Message, "list", (
+    repeating_field_set_1_entries = _get_repeating_entries(nmea2000Message, "##list##", (
         {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
         "{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}",
         {%- endfor %}
     ))
     {%- endif %}
     {%- if pgn.RepeatingFieldSet2Size is defined %}
-    repeating_field_set_2_entries = _get_repeating_entries(nmea2000Message, "list2", (
+    repeating_field_set_2_entries = _get_repeating_entries(nmea2000Message, "##list2##", (
         {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet2StartField and repeating_field.Order < pgn.RepeatingFieldSet2StartField + pgn.RepeatingFieldSet2Size %}
         "{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}",
         {%- endfor %}

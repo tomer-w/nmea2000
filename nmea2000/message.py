@@ -164,15 +164,15 @@ class NMEA2000Message:
         return nmea_field
 
     def get_list_field_size(self) -> int:
-        list_fields = self.get_field_by_id("list")
+        list_fields = self.get_field_by_id("##list##")
         if list_fields.value is None or not isinstance(list_fields.value, list):
-            raise ValueError(f"PGN: {self.id}: Field with id 'list' is not a list.")
+            raise ValueError(f"PGN: {self.id}: Field with id '##list##' is not a list.")
         return len(list_fields.value)
 
     def get_list_field_by_id(self, list_index: int, field_id: str) -> NMEA2000Field:
-        list_fields = self.get_field_by_id("list")
+        list_fields = self.get_field_by_id("##list##")
         if list_fields.value is None or not isinstance(list_fields.value, list):
-            raise ValueError(f"PGN: {self.id}: Field with id 'list' is not a list.")
+            raise ValueError(f"PGN: {self.id}: Field with id '##list##' is not a list.")
         if list_index < 0 or list_index >= len(list_fields.value):
             raise ValueError(
                 f"PGN: {self.id}: Repeating field index {list_index} is out of range."

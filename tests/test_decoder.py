@@ -1024,7 +1024,7 @@ def test_pgn_129540_five_sats_in_view():
     sats_in_view_field = msg.get_field_by_id("satsInView")
     assert sats_in_view_field.value == 5
 
-    # Repeating fields should be in a single 'list' field with 5 entries
+    # Repeating fields should be in a single '##list##' field with 5 entries
     repeat_length = msg.get_list_field_size()
     assert repeat_length == 5, f"Expected 5 satellites, got {repeat_length}"
 
