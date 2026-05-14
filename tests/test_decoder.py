@@ -966,3 +966,25 @@ def test_decimal_decode():
     # Verify surrounding fields
     assert msg.get_field_by_id("dscFormat").value == "Distress"
     assert msg.get_field_by_id("dscCategory").value == "Distress"
+
+
+def test_field_is_numeric():
+    """Test NMEA2000Field.is_numeric returns True only for NUMBER, FLOAT, and DECIMAL types."""
+    # Numeric types
+    assert NMEA2000Field("v", type=FieldTypes.NUMBER).is_numeric is True
+    assert NMEA2000Field("v", type=FieldTypes.FLOAT).is_numeric is True
+    assert NMEA2000Field("v", type=FieldTypes.DECIMAL).is_numeric is True
+
+    # Non-numeric types
+    assert NMEA2000Field("v", type=FieldTypes.LOOKUP).is_numeric is False
+    assert NMEA2000Field("v", type=FieldTypes.STRING_LZ).is_numeric is False
+    assert NMEA2000Field("v", type=FieldTypes.BINARY).is_numeric is False
+    assert NMEA2000Field("v", type=FieldTypes.RESERVED).is_numeric is False
+    assert NMEA2000Field("v", type=FieldTypes.TIME).is_numeric is False
+    assert NMEA2000Field("v", type=FieldTypes.DATE).is_numeric is False
+
+    # is_numeric should not depend on value being None
+    field = NMEA2000Field(
+        "voltage", type=FieldTypes.NUMBER, value=None, unit_of_measurement="V"
+    )
+    assert field.is_numeric is True

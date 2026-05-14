@@ -17,6 +17,10 @@ from .utils import (
     radians_to_degrees,
 )
 
+_NUMERIC_FIELD_TYPES = frozenset(
+    {FieldTypes.NUMBER, FieldTypes.FLOAT, FieldTypes.DECIMAL}
+)
+
 logger = logging.getLogger(__name__)
 
 FieldScalarValue: TypeAlias = str | int | float | bytes | time | date | None
@@ -215,6 +219,11 @@ class NMEA2000Field:
     physical_quantities: PhysicalQuantities | None = None
     type: FieldTypes = FieldTypes.NUMBER
     part_of_primary_key: bool | None = None
+
+    @property
+    def is_numeric(self) -> bool:
+        """Return True if this field type represents a numeric value (NUMBER, FLOAT, or DECIMAL)."""
+        return self.type in _NUMERIC_FIELD_TYPES
 
     def __str__(self):
         return f"NMEA2000Field(id={self.id}, name={self.name}, description={self.description}, unit_of_measurement={self.unit_of_measurement}, value={self.value}, raw_value={self.raw_value}, physical_quantities={self.physical_quantities}, type={self.type}, part_of_primary_key = {self.part_of_primary_key})"
