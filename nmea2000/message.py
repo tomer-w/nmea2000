@@ -146,11 +146,35 @@ class NMEA2000Message:
         msg.fields = [NMEA2000Field(**field) for field in data.get("fields", [])]
         return msg
 
-    def get_field_by_id(self, id: str) -> NMEA2000Field:
-        field = next((f for f in self.fields if f.id == id), None)
-        if field is None:
-            raise ValueError(f"PGN: {self.id}: Field with id '{id}' is missing.")
-        return field
+    def get_field_by_id(self, field_id: str) -> NMEA2000Field:
+        nmea_field = next((f for f in self.fields if f.id == field_id), None)
+        if nmea_field is None:
+            raise ValueError(f"PGN: {self.id}: Field with id '{field_id}' is missing.")
+        return nmea_field
+
+    def get_list_field_size(self) -> int:
+        list_fields = self.get_field_by_id("list")
+        if list_fields.value is None or not isinstance(list_fields.value, list):
+            raise ValueError(f"PGN: {self.id}: Field with id 'list' is not a list.")
+        return len(list_fields.value)
+
+    def get_list_field_by_id(self, list_index: int, field_id: str) -> NMEA2000Field:
+        list_fields = self.get_field_by_id("list")
+        if list_fields.value is None or not isinstance(list_fields.value, list):
+            raise ValueError(f"PGN: {self.id}: Field with id 'list' is not a list.")
+        if list_index < 0 or list_index >= len(list_fields.value):
+            raise ValueError(
+                f"PGN: {self.id}: Repeating field index {list_index} is out of range."
+            )
+        nmea_field = next(
+            (f for f in list_fields.value[list_index].values() if f.id == field_id),
+            None,
+        )
+        if nmea_field is None:
+            raise ValueError(
+                f"PGN: {self.id}: Repeating field index {list_index}: Field with id '{field_id}' is missing."
+            )
+        return nmea_field
 
     def get_field_int_value_by_id(
         self, id: str, default_value: int | None = None
@@ -164,24 +188,26 @@ class NMEA2000Message:
             )
         return field.value
 
-    def get_field_str_value_by_id(self, id: str) -> str | None:
-        field = self.get_field_by_id(id)
+    def get_field_str_value_by_id(self, field_id: str) -> str | None:
+        field = self.get_field_by_id(field_id)
         if field.value is None:
             logger.warning(
                 "PGN: %s: Field with id '%s' is None. Raw value is: %s",
                 self.id,
-                id,
+                field_id,
                 field.raw_value,
             )
             return None
         if not isinstance(field.value, str):
             raise ValueError(
-                f"PGN: {self.id}: Field with id '{id}' is not a string. It is {type(field.value).__name__}."
+                f"PGN: {self.id}: Field with id '{field_id}' is not a string. It is {type(field.value).__name__}."
             )
         return field.value
 
-    def get_field_raw_int_by_id(self, id: str, default_value: int | None = None) -> int:
-        field = self.get_field_by_id(id)
+    def get_field_raw_int_by_id(
+        self, field_id: str, default_value: int | None = None
+    ) -> int:
+        field = self.get_field_by_id(field_id)
         if isinstance(field.raw_value, int):
             return field.raw_value
         if isinstance(field.value, int):
@@ -189,11 +215,11 @@ class NMEA2000Message:
         if default_value is not None:
             return default_value
         raise ValueError(
-            f"PGN: {self.id}: Field with id '{id}' does not have an integer raw value."
+            f"PGN: {self.id}: Field with id '{field_id}' does not have an integer raw value."
         )
 
-    def get_field_display_string_by_id(self, id: str) -> str:
-        field = self.get_field_by_id(id)
+    def get_field_display_string_by_id(self, field_id: str) -> str:
+        field = self.get_field_by_id(field_id)
         if isinstance(field.value, str):
             return field.value
         if isinstance(field.raw_value, str):
@@ -203,7 +229,7 @@ class NMEA2000Message:
         if isinstance(field.value, int):
             return str(field.value)
         raise ValueError(
-            f"PGN: {self.id}: Field with id '{id}' does not have a string display value."
+            f"PGN: {self.id}: Field with id '{field_id}' does not have a string display value."
         )
 
 

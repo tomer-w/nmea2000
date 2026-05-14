@@ -671,12 +671,12 @@ def test_field_index_command_group_function():
     assert msg.PGN == 126208
     assert msg.description == "NMEA - Command group function"
 
-    param_field = msg.get_field_by_id("parameter")
+    param_field = msg.get_list_field_by_id(0, "parameter")
     assert param_field is not None
     assert param_field.type == FieldTypes.FIELD_INDEX
     assert isinstance(param_field.raw_value, (int, float))
 
-    value_field = msg.get_field_by_id("value")
+    value_field = msg.get_list_field_by_id(0, "value")
     assert value_field is not None
     assert value_field.type == FieldTypes.VARIABLE
     assert value_field.value is not None  # has remaining data
@@ -693,13 +693,12 @@ def test_field_index_read_fields_group_function():
     assert msg.PGN == 126208
     assert msg.description == "NMEA - Read Fields group function"
 
-    # Find FIELD_INDEX fields
-    field_index_fields = [f for f in msg.fields if f.type == FieldTypes.FIELD_INDEX]
-    assert len(field_index_fields) >= 1
-
-    # Find VARIABLE fields
-    variable_fields = [f for f in msg.fields if f.type == FieldTypes.VARIABLE]
-    assert len(variable_fields) >= 1
+    # Repeating set 1 contains selectionParameter (FIELD_INDEX) + selectionValue (VARIABLE)
+    assert msg.get_list_field_size() >= 1
+    assert (
+        msg.get_list_field_by_id(0, "selectionParameter").type == FieldTypes.FIELD_INDEX
+    )
+    assert msg.get_list_field_by_id(0, "selectionValue").type == FieldTypes.VARIABLE
 
 
 def test_iso_name_decode():
@@ -751,42 +750,32 @@ def test_pgn_127503_repeating_fields_are_nmea2000field():
     assert msg.get_field_by_id("instance").value == 0
     assert msg.get_field_by_id("numberOfLines").value == 1
 
-    list_field = msg.get_field_by_id("list")
-    assert list_field.type == FieldTypes.VARIABLE
-    assert isinstance(list_field.value, list)
-    assert len(list_field.value) == 1
-
-    entry = list_field.value[0]
-
-    # All values in the entry should be NMEA2000Field objects
-    for key, field in entry.items():
-        assert isinstance(field, NMEA2000Field), (
-            f"Entry '{key}' should be NMEA2000Field, got {type(field)}"
-        )
+    assert msg.get_list_field_size() == 1
 
     # Validate field metadata
-    assert entry["voltage"].value == 12.8
-    assert entry["voltage"].unit_of_measurement == "V"
-    assert entry["voltage"].type == FieldTypes.NUMBER
+    assert msg.get_list_field_by_id(0, "voltage").value == 12.8
+    assert msg.get_list_field_by_id(0, "voltage").unit_of_measurement == "V"
+    assert msg.get_list_field_by_id(0, "voltage").type == FieldTypes.NUMBER
     assert (
-        entry["voltage"].physical_quantities == PhysicalQuantities.POTENTIAL_DIFFERENCE
+        msg.get_list_field_by_id(0, "voltage").physical_quantities
+        == PhysicalQuantities.POTENTIAL_DIFFERENCE
     )
 
-    assert entry["current"].value == 30.0
-    assert entry["current"].unit_of_measurement == "A"
+    assert msg.get_list_field_by_id(0, "current").value == 30.0
+    assert msg.get_list_field_by_id(0, "current").unit_of_measurement == "A"
 
-    assert entry["frequency"].value == 50.0
-    assert entry["frequency"].unit_of_measurement == "Hz"
+    assert msg.get_list_field_by_id(0, "frequency").value == 50.0
+    assert msg.get_list_field_by_id(0, "frequency").unit_of_measurement == "Hz"
 
-    assert entry["breakerSize"].value == 100.0
-    assert entry["realPower"].value == 5504
-    assert entry["reactivePower"].value == 5504
-    assert entry["powerFactor"].value == 1.0
+    assert msg.get_list_field_by_id(0, "breakerSize").value == 100.0
+    assert msg.get_list_field_by_id(0, "realPower").value == 5504
+    assert msg.get_list_field_by_id(0, "reactivePower").value == 5504
+    assert msg.get_list_field_by_id(0, "powerFactor").value == 1.0
 
-    assert entry["line"].type == FieldTypes.LOOKUP
-    assert entry["line"].value == "Line 1"
+    assert msg.get_list_field_by_id(0, "line").type == FieldTypes.LOOKUP
+    assert msg.get_list_field_by_id(0, "line").value == "Line 1"
 
-    assert entry["reserved_20"].type == FieldTypes.RESERVED
+    assert msg.get_list_field_by_id(0, "reserved_20").type == FieldTypes.RESERVED
 
 
 def test_pgn_127503_unavailable_fields():
@@ -794,18 +783,16 @@ def test_pgn_127503_unavailable_fields():
     decoder = _get_decoder(already_combined=True)
     msg = decoder.decode(PGN_127503_UNAVAILABLE)
 
-    entry = msg.get_field_by_id("list").value[0]
-
     # These fields have 0xFFFF raw values — should decode as None
-    assert entry["current"].value is None
-    assert entry["frequency"].value is None
-    assert entry["breakerSize"].value is None
-    assert entry["realPower"].value is None
-    assert entry["reactivePower"].value is None
+    assert msg.get_list_field_by_id(0, "current").value is None
+    assert msg.get_list_field_by_id(0, "frequency").value is None
+    assert msg.get_list_field_by_id(0, "breakerSize").value is None
+    assert msg.get_list_field_by_id(0, "realPower").value is None
+    assert msg.get_list_field_by_id(0, "reactivePower").value is None
 
     # But line/acceptability should still have values
-    assert entry["line"].value == "Line 2"
-    assert entry["acceptability"].value == "Bad frequency"
+    assert msg.get_list_field_by_id(0, "line").value == "Line 2"
+    assert msg.get_list_field_by_id(0, "acceptability").value == "Bad frequency"
 
 
 def test_pgn_127504_repeating_fields_are_nmea2000field():
@@ -814,22 +801,14 @@ def test_pgn_127504_repeating_fields_are_nmea2000field():
     msg = decoder.decode(PGN_127504_SAMPLE)
 
     assert msg.PGN == 127504
-    list_field = msg.get_field_by_id("list")
-    assert list_field.type == FieldTypes.VARIABLE
-    assert len(list_field.value) == 1
+    assert msg.get_list_field_size() == 1
 
-    entry = list_field.value[0]
-    for key, field in entry.items():
-        assert isinstance(field, NMEA2000Field), (
-            f"Entry '{key}' should be NMEA2000Field, got {type(field)}"
-        )
-
-    assert entry["voltage"].value == 12.8
-    assert entry["voltage"].unit_of_measurement == "V"
-    assert entry["frequency"].value == 50.0
-    assert entry["frequency"].unit_of_measurement == "Hz"
-    assert entry["waveform"].type == FieldTypes.LOOKUP
-    assert entry["waveform"].value == "Sine wave"
+    assert msg.get_list_field_by_id(0, "voltage").value == 12.8
+    assert msg.get_list_field_by_id(0, "voltage").unit_of_measurement == "V"
+    assert msg.get_list_field_by_id(0, "frequency").value == 50.0
+    assert msg.get_list_field_by_id(0, "frequency").unit_of_measurement == "Hz"
+    assert msg.get_list_field_by_id(0, "waveform").type == FieldTypes.LOOKUP
+    assert msg.get_list_field_by_id(0, "waveform").value == "Sine wave"
 
 
 def test_pgn_127503_multiple_lines():
@@ -888,20 +867,17 @@ def test_pgn_127503_multiple_lines():
 
     msg = decode_pgn_127503(data_raw, data_length_bits)
 
-    list_field = msg.get_field_by_id("list")
-    assert len(list_field.value) == 2
+    assert msg.get_list_field_size() == 2
 
-    entry0 = list_field.value[0]
-    assert entry0["voltage"].value == pytest.approx(0.05)
-    assert entry0["current"].value == 30.0
-    assert entry0["frequency"].value == 50.0
-    assert entry0["powerFactor"].value == 1.0
+    assert msg.get_list_field_by_id(0, "voltage").value == pytest.approx(0.05)
+    assert msg.get_list_field_by_id(0, "current").value == 30.0
+    assert msg.get_list_field_by_id(0, "frequency").value == 50.0
+    assert msg.get_list_field_by_id(0, "powerFactor").value == 1.0
 
-    entry1 = list_field.value[1]
-    assert entry1["voltage"].value == pytest.approx(0.10)
-    assert entry1["current"].value == 60.0
-    assert entry1["frequency"].value == 100.0
-    assert entry1["powerFactor"].value == 0.5
+    assert msg.get_list_field_by_id(1, "voltage").value == pytest.approx(0.10)
+    assert msg.get_list_field_by_id(1, "current").value == 60.0
+    assert msg.get_list_field_by_id(1, "frequency").value == 100.0
+    assert msg.get_list_field_by_id(1, "powerFactor").value == 0.5
 
 
 def test_dynamic_field_decode():
@@ -916,20 +892,19 @@ def test_dynamic_field_decode():
     assert msg.PGN == 130824
     assert msg.description == "B&G: key-value data"
 
-    key_field = msg.get_field_by_id("key")
-    assert key_field is not None
+    assert msg.get_list_field_size() >= 1
+
+    key_field = msg.get_list_field_by_id(0, "key")
     assert key_field.type == FieldTypes.DYNAMIC_FIELD_KEY
     assert key_field.value == "Remote 9"
     assert key_field.raw_value == 248
     assert key_field.part_of_primary_key is True
 
-    length_field = msg.get_field_by_id("length")
-    assert length_field is not None
+    length_field = msg.get_list_field_by_id(0, "length")
     assert length_field.type == FieldTypes.DYNAMIC_FIELD_LENGTH
     assert length_field.raw_value == 4
 
-    value_field = msg.get_field_by_id("value")
-    assert value_field is not None
+    value_field = msg.get_list_field_by_id(0, "value")
     assert value_field.type == FieldTypes.DYNAMIC_FIELD_VALUE
     assert value_field.value is not None
 
@@ -988,3 +963,122 @@ def test_field_is_numeric():
         "voltage", type=FieldTypes.NUMBER, value=None, unit_of_measurement="V"
     )
     assert field.is_numeric is True
+
+
+def test_pgn_129540_five_sats_in_view():
+    """Test that PGN 129540 with 5 sats_in_view returns 5 repeating field entries."""
+    import struct
+    from nmea2000.pgns import decode_pgn_129540
+
+    def make_sat(prn, elev_raw, azim_raw, snr_raw, rr_raw, status):
+        """Build 12-byte repeating entry for one satellite."""
+        reserved = 0xF
+        return (
+            bytes([prn])
+            + struct.pack("<h", elev_raw)
+            + struct.pack("<H", azim_raw)
+            + struct.pack("<h", snr_raw)
+            + struct.pack("<i", rr_raw)
+            + bytes([(reserved << 4) | status])
+        )
+
+    header = bytes(
+        [
+            42,  # SID = 42
+            0xFD,  # range_residual_mode=1 (bits 0-1), reserved=0x3F (bits 2-7)
+            5,  # sats_in_view = 5
+        ]
+    )
+
+    sats = [
+        make_sat(
+            prn=1, elev_raw=5000, azim_raw=10000, snr_raw=3000, rr_raw=0, status=1
+        ),
+        make_sat(
+            prn=5, elev_raw=3000, azim_raw=20000, snr_raw=2500, rr_raw=100, status=2
+        ),
+        make_sat(
+            prn=10, elev_raw=8000, azim_raw=4000, snr_raw=3500, rr_raw=200, status=3
+        ),
+        make_sat(
+            prn=20, elev_raw=1000, azim_raw=50000, snr_raw=2000, rr_raw=500, status=0
+        ),
+        make_sat(
+            prn=31, elev_raw=10000, azim_raw=5000, snr_raw=4000, rr_raw=1000, status=1
+        ),
+    ]
+
+    payload = header + b"".join(sats)
+    data_raw = int.from_bytes(payload, byteorder="little")
+    data_length_bits = len(payload) * 8
+
+    msg = decode_pgn_129540(data_raw, data_length_bits)
+
+    assert msg.PGN == 129540
+    assert msg.id == "gnssSatsInView"
+
+    # Header fields
+    sid_field = msg.get_field_by_id("sid")
+    assert sid_field.value == 42
+
+    sats_in_view_field = msg.get_field_by_id("satsInView")
+    assert sats_in_view_field.value == 5
+
+    # Repeating fields should be in a single 'list' field with 5 entries
+    repeat_length = msg.get_list_field_size()
+    assert repeat_length == 5, f"Expected 5 satellites, got {repeat_length}"
+
+    # Verify decoded values for each satellite
+    expected = [
+        {
+            "prn": 1,
+            "elevation": 0.5,
+            "azimuth": 1.0,
+            "snr": 30.0,
+            "rangeResiduals": 0.0,
+        },
+        {
+            "prn": 5,
+            "elevation": 0.3,
+            "azimuth": 2.0,
+            "snr": 25.0,
+            "rangeResiduals": 0.001,
+        },
+        {
+            "prn": 10,
+            "elevation": 0.8,
+            "azimuth": 0.4,
+            "snr": 35.0,
+            "rangeResiduals": 0.002,
+        },
+        {
+            "prn": 20,
+            "elevation": 0.1,
+            "azimuth": 5.0,
+            "snr": 20.0,
+            "rangeResiduals": 0.005,
+        },
+        {
+            "prn": 31,
+            "elevation": 1.0,
+            "azimuth": 0.5,
+            "snr": 40.0,
+            "rangeResiduals": 0.01,
+        },
+    ]
+    for i in range(5):
+        assert msg.get_list_field_by_id(i, "prn").value == expected[i]["prn"], (
+            f"Sat {i} PRN mismatch"
+        )
+        assert msg.get_list_field_by_id(i, "elevation").value == pytest.approx(
+            expected[i]["elevation"]
+        ), f"Sat {i} elevation mismatch"
+        assert msg.get_list_field_by_id(i, "azimuth").value == pytest.approx(
+            expected[i]["azimuth"]
+        ), f"Sat {i} azimuth mismatch"
+        assert msg.get_list_field_by_id(i, "snr").value == pytest.approx(
+            expected[i]["snr"]
+        ), f"Sat {i} SNR mismatch"
+        assert msg.get_list_field_by_id(i, "rangeResiduals").value == pytest.approx(
+            expected[i]["rangeResiduals"]
+        ), f"Sat {i} rangeResiduals mismatch"

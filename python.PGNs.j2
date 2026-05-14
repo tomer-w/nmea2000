@@ -79,7 +79,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     raise ValueError(f"Cant encode this message, {value} is missing from {lookup_name}")
 
 
-{%- macro emit_encode_value(field, field_ref, pgn) %}
+{%- macro emit_encode_value(field, field_ref, pgn, in_repeating=false) %}
     advance_running_offset = True
     {%- set field_signed = field.Signed | default(false) %}
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'PGN' or field.FieldType == 'MMSI' or field.FieldType == 'FIELD_INDEX' %}
@@ -222,7 +222,12 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
         field_value = encode_binary_data(field_bytes)
     {%- if field.Order > 1 and pgn.Fields[field.Order - 2].FieldType == 'DYNAMIC_FIELD_LENGTH' %}
         {%- set length_field = pgn.Fields[field.Order - 2] %}
-    length_field = nmea2000Message.get_field_by_id("{{ generate_field_id(length_field.Id, length_field.FieldType, length_field.BitOffset) }}")
+        {%- set length_field_id = generate_field_id(length_field.Id, length_field.FieldType, length_field.BitOffset) %}
+        {%- if in_repeating %}
+    length_field = repeating_entry.get("{{ length_field_id }}")
+        {%- else %}
+    length_field = nmea2000Message.get_field_by_id("{{ length_field_id }}")
+        {%- endif %}
     if isinstance(length_field.raw_value, (int, float)):
         field_bit_length = int(length_field.raw_value) * 8
     else:
@@ -277,6 +282,25 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     {{ field_name }}_raw, bits_to_skip = decode_string_lau(_data_raw_, running_bit_offset)
     {{ field_name }} = {{ field_name }}_raw
     running_bit_offset += bits_to_skip
+    {%- elif field.FieldType == 'VARIABLE' %}
+    _variable_bits = _data_length_bits_ - running_bit_offset
+    if _variable_bits > 0:
+        {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _variable_bits))
+    else:
+        {{ field_name }} = {{ field_name }}_raw = None
+    running_bit_offset = _data_length_bits_
+    {%- elif field.FieldType == 'BINARY' %}
+    {%- if field.BitLength is defined and field.BitLength > 0 %}
+    {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }}))
+    running_bit_offset += {{ field.BitLength }}
+    {%- else %}
+    _binary_bits = _data_length_bits_ - running_bit_offset
+    if _binary_bits > 0:
+        {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _binary_bits))
+    else:
+        {{ field_name }} = {{ field_name }}_raw = None
+    running_bit_offset = _data_length_bits_
+    {%- endif %}
     {%- else %}
     raise ValueError("PGN {{ field.PGN | default('unknown') }} repeating FieldType ({{ field.FieldType }}) not supported")
     {%- endif %}
@@ -491,15 +515,15 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
     {%- endif -%}
     {%- endif %}
 {% endfor %}
-    {%- set ns_repeating = namespace(set1_has_variable=false) %}
+    {%- set ns_repeating = namespace(set1_has_dynamic_field=false) %}
     {%- if pgn.RepeatingFieldSet1Size is defined %}
         {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
-            {%- if repeating_field.FieldType == 'VARIABLE' or repeating_field.FieldType == 'DYNAMIC_FIELD_KEY' or repeating_field.FieldType == 'DYNAMIC_FIELD_LENGTH' or repeating_field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
-                {%- set ns_repeating.set1_has_variable = true %}
+            {%- if repeating_field.FieldType == 'DYNAMIC_FIELD_KEY' or repeating_field.FieldType == 'DYNAMIC_FIELD_LENGTH' or repeating_field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
+                {%- set ns_repeating.set1_has_dynamic_field = true %}
             {%- endif %}
         {%- endfor %}
     {%- endif %}
-    {%- if pgn.RepeatingFieldSet1Size is defined and ns_repeating.set1_has_variable == false %}
+    {%- if pgn.RepeatingFieldSet1Size is defined and ns_repeating.set1_has_dynamic_field == false %}
     running_bit_offset = _repeating_field_set_1_offset
     repeating_field_set_1_entries = []
         {%- if pgn.RepeatingFieldSet1CountField is defined %}
@@ -517,6 +541,63 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
         {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
             {%- set repeating_field_name = generate_field_python_name(repeating_field.Name, repeating_field.FieldType, repeating_field.BitOffset) %}
 {{ emit_repeating_decode_value(repeating_field, repeating_field_name) | indent(4, true) }}
+        repeating_entry["{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}"] = NMEA2000Field('{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}', '{{ repeating_field.Name }}', {% if repeating_field.Description is defined -%}"{{repeating_field.Description}}"{%- else -%}None{%- endif -%}, {% if repeating_field.Unit is defined -%}'{{repeating_field.Unit}}'{%- else -%}None{%- endif -%}, {{ repeating_field_name }}, {{ repeating_field_name }}_raw, {% if repeating_field.PhysicalQuantity is defined -%}PhysicalQuantities.{{repeating_field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{repeating_field.FieldType}}, {% if repeating_field.PartOfPrimaryKey is defined -%}{{repeating_field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%})
+        {%- endfor %}
+        repeating_field_set_1_entries.append(repeating_entry)
+    if repeating_field_set_1_entries:
+        nmea2000Message.fields = [
+            field for field in nmea2000Message.fields
+            if field.id not in {
+                {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
+                "{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}",
+                {%- endfor %}
+            }
+        ]
+        nmea2000Message.fields.append(NMEA2000Field('list', 'List', None, None, repeating_field_set_1_entries, None, None, FieldTypes.VARIABLE, False))
+    {%- elif pgn.RepeatingFieldSet1Size is defined and ns_repeating.set1_has_dynamic_field == true %}
+    running_bit_offset = _repeating_field_set_1_offset
+    repeating_field_set_1_entries = []
+        {%- if pgn.RepeatingFieldSet1CountField is defined %}
+            {%- set count_field = pgn.Fields[pgn.RepeatingFieldSet1CountField - 1] %}
+            {%- set count_field_name = generate_field_python_name(count_field.Name, count_field.FieldType, count_field.BitOffset) %}
+    _repeating_field_set_1_count = int({{ count_field_name }}_raw or 0)
+        {%- else %}
+    _repeating_field_set_1_count = None
+        {%- endif %}
+    while (
+        (_repeating_field_set_1_count is None and running_bit_offset < _data_length_bits_) or
+        (_repeating_field_set_1_count is not None and len(repeating_field_set_1_entries) < _repeating_field_set_1_count)
+    ):
+        repeating_entry = {}
+        {%- set ns_dyn = namespace(has_preceding_length=false) %}
+        {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
+            {%- set repeating_field_name = generate_field_python_name(repeating_field.Name, repeating_field.FieldType, repeating_field.BitOffset) %}
+            {%- if repeating_field.FieldType == 'DYNAMIC_FIELD_KEY' %}
+        {{ repeating_field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ repeating_field.BitLength }})
+        dyn_kv_metadata = lookup_field_type_{{ repeating_field.LookupFieldTypeEnumeration }}({{ repeating_field_name }}_raw)
+        {{ repeating_field_name }} = dyn_kv_metadata.name if dyn_kv_metadata is not None else {{ repeating_field_name }}_raw
+        running_bit_offset += {{ repeating_field.BitLength }}
+            {%- elif repeating_field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
+                {%- set ns_dyn.has_preceding_length = true %}
+        {{ repeating_field_name }} = {{ repeating_field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ repeating_field.BitLength }}, {{ repeating_field.Signed | default(false) }}, {{ repeating_field.Resolution }}, {{ repeating_field.RangeMin }}, {{ repeating_field.RangeMax }})
+        running_bit_offset += {{ repeating_field.BitLength }}
+            {%- elif repeating_field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
+                {%- if ns_dyn.has_preceding_length %}
+        _dyn_value_bit_length = int({{ generate_field_python_name(pgn.Fields[repeating_field.Order - 2].Name, pgn.Fields[repeating_field.Order - 2].FieldType, pgn.Fields[repeating_field.Order - 2].BitOffset) }}_raw or 0) * 8
+                {%- else %}
+        if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
+            _dyn_value_bit_length = dyn_kv_metadata.bits
+        else:
+            _dyn_value_bit_length = _data_length_bits_ - running_bit_offset
+                {%- endif %}
+        if _dyn_value_bit_length > 0:
+            {{ repeating_field_name }} = {{ repeating_field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_value_bit_length))
+        else:
+            {{ repeating_field_name }} = {{ repeating_field_name }}_raw = None
+        running_bit_offset += _dyn_value_bit_length
+            {%- else %}
+{{ emit_repeating_decode_value(repeating_field, repeating_field_name) | indent(4, true) }}
+            {%- endif %}
         repeating_entry["{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}"] = NMEA2000Field('{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}', '{{ repeating_field.Name }}', {% if repeating_field.Description is defined -%}"{{repeating_field.Description}}"{%- else -%}None{%- endif -%}, {% if repeating_field.Unit is defined -%}'{{repeating_field.Unit}}'{%- else -%}None{%- endif -%}, {{ repeating_field_name }}, {{ repeating_field_name }}_raw, {% if repeating_field.PhysicalQuantity is defined -%}PhysicalQuantities.{{repeating_field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{repeating_field.FieldType}}, {% if repeating_field.PartOfPrimaryKey is defined -%}{{repeating_field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%})
         {%- endfor %}
         repeating_field_set_1_entries.append(repeating_entry)
@@ -564,7 +645,7 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes
         if field is None:
             raise ValueError("Cant encode this message, missing '{{repeating_field.Name}}'")
         field_offset = running_bit_offset
-{{ emit_encode_value(repeating_field, 'field', pgn) | indent(4, true) }}
+{{ emit_encode_value(repeating_field, 'field', pgn, in_repeating=true) | indent(4, true) }}
         assert isinstance(field_value, int)
         if field_value < 0:
             raise ValueError("Cant encode this message, '{{repeating_field.Name}}' cannot be negative")
@@ -591,7 +672,7 @@ def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes
         if field is None:
             raise ValueError("Cant encode this message, missing '{{repeating_field.Name}}'")
         field_offset = running_bit_offset
-{{ emit_encode_value(repeating_field, 'field', pgn) | indent(4, true) }}
+{{ emit_encode_value(repeating_field, 'field', pgn, in_repeating=true) | indent(4, true) }}
         assert isinstance(field_value, int)
         if field_value < 0:
             raise ValueError("Cant encode this message, '{{repeating_field.Name}}' cannot be negative")
