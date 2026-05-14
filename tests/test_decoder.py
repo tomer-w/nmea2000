@@ -1082,3 +1082,35 @@ def test_pgn_129540_five_sats_in_view():
         assert msg.get_list_field_by_id(i, "rangeResiduals").value == pytest.approx(
             expected[i]["rangeResiduals"]
         ), f"Sat {i} rangeResiduals mismatch"
+
+
+def test_pgn_129540_apply_preferred_units_to_list_fields():
+    """Test that apply_preferred_units converts ANGLE fields inside repeating list entries."""
+    import math
+
+    decoder = _get_decoder(
+        preferred_units={PhysicalQuantities.ANGLE: "deg"}, already_combined=True
+    )
+    msg = decoder.decode(
+        "2025-01-01T00:00:00.000Z,6,129540,1,255,27,"
+        "00,fd,02,01,88,13,10,27,b8,0b,00,00,00,00,f1,"
+        "05,b8,0b,20,4e,c4,09,64,00,00,00,f2"
+    )
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.PGN == 129540
+    assert msg.get_list_field_size() == 2
+
+    # Elevation and azimuth should be converted from radians to degrees
+    assert msg.get_list_field_by_id(0, "elevation").unit_of_measurement == "Deg"
+    assert msg.get_list_field_by_id(0, "elevation").value == round(math.degrees(0.5), 0)
+    assert msg.get_list_field_by_id(0, "azimuth").unit_of_measurement == "Deg"
+    assert msg.get_list_field_by_id(0, "azimuth").value == round(math.degrees(1.0), 0)
+
+    assert msg.get_list_field_by_id(1, "elevation").unit_of_measurement == "Deg"
+    assert msg.get_list_field_by_id(1, "elevation").value == round(math.degrees(0.3), 0)
+    assert msg.get_list_field_by_id(1, "azimuth").unit_of_measurement == "Deg"
+    assert msg.get_list_field_by_id(1, "azimuth").value == round(math.degrees(2.0), 0)
+
+    # SNR should be unaffected (not an ANGLE)
+    assert msg.get_list_field_by_id(0, "snr").value == pytest.approx(30.0)
+    assert msg.get_list_field_by_id(0, "snr").unit_of_measurement == "dB"

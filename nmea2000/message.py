@@ -90,34 +90,45 @@ class NMEA2000Message:
             return
 
         for f in self.fields:
-            if f.physical_quantities == PhysicalQuantities.TEMPERATURE:
-                requested_unit = preferred_units.get(
-                    PhysicalQuantities.TEMPERATURE, None
-                )
-                if requested_unit == "c":
-                    f.unit_of_measurement = "C"
-                    f.value = kelvin_to_celsius(f.value)
-                elif requested_unit == "f":
-                    f.unit_of_measurement = "F"
-                    f.value = kelvin_to_fahrenheit(f.value)
-            if f.physical_quantities == PhysicalQuantities.PRESSURE:
-                requested_unit = preferred_units.get(PhysicalQuantities.PRESSURE, None)
-                if requested_unit == "bar":
-                    f.unit_of_measurement = "Bar"
-                    f.value = pascal_to_bar(f.value)
-                elif requested_unit == "psi":
-                    f.unit_of_measurement = "PSI"
-                    f.value = pascal_to_PSI(f.value)
-            if f.physical_quantities == PhysicalQuantities.ANGLE:
-                requested_unit = preferred_units.get(PhysicalQuantities.ANGLE, None)
-                if requested_unit == "deg":
-                    f.unit_of_measurement = "Deg"
-                    f.value = radians_to_degrees(f.value)
-            if f.physical_quantities == PhysicalQuantities.SPEED:
-                requested_unit = preferred_units.get(PhysicalQuantities.SPEED, None)
-                if requested_unit == "kts":
-                    f.unit_of_measurement = "kts"
-                    f.value = mps_to_knots(f.value)
+            self._apply_preferred_units_to_field(f, preferred_units)
+            if isinstance(f.value, list):
+                for entry in f.value:
+                    if isinstance(entry, dict):
+                        for nested_field in entry.values():
+                            self._apply_preferred_units_to_field(
+                                nested_field, preferred_units
+                            )
+
+    @staticmethod
+    def _apply_preferred_units_to_field(
+        f: NMEA2000Field, preferred_units: dict[PhysicalQuantities, str]
+    ):
+        if f.physical_quantities == PhysicalQuantities.TEMPERATURE:
+            requested_unit = preferred_units.get(PhysicalQuantities.TEMPERATURE, None)
+            if requested_unit == "c":
+                f.unit_of_measurement = "C"
+                f.value = kelvin_to_celsius(f.value)
+            elif requested_unit == "f":
+                f.unit_of_measurement = "F"
+                f.value = kelvin_to_fahrenheit(f.value)
+        if f.physical_quantities == PhysicalQuantities.PRESSURE:
+            requested_unit = preferred_units.get(PhysicalQuantities.PRESSURE, None)
+            if requested_unit == "bar":
+                f.unit_of_measurement = "Bar"
+                f.value = pascal_to_bar(f.value)
+            elif requested_unit == "psi":
+                f.unit_of_measurement = "PSI"
+                f.value = pascal_to_PSI(f.value)
+        if f.physical_quantities == PhysicalQuantities.ANGLE:
+            requested_unit = preferred_units.get(PhysicalQuantities.ANGLE, None)
+            if requested_unit == "deg":
+                f.unit_of_measurement = "Deg"
+                f.value = radians_to_degrees(f.value)
+        if f.physical_quantities == PhysicalQuantities.SPEED:
+            requested_unit = preferred_units.get(PhysicalQuantities.SPEED, None)
+            if requested_unit == "kts":
+                f.unit_of_measurement = "kts"
+                f.value = mps_to_knots(f.value)
 
     def __str__(self):
         return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, source_iso_name={self.source_iso_name}, dest={self.destination}, description={self.description}, fields={self.fields})"
