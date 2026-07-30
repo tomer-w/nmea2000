@@ -533,6 +533,8 @@ class TextNmea2000Gateway(AsyncIOClient):
     async def _receive_impl(self):
         """Receive a single text line from the TCP connection and decode it."""
         data = await self.reader.readline()
+        if not data:
+            raise ConnectionError("Connection closed by remote host")
         self.logger.debug(f"Received: {data.hex()}")
         line = data.decode('utf-8', errors='ignore').strip()
         try:
@@ -544,6 +546,7 @@ class TextNmea2000Gateway(AsyncIOClient):
         self.logger.debug(f"Received message: {message}")
         if message is not None:
             await self.queue.put(message)
+
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message):
         """Encode a NMEA2000 message using the bound format."""
