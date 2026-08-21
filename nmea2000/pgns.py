@@ -30741,8 +30741,7 @@ def encode_pgn_65409(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.001, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -32287,8 +32286,7 @@ def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message)
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -32315,8 +32313,7 @@ def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message)
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -40689,8 +40686,7 @@ def encode_pgn_126720_airmarCalibrateCompass(nmea2000Message: NMEA2000Message) -
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, True, 0.05)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.05, True)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -40717,8 +40713,7 @@ def encode_pgn_126720_airmarCalibrateCompass(nmea2000Message: NMEA2000Message) -
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, True, 0.05)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.05, True)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -42060,8 +42055,7 @@ def encode_pgn_126720_airmarSpeedFilterNone(nmea2000Message: NMEA2000Message) ->
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -42301,8 +42295,7 @@ def encode_pgn_126720_airmarSpeedFilterIir(nmea2000Message: NMEA2000Message) -> 
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -42329,8 +42322,7 @@ def encode_pgn_126720_airmarSpeedFilterIir(nmea2000Message: NMEA2000Message) -> 
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -42564,8 +42556,7 @@ def encode_pgn_126720_airmarTemperatureFilterNone(nmea2000Message: NMEA2000Messa
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -42805,8 +42796,7 @@ def encode_pgn_126720_airmarTemperatureFilterIir(nmea2000Message: NMEA2000Messag
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -42833,8 +42823,7 @@ def encode_pgn_126720_airmarTemperatureFilterIir(nmea2000Message: NMEA2000Messag
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -48785,7 +48774,6 @@ def encode_pgn_126992(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -48813,8 +48801,7 @@ def encode_pgn_126992(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -48897,8 +48884,7 @@ def encode_pgn_126993(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -49632,8 +49618,7 @@ def encode_pgn_127233(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -49705,7 +49690,6 @@ def encode_pgn_127233(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -49733,8 +49717,7 @@ def encode_pgn_127233(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -51515,7 +51498,6 @@ def encode_pgn_127258(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -52027,8 +52009,7 @@ def encode_pgn_127489(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -52623,8 +52604,7 @@ def encode_pgn_127491(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 60)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 60, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -53475,8 +53455,7 @@ def encode_pgn_127494(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -54069,8 +54048,7 @@ def encode_pgn_127496(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -54149,8 +54127,7 @@ def encode_pgn_127496(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -58028,8 +58005,7 @@ def encode_pgn_127506(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 60)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 60, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -58353,8 +58329,7 @@ def encode_pgn_127507(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 60)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 60, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -59106,8 +59081,7 @@ def encode_pgn_127510(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 60)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 60, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -59381,8 +59355,7 @@ def encode_pgn_127511(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -62520,8 +62493,7 @@ def encode_pgn_128006(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 8, False, 0.005)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 8)
+        field_value = encode_time(field.value, 8, 0.005, False)
     field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -62959,8 +62931,7 @@ def encode_pgn_128008(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 60)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 60, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -63378,7 +63349,6 @@ def encode_pgn_128275(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -63406,8 +63376,7 @@ def encode_pgn_128275(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -63917,8 +63886,7 @@ def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -63945,8 +63913,7 @@ def encode_pgn_128520(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -65871,8 +65838,7 @@ def encode_pgn_128776(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 8, False, 0.005)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 8)
+        field_value = encode_time(field.value, 8, 0.005, False)
     field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -66457,8 +66423,7 @@ def encode_pgn_128778(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 60)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 60, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -67069,8 +67034,7 @@ def encode_pgn_129027(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 8, False, 0.005)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 8)
+        field_value = encode_time(field.value, 8, 0.005, False)
     field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -67236,8 +67200,7 @@ def encode_pgn_129028(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 8, False, 0.005)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 8)
+        field_value = encode_time(field.value, 8, 0.005, False)
     field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -67582,7 +67545,6 @@ def encode_pgn_129029(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -67610,8 +67572,7 @@ def encode_pgn_129029(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -68001,8 +67962,7 @@ def encode_pgn_129029(nmea2000Message: NMEA2000Message) -> bytes:
         elif isinstance(field.value, (int, float)):
             field_value = encode_number(field.value, 16, False, 0.01)
         else:
-            assert field.value is None or isinstance(field.value, time)
-            field_value = encode_time(field.value, 16)
+            field_value = encode_time(field.value, 16, 0.01, False)
         field_bit_length = 16
         assert isinstance(field_value, int)
         if field_value < 0:
@@ -68064,7 +68024,6 @@ def encode_pgn_129033(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -68092,8 +68051,7 @@ def encode_pgn_129033(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -68120,8 +68078,7 @@ def encode_pgn_129033(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, True, 60)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 60, True)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -72079,8 +72036,7 @@ def encode_pgn_129284(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -72103,7 +72059,6 @@ def encode_pgn_129284(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -73062,8 +73017,7 @@ def encode_pgn_129301(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -73766,8 +73720,7 @@ def encode_pgn_129538(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -75742,8 +75695,7 @@ def encode_pgn_129546(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 1, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -76229,8 +76181,7 @@ def encode_pgn_129549(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.1, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -77086,8 +77037,7 @@ def encode_pgn_129551(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -78309,8 +78259,7 @@ def encode_pgn_129793(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -78379,7 +78328,6 @@ def encode_pgn_129793(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -78875,7 +78823,6 @@ def encode_pgn_129794(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -78903,8 +78850,7 @@ def encode_pgn_129794(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -83208,8 +83154,7 @@ def encode_pgn_129805(nmea2000Message: NMEA2000Message) -> bytes:
         elif isinstance(field.value, (int, float)):
             field_value = encode_number(field.value, 8, False, 60)
         else:
-            assert field.value is None or isinstance(field.value, time)
-            field_value = encode_time(field.value, 8)
+            field_value = encode_time(field.value, 8, 60, False)
         field_bit_length = 8
         assert isinstance(field_value, int)
         if field_value < 0:
@@ -84542,8 +84487,7 @@ def encode_pgn_129807(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 4, False, 60)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 4)
+        field_value = encode_time(field.value, 4, 60, False)
     field_bit_length = 4
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -85053,8 +84997,7 @@ def encode_pgn_129808_dscDistressCallInformation(nmea2000Message: NMEA2000Messag
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -85214,8 +85157,7 @@ def encode_pgn_129808_dscDistressCallInformation(nmea2000Message: NMEA2000Messag
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -85237,7 +85179,6 @@ def encode_pgn_129808_dscDistressCallInformation(nmea2000Message: NMEA2000Messag
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -85755,8 +85696,7 @@ def encode_pgn_129808_dscCallInformation(nmea2000Message: NMEA2000Message) -> by
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -85916,8 +85856,7 @@ def encode_pgn_129808_dscCallInformation(nmea2000Message: NMEA2000Message) -> by
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -85939,7 +85878,6 @@ def encode_pgn_129808_dscCallInformation(nmea2000Message: NMEA2000Message) -> by
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -86932,8 +86870,7 @@ def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -86960,8 +86897,7 @@ def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -86988,8 +86924,7 @@ def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87016,8 +86951,7 @@ def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87044,8 +86978,7 @@ def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87072,8 +87005,7 @@ def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87100,8 +87032,7 @@ def encode_pgn_130052(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87411,8 +87342,7 @@ def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87439,8 +87369,7 @@ def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87467,8 +87396,7 @@ def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87495,8 +87423,7 @@ def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87523,8 +87450,7 @@ def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87551,8 +87477,7 @@ def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87579,8 +87504,7 @@ def encode_pgn_130053(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87823,8 +87747,7 @@ def encode_pgn_130054(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87897,8 +87820,7 @@ def encode_pgn_130054(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -87925,8 +87847,7 @@ def encode_pgn_130054(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 1e-09)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1e-09, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -88874,8 +88795,7 @@ def encode_pgn_130064(nmea2000Message: NMEA2000Message) -> bytes:
         elif isinstance(field.value, (int, float)):
             field_value = encode_number(field.value, 32, False, 0.0001)
         else:
-            assert field.value is None or isinstance(field.value, time)
-            field_value = encode_time(field.value, 32)
+            field_value = encode_time(field.value, 32, 0.0001, False)
         field_bit_length = 32
         assert isinstance(field_value, int)
         if field_value < 0:
@@ -88899,7 +88819,6 @@ def encode_pgn_130064(nmea2000Message: NMEA2000Message) -> bytes:
         if isinstance(field.raw_value, int):
             field_value = field.raw_value
         else:
-            assert field.value is None or isinstance(field.value, date)
             field_value = encode_date(field.value, 16)
         field_bit_length = 16
         assert isinstance(field_value, int)
@@ -89589,8 +89508,7 @@ def encode_pgn_130066(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -89612,7 +89530,6 @@ def encode_pgn_130066(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -93825,7 +93742,6 @@ def encode_pgn_130320(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -93853,8 +93769,7 @@ def encode_pgn_130320(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -94154,7 +94069,6 @@ def encode_pgn_130321(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -94182,8 +94096,7 @@ def encode_pgn_130321(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -94522,7 +94435,6 @@ def encode_pgn_130322(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -94550,8 +94462,7 @@ def encode_pgn_130322(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -94934,7 +94845,6 @@ def encode_pgn_130323(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -94962,8 +94872,7 @@ def encode_pgn_130323(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -95438,7 +95347,6 @@ def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> bytes:
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -95466,8 +95374,7 @@ def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -95699,8 +95606,7 @@ def encode_pgn_130324(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.01)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.01, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -100198,8 +100104,7 @@ def encode_pgn_130567(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -100478,8 +100383,7 @@ def encode_pgn_130569(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 1, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -100506,8 +100410,7 @@ def encode_pgn_130569(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 1, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -108022,8 +107925,7 @@ def encode_pgn_130816_sonichubPlaylist(nmea2000Message: NMEA2000Message) -> byte
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -108050,8 +107952,7 @@ def encode_pgn_130816_sonichubPlaylist(nmea2000Message: NMEA2000Message) -> byte
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -110385,8 +110286,7 @@ def encode_pgn_130816_sonichubPosition(nmea2000Message: NMEA2000Message) -> byte
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -113982,8 +113882,7 @@ def encode_pgn_130818_furunoSensorSetup(nmea2000Message: NMEA2000Message) -> byt
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 16, False, 0.1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 16)
+        field_value = encode_time(field.value, 16, 0.1, False)
     field_bit_length = 16
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -114140,8 +114039,7 @@ def encode_pgn_130818_furunoSensorSetup(nmea2000Message: NMEA2000Message) -> byt
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -114168,8 +114066,7 @@ def encode_pgn_130818_furunoSensorSetup(nmea2000Message: NMEA2000Message) -> byt
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, True, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, True)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -118160,8 +118057,7 @@ def encode_pgn_130820_fusionMedia(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -118188,8 +118084,7 @@ def encode_pgn_130820_fusionMedia(nmea2000Message: NMEA2000Message) -> bytes:
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -119447,8 +119342,7 @@ def encode_pgn_130820_fusionTrackPosition(nmea2000Message: NMEA2000Message) -> b
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 24, False, 0.001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 24)
+        field_value = encode_time(field.value, 24, 0.001, False)
     field_bit_length = 24
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -134212,7 +134106,6 @@ def encode_pgn_130836_maretronSwitchStatusCounter(nmea2000Message: NMEA2000Messa
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -134240,8 +134133,7 @@ def encode_pgn_130836_maretronSwitchStatusCounter(nmea2000Message: NMEA2000Messa
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -134851,7 +134743,6 @@ def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message
     if isinstance(field.raw_value, int):
         field_value = field.raw_value
     else:
-        assert field.value is None or isinstance(field.value, date)
         field_value = encode_date(field.value, 16)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -134879,8 +134770,7 @@ def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 0.0001)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 0.0001, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -134907,8 +134797,7 @@ def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -134935,8 +134824,7 @@ def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:
@@ -134963,8 +134851,7 @@ def encode_pgn_130837_maretronSwitchStatusTimer(nmea2000Message: NMEA2000Message
     elif isinstance(field.value, (int, float)):
         field_value = encode_number(field.value, 32, False, 1)
     else:
-        assert field.value is None or isinstance(field.value, time)
-        field_value = encode_time(field.value, 32)
+        field_value = encode_time(field.value, 32, 1, False)
     field_bit_length = 32
     assert isinstance(field_value, int)
     if field_value < 0:

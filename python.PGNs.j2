@@ -114,7 +114,6 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     if isinstance({{ field_ref }}.raw_value, int):
         field_value = {{ field_ref }}.raw_value
     else:
-        assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, date)
         field_value = encode_date({{ field_ref }}.value, {{ field.BitLength }})
     field_bit_length = {{ field.BitLength }}
     {%- elif field.FieldType == 'TIME' or field.FieldType == 'DURATION' %}
@@ -125,8 +124,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     elif isinstance({{ field_ref }}.value, (int, float)):
         field_value = encode_number({{ field_ref }}.value, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }})
     else:
-        assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, time)
-        field_value = encode_time({{ field_ref }}.value, {{ field.BitLength }})
+        field_value = encode_time({{ field_ref }}.value, {{ field.BitLength }}, {{ field.Resolution }}, {{ field_signed }})
     field_bit_length = {{ field.BitLength }}
     {%- elif field.FieldType == 'DECIMAL' %}
     if isinstance({{ field_ref }}.raw_value, int):

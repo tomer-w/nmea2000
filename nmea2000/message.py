@@ -153,6 +153,8 @@ class NMEA2000Message:
     @staticmethod
     def from_json(json_str):
         data = orjson.loads(json_str)
+        if isinstance(data.get("timestamp"), str):
+            data["timestamp"] = datetime.fromisoformat(data["timestamp"])
         msg = NMEA2000Message(**data)
         msg.fields = [NMEA2000Field(**field) for field in data.get("fields", [])]
         return msg

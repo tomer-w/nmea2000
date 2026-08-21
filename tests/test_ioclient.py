@@ -9,6 +9,8 @@ import can.message
 import pytest
 
 from nmea2000.device import N2KDevice
+from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.input_formats import N2KFormat
 from nmea2000.ioclient import AsyncIOClient, PythonCanAsyncIOClient, State
 from nmea2000.message import NMEA2000Message
 
@@ -71,7 +73,9 @@ class PythonCanSendClient(PythonCanAsyncIOClient):
         super().__init__("virtual", "test-python-can-send", **kwargs)
         self.encoded_message = encoded_message
 
-    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[can.message.Message]:
+    def _encode_impl(
+        self, nmea2000Message: NMEA2000Message
+    ) -> list[can.message.Message]:
         return [self.encoded_message]
 
 
@@ -90,7 +94,9 @@ class FakeBus:
 
 
 class FlakyBus(FakeBus):
-    def __init__(self, failures_before_success: int, error: can.CanOperationError) -> None:
+    def __init__(
+        self, failures_before_success: int, error: can.CanOperationError
+    ) -> None:
         super().__init__()
         self.failures_before_success = failures_before_success
         self.error = error
@@ -101,6 +107,36 @@ class FlakyBus(FakeBus):
             self.failures_before_success -= 1
             raise self.error
         self.sent_messages.append(message)
+
+
+@pytest.mark.asyncio
+async def test_seed_network_map_parses_timestamp_for_python_can(monkeypatch) -> None:
+    client = RecordingClient([])
+    seeded_pgns: list[int | float | str | bytes | None] = []
+    seeded_timestamps: list[datetime] = []
+    encoded_messages: list[can.message.Message] = []
+    encoder = NMEA2000Encoder(N2KFormat.PYTHON_CAN)
+
+    async def no_sleep(_delay: float) -> None:
+        return
+
+    async def record_message(message: NMEA2000Message) -> None:
+        seeded_pgns.append(message.fields[0].value)
+        seeded_timestamps.append(message.timestamp)
+        encoded_messages.extend(encoder.encode(message))
+
+    monkeypatch.setattr(asyncio, "sleep", no_sleep)
+    monkeypatch.setattr(client, "send", record_message)
+
+    try:
+        await client._seed_network_map()
+    finally:
+        await client.close()
+
+    assert seeded_pgns == [60928, 126996, 126998]
+    assert all(isinstance(timestamp, datetime) for timestamp in seeded_timestamps)
+    assert all(isinstance(message.timestamp, float) for message in encoded_messages)
+    assert all(str(message) for message in encoded_messages)
 
 
 @pytest.mark.asyncio
@@ -155,7 +191,9 @@ async def test_python_can_client_retries_transient_buffer_pressure() -> None:
     )
     bus = FlakyBus(
         failures_before_success=2,
-        error=can.CanOperationError("Failed to transmit: No buffer space available", 105),
+        error=can.CanOperationError(
+            "Failed to transmit: No buffer space available", 105
+        ),
     )
     client.bus = bus
 
@@ -169,7 +207,9 @@ async def test_python_can_client_retries_transient_buffer_pressure() -> None:
 
 
 @pytest.mark.asyncio
-async def test_python_can_client_raises_persistent_buffer_pressure_without_reconnect() -> None:
+async def test_python_can_client_raises_persistent_buffer_pressure_without_reconnect() -> (
+    None
+):
     encoded_message = can.message.Message(
         arbitration_id=0x19F1120A,
         is_extended_id=True,

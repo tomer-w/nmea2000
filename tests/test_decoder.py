@@ -357,6 +357,8 @@ def test_json():
     assert msg2.source == msg.source
     assert msg2.destination == msg.destination
     assert msg2.description == msg.description
+    assert isinstance(msg2.timestamp, datetime)
+    assert msg2.timestamp == msg.timestamp
     assert len(msg2.fields) == len(msg.fields)
     for field in msg.fields:
         field2 = msg2.fields.pop(0)

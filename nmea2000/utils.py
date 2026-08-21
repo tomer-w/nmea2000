@@ -120,12 +120,14 @@ def decode_date(days_since_epoch: int | float | None) -> date | None:
     return decoded_date
 
 
-def encode_date(decoded_date: date | None, bit_length: int = 16) -> int:
+def encode_date(decoded_date: date | str | None, bit_length: int = 16) -> int:
     """
     Encodes a date into an integer representing the number of days since 1970-01-01 (UNIX epoch)
     """
     if decoded_date is None:
         return (1 << bit_length) - 1
+    if isinstance(decoded_date, str):
+        decoded_date = date.fromisoformat(decoded_date)
 
     # Define the start date as 1970-01-01
     start_date = date(1970, 1, 1)
@@ -159,20 +161,31 @@ def decode_time(seconds_since_midnight: int | float | None) -> time | None:
     return time(hour=hours, minute=minutes, second=seconds)
 
 
-def encode_time(time: time | None, bit_length: int) -> int:
+def encode_time(
+    decoded_time: time | str | None,
+    bit_length: int,
+    resolution: float = 1,
+    signed: bool = False,
+) -> int:
     """
     Encodes a time object into an integer representing the number of seconds since midnight.
     Returns:
         int: The number of seconds since midnight.
     """
-    if time is None:
-        # Set to "not available" value
-        return (1 << bit_length) - 1
+    if isinstance(decoded_time, str):
+        decoded_time = time.fromisoformat(decoded_time)
+    if decoded_time is None:
+        return (1 << (bit_length - int(signed))) - 1
 
     # Calculate the number of seconds since midnight
-    seconds_since_midnight = time.hour * 3600 + time.minute * 60 + time.second
+    seconds_since_midnight = (
+        decoded_time.hour * 3600
+        + decoded_time.minute * 60
+        + decoded_time.second
+        + decoded_time.microsecond / 1_000_000
+    )
 
-    return seconds_since_midnight
+    return int(round(seconds_since_midnight / resolution))
 
 
 def decode_decimal(number_int: int | None) -> int | None:
