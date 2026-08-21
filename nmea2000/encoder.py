@@ -1,10 +1,10 @@
 """NMEA 2000 Encoder Module"""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from importlib import import_module
-from typing import ClassVar, TypeAlias
+from typing import Generic, Literal, TypeAlias, TypeVar, overload
 
 import can.message
 
@@ -14,53 +14,26 @@ from .input_formats import N2KFormat
 from .message import NMEA2000Message
 
 N2KEncoded: TypeAlias = str | list[str] | list[bytes] | list[can.message.Message]
+EncodedT_co = TypeVar("EncodedT_co", covariant=True)
 
 
-class EncoderInterface(ABC):
-    """Public encoder contract shared by the dispatcher and concrete handlers."""
+class EncoderInterface(ABC, Generic[EncodedT_co]):
+    """Encoder contract for a single output format."""
 
     @abstractmethod
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
-    ) -> N2KEncoded:
+    ) -> EncodedT_co:
         """Encode an NMEA2000Message."""
 
 
 class EncoderBase:
     """Shared encoder mechanics used by concrete format handlers."""
 
-    def __init__(self, output_format: N2KFormat | str = N2KFormat.N2K_ASCII_RAW) -> None:
+    def __init__(self) -> None:
         # Sequence counter (3 bits)
         self.sequence_counter = 0
-        self.output_format = self._normalize_output_format(output_format)
-
-    @classmethod
-    def _normalize_output_format(cls, output_format: N2KFormat | str) -> N2KFormat:
-        if isinstance(output_format, N2KFormat):
-            return output_format
-        if isinstance(output_format, str):
-            normalized = output_format.strip().lower()
-            try:
-                return N2KFormat(normalized)
-            except ValueError as exc:
-                raise ValueError(f"Unsupported format: {output_format}") from exc
-        raise ValueError(f"Unsupported format type: {type(output_format)!r}")
-
-    def _resolve_output_format(self, output_format: N2KFormat | str | None) -> N2KFormat:
-        if output_format is None:
-            return self.output_format
-        return self._normalize_output_format(output_format)
-
-    def _assert_output_format(self, output_format: N2KFormat | str | None = None) -> N2KFormat:
-        requested_format = self._resolve_output_format(output_format)
-        if requested_format != self.output_format:
-            raise ValueError(
-                "This encoder instance is already bound to "
-                f"{self.output_format.value}; create a new encoder for {requested_format.value}."
-            )
-        return requested_format
 
     def _call_encode_function(self, nmea200_message: NMEA2000Message) -> bytes:
         encode_func_name = f"encode_pgn_{nmea200_message.PGN}"
@@ -70,13 +43,15 @@ class EncoderBase:
             None,
         )
 
-        #if we have multiple functions we need to use the ID as well
+        # if we have multiple functions we need to use the ID as well
         if not encode_func:
             encode_func_name = f"encode_pgn_{nmea200_message.PGN}_{nmea200_message.id}"
             encode_func = getattr(pgns_module, encode_func_name, None)
 
             if not encode_func:
-                raise ValueError(f"No encoding function found for PGN: {nmea200_message.PGN}")
+                raise ValueError(
+                    f"No encoding function found for PGN: {nmea200_message.PGN}"
+                )
 
         try:
             can_data_bytes = encode_func(nmea200_message)  # pylint: disable=not-callable
@@ -119,8 +94,8 @@ class EncoderBase:
         Builds a 29-bit CAN frame ID (ID0 - ID28) from PGN, source ID, destination, and priority.
         Based on https://canboat.github.io/canboat/canboat.html
         """
-        dp = (pgn_id >> 16) & 0x03      # Extract DP (and reserved)
-        pf = (pgn_id >> 8) & 0xFF       # Extract PF
+        dp = (pgn_id >> 16) & 0x03  # Extract DP (and reserved)
+        pf = (pgn_id >> 8) & 0xFF  # Extract PF
         ps = 0
 
         if pf < 0xF0:
@@ -131,9 +106,9 @@ class EncoderBase:
             ps = pgn_id & 0xFF
 
         pgn_field = (dp << 16) | (pf << 8) | ps  # 18 bits
-        frame_id = (priority & 0x7) << 26        # 3 bits: Priority
-        frame_id |= (pgn_field & 0x3FFFF) << 8   # 18 bits: PGN
-        frame_id |= source & 0xFF                # 8 bits: Source
+        frame_id = (priority & 0x7) << 26  # 3 bits: Priority
+        frame_id |= (pgn_field & 0x3FFFF) << 8  # 18 bits: PGN
+        frame_id |= source & 0xFF  # 8 bits: Source
 
         return frame_id
 
@@ -155,58 +130,83 @@ class EncoderBase:
             return [can_data_bytes]
 
 
-class NMEA2000Encoder(EncoderInterface):
-    """Thin public dispatcher that binds to one concrete format encoder."""
-
-    HANDLERS: ClassVar[dict[N2KFormat, type[EncoderInterface]]] = {}
-
-    def __init__(self, output_format: N2KFormat | str = N2KFormat.N2K_ASCII_RAW):
-        self.output_format = EncoderBase._normalize_output_format(output_format)
-        self._delegate: EncoderInterface | None = None
-
-    @classmethod
-    def add_handler(cls, output_format: N2KFormat, handler_cls: type[EncoderInterface]) -> None:
-        cls.HANDLERS[output_format] = handler_cls
-
-    @classmethod
-    def get_handler(cls, output_format: N2KFormat) -> type[EncoderInterface]:
-        handler_cls = cls.HANDLERS.get(output_format)
-        if handler_cls is None:
-            raise ValueError(f"Unsupported output format: {output_format}")
-        return handler_cls
-
-    def _bind_delegate(self, output_format: N2KFormat | str | None = None) -> EncoderInterface:
-        requested_format = (
-            self.output_format
-            if output_format is None
-            else EncoderBase._normalize_output_format(output_format)
-        )
-        if self._delegate is None:
-            handler_cls = self.get_handler(requested_format)
-            self.output_format = requested_format
-            self._delegate = handler_cls(output_format=requested_format)
-            return self._delegate
-
-        if requested_format != self.output_format:
-            raise ValueError(
-                "This NMEA2000Encoder instance is already bound to "
-                f"{self.output_format.value}; create a new encoder for {requested_format.value}."
-            )
-        return self._delegate
-
-    def encode(
-        self,
-        nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
-    ) -> N2KEncoded:
-        delegate = self._bind_delegate(output_format)
-        return delegate.encode(nmea200_message, self.output_format)
+def _normalize_output_format(output_format: N2KFormat | str) -> N2KFormat:
+    if isinstance(output_format, N2KFormat):
+        return output_format
+    normalized = output_format.strip().lower()
+    try:
+        return N2KFormat(normalized)
+    except ValueError as exc:
+        raise ValueError(f"Unsupported format: {output_format}") from exc
 
 
-import_module(".encoder_formats", __package__)
+@overload
+def create_encoder() -> EncoderInterface[str]: ...
+
+
+@overload
+def create_encoder(
+    output_format: Literal[
+        N2KFormat.N2K_ASCII_RAW,
+        N2KFormat.N2K_ASCII,
+        N2KFormat.BASIC_STRING,
+        N2KFormat.PCDIN,
+        N2KFormat.MXPGN,
+        N2KFormat.PDGY,
+        N2KFormat.PDGY_DEBUG,
+    ],
+) -> EncoderInterface[str]: ...
+
+
+@overload
+def create_encoder(
+    output_format: Literal[
+        N2KFormat.CAN_FRAME_ASCII_RAW,
+        N2KFormat.CAN_FRAME_ASCII_RAW_OUT,
+        N2KFormat.CANDUMP1,
+        N2KFormat.CANDUMP2,
+        N2KFormat.CANDUMP3,
+    ],
+) -> EncoderInterface[str | list[str]]: ...
+
+
+@overload
+def create_encoder(
+    output_format: Literal[
+        N2KFormat.CAN_FRAME_ASCII,
+        N2KFormat.EBYTE,
+        N2KFormat.WAVESHARE,
+        N2KFormat.BST_D0,
+        N2KFormat.BST_95,
+    ],
+) -> EncoderInterface[list[bytes]]: ...
+
+
+@overload
+def create_encoder(
+    output_format: Literal[N2KFormat.PYTHON_CAN],
+) -> EncoderInterface[list[can.message.Message]]: ...
+
+
+@overload
+def create_encoder(output_format: N2KFormat | str) -> EncoderInterface[N2KEncoded]: ...
+
+
+def create_encoder(
+    output_format: N2KFormat | str = N2KFormat.N2K_ASCII_RAW,
+) -> EncoderInterface[N2KEncoded]:
+    """Create an encoder bound to one output format."""
+    from .encoder_formats import ENCODER_CLASSES
+
+    normalized_format = _normalize_output_format(output_format)
+    encoder_cls = ENCODER_CLASSES.get(normalized_format)
+    if encoder_cls is None:
+        raise ValueError(f"Unsupported output format: {normalized_format}")
+    return encoder_cls()
+
 
 __all__ = [
     "EncoderBase",
     "EncoderInterface",
-    "NMEA2000Encoder",
+    "create_encoder",
 ]

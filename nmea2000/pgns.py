@@ -6691,7 +6691,7 @@ def is_fast_pgn_59392() -> bool:
     """Return True if PGN 59392 is a fast PGN."""
     return False
 # ERROR: This PGN is corrupted. It has multiple fields but none of them have a match attribute.
-def decode_pgn_59392(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Message:
+def decode_pgn_59392(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Message:  # pyright: ignore[reportRedeclaration]
     """Decode PGN 59392."""
     nmea2000Message = NMEA2000Message(PGN=59392, id='0xe8000xee00StandardizedSingleFrameAddressed', description='0xE800-0xEE00: Standardized single-frame addressed')
     running_bit_offset = 0
@@ -6703,7 +6703,7 @@ def decode_pgn_59392(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Messag
 
     return nmea2000Message
 
-def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> bytes:  # pyright: ignore[reportRedeclaration]
     """Encode Nmea2000Message object to binary data for PGN 59392."""
     data_raw = 0
     running_bit_offset = 0
@@ -6714,7 +6714,7 @@ def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 64
     assert isinstance(field_value, int)
@@ -6731,7 +6731,7 @@ def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> bytes:
     payload_bit_length = max(payload_bit_length, payload_end_offset)
     return data_raw.to_bytes(8, byteorder="little")
 
-def decode_pgn_59392(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Message:
+def decode_pgn_59392(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Message:  # pyright: ignore[reportRedeclaration]
     """Decode PGN 59392."""
     nmea2000Message = NMEA2000Message(PGN=59392, id='isoAcknowledgement', description='ISO Acknowledgement')
     running_bit_offset = 0
@@ -6762,7 +6762,7 @@ def decode_pgn_59392(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Messag
 
     return nmea2000Message
 
-def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_59392(nmea2000Message: NMEA2000Message) -> bytes:  # pyright: ignore[reportRedeclaration]
     """Encode Nmea2000Message object to binary data for PGN 59392."""
     data_raw = 0
     running_bit_offset = 0
@@ -6978,7 +6978,7 @@ def encode_pgn_60160(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 56
     assert isinstance(field_value, int)
@@ -7001,6 +7001,8 @@ def is_fast_pgn_60416() -> bool:
     return False
 # Complex PGN. number of matches: 5
 def decode_pgn_60416(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # isoTransportProtocolConnectionManagementRequestToSend | Description: ISO Transport Protocol, Connection Management - Request To Send
     if (
         (((data_raw >> 0) & 0xFF) == 16)
@@ -7787,7 +7789,7 @@ def encode_pgn_60416_isoTransportProtocolConnectionManagementAbort(nmea2000Messa
     field = nmea2000Message.get_field_by_id("reason")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -8052,6 +8054,8 @@ def encode_pgn_60928(nmea2000Message: NMEA2000Message) -> bytes:
         field_value = field.value
     else:
         controller_field = nmea2000Message.get_field_by_id("deviceClass")
+        if controller_field is None:
+            raise ValueError("Cant encode this message, missing indirect lookup controller")
         if isinstance(controller_field.raw_value, int):
             controller_raw_value = controller_field.raw_value
         else:
@@ -8059,6 +8063,8 @@ def encode_pgn_60928(nmea2000Message: NMEA2000Message) -> bytes:
         indirect_lookup_values = IndirectLookupEncodeMaps['DEVICE_FUNCTION'].get(controller_raw_value)
         if indirect_lookup_values is None:
             raise ValueError("Cant encode this message, 'Device Function' controller value is missing")
+        if not isinstance(field.value, str):
+            raise ValueError("Cant encode this message, 'Device Function' must be a string")
         field_value = indirect_lookup_values.get(field.value)
         if field_value is None:
             raise ValueError("Cant encode this message, 'Device Function' indirect lookup value is missing")
@@ -8208,6 +8214,8 @@ def is_fast_pgn_61184() -> bool:
     return False
 # Complex PGN. number of matches: 5
 def decode_pgn_61184(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # seatalkWirelessKeypadLightControl | Description: Seatalk: Wireless Keypad Light Control
     if (
         (((data_raw >> 0) & 0x7FF) == 1851) and
@@ -8357,7 +8365,7 @@ def encode_pgn_61184_0xef00ManufacturerProprietarySingleFrameAddressed(nmea2000M
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -9493,7 +9501,7 @@ def encode_pgn_61440(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -13291,7 +13299,7 @@ def encode_pgn_65240(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("uniqueNumber")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 21
     assert isinstance(field_value, int)
@@ -13395,6 +13403,8 @@ def encode_pgn_65240(nmea2000Message: NMEA2000Message) -> bytes:
         field_value = field.value
     else:
         controller_field = nmea2000Message.get_field_by_id("deviceClass")
+        if controller_field is None:
+            raise ValueError("Cant encode this message, missing indirect lookup controller")
         if isinstance(controller_field.raw_value, int):
             controller_raw_value = controller_field.raw_value
         else:
@@ -13402,6 +13412,8 @@ def encode_pgn_65240(nmea2000Message: NMEA2000Message) -> bytes:
         indirect_lookup_values = IndirectLookupEncodeMaps['DEVICE_FUNCTION'].get(controller_raw_value)
         if indirect_lookup_values is None:
             raise ValueError("Cant encode this message, 'Device Function' controller value is missing")
+        if not isinstance(field.value, str):
+            raise ValueError("Cant encode this message, 'Device Function' must be a string")
         field_value = indirect_lookup_values.get(field.value)
         if field_value is None:
             raise ValueError("Cant encode this message, 'Device Function' indirect lookup value is missing")
@@ -13576,6 +13588,8 @@ def is_fast_pgn_65280() -> bool:
     return False
 # Complex PGN. number of matches: 7
 def decode_pgn_65280(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # furunoHeave | Description: Furuno: Heave
     if (
         (((data_raw >> 0) & 0x7FF) == 1855) and
@@ -13737,7 +13751,7 @@ def encode_pgn_65280_0xff000xffffManufacturerProprietarySingleFrameNonAddressed(
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -14040,7 +14054,7 @@ def encode_pgn_65280_hondaEngineData(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -14174,7 +14188,7 @@ def encode_pgn_65280_yanmarEngineDataA(nmea2000Message: NMEA2000Message) -> byte
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -14308,7 +14322,7 @@ def encode_pgn_65280_maretronKeelPosition(nmea2000Message: NMEA2000Message) -> b
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -14442,7 +14456,7 @@ def encode_pgn_65280_mercuryEngineData(nmea2000Message: NMEA2000Message) -> byte
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -14922,6 +14936,8 @@ def is_fast_pgn_65281() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65281(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # yanmarEngineDataB | Description: Yanmar: Engine Data B
     if (
         (((data_raw >> 0) & 0x7FF) == 172) and
@@ -15056,7 +15072,7 @@ def encode_pgn_65281_yanmarEngineDataB(nmea2000Message: NMEA2000Message) -> byte
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -15190,7 +15206,7 @@ def encode_pgn_65281_bepMarineProprietaryPgn65281(nmea2000Message: NMEA2000Messa
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -15213,6 +15229,8 @@ def is_fast_pgn_65282() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65282(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronNumberOfChannels | Description: Maretron: Number of Channels
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -16225,6 +16243,8 @@ def is_fast_pgn_65284() -> bool:
     return False
 # Complex PGN. number of matches: 3
 def decode_pgn_65284(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronProprietaryDcBreakerCurrent | Description: Maretron: Proprietary DC Breaker Current
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -16599,7 +16619,7 @@ def encode_pgn_65284_hondaEngineAlerts(nmea2000Message: NMEA2000Message) -> byte
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -16797,7 +16817,7 @@ def encode_pgn_65284_bepMarineCzoneCircuitStatus(nmea2000Message: NMEA2000Messag
     field = nmea2000Message.get_field_by_id("bitmap")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 32
     assert isinstance(field_value, int)
@@ -16820,6 +16840,8 @@ def is_fast_pgn_65285() -> bool:
     return False
 # Complex PGN. number of matches: 3
 def decode_pgn_65285(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # airmarBootStateAcknowledgment | Description: Airmar: Boot State Acknowledgment
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
@@ -17331,7 +17353,7 @@ def encode_pgn_65285_maretronUniversalConfigurationSf(nmea2000Message: NMEA2000M
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -17354,6 +17376,8 @@ def is_fast_pgn_65286() -> bool:
     return False
 # Complex PGN. number of matches: 3
 def decode_pgn_65286(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # chetcoDimmer | Description: Chetco: Dimmer
     if (
         (((data_raw >> 0) & 0x7FF) == 409) and
@@ -18085,6 +18109,8 @@ def is_fast_pgn_65287() -> bool:
     return False
 # Complex PGN. number of matches: 3
 def decode_pgn_65287(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # airmarAccessLevel | Description: Airmar: Access Level
     if (
         (((data_raw >> 0) & 0x7FF) == 135) and
@@ -18750,6 +18776,8 @@ def is_fast_pgn_65288() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65288(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # seatalkAlarm | Description: Seatalk: Alarm
     if (
         (((data_raw >> 0) & 0x7FF) == 1851) and
@@ -19012,7 +19040,7 @@ def encode_pgn_65288_seatalkAlarm(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("alarmPriority")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -19268,6 +19296,8 @@ def is_fast_pgn_65289() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65289(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetTrimTabSensorCalibration | Description: Simnet: Trim Tab Sensor Calibration
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -19661,6 +19691,8 @@ def is_fast_pgn_65290() -> bool:
     return False
 # Complex PGN. number of matches: 3
 def decode_pgn_65290(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetPaddleWheelSpeedConfiguration | Description: Simnet: Paddle Wheel Speed Configuration
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -20533,6 +20565,8 @@ def is_fast_pgn_65292() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65292(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetClearFluidLevelWarnings | Description: Simnet: Clear Fluid Level Warnings
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -20804,7 +20838,7 @@ def encode_pgn_65292_maretronAutomationFunctionMaster(nmea2000Message: NMEA2000M
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -20827,6 +20861,8 @@ def is_fast_pgn_65293() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65293(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetLgc2000Configuration | Description: Simnet: LGC-2000 Configuration
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -21303,7 +21339,7 @@ def encode_pgn_65294(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -21441,7 +21477,7 @@ def encode_pgn_65295(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -21579,7 +21615,7 @@ def encode_pgn_65296(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -21717,7 +21753,7 @@ def encode_pgn_65297(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -21855,7 +21891,7 @@ def encode_pgn_65298(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -21878,6 +21914,8 @@ def is_fast_pgn_65299() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65299(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # suzukiEngineDataB | Description: Suzuki: Engine Data B
     if (
         (((data_raw >> 0) & 0x7FF) == 586) and
@@ -22012,7 +22050,7 @@ def encode_pgn_65299_suzukiEngineDataB(nmea2000Message: NMEA2000Message) -> byte
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -22146,7 +22184,7 @@ def encode_pgn_65299_bepMarineProprietaryPgn65299(nmea2000Message: NMEA2000Messa
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -22169,6 +22207,8 @@ def is_fast_pgn_65300() -> bool:
     return False
 # Complex PGN. number of matches: 3
 def decode_pgn_65300(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # suzukiEngineDataC | Description: Suzuki: Engine Data C
     if (
         (((data_raw >> 0) & 0x7FF) == 586) and
@@ -22310,7 +22350,7 @@ def encode_pgn_65300_suzukiEngineDataC(nmea2000Message: NMEA2000Message) -> byte
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -22444,7 +22484,7 @@ def encode_pgn_65300_bepMarineProprietaryPgn65300(nmea2000Message: NMEA2000Messa
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -22610,7 +22650,7 @@ def encode_pgn_65300_carlingSwitchboardStatus(nmea2000Message: NMEA2000Message) 
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 40
     assert isinstance(field_value, int)
@@ -22748,7 +22788,7 @@ def encode_pgn_65301(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -23155,7 +23195,7 @@ def encode_pgn_65303(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -23178,6 +23218,8 @@ def is_fast_pgn_65304() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65304(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # suzukiEngineDataE | Description: Suzuki: Engine Data E
     if (
         (((data_raw >> 0) & 0x7FF) == 586) and
@@ -23312,7 +23354,7 @@ def encode_pgn_65304_suzukiEngineDataE(nmea2000Message: NMEA2000Message) -> byte
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -23446,7 +23488,7 @@ def encode_pgn_65304_bepMarineProprietaryPgn65304(nmea2000Message: NMEA2000Messa
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -23469,6 +23511,8 @@ def is_fast_pgn_65305() -> bool:
     return False
 # Complex PGN. number of matches: 5
 def decode_pgn_65305(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetDeviceStatus | Description: Simnet: Device Status
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -24556,7 +24600,7 @@ def encode_pgn_65305_simnetSailingProcessorStatus(nmea2000Message: NMEA2000Messa
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 32
     assert isinstance(field_value, int)
@@ -24694,7 +24738,7 @@ def encode_pgn_65306(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -24832,7 +24876,7 @@ def encode_pgn_65308(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -25207,7 +25251,7 @@ def encode_pgn_65310(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -25345,7 +25389,7 @@ def encode_pgn_65311(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -25688,7 +25732,7 @@ def encode_pgn_65313(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -25711,6 +25755,8 @@ def is_fast_pgn_65314() -> bool:
     return False
 # Complex PGN. number of matches: 2
 def decode_pgn_65314(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # bepMarineProprietaryPgn65314 | Description: BEP Marine: Proprietary PGN 65314
     if (
         (((data_raw >> 0) & 0x7FF) == 295) and
@@ -25845,7 +25891,7 @@ def encode_pgn_65314_bepMarineProprietaryPgn65314(nmea2000Message: NMEA2000Messa
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -26242,7 +26288,7 @@ def encode_pgn_65315(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -26380,7 +26426,7 @@ def encode_pgn_65316(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -26518,7 +26564,7 @@ def encode_pgn_65317(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -26656,7 +26702,7 @@ def encode_pgn_65325(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -26794,7 +26840,7 @@ def encode_pgn_65329(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -26932,7 +26978,7 @@ def encode_pgn_65330(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -27070,7 +27116,7 @@ def encode_pgn_65332(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -27744,7 +27790,7 @@ def encode_pgn_65344(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -28087,7 +28133,7 @@ def encode_pgn_65346(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -28225,7 +28271,7 @@ def encode_pgn_65348(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -28363,7 +28409,7 @@ def encode_pgn_65349(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -29999,7 +30045,7 @@ def encode_pgn_65379(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("subMode")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -30020,7 +30066,7 @@ def encode_pgn_65379(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("pilotModeData")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -31466,7 +31512,7 @@ def encode_pgn_65424(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -31604,7 +31650,7 @@ def encode_pgn_65440(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -31742,7 +31788,7 @@ def encode_pgn_65441(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -31880,7 +31926,7 @@ def encode_pgn_65472(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -32044,6 +32090,8 @@ def is_fast_pgn_126208() -> bool:
     return True
 # Complex PGN. number of matches: 8
 def decode_pgn_126208(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # nmeaRequestGroupFunction | Description: NMEA - Request group function
     if (
         (((data_raw >> 0) & 0xFF) == 0)
@@ -32111,7 +32159,7 @@ def encode_pgn_126208_0x1ed000x1ee00StandardizedFastPacketAddressed(nmea2000Mess
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1784
     assert isinstance(field_value, int)
@@ -32389,7 +32437,7 @@ def encode_pgn_126208_nmeaRequestGroupFunction(nmea2000Message: NMEA2000Message)
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = binary_data_bit_length(field_bytes)
         advance_running_offset = False
@@ -32665,7 +32713,7 @@ def encode_pgn_126208_nmeaCommandGroupFunction(nmea2000Message: NMEA2000Message)
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = binary_data_bit_length(field_bytes)
         advance_running_offset = False
@@ -33267,7 +33315,7 @@ def encode_pgn_126208_nmeaReadFieldsGroupFunction(nmea2000Message: NMEA2000Messa
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = binary_data_bit_length(field_bytes)
         advance_running_offset = False
@@ -33672,7 +33720,7 @@ def encode_pgn_126208_nmeaReadFieldsReplyGroupFunction(nmea2000Message: NMEA2000
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = binary_data_bit_length(field_bytes)
         advance_running_offset = False
@@ -33724,7 +33772,7 @@ def encode_pgn_126208_nmeaReadFieldsReplyGroupFunction(nmea2000Message: NMEA2000
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = binary_data_bit_length(field_bytes)
         advance_running_offset = False
@@ -34101,7 +34149,7 @@ def encode_pgn_126208_nmeaWriteFieldsGroupFunction(nmea2000Message: NMEA2000Mess
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = binary_data_bit_length(field_bytes)
         advance_running_offset = False
@@ -34153,7 +34201,7 @@ def encode_pgn_126208_nmeaWriteFieldsGroupFunction(nmea2000Message: NMEA2000Mess
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = binary_data_bit_length(field_bytes)
         advance_running_offset = False
@@ -34530,7 +34578,7 @@ def encode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(nmea2000Message: NMEA200
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = binary_data_bit_length(field_bytes)
         advance_running_offset = False
@@ -34582,7 +34630,7 @@ def encode_pgn_126208_nmeaWriteFieldsReplyGroupFunction(nmea2000Message: NMEA200
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = binary_data_bit_length(field_bytes)
         advance_running_offset = False
@@ -34717,6 +34765,8 @@ def is_fast_pgn_126720() -> bool:
     return True
 # Complex PGN. number of matches: 41
 def decode_pgn_126720(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # garminAhrsAttCogSourceValidFlag | Description: Garmin AHRS ATT: COG Source Valid Flag
     if (
         (((data_raw >> 0) & 0x7FF) == 229) and
@@ -36260,7 +36310,7 @@ def encode_pgn_126720_0x1ef00ManufacturerProprietaryFastPacketAddressed(nmea2000
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -36515,7 +36565,7 @@ def encode_pgn_126720_seatalk1PilotMode(nmea2000Message: NMEA2000Message) -> byt
     field = nmea2000Message.get_field_by_id("unknown1")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 24
     assert isinstance(field_value, int)
@@ -36587,7 +36637,7 @@ def encode_pgn_126720_seatalk1PilotMode(nmea2000Message: NMEA2000Message) -> byt
     field = nmea2000Message.get_field_by_id("pilotModeData")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -36608,7 +36658,7 @@ def encode_pgn_126720_seatalk1PilotMode(nmea2000Message: NMEA2000Message) -> byt
     field = nmea2000Message.get_field_by_id("unknown2")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 80
     assert isinstance(field_value, int)
@@ -36819,7 +36869,7 @@ def encode_pgn_126720_seatalk1PilotHullType(nmea2000Message: NMEA2000Message) ->
     field = nmea2000Message.get_field_by_id("unknown")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -36865,7 +36915,7 @@ def encode_pgn_126720_seatalk1PilotHullType(nmea2000Message: NMEA2000Message) ->
     field = nmea2000Message.get_field_by_id("unknown2")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 64
     assert isinstance(field_value, int)
@@ -37083,7 +37133,7 @@ def encode_pgn_126720_seatalkPilotAutoTurn(nmea2000Message: NMEA2000Message) -> 
     field = nmea2000Message.get_field_by_id("unknown")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -37154,7 +37204,7 @@ def encode_pgn_126720_seatalkPilotAutoTurn(nmea2000Message: NMEA2000Message) -> 
     field = nmea2000Message.get_field_by_id("unknown3")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -37745,7 +37795,7 @@ def encode_pgn_126720_seatalk1DisplayBrightness(nmea2000Message: NMEA2000Message
     field = nmea2000Message.get_field_by_id("unknown2")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -37994,7 +38044,7 @@ def encode_pgn_126720_seatalk1DisplayColor(nmea2000Message: NMEA2000Message) -> 
     field = nmea2000Message.get_field_by_id("unknown1")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -38066,7 +38116,7 @@ def encode_pgn_126720_seatalk1DisplayColor(nmea2000Message: NMEA2000Message) -> 
     field = nmea2000Message.get_field_by_id("unknown2")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -38392,7 +38442,7 @@ def encode_pgn_126720_seatalk1Keystroke(nmea2000Message: NMEA2000Message) -> byt
     field = nmea2000Message.get_field_by_id("unknownData")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 112
     assert isinstance(field_value, int)
@@ -43862,7 +43912,7 @@ def encode_pgn_126720_maretronProprietaryConfiguration(nmea2000Message: NMEA2000
     field = nmea2000Message.get_field_by_id("payload")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1784
     assert isinstance(field_value, int)
@@ -44581,7 +44631,7 @@ def encode_pgn_126720_lumishoreProprietary(nmea2000Message: NMEA2000Message) -> 
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1784
     assert isinstance(field_value, int)
@@ -45703,7 +45753,7 @@ def encode_pgn_126976(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1784
     assert isinstance(field_value, int)
@@ -65710,7 +65760,7 @@ def encode_pgn_128776(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("speedControl")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -68498,7 +68548,7 @@ def encode_pgn_129038(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("communicationState")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 19
     assert isinstance(field_value, int)
@@ -69167,7 +69217,7 @@ def encode_pgn_129039(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("communicationState")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 19
     assert isinstance(field_value, int)
@@ -70997,7 +71047,7 @@ def encode_pgn_129041(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("atonStatus")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -74650,7 +74700,7 @@ def encode_pgn_129541(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("svHealthBits")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -77914,9 +77964,11 @@ def encode_pgn_129792(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("binaryData")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     length_field = nmea2000Message.get_field_by_id("numberOfBitsInBinaryDataField")
+    if length_field is None:
+        raise ValueError("Cant encode this message, missing binary length field")
     if isinstance(length_field.raw_value, (int, float)):
         field_bit_length = int(length_field.raw_value)
     else:
@@ -78279,7 +78331,7 @@ def encode_pgn_129793(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("communicationState")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 19
     assert isinstance(field_value, int)
@@ -79434,9 +79486,11 @@ def encode_pgn_129795(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("binaryData")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     length_field = nmea2000Message.get_field_by_id("numberOfBitsInBinaryDataField")
+    if length_field is None:
+        raise ValueError("Cant encode this message, missing binary length field")
     if isinstance(length_field.raw_value, (int, float)):
         field_bit_length = int(length_field.raw_value)
     else:
@@ -80049,9 +80103,11 @@ def encode_pgn_129797(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("binaryData")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     length_field = nmea2000Message.get_field_by_id("numberOfBitsInBinaryDataField")
+    if length_field is None:
+        raise ValueError("Cant encode this message, missing binary length field")
     if isinstance(length_field.raw_value, (int, float)):
         field_bit_length = int(length_field.raw_value)
     else:
@@ -80457,7 +80513,7 @@ def encode_pgn_129798(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("communicationState")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 19
     assert isinstance(field_value, int)
@@ -80529,7 +80585,7 @@ def encode_pgn_129798(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("reservedForRegionalApplications")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -84557,6 +84613,8 @@ def is_fast_pgn_129808() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_129808(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # dscDistressCallInformation | Description: DSC Distress Call Information
     if (
         (((data_raw >> 8) & 0xFF) == 112)
@@ -88296,7 +88354,7 @@ def encode_pgn_130061(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("nameSelectionCriteriaMask")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 12
     assert isinstance(field_value, int)
@@ -104522,7 +104580,7 @@ def encode_pgn_130584(nmea2000Message: NMEA2000Message) -> bytes:
         field_offset = running_bit_offset
     
         advance_running_offset = True
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
         field_bit_length = 48
         assert isinstance(field_value, int)
@@ -104772,7 +104830,7 @@ def encode_pgn_130585(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("bluetoothAddress")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 48
     assert isinstance(field_value, int)
@@ -105228,6 +105286,8 @@ def is_fast_pgn_130816() -> bool:
     return True
 # Complex PGN. number of matches: 24
 def decode_pgn_130816(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # sonichubInit2 | Description: SonicHub: Init #2
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
@@ -105528,7 +105588,7 @@ def encode_pgn_130816_0x1ff000x1ffffManufacturerSpecificFastPacketNonAddressed(n
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1784
     assert isinstance(field_value, int)
@@ -111333,7 +111393,7 @@ def encode_pgn_130816_bepMarineCzoneZcfBusDistribution(nmea2000Message: NMEA2000
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1600
     assert isinstance(field_value, int)
@@ -112016,6 +112076,8 @@ def is_fast_pgn_130817() -> bool:
     return True
 # Complex PGN. number of matches: 5
 def decode_pgn_130817(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # navicoUnknown | Description: Navico: Unknown
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
@@ -112831,7 +112893,7 @@ def encode_pgn_130817_furunoSvControl(nmea2000Message: NMEA2000Message) -> bytes
     field = nmea2000Message.get_field_by_id("f4")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -112852,7 +112914,7 @@ def encode_pgn_130817_furunoSvControl(nmea2000Message: NMEA2000Message) -> bytes
     field = nmea2000Message.get_field_by_id("f5")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 8
     assert isinstance(field_value, int)
@@ -112923,7 +112985,7 @@ def encode_pgn_130817_furunoSvControl(nmea2000Message: NMEA2000Message) -> bytes
     field = nmea2000Message.get_field_by_id("f8")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 16
     assert isinstance(field_value, int)
@@ -113433,7 +113495,7 @@ def encode_pgn_130817_bepMarineCzoneStatusExtended(nmea2000Message: NMEA2000Mess
     field = nmea2000Message.get_field_by_id("records")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 192
     assert isinstance(field_value, int)
@@ -113456,6 +113518,8 @@ def is_fast_pgn_130818() -> bool:
     return True
 # Complex PGN. number of matches: 5
 def decode_pgn_130818(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetReprogramData | Description: Simnet: Reprogram Data
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -113675,7 +113739,7 @@ def encode_pgn_130818_simnetReprogramData(nmea2000Message: NMEA2000Message) -> b
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1736
     assert isinstance(field_value, int)
@@ -114565,7 +114629,7 @@ def encode_pgn_130818_bepMarineProprietaryPgn130818(nmea2000Message: NMEA2000Mes
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -114887,6 +114951,8 @@ def is_fast_pgn_130819() -> bool:
     return True
 # Complex PGN. number of matches: 4
 def decode_pgn_130819(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetRequestReprogram | Description: Simnet: Request Reprogram
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -115424,7 +115490,7 @@ def encode_pgn_130819_maretronAlertTransmission(nmea2000Message: NMEA2000Message
     field = nmea2000Message.get_field_by_id("maretronExtension")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 128
     assert isinstance(field_value, int)
@@ -115981,7 +116047,7 @@ def encode_pgn_130819_bepMarineProprietaryPgn130819(nmea2000Message: NMEA2000Mes
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -116004,6 +116070,8 @@ def is_fast_pgn_130820() -> bool:
     return True
 # Complex PGN. number of matches: 42
 def decode_pgn_130820(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # bepMarineCzoneEnumerationReply | Description: BEP Marine: CZone Enumeration Reply
     if (
         (((data_raw >> 0) & 0x7FF) == 295) and
@@ -116520,7 +116588,7 @@ def encode_pgn_130820_bepMarineCzoneEnumerationReply(nmea2000Message: NMEA2000Me
     field = nmea2000Message.get_field_by_id("label")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1736
     assert isinstance(field_value, int)
@@ -125680,9 +125748,11 @@ def encode_pgn_130820_fusionSiriusxmPresets(nmea2000Message: NMEA2000Message) ->
     field = nmea2000Message.get_field_by_id("values")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     length_field = nmea2000Message.get_field_by_id("count")
+    if length_field is None:
+        raise ValueError("Cant encode this message, missing binary length field")
     if isinstance(length_field.raw_value, (int, float)):
         field_bit_length = int(length_field.raw_value)
     else:
@@ -126297,7 +126367,7 @@ def encode_pgn_130820_bepMarineProprietaryPgn130820(nmea2000Message: NMEA2000Mes
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -126320,6 +126390,8 @@ def is_fast_pgn_130821() -> bool:
     return True
 # Complex PGN. number of matches: 4
 def decode_pgn_130821(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # navicoAsciiData | Description: Navico: ASCII Data
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
@@ -127537,7 +127609,7 @@ def encode_pgn_130821_bepMarineProprietaryPgn130821(nmea2000Message: NMEA2000Mes
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -127560,6 +127632,8 @@ def is_fast_pgn_130822() -> bool:
     return True
 # Complex PGN. number of matches: 3
 def decode_pgn_130822(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # navicoUnknown1 | Description: Navico: Unknown 1
     if (
         (((data_raw >> 0) & 0x7FF) == 275) and
@@ -127701,7 +127775,7 @@ def encode_pgn_130822_navicoUnknown1(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1848
     assert isinstance(field_value, int)
@@ -128117,7 +128191,7 @@ def encode_pgn_130822_maretronAlertControl(nmea2000Message: NMEA2000Message) -> 
     field = nmea2000Message.get_field_by_id("maretronExtension")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 128
     assert isinstance(field_value, int)
@@ -128251,7 +128325,7 @@ def encode_pgn_130822_bepMarineProprietaryPgn130822(nmea2000Message: NMEA2000Mes
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -128545,6 +128619,8 @@ def is_fast_pgn_130824() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130824(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # bGKeyValueData | Description: B&G: key-value data
     if (
         (((data_raw >> 0) & 0x7FF) == 381) and
@@ -128806,9 +128882,11 @@ def encode_pgn_130824_bGKeyValueData(nmea2000Message: NMEA2000Message) -> bytes:
             field_value = field.value
             field_bytes = b""
         else:
-            field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+            field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
             field_value = encode_binary_data(field_bytes)
         length_field = repeating_entry.get("length")
+        if length_field is None:
+            raise ValueError("Cant encode this message, missing dynamic field length")
         if isinstance(length_field.raw_value, (int, float)):
             field_bit_length = int(length_field.raw_value) * 8
         else:
@@ -129103,6 +129181,8 @@ def is_fast_pgn_130825() -> bool:
     return True
 # Complex PGN. number of matches: 3
 def decode_pgn_130825(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronDataInstanceChannelCorrelation | Description: Maretron: Data Instance Channel Correlation
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -129511,7 +129591,7 @@ def encode_pgn_130825_navicoUnknown2(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 80
     assert isinstance(field_value, int)
@@ -129645,7 +129725,7 @@ def encode_pgn_130825_bepMarineProprietaryPgn130825(nmea2000Message: NMEA2000Mes
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -129668,6 +129748,8 @@ def is_fast_pgn_130826() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130826(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronSwitchIndicatorStatus | Description: Maretron: Switch Indicator Status
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -130034,7 +130116,7 @@ def encode_pgn_130826_bepMarineProprietaryPgn130826(nmea2000Message: NMEA2000Mes
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -130360,6 +130442,8 @@ def is_fast_pgn_130828() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130828(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetSetSerialNumber | Description: Simnet: Set Serial Number
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -130996,6 +131080,8 @@ def is_fast_pgn_130830() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130830(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronDometicHvacStatus | Description: Maretron: Dometic HVAC Status
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -131457,6 +131543,8 @@ def is_fast_pgn_130831() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130831(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronUniversalConfigurationFp | Description: Maretron: Universal Configuration FP
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -131591,7 +131679,7 @@ def encode_pgn_130831_maretronUniversalConfigurationFp(nmea2000Message: NMEA2000
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -131721,6 +131809,8 @@ def is_fast_pgn_130832() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130832(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronVesselOperatingMode | Description: Maretron: Vessel Operating Mode
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -132212,6 +132302,8 @@ def is_fast_pgn_130833() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130833(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronVesselDataRecorderStatus | Description: Maretron: Vessel Data Recorder Status
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -132725,6 +132817,8 @@ def is_fast_pgn_130834() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130834(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronSmsStatus | Description: Maretron: SMS Status
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -133146,6 +133240,8 @@ def is_fast_pgn_130835() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130835(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronSmsTextMessage | Description: Maretron: SMS Text Message
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -133471,6 +133567,8 @@ def is_fast_pgn_130836() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130836(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetFluidLevelSensorConfiguration | Description: Simnet: Fluid Level Sensor Configuration
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -134282,6 +134380,8 @@ def is_fast_pgn_130837() -> bool:
     return True
 # Complex PGN. number of matches: 3
 def decode_pgn_130837(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # suzukiEngineSensorData | Description: Suzuki: Engine Sensor Data
     if (
         (((data_raw >> 0) & 0x7FF) == 586) and
@@ -134922,6 +135022,8 @@ def is_fast_pgn_130838() -> bool:
     return True
 # Complex PGN. number of matches: 3
 def decode_pgn_130838(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronBnwas | Description: Maretron: BNWAS
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -135063,7 +135165,7 @@ def encode_pgn_130838_maretronBnwas(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -135411,6 +135513,8 @@ def is_fast_pgn_130840() -> bool:
     return True
 # Complex PGN. number of matches: 2
 def decode_pgn_130840(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronGenericSensor | Description: Maretron: Generic Sensor
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -135609,7 +135713,7 @@ def encode_pgn_130840_maretronGenericSensor(nmea2000Message: NMEA2000Message) ->
     field = nmea2000Message.get_field_by_id("value")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 32
     assert isinstance(field_value, int)
@@ -135854,7 +135958,7 @@ def encode_pgn_130841(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -135877,6 +135981,8 @@ def is_fast_pgn_130842() -> bool:
     return True
 # Complex PGN. number of matches: 4
 def decode_pgn_130842(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronWindlassOperatingStatus | Description: Maretron: Windlass Operating Status
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -137698,6 +137804,8 @@ def is_fast_pgn_130843() -> bool:
     return True
 # Complex PGN. number of matches: 3
 def decode_pgn_130843(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronWindlassControlCommand | Description: Maretron: Windlass Control Command
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -137839,7 +137947,7 @@ def encode_pgn_130843_maretronWindlassControlCommand(nmea2000Message: NMEA2000Me
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -138351,7 +138459,7 @@ def encode_pgn_130844(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -138374,6 +138482,8 @@ def is_fast_pgn_130845() -> bool:
     return True
 # Complex PGN. number of matches: 3
 def decode_pgn_130845(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # maretronDcEnergy | Description: Maretron: DC Energy
     if (
         (((data_raw >> 0) & 0x7FF) == 137) and
@@ -138515,7 +138625,7 @@ def encode_pgn_130845_maretronDcEnergy(nmea2000Message: NMEA2000Message) -> byte
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -138993,7 +139103,7 @@ def encode_pgn_130845_simnetKeyValue(nmea2000Message: NMEA2000Message) -> bytes:
         field_value = field.value
         field_bytes = b""
     else:
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
     if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
         field_bit_length = dyn_kv_metadata.bits
@@ -139019,6 +139129,8 @@ def is_fast_pgn_130846() -> bool:
     return True
 # Complex PGN. number of matches: 3
 def decode_pgn_130846(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetParameterSet | Description: Simnet: Parameter Set
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -139399,7 +139511,7 @@ def encode_pgn_130846_simnetParameterSet(nmea2000Message: NMEA2000Message) -> by
         field_value = field.value
         field_bytes = b""
     else:
-        field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+        field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
         field_value = encode_binary_data(field_bytes)
     if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
         field_bit_length = dyn_kv_metadata.bits
@@ -139536,7 +139648,7 @@ def encode_pgn_130846_maretronBatteryAmpHourRecord(nmea2000Message: NMEA2000Mess
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1768
     assert isinstance(field_value, int)
@@ -140339,6 +140451,8 @@ def is_fast_pgn_130850() -> bool:
     return True
 # Complex PGN. number of matches: 11
 def decode_pgn_130850(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     # simnetCommandApStandby | Description: Simnet: Command AP Standby
     if (
         (((data_raw >> 0) & 0x7FF) == 1857) and
@@ -148808,7 +148922,7 @@ def encode_pgn_130921(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("data")
 
     advance_running_offset = True
-    field_bytes = normalize_binary_data(field.raw_value) if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data(field.value)
+    field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = 1752
     assert isinstance(field_value, int)

@@ -10,7 +10,7 @@ import can.message
 import pytest
 
 from nmea2000.device import N2KDevice
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat
 from nmea2000.ioclient import AsyncIOClient, PythonCanAsyncIOClient, State
 from nmea2000.message import NMEA2000Message
@@ -113,10 +113,10 @@ class FlakyBus(FakeBus):
 @pytest.mark.asyncio
 async def test_seed_network_map_parses_timestamp_for_python_can(monkeypatch) -> None:
     client = RecordingClient([])
-    seeded_pgns: list[int | float | str | bytes | None] = []
+    seeded_pgns: list[object] = []
     seeded_timestamps: list[datetime] = []
     encoded_messages: list[can.message.Message] = []
-    encoder = NMEA2000Encoder(N2KFormat.PYTHON_CAN)
+    encoder = create_encoder(N2KFormat.PYTHON_CAN)
 
     async def no_sleep(_delay: float) -> None:
         return
@@ -124,7 +124,12 @@ async def test_seed_network_map_parses_timestamp_for_python_can(monkeypatch) -> 
     async def record_message(message: NMEA2000Message) -> None:
         seeded_pgns.append(message.fields[0].value)
         seeded_timestamps.append(message.timestamp)
-        encoded_messages.extend(encoder.encode(message))
+        encoded = encoder.encode(message)
+        assert isinstance(encoded, list)
+        assert all(isinstance(item, can.message.Message) for item in encoded)
+        encoded_messages.extend(
+            item for item in encoded if isinstance(item, can.message.Message)
+        )
 
     monkeypatch.setattr(asyncio, "sleep", no_sleep)
     monkeypatch.setattr(client, "send", record_message)
@@ -165,7 +170,7 @@ async def test_python_can_client_send_uses_bus_instead_of_writer() -> None:
     )
     client = PythonCanSendClient(encoded_message)
     bus = FakeBus()
-    client.bus = bus
+    client.bus = cast(can.BusABC, bus)
 
     try:
         await client.send(_build_message())
@@ -198,7 +203,7 @@ async def test_python_can_client_retries_transient_buffer_pressure(
             "Failed to transmit: No buffer space available", 105
         ),
     )
-    client.bus = bus
+    client.bus = cast(can.BusABC, bus)
     caplog.set_level(logging.DEBUG, logger=client.logger.name)
 
     try:
@@ -236,7 +241,7 @@ async def test_python_can_client_raises_persistent_buffer_pressure_without_recon
         failures_before_success=10,
         error=can.CanOperationError("Transmit buffer full"),
     )
-    client.bus = bus
+    client.bus = cast(can.BusABC, bus)
     client._state = State.CONNECTED
     caplog.set_level(logging.DEBUG, logger=client.logger.name)
 

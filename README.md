@@ -246,11 +246,11 @@ output:
 
 #### Example Code
 ```python
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat
 
 # Initialize encoder
-encoder = NMEA2000Encoder(output_format=N2KFormat.TCP)
+encoder = create_encoder(N2KFormat.EBYTE)
 
 # Data to encode: vessel heading message (PGN 127250)
    message = NMEA2000Message(

@@ -54,6 +54,14 @@ ignore = ["DTZ001", "DTZ005", "DTZ006", "DTZ007", "PYI041", "TRY004"]
 "nmea2000/ioclient.py" = ["BLE001", "TRY002"]
 "tests/NMEA2000TestServer.py" = ["BLE001", "N999", "S110", "TRY002", "UP035"]
 
+[tool.pyright]
+typeCheckingMode = "basic"
+exclude = [
+    ".venv",
+    ".venv-*",
+    "build",
+]
+
 [tool.pylint.messages_control]
 disable = ["line-too-long"]
 

@@ -11,8 +11,7 @@ from nmea2000.input_formats import N2KFormat
 from tests.NMEA2000TestServer import NMEA2000TestServer
 
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("test_cli")
 
@@ -28,7 +27,9 @@ class TestCliDecode:
     def test_decode_frame(self):
         result = subprocess.run(
             [*CLI_MODULE, "decode", "--frame", N2K_ASCII_FRAME],
-            capture_output=True, text=True, timeout=10
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         assert result.returncode == 0
         output = result.stdout.strip()
@@ -42,7 +43,9 @@ class TestCliDecode:
     def test_decode_frame_fields(self):
         result = subprocess.run(
             [*CLI_MODULE, "decode", "--frame", N2K_ASCII_FRAME],
-            capture_output=True, text=True, timeout=10
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         data = json.loads(result.stdout.strip())
         fields = data["fields"]
@@ -52,8 +55,7 @@ class TestCliDecode:
 
     def test_decode_missing_args(self):
         result = subprocess.run(
-            [*CLI_MODULE, "decode"],
-            capture_output=True, text=True, timeout=10
+            [*CLI_MODULE, "decode"], capture_output=True, text=True, timeout=10
         )
         assert result.returncode != 0 or "Error" in result.stdout
 
@@ -62,7 +64,9 @@ class TestCliDecode:
         frame_file.write_text(N2K_ASCII_FRAME + "\n")
         result = subprocess.run(
             [*CLI_MODULE, "decode", "--file", str(frame_file)],
-            capture_output=True, text=True, timeout=10
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         assert result.returncode == 0
 
@@ -75,7 +79,9 @@ class TestCliEncode:
     def test_encode_frame(self):
         result = subprocess.run(
             [*CLI_MODULE, "encode", "--frame", self.SAMPLE_JSON],
-            capture_output=True, text=True, timeout=10
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         assert result.returncode == 0
         assert "09FF7" in result.stdout
@@ -85,15 +91,16 @@ class TestCliEncode:
         json_file.write_text(self.SAMPLE_JSON)
         result = subprocess.run(
             [*CLI_MODULE, "encode", "--file", str(json_file)],
-            capture_output=True, text=True, timeout=10
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         assert result.returncode == 0
         assert "09FF7" in result.stdout
 
     def test_encode_missing_args(self):
         result = subprocess.run(
-            [*CLI_MODULE, "encode"],
-            capture_output=True, text=True, timeout=10
+            [*CLI_MODULE, "encode"], capture_output=True, text=True, timeout=10
         )
         assert result.returncode != 0 or "Error" in result.stdout
 
@@ -126,13 +133,20 @@ class TestCliTcpClientJson:
     async def test_tcp_client_json_actisense(self, actisense_server):
         """text --json should output valid JSON lines for Actisense."""
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "text",
-            "--server", "127.0.0.1", "--port", "18881",
-            "--format", "N2K_ASCII_RAW", "--json",
+            *CLI_MODULE,
+            "text",
+            "--server",
+            "127.0.0.1",
+            "--port",
+            "18881",
+            "--format",
+            "N2K_ASCII_RAW",
+            "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
         )
+        assert proc.stdout is not None
         try:
             # Wait until the server sees a connected client
             for _ in range(20):
@@ -173,13 +187,18 @@ class TestCliTcpClientJson:
     async def test_tcp_client_json_ebyte(self, ebyte_server):
         """ebyte --json should output valid JSON for EBYTE gateway."""
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "ebyte",
-            "--server", "127.0.0.1", "--port", "18882",
+            *CLI_MODULE,
+            "ebyte",
+            "--server",
+            "127.0.0.1",
+            "--port",
+            "18882",
             "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
         )
+        assert proc.stdout is not None
         try:
             for _ in range(20):
                 if ebyte_server.clients:
@@ -212,13 +231,20 @@ class TestCliTcpClientJson:
     async def test_tcp_client_json_yacht_devices(self, yacht_devices_server):
         """text --json should output valid JSON for Yacht Devices gateway."""
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "text",
-            "--server", "127.0.0.1", "--port", "18883",
-            "--format", "CAN_FRAME_ASCII", "--json",
+            *CLI_MODULE,
+            "text",
+            "--server",
+            "127.0.0.1",
+            "--port",
+            "18883",
+            "--format",
+            "CAN_FRAME_ASCII",
+            "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
         )
+        assert proc.stdout is not None
         try:
             for _ in range(20):
                 if yacht_devices_server.clients:
@@ -257,14 +283,20 @@ class TestCliTcpClientJson:
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "text",
-            "--server", "127.0.0.1", "--port", "18881",
-            "--format", "N2K_ASCII_RAW",
+            *CLI_MODULE,
+            "text",
+            "--server",
+            "127.0.0.1",
+            "--port",
+            "18881",
+            "--format",
+            "N2K_ASCII_RAW",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
             env=env,
         )
+        assert proc.stdout is not None
         try:
             for _ in range(20):
                 if actisense_server.clients:
@@ -302,13 +334,20 @@ class TestCliTcpClientJson:
     async def test_tcp_client_json_multiple_messages(self, actisense_server):
         """Multiple messages should each produce a separate JSON line."""
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "text",
-            "--server", "127.0.0.1", "--port", "18881",
-            "--format", "N2K_ASCII_RAW", "--json",
+            *CLI_MODULE,
+            "text",
+            "--server",
+            "127.0.0.1",
+            "--port",
+            "18881",
+            "--format",
+            "N2K_ASCII_RAW",
+            "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
         )
+        assert proc.stdout is not None
         try:
             for _ in range(20):
                 if actisense_server.clients:
@@ -351,13 +390,20 @@ class TestCliTcpClientJson:
         from nmea2000.message import NMEA2000Message
 
         proc = await asyncio.create_subprocess_exec(
-            *CLI_MODULE, "text",
-            "--server", "127.0.0.1", "--port", "18881",
-            "--format", "N2K_ASCII_RAW", "--json",
+            *CLI_MODULE,
+            "text",
+            "--server",
+            "127.0.0.1",
+            "--port",
+            "18881",
+            "--format",
+            "N2K_ASCII_RAW",
+            "--json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             stdin=asyncio.subprocess.PIPE,
         )
+        assert proc.stdout is not None
         try:
             for _ in range(20):
                 if actisense_server.clients:

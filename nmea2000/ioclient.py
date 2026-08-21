@@ -15,7 +15,7 @@ from tenacity.asyncio import AsyncRetrying
 
 from .consts import PhysicalQuantities
 from .decoder import InvalidFrameError, NMEA2000Decoder
-from .encoder import NMEA2000Encoder
+from .encoder import N2KEncoded, EncoderInterface, create_encoder
 from .input_formats import TEXT_FORMATS, N2KFormat
 from .message import NMEA2000Message
 from .utils import calculate_canbus_checksum
@@ -31,40 +31,48 @@ def _configure_tcp_keepalive(sock: socket.socket) -> None:
         idle_opt = getattr(socket, "TCP_KEEPALIVE", None)
     if idle_opt is not None:
         try:
-            sock.setsockopt(socket.IPPROTO_TCP, idle_opt, 30)  # Idle time before keepalive probes (Linux/macOS)
+            sock.setsockopt(
+                socket.IPPROTO_TCP, idle_opt, 30
+            )  # Idle time before keepalive probes (Linux/macOS)
         except OSError:
             pass
 
     interval_opt = getattr(socket, "TCP_KEEPINTVL", None)
     if interval_opt is not None:
         try:
-            sock.setsockopt(socket.IPPROTO_TCP, interval_opt, 10)  # Interval between keepalive probes
+            sock.setsockopt(
+                socket.IPPROTO_TCP, interval_opt, 10
+            )  # Interval between keepalive probes
         except OSError:
             pass
 
     count_opt = getattr(socket, "TCP_KEEPCNT", None)
     if count_opt is not None:
         try:
-            sock.setsockopt(socket.IPPROTO_TCP, count_opt, 5)  # Number of failed probes before dropping connection
+            sock.setsockopt(
+                socket.IPPROTO_TCP, count_opt, 5
+            )  # Number of failed probes before dropping connection
         except OSError:
             pass
 
 
 class State(Enum):
     """Connection states for NMEA2000 clients.
-    
+
     Attributes:
         DISCONNECTED: Client is initialized but not connected or has lost connection.
         CONNECTED: Client has an active connection to the device/server.
         CLOSED: Client has been deliberately closed and cannot be reconnected.
     """
+
     DISCONNECTED = 0
     CONNECTED = 1
     CLOSED = 2
 
+
 class AsyncIOClient(ABC):
     """Base class for asynchronous NMEA2000 clients.
-    
+
     This abstract class implements common functionality for TCP and Serial clients,
     including connection management, automatic reconnection, message handling,
     and state management. Subclasses must implement _connect_impl, _receive_impl,
@@ -80,7 +88,9 @@ class AsyncIOClient(ABC):
         """Subclasses must implement."""
 
     @abstractmethod
-    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> Sequence[EncodedMessage]:
+    def _encode_impl(
+        self, nmea2000Message: NMEA2000Message
+    ) -> Sequence[EncodedMessage]:
         """Subclasses must implement."""
 
     async def _send_impl(self, encoded_message: EncodedMessage):
@@ -99,20 +109,21 @@ class AsyncIOClient(ABC):
         """Whether a send failure should trigger reconnect handling."""
         return True
 
-    def __init__(self, 
-                 exclude_pgns:list[int | str] | None,
-                 include_pgns:list[int | str] | None,
-                 exclude_manufacturer_code:list[str] | None,
-                 include_manufacturer_code:list[str] | None,
-                 preferred_units:dict[PhysicalQuantities, str] | None,
-                 dump_to_file: str | None,
-                 dump_pgns:list[int | str] | None,
-                 build_network_map: bool,
-                 seed_network_map: bool,
-                 bound_format: N2KFormat | None = None,
-                 ):
+    def __init__(
+        self,
+        exclude_pgns: list[int | str] | None,
+        include_pgns: list[int | str] | None,
+        exclude_manufacturer_code: list[str] | None,
+        include_manufacturer_code: list[str] | None,
+        preferred_units: dict[PhysicalQuantities, str] | None,
+        dump_to_file: str | None,
+        dump_pgns: list[int | str] | None,
+        build_network_map: bool,
+        seed_network_map: bool,
+        bound_format: N2KFormat | None = None,
+    ):
         """Initialize the AsyncIOClient.
-        
+
         Args:
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
@@ -130,33 +141,36 @@ class AsyncIOClient(ABC):
             bound_format=bound_format,
             exclude_pgns=exclude_pgns,
             include_pgns=include_pgns,
-            exclude_manufacturer_code = exclude_manufacturer_code,
-            include_manufacturer_code = include_manufacturer_code,
-            preferred_units = preferred_units,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
             dump_to_file=dump_to_file,
-            dump_pgns = dump_pgns,
-            build_network_map = build_network_map)
-        self.encoder = NMEA2000Encoder()
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+        )
         self.lock = asyncio.Lock()
-        
+
         # Setup logging
         self.logger = logging.getLogger(__name__)
-        
-        self._process_queue_task = asyncio.create_task(self._process_queue())  # Track the process queue task
-        self._receive_task = None  # Track the receive loop task
 
+        self._process_queue_task = asyncio.create_task(
+            self._process_queue()
+        )  # Track the process queue task
+        self._receive_task = None  # Track the receive loop task
 
     def set_status_callback(self, callback: Callable[[State], Awaitable[None]] | None):
         """Registers a callback to be executed when the connection status changes.
-        
+
         Args:
             callback: Async function with signature: async def callback(status: State) -> None
         """
         self.status_callback = callback
 
-    def set_receive_callback(self, callback: Callable[[NMEA2000Message], Awaitable[None]] | None):
+    def set_receive_callback(
+        self, callback: Callable[[NMEA2000Message], Awaitable[None]] | None
+    ):
         """Registers a callback to be executed when data is received.
-        
+
         Args:
             callback: Async function with signature: async def callback(message: NMEA2000Message) -> None
         """
@@ -165,7 +179,7 @@ class AsyncIOClient(ABC):
     @property
     def state(self) -> State:
         """Get the current connection state.
-        
+
         Returns:
             The current connection state as a State enum value.
         """
@@ -173,19 +187,19 @@ class AsyncIOClient(ABC):
 
     async def _update_state(self, new_state):
         """Update connection state and trigger callback if status changes.
-        
+
         This method changes the internal state and triggers the status callback
         if registered. It's used internally whenever the connection state changes.
-        
+
         Args:
             new_state: New State enum value to set.
         """
         self.logger.info("State changed. old: %s, new: %s", self._state, new_state)
         if self._state == new_state:
             return  # State hasn't changed, no need to do anything
-            
+
         self._state = new_state
-        
+
         # Call status callback if registered
         if self.status_callback:
             try:
@@ -195,18 +209,18 @@ class AsyncIOClient(ABC):
 
     async def connect(self):
         """Establish connection to the NMEA2000 gateway.
-        
-        This method attempts to connect to the gateway device with automatic 
+
+        This method attempts to connect to the gateway device with automatic
         reconnection on failure. It uses exponential backoff for retry attempts.
         The method is thread-safe and can be called multiple times.
-        
+
         If the client has been closed (state is CLOSED), this method will return
         without attempting to connect.
         """
         if self._state == State.CLOSED:
             self.logger.info("Object terminated. Cannot connect.")
             return
-        
+
         if self.lock.locked():
             self.logger.info("connect is already running")
             return
@@ -214,23 +228,23 @@ class AsyncIOClient(ABC):
         async with self.lock:
             if self._state == State.CONNECTED:
                 return
-                
+
             # Use AsyncRetrying for proper async behavior
             async for attempt in AsyncRetrying(
                 stop=stop_never,  # Retry forever
                 wait=wait_exponential(multiplier=0.5, max=10),  # Exponential backoff
                 retry=retry_if_exception_type(Exception),  # Only retry on exceptions
-                before_sleep=self.log_before_retry  # Log each failure before sleeping
+                before_sleep=self.log_before_retry,  # Log each failure before sleeping
             ):
                 with attempt:
                     if self._state == State.CLOSED:
                         self.logger.info("Object terminated. stop connect retry.")
                         return
-                    
-                    await self._connect_impl()            
+
+                    await self._connect_impl()
                     await self._update_state(State.CONNECTED)
                     self.logger.info("Connected to the gateway.")
-    
+
                     # Cancel any existing receive loop task
                     if self._receive_task and not self._receive_task.done():
                         self.logger.info("Going to cancel existing receive task")
@@ -239,7 +253,7 @@ class AsyncIOClient(ABC):
                             await asyncio.sleep(0.01)  # Allow cancellation to propagate
                         except asyncio.CancelledError:
                             raise AssertionError("Super strange. not expected at all")
-    
+
                     self.logger.info("Starting receive loop task")
                     # Start a new receive loop task
                     self._receive_task = asyncio.create_task(self._receive_loop())
@@ -247,7 +261,7 @@ class AsyncIOClient(ABC):
                         asyncio.create_task(self._seed_network_map())
 
     async def _seed_network_map(self):
-        # To seed the network map we will send request for 3 PGNS: 60928, 126996, 126998 
+        # To seed the network map we will send request for 3 PGNS: 60928, 126996, 126998
         await asyncio.sleep(2)
         json_str = '{"PGN":59904,"id":"isoRequest","description":"ISO Request","fields":[{"id":"pgn","name":"PGN","description":null,"unit_of_measurement":null,"value":60928,"raw_value":60928,"physical_quantities":null,"type":[13],"part_of_primary_key":false}],"source":0,"destination":255,"priority":6,"timestamp":"2012-06-17T15:02:11","source_iso_name":null,"hash":null}'
         msg = NMEA2000Message.from_json(json_str)
@@ -261,7 +275,7 @@ class AsyncIOClient(ABC):
 
     async def _receive_loop(self):
         """Background task that continuously receives messages from the gateway.
-        
+
         This loop runs until the client is closed. If an exception occurs during
         reading (e.g., connection lost), it will trigger a reconnection attempt.
         """
@@ -277,13 +291,13 @@ class AsyncIOClient(ABC):
                 await self._update_state(State.DISCONNECTED)
                 asyncio.create_task(self.connect())
         self.logger.info("Received loop terminated")
-        
+
     async def send(self, nmea2000Message: NMEA2000Message):
         """Send a NMEA2000 message to the gateway.
-        
+
         If an exception occurs during sending (e.g., connection lost),
         it will trigger a reconnection attempt.
-        
+
         Args:
             nmea2000Message: The NMEA2000Message object to send.
         """
@@ -309,12 +323,14 @@ class AsyncIOClient(ABC):
                     await self._update_state(State.DISCONNECTED)
                     asyncio.create_task(self.connect())
                 else:
-                    self.logger.warning("Send failed without reconnecting. Error %s", ex, exc_info=True)
+                    self.logger.warning(
+                        "Send failed without reconnecting. Error %s", ex, exc_info=True
+                    )
             raise
 
     async def close(self):
         """Close the connection and terminate the client.
-        
+
         This method closes the connection and sets the state to CLOSED.
         After calling this method, the client cannot be reconnected.
         """
@@ -333,7 +349,7 @@ class AsyncIOClient(ABC):
 
     async def _process_queue(self):
         """Process received messages in order.
-        
+
         This background task processes messages from the queue and calls
         the receive_callback for each message. It runs until the client is closed.
         """
@@ -356,14 +372,14 @@ class AsyncIOClient(ABC):
 
     def log_before_retry(self, retry_state):
         """Custom retry logging callback for the tenacity retry decorator.
-        
+
         Args:
             retry_state: The current retry state from tenacity.
         """
         self.logger.warning(
             "Retrying due to error: %s. Next attempt in %.2f seconds.",
             retry_state.outcome.exception(),
-            retry_state.next_action.sleep if retry_state.next_action else 0
+            retry_state.next_action.sleep if retry_state.next_action else 0,
         )
 
     async def __aenter__(self):
@@ -373,28 +389,31 @@ class AsyncIOClient(ABC):
     async def __aexit__(self, exc_type, exc_value, traceback):
         """Exit the async runtime context and clean up resources."""
         await self.close()
-        
+
 
 class EByteNmea2000Gateway(AsyncIOClient):
     """TCP implementation of AsyncIOClient for NMEA2000 gateways.
-    
+
     This class implements a TCP client for connecting to NMEA2000 networks
     through TCP-based gateways like ECAN-E01 or ECAN-W01.
     https://www.cdebyte.com/products/ECAN-E01
     """
-    def __init__(self,
-                 host: str,
-                 port: int, 
-                 exclude_pgns:list[int | str] | None=None,
-                 include_pgns:list[int | str] | None=None,
-                 exclude_manufacturer_code:list[str] | None=None,
-                 include_manufacturer_code:list[str] | None=None,
-                 preferred_units:dict[PhysicalQuantities, str] | None=None,
-                 dump_to_file: str | None = None,
-                 dump_pgns:list[int | str] | None=None,
-                 build_network_map: bool = False):
+
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        exclude_pgns: list[int | str] | None = None,
+        include_pgns: list[int | str] | None = None,
+        exclude_manufacturer_code: list[str] | None = None,
+        include_manufacturer_code: list[str] | None = None,
+        preferred_units: dict[PhysicalQuantities, str] | None = None,
+        dump_to_file: str | None = None,
+        dump_pgns: list[int | str] | None = None,
+        build_network_map: bool = False,
+    ):
         """Initialize a TCP NMEA2000 gateway client.
-        
+
         Args:
             host: Server hostname or IP address.
             port: Server port number.
@@ -402,23 +421,25 @@ class EByteNmea2000Gateway(AsyncIOClient):
             include_pgns: List of PGNs to include for processing.
         """
         super().__init__(
-            exclude_pgns = exclude_pgns,
-            include_pgns = include_pgns,
-            exclude_manufacturer_code = exclude_manufacturer_code,
-            include_manufacturer_code = include_manufacturer_code,
-            preferred_units = preferred_units,
-            dump_to_file = dump_to_file,
-            dump_pgns = dump_pgns,
-            build_network_map = build_network_map,
-            seed_network_map = True,
-            bound_format = N2KFormat.EBYTE)
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+            seed_network_map=True,
+            bound_format=N2KFormat.EBYTE,
+        )
         self.host = host
         self.port = port
+        self.encoder = create_encoder(N2KFormat.EBYTE)
         self.lock = asyncio.Lock()
 
     async def _connect_impl(self):
         """Connect to the TCP server.
-        
+
         This method establishes a TCP connection to the server and configures
         TCP keepalive to detect dropped connections. It's called by the
         connect() method.
@@ -433,14 +454,14 @@ class EByteNmea2000Gateway(AsyncIOClient):
 
     async def _receive_impl(self):
         """Receive data from the TCP connection.
-        
+
         This method reads exactly 13 bytes from the TCP connection (the size of
         a standard NMEA2000 message) and processes it. It's called repeatedly
         by the _receive_loop() method.
         """
         data = await self.reader.readexactly(13)
         self.logger.debug(f"Received: {data.hex()}")
-        if data == b'Sorry,Limited':  # cant handle more TCP connections
+        if data == b"Sorry,Limited":  # cant handle more TCP connections
             self.logger.error("Sorry, Limited. sleeping for 30 seconds")
             self.connected = False
             await asyncio.sleep(30)
@@ -448,7 +469,10 @@ class EByteNmea2000Gateway(AsyncIOClient):
         try:
             message = self.decoder.decode(data)
         except Exception as e:
-            self.logger.warning(f"decoding failed. text: {data}, bytes: {data.hex()}. Error: {e}", exc_info=True)
+            self.logger.warning(
+                f"decoding failed. text: {data}, bytes: {data.hex()}. Error: {e}",
+                exc_info=True,
+            )
             return
 
         self.logger.debug(f"Received message: {message}")
@@ -457,12 +481,13 @@ class EByteNmea2000Gateway(AsyncIOClient):
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         """Encode a NMEA2000 message over the TCP connection.
-        
+
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.EBYTE)
-    
+        return self.encoder.encode(nmea2000Message)
+
+
 class TextNmea2000Gateway(AsyncIOClient):
     """TCP client for text/line-based NMEA 2000 gateways.
 
@@ -473,21 +498,24 @@ class TextNmea2000Gateway(AsyncIOClient):
     gateway auto-detects the format from the first received message; encoding
     is not available in that mode.
     """
-    def __init__(self,
-                 host: str,
-                 port: int, 
-                 format: N2KFormat | None = None,
-                 exclude_pgns:list[int | str] | None=None,
-                 include_pgns:list[int | str] | None=None,
-                 exclude_manufacturer_code:list[str] | None=None,
-                 include_manufacturer_code:list[str] | None=None,
-                 preferred_units:dict[PhysicalQuantities, str] | None=None,
-                 dump_to_file: str | None = None,
-                 dump_pgns:list[int | str] | None=None,
-                 build_network_map: bool = False,
-                 seed_network_map: bool = True):
+
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        format: N2KFormat | None = None,
+        exclude_pgns: list[int | str] | None = None,
+        include_pgns: list[int | str] | None = None,
+        exclude_manufacturer_code: list[str] | None = None,
+        include_manufacturer_code: list[str] | None = None,
+        preferred_units: dict[PhysicalQuantities, str] | None = None,
+        dump_to_file: str | None = None,
+        dump_pgns: list[int | str] | None = None,
+        build_network_map: bool = False,
+        seed_network_map: bool = True,
+    ):
         """Initialize a TCP NMEA2000 gateway client.
-        
+
         Args:
             host: Server hostname or IP address.
             port: Server port number.
@@ -509,19 +537,23 @@ class TextNmea2000Gateway(AsyncIOClient):
                 f"Valid text formats are: {valid}."
             )
         super().__init__(
-            exclude_pgns = exclude_pgns,
-            include_pgns = include_pgns,
-            exclude_manufacturer_code = exclude_manufacturer_code,
-            include_manufacturer_code = include_manufacturer_code,
-            preferred_units = preferred_units,
-            dump_to_file = dump_to_file,
-            dump_pgns = dump_pgns,
-            build_network_map = build_network_map,
-            seed_network_map = seed_network_map,
-            bound_format = format)
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+            seed_network_map=seed_network_map,
+            bound_format=format,
+        )
         self.host = host
         self.port = port
         self.format = format
+        self.encoder: EncoderInterface[N2KEncoded] | None = (
+            create_encoder(format) if format is not None else None
+        )
         self.lock = asyncio.Lock()
 
     async def _connect_impl(self):
@@ -539,68 +571,87 @@ class TextNmea2000Gateway(AsyncIOClient):
         if not data:
             raise ConnectionError("Connection closed by remote host")
         self.logger.debug(f"Received: {data.hex()}")
-        line = data.decode('utf-8', errors='ignore').strip()
+        line = data.decode("utf-8", errors="ignore").strip()
         try:
             message = self.decoder.decode(line)
         except Exception as e:
-            self.logger.warning(f"decoding failed. text: {line}, bytes: {data.hex()}. Error: {e}", exc_info=True)
+            self.logger.warning(
+                f"decoding failed. text: {line}, bytes: {data.hex()}. Error: {e}",
+                exc_info=True,
+            )
             return
 
         self.logger.debug(f"Received message: {message}")
         if message is not None:
             await self.queue.put(message)
 
-
-    def _encode_impl(self, nmea2000Message: NMEA2000Message):
+    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         """Encode a NMEA2000 message using the bound format."""
-        if self.format is None:
+        if self.encoder is None:
             raise ValueError(
                 "Cannot encode: this gateway was created with format=None "
                 "(auto-sense mode). Specify an explicit format to enable encoding."
             )
-        return self.encoder.encode(nmea2000Message, output_format=self.format)
+        encoded = self.encoder.encode(nmea2000Message)
+        if isinstance(encoded, str):
+            return [(encoded + "\r\n").encode()]
+        result: list[bytes] = []
+        for item in encoded:
+            if isinstance(item, str):
+                result.append((item + "\r\n").encode())
+            elif isinstance(item, bytes):
+                result.append(item)
+            else:
+                raise TypeError("Text encoder returned a non-text value")
+        return result
+
 
 class WaveShareNmea2000Gateway(AsyncIOClient):
     """Serial implementation of AsyncIOClient for NMEA2000 gateways.
-    
+
     This class implements a USB/Serial client for connecting to NMEA2000 networks
     through serial-based gateways like Waveshare USB-CAN-A
     https://www.waveshare.com/wiki/USB-CAN-A
     """
-    def __init__(self,
-                 port: str,
-                 exclude_pgns:list[int | str] | None=None,
-                 include_pgns:list[int | str] | None=None,
-                 exclude_manufacturer_code:list[str] | None=None,
-                 include_manufacturer_code:list[str] | None=None,
-                 preferred_units:dict[PhysicalQuantities, str] | None=None,
-                 dump_to_file: str | None = None,
-                 dump_pgns:list[int | str] | None=None,
-                 build_network_map: bool = False):
+
+    def __init__(
+        self,
+        port: str,
+        exclude_pgns: list[int | str] | None = None,
+        include_pgns: list[int | str] | None = None,
+        exclude_manufacturer_code: list[str] | None = None,
+        include_manufacturer_code: list[str] | None = None,
+        preferred_units: dict[PhysicalQuantities, str] | None = None,
+        dump_to_file: str | None = None,
+        dump_pgns: list[int | str] | None = None,
+        build_network_map: bool = False,
+    ):
         """Initialize a USB/Serial NMEA2000 gateway client.
-        
+
         Args:
             port: Serial port name (e.g., "/dev/ttyUSB0" on Linux or "COM3" on Windows).
             exclude_pgns: List of PGNs to exclude from processing.
             include_pgns: List of PGNs to include for processing.
         """
         super().__init__(
-            exclude_pgns = exclude_pgns,
-            include_pgns = include_pgns,
-            exclude_manufacturer_code = exclude_manufacturer_code,
-            include_manufacturer_code = include_manufacturer_code,
-            preferred_units = preferred_units,
-            dump_to_file = dump_to_file,
-            dump_pgns = dump_pgns,
-            build_network_map = build_network_map,
-            seed_network_map = True,
-            bound_format = N2KFormat.WAVESHARE)
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+            seed_network_map=True,
+            bound_format=N2KFormat.WAVESHARE,
+        )
         self.port = port
+        self.encoder = create_encoder(N2KFormat.WAVESHARE)
         self._buffer = None
 
     async def _connect_impl(self):
         """Connect to the USB/Serial device.
-        
+
         This method establishes a serial connection to the device with the
         appropriate parameters for NMEA2000 communication. It's called by the
         connect() method.
@@ -620,25 +671,25 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
         self._buffer = bytearray()
 
         config_packet = [
-            0xaa,     #  0  Packet header
-            0x55,     #  1  Packet header
-            0x02,     #  3 Type: use fixed 20 bytes protocol to send and receive data ##  0x02- Setting (using fixed 20 byte protocol to send and receive data),   0x12- Setting (using variable protocol to send and receive data)##
-            0x05,     #  3 CAN Baud Rate:  500kbps  ##  0x01(1Mbps),  0x02(800kbps),  0x03(500kbps),  0x04(400kbps),  0x05(250kbps),  0x06(200kbps),  0x07(125kbps),  0x08(100kbps),  0x09(50kbps),  0x0a(20kbps),  0x0b(10kbps),   0x0c(5kbps)##
-            0x02,     #  4  Frame Type: Extended Frame  ##   0x01 standard frame,   0x02 extended frame ##
-            0x00,     #  5  Filter ID1
-            0x00,     #  6  Filter ID2
-            0x00,     #  7  Filter ID3
-            0x00,     #  8  Filter ID4
-            0x00,     #  9  Mask ID1
-            0x00,     #  10 Mask ID2
-            0x00,     #  11 Mask ID3
-            0x00,     #  12 Mask ID4
-            0x00,     #  13 CAN mode:  normal mode  ##   0x00 normal mode,   0x01 silent mode,   0x02 loopback mode,   0x03 loopback silent mode ##
-            0x00,     #  14 automatic resend:  automatic retransmission
-            0x00,     #  15 Spare
-            0x00,     #  16 Spare
-            0x00,     #  17 Spare
-            0x00,     #  18 Spare
+            0xAA,  #  0  Packet header
+            0x55,  #  1  Packet header
+            0x02,  #  3 Type: use fixed 20 bytes protocol to send and receive data ##  0x02- Setting (using fixed 20 byte protocol to send and receive data),   0x12- Setting (using variable protocol to send and receive data)##
+            0x05,  #  3 CAN Baud Rate:  500kbps  ##  0x01(1Mbps),  0x02(800kbps),  0x03(500kbps),  0x04(400kbps),  0x05(250kbps),  0x06(200kbps),  0x07(125kbps),  0x08(100kbps),  0x09(50kbps),  0x0a(20kbps),  0x0b(10kbps),   0x0c(5kbps)##
+            0x02,  #  4  Frame Type: Extended Frame  ##   0x01 standard frame,   0x02 extended frame ##
+            0x00,  #  5  Filter ID1
+            0x00,  #  6  Filter ID2
+            0x00,  #  7  Filter ID3
+            0x00,  #  8  Filter ID4
+            0x00,  #  9  Mask ID1
+            0x00,  #  10 Mask ID2
+            0x00,  #  11 Mask ID3
+            0x00,  #  12 Mask ID4
+            0x00,  #  13 CAN mode:  normal mode  ##   0x00 normal mode,   0x01 silent mode,   0x02 loopback mode,   0x03 loopback silent mode ##
+            0x00,  #  14 automatic resend:  automatic retransmission
+            0x00,  #  15 Spare
+            0x00,  #  16 Spare
+            0x00,  #  17 Spare
+            0x00,  #  18 Spare
         ]
 
         checksum = calculate_canbus_checksum(config_packet)
@@ -685,25 +736,28 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
             except InvalidFrameError as e:
                 self.logger.debug("Invalid frame, resyncing: %s", e)
                 # Skip past this false aa55 marker to find the next valid packet start
-                self._buffer = self._buffer[start + 2:]
+                self._buffer = self._buffer[start + 2 :]
                 continue
             except Exception as e:
-                self.logger.warning(f"decoding failed. bytes: {packet.hex()}. Error: {e}", exc_info=True)
+                self.logger.warning(
+                    f"decoding failed. bytes: {packet.hex()}. Error: {e}", exc_info=True
+                )
 
             self.logger.debug(f"Received message: {message}")
             if message is not None:
                 await self.queue.put(message)
 
             # Remove the processed packet from the buffer
-            self._buffer = self._buffer[start + 20:]
+            self._buffer = self._buffer[start + 20 :]
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
         """Encode a NMEA2000 message for USB/Serial device.
-        
+
         Args:
             nmea2000Message: The NMEA2000Message object to encode.
         """
-        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.WAVESHARE)
+        return self.encoder.encode(nmea2000Message)
+
 
 class PythonCanAsyncIOClient(AsyncIOClient):
     """AsyncIOClient implementation for python-can supported devices.
@@ -711,21 +765,24 @@ class PythonCanAsyncIOClient(AsyncIOClient):
     Connects to NMEA2000 networks through any CAN interface supported by the
     python-can library (e.g. slcan, seeedstudio, socketcan).
     """
-    def __init__(self,
-                 interface: str,
-                 channel: str,
-                 exclude_pgns: list[int | str] | None = None,
-                 include_pgns: list[int | str] | None = None,
-                 exclude_manufacturer_code: list[str] | None = None,
-                 include_manufacturer_code: list[str] | None = None,
-                 preferred_units: dict[PhysicalQuantities, str] | None = None,
-                 dump_to_file: str | None = None,
-                 dump_pgns: list[int | str] | None = None,
-                 build_network_map: bool = False,
-                 send_timeout: float = 0.1,
-                 send_retry_count: int = 3,
-                 send_retry_delay: float = 0.05,
-                 **kwargs):
+
+    def __init__(
+        self,
+        interface: str,
+        channel: str,
+        exclude_pgns: list[int | str] | None = None,
+        include_pgns: list[int | str] | None = None,
+        exclude_manufacturer_code: list[str] | None = None,
+        include_manufacturer_code: list[str] | None = None,
+        preferred_units: dict[PhysicalQuantities, str] | None = None,
+        dump_to_file: str | None = None,
+        dump_pgns: list[int | str] | None = None,
+        build_network_map: bool = False,
+        send_timeout: float = 0.1,
+        send_retry_count: int = 3,
+        send_retry_delay: float = 0.05,
+        **kwargs,
+    ):
         """Initialize a python-can NMEA2000 client.
 
         Args:
@@ -743,25 +800,31 @@ class PythonCanAsyncIOClient(AsyncIOClient):
             dump_pgns=dump_pgns,
             build_network_map=build_network_map,
             seed_network_map=True,
-            bound_format=N2KFormat.PYTHON_CAN)
+            bound_format=N2KFormat.PYTHON_CAN,
+        )
         self.interface = interface
         self.channel = channel
         self.send_timeout = send_timeout
         self.send_retry_count = send_retry_count
         self.send_retry_delay = send_retry_delay
         self.can_options = kwargs
-        self.bus: can.interface.Bus | None = None
+        self.bus: can.BusABC | None = None
+        self.encoder = create_encoder(N2KFormat.PYTHON_CAN)
 
     async def _connect_impl(self):
         """Connect to the CAN device via python-can."""
         self.logger.info("Connecting to %s on %s", self.interface, self.channel)
         self.bus = can.interface.Bus(
-            interface=self.interface, channel=self.channel, **self.can_options)
+            interface=self.interface, channel=self.channel, **self.can_options
+        )
         self.logger.info("Connected to %s on %s", self.interface, self.channel)
 
     async def _receive_impl(self):
         """Receive data from the CAN device using non-blocking poll."""
-        msg = self.bus.recv(timeout=0)
+        bus = self.bus
+        if bus is None:
+            raise RuntimeError("CAN bus is not connected")
+        msg = bus.recv(timeout=0)
         if msg is None:
             await asyncio.sleep(0.01)
             return
@@ -770,16 +833,20 @@ class PythonCanAsyncIOClient(AsyncIOClient):
         try:
             decoded_frame = self.decoder.decode(msg)
         except Exception as e:
-            self.logger.warning("decoding failed. message: %s. Error: %s", msg, e, exc_info=True)
+            self.logger.warning(
+                "decoding failed. message: %s. Error: %s", msg, e, exc_info=True
+            )
             return
 
         self.logger.debug("Received message: %s", decoded_frame)
         if decoded_frame is not None:
             await self.queue.put(decoded_frame)
 
-    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list:
+    def _encode_impl(
+        self, nmea2000Message: NMEA2000Message
+    ) -> list[can.message.Message]:
         """Encode a NMEA2000 message for python-can device."""
-        return self.encoder.encode(nmea2000Message, output_format=N2KFormat.PYTHON_CAN)
+        return self.encoder.encode(nmea2000Message)
 
     @staticmethod
     def _is_transient_send_error(error: Exception) -> bool:
@@ -905,17 +972,19 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
 
     _SUPPORTED_BST_CMDS: ClassVar[set[int]] = {0xD0, 0x95}
 
-    def __init__(self,
-                 host: str,
-                 port: int,
-                 exclude_pgns: list[int | str] | None = None,
-                 include_pgns: list[int | str] | None = None,
-                 exclude_manufacturer_code: list[str] | None = None,
-                 include_manufacturer_code: list[str] | None = None,
-                 preferred_units: dict[PhysicalQuantities, str] | None = None,
-                 dump_to_file: str | None = None,
-                 dump_pgns: list[int | str] | None = None,
-                 build_network_map: bool = False):
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        exclude_pgns: list[int | str] | None = None,
+        include_pgns: list[int | str] | None = None,
+        exclude_manufacturer_code: list[str] | None = None,
+        include_manufacturer_code: list[str] | None = None,
+        preferred_units: dict[PhysicalQuantities, str] | None = None,
+        dump_to_file: str | None = None,
+        dump_pgns: list[int | str] | None = None,
+        build_network_map: bool = False,
+    ):
         super().__init__(
             exclude_pgns=exclude_pgns,
             include_pgns=include_pgns,
@@ -926,9 +995,11 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
             dump_pgns=dump_pgns,
             build_network_map=build_network_map,
             seed_network_map=True,
-            bound_format=None)
+            bound_format=None,
+        )
         self.host = host
         self.port = port
+        self.encoder = create_encoder(N2KFormat.BST_95)
         self._buffer: bytearray | None = None
 
     async def _connect_impl(self):
@@ -956,20 +1027,23 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
             self._buffer = self._buffer[consumed:]
 
             if not payload or payload[0] not in self._SUPPORTED_BST_CMDS:
-                self.logger.debug("Skipping unsupported BST message: %s",
-                                  payload.hex() if payload else "(empty)")
+                self.logger.debug(
+                    "Skipping unsupported BST message: %s",
+                    payload.hex() if payload else "(empty)",
+                )
                 continue
 
             try:
                 message = self.decoder.decode(payload)
             except Exception as e:
-                self.logger.warning("BST decode failed: %s. Data: %s",
-                                    e, payload.hex(), exc_info=True)
+                self.logger.warning(
+                    "BST decode failed: %s. Data: %s", e, payload.hex(), exc_info=True
+                )
                 continue
 
             if message is not None:
                 await self.queue.put(message)
 
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
-        bst_packets = self.encoder.encode(nmea2000Message, output_format=N2KFormat.BST_95)
+        bst_packets = self.encoder.encode(nmea2000Message)
         return [bdtp_wrap(pkt) for pkt in bst_packets]

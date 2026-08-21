@@ -9,12 +9,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 from .input_formats import N2KFormat
 from .ioclient import (
     ActisenseBstNmea2000Gateway,
-    AsyncIOClient,
     EByteNmea2000Gateway,
     PythonCanAsyncIOClient,
     State,
@@ -27,6 +26,22 @@ logger = logging.getLogger(__name__)
 
 MessageCallback = Callable[[NMEA2000Message], Awaitable[None]]
 StatusCallback = Callable[[State], Awaitable[None]]
+
+
+class N2KClient(Protocol):
+    @property
+    def state(self) -> State: ...
+
+    def set_receive_callback(self, callback: MessageCallback | None) -> None: ...
+
+    def set_status_callback(self, callback: StatusCallback | None) -> None: ...
+
+    async def connect(self) -> None: ...
+
+    async def close(self) -> None: ...
+
+    async def send(self, message: NMEA2000Message, /) -> None: ...
+
 
 MANAGEMENT_PGNS = frozenset(
     {59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998}
@@ -49,7 +64,7 @@ class N2KDevice:
 
     def __init__(
         self,
-        client: AsyncIOClient,
+        client: N2KClient,
         *,
         preferred_address: int = 100,  # A commonly unused address
         unique_number: int | None = None,

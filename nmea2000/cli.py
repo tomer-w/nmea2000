@@ -7,7 +7,7 @@ from pathlib import Path
 import can.cli
 
 from .decoder import NMEA2000Decoder
-from .encoder import NMEA2000Encoder
+from .encoder import create_encoder
 from .input_formats import TEXT_FORMATS, N2KFormat
 from .ioclient import (
     ActisenseBstNmea2000Gateway,
@@ -254,7 +254,7 @@ async def async_main():
             exit(1)
 
     elif args.command == "encode":
-        encoder = NMEA2000Encoder(output_format=N2KFormat.N2K_ASCII_RAW)
+        encoder = create_encoder(N2KFormat.N2K_ASCII_RAW)
 
         # Encode from a frame json
         if args.frame:

@@ -91,7 +91,7 @@ def _decode_combined_payload(
     source_id: int,
     dest: int,
     payload: bytes,
-    raw_input: str,
+    raw_input: bytes | str,
     timestamp: datetime | None = None,
 ) -> NMEA2000Message | None:
     return decoder._decode(
@@ -628,7 +628,7 @@ class PythonCanDecoder(DecoderBase, DecoderInterface):
             dest,
             timestamp,
             can_data,
-            data.data,
+            bytes(data.data),
         )
 
 
@@ -681,7 +681,11 @@ class BstD0Decoder(DecoderBase, DecoderInterface):
 
         logger.debug(
             "BST D0: PGN=%d, src=%d, dst=%d, pri=%d, payload=%s",
-            pgn, source, dest, priority, payload.hex(),
+            pgn,
+            source,
+            dest,
+            priority,
+            payload.hex(),
         )
 
         return _decode_combined_payload(
@@ -749,7 +753,11 @@ class Bst95Decoder(DecoderBase, DecoderInterface):
 
         logger.debug(
             "BST 95: PGN=%d, src=%d, dst=%d, pri=%d, payload=%s",
-            pgn, source, dest, priority, can_data.hex(),
+            pgn,
+            source,
+            dest,
+            priority,
+            can_data.hex(),
         )
 
         return self._decode(

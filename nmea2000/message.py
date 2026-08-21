@@ -109,28 +109,36 @@ class NMEA2000Message:
             requested_unit = preferred_units.get(PhysicalQuantities.TEMPERATURE, None)
             if requested_unit == "c":
                 f.unit_of_measurement = "C"
-                f.value = kelvin_to_celsius(f.value)
+                f.value = kelvin_to_celsius(NMEA2000Message._numeric_value(f))
             elif requested_unit == "f":
                 f.unit_of_measurement = "F"
-                f.value = kelvin_to_fahrenheit(f.value)
+                f.value = kelvin_to_fahrenheit(NMEA2000Message._numeric_value(f))
         if f.physical_quantities == PhysicalQuantities.PRESSURE:
             requested_unit = preferred_units.get(PhysicalQuantities.PRESSURE, None)
             if requested_unit == "bar":
                 f.unit_of_measurement = "Bar"
-                f.value = pascal_to_bar(f.value)
+                f.value = pascal_to_bar(NMEA2000Message._numeric_value(f))
             elif requested_unit == "psi":
                 f.unit_of_measurement = "PSI"
-                f.value = pascal_to_PSI(f.value)
+                f.value = pascal_to_PSI(NMEA2000Message._numeric_value(f))
         if f.physical_quantities == PhysicalQuantities.ANGLE:
             requested_unit = preferred_units.get(PhysicalQuantities.ANGLE, None)
             if requested_unit == "deg":
                 f.unit_of_measurement = "Deg"
-                f.value = radians_to_degrees(f.value)
+                f.value = radians_to_degrees(NMEA2000Message._numeric_value(f))
         if f.physical_quantities == PhysicalQuantities.SPEED:
             requested_unit = preferred_units.get(PhysicalQuantities.SPEED, None)
             if requested_unit == "kts":
                 f.unit_of_measurement = "kts"
-                f.value = mps_to_knots(f.value)
+                f.value = mps_to_knots(NMEA2000Message._numeric_value(f))
+
+    @staticmethod
+    def _numeric_value(f: NMEA2000Field) -> float | None:
+        if f.value is None or isinstance(f.value, (int, float)):
+            return f.value
+        raise TypeError(
+            f"Cannot convert non-numeric value for field {f.id}: {f.value!r}"
+        )
 
     def __str__(self):
         return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, source_iso_name={self.source_iso_name}, dest={self.destination}, description={self.description}, fields={self.fields})"

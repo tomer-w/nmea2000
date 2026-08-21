@@ -5,7 +5,7 @@ import pytest
 
 from nmea2000.consts import PhysicalQuantities
 from nmea2000.decoder import NMEA2000Decoder
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat, detect_format
 from nmea2000.message import NMEA2000Field, NMEA2000Message
 
@@ -51,12 +51,12 @@ def _assert_semantic_roundtrip(
             assert other.raw_value == field.raw_value
 
 
-def _decode_list_input(data: list) -> NMEA2000Message:
+def _decode_list_input(data: list[str | bytes]) -> NMEA2000Message:
     """Decode a list of frames (fast-packet reassembly) by feeding them one at a time."""
     decoder = _get_decoder()
     msg: NMEA2000Message | None = None
     for item in data:
-        line = item.decode("utf-8") if isinstance(item, (bytes, bytearray, memoryview)) else item
+        line = item.decode("utf-8") if isinstance(item, bytes) else item
         msg = decoder.decode(line)
     assert isinstance(msg, NMEA2000Message)
     return msg
@@ -64,7 +64,6 @@ def _decode_list_input(data: list) -> NMEA2000Message:
 
 def _assert_payload_roundtrip(
     expected_input: str | list[str],
-    encoder: NMEA2000Encoder,
     msg: NMEA2000Message,
     *,
     allow_basic_string_canonicalization: bool = False,
@@ -72,14 +71,23 @@ def _assert_payload_roundtrip(
     output_format = (
         N2KFormat.BASIC_STRING
         if allow_basic_string_canonicalization
-        else detect_format(expected_input if isinstance(expected_input, str) else expected_input[0])
+        else detect_format(
+            expected_input if isinstance(expected_input, str) else expected_input[0]
+        )
     )
-    actual_output = encoder.encode(msg, output_format=output_format)
-    already_combined = output_format == N2KFormat.BASIC_STRING and isinstance(actual_output, str)
+    actual_output = create_encoder(output_format).encode(msg)
+    already_combined = output_format == N2KFormat.BASIC_STRING and isinstance(
+        actual_output, str
+    )
     if isinstance(actual_output, list):
-        redecoded = _decode_list_input(actual_output)
+        assert all(isinstance(item, (str, bytes)) for item in actual_output)
+        redecoded = _decode_list_input(
+            [item for item in actual_output if isinstance(item, (str, bytes))]
+        )
     else:
-        redecoded = _get_decoder(already_combined=already_combined).decode(actual_output)
+        redecoded = _get_decoder(already_combined=already_combined).decode(
+            actual_output
+        )
     assert isinstance(redecoded, NMEA2000Message)
     _assert_semantic_roundtrip(msg, redecoded)
 
@@ -130,7 +138,7 @@ def _generate_test_message() -> NMEA2000Message:
 
 
 def test_tcp_encode():
-    encoder = NMEA2000Encoder(output_format=N2KFormat.EBYTE)
+    encoder = create_encoder(N2KFormat.EBYTE)
     msg_bytes = encoder.encode(_generate_test_message())[0]
     decoder = _get_decoder(preferred_units={PhysicalQuantities.ANGLE: "deg"})
     msg = decoder.decode(msg_bytes)
@@ -140,25 +148,29 @@ def test_tcp_encode():
 
 def test_tcp_encode_2():
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder(output_format=N2KFormat.EBYTE)
+    encoder = create_encoder(N2KFormat.EBYTE)
     msg = decoder.decode(bytes.fromhex("8800ff00093f9fdcffffffffff"))
     assert isinstance(msg, NMEA2000Message)
-    msg_bytes_hex = encoder.encode(msg)[0].hex()
+    encoded = encoder.encode(msg)[0]
+    assert isinstance(encoded, bytes)
+    msg_bytes_hex = encoded.hex()
     assert msg_bytes_hex == "8800ff00093f9fdcffffffffff"
 
 
 def test_usb_encode():
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder(output_format=N2KFormat.WAVESHARE)
+    encoder = create_encoder(N2KFormat.WAVESHARE)
     msg = decoder.decode(bytes.fromhex("aa550102010113f10908fffac2ffffffffff00d0"))
     assert isinstance(msg, NMEA2000Message)
-    msg_bytes_hex = encoder.encode(msg)[0].hex()
+    encoded = encoder.encode(msg)[0]
+    assert isinstance(encoded, bytes)
+    msg_bytes_hex = encoded.hex()
     assert msg_bytes_hex == "aa550102010113f10908fffac2ffffffffff00d0"
 
 
 def test_yacht_devices_encode():
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder(output_format=N2KFormat.CAN_FRAME_ASCII)
+    encoder = create_encoder(N2KFormat.CAN_FRAME_ASCII)
     msg = decoder.decode("21:31:42.671 T 01F010B3 FF FF 0C 4F 70 BE 3E 33")
     assert isinstance(msg, NMEA2000Message)
     msg_bytes = encoder.encode(msg)[0]
@@ -170,7 +182,7 @@ def test_python_can_encode():
     import can.message
 
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder(output_format=N2KFormat.PYTHON_CAN)
+    encoder = create_encoder(N2KFormat.PYTHON_CAN)
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert isinstance(msg, NMEA2000Message)
 
@@ -193,7 +205,7 @@ def test_python_can_encode():
 def test_python_can_roundtrip():
     """Test that encode -> decode roundtrip via python-can preserves message content."""
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder(output_format=N2KFormat.PYTHON_CAN)
+    encoder = create_encoder(N2KFormat.PYTHON_CAN)
     msg = decoder.decode(bytes.fromhex("aa550102010113f10908fffac2ffffffffff00d0"))
     assert isinstance(msg, NMEA2000Message)
 
@@ -213,7 +225,6 @@ def test_python_can_roundtrip():
     ids=_roundtrip_case_id,
 )
 def test_canboatjs_autosense_roundtrip_cases(case: dict):
-    encoder = NMEA2000Encoder()
     expected = case["expected"]
 
     msg = _decode_roundtrip_case(case)
@@ -224,7 +235,6 @@ def test_canboatjs_autosense_roundtrip_cases(case: dict):
 
     _assert_payload_roundtrip(
         case["input"],
-        encoder,
         msg,
         allow_basic_string_canonicalization=bool(case.get("skipEncoderTest")),
     )

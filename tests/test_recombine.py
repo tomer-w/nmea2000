@@ -1,7 +1,7 @@
 from datetime import date, time
 
 from nmea2000.decoder import NMEA2000Message
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat
 
 from .test_decoder import _get_decoder
@@ -186,7 +186,7 @@ def test_encode_fast():
     msg1 = NMEA2000Message.from_json(json)
     msg1.get_field_by_id("date").raw_value = None
     msg1.get_field_by_id("time").raw_value = None
-    encoder = NMEA2000Encoder(output_format=N2KFormat.EBYTE)
+    encoder = create_encoder(N2KFormat.EBYTE)
     msg_packets = encoder.encode(msg1)
     decoder = _get_decoder()
     for msg_bytes in msg_packets:

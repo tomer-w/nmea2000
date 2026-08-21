@@ -156,6 +156,8 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
         field_value = {{ field_ref }}.value
     else:
         controller_field = nmea2000Message.get_field_by_id("{{ generate_field_id(controller_field.Id, controller_field.FieldType, controller_field.BitOffset) }}")
+        if controller_field is None:
+            raise ValueError("Cant encode this message, missing indirect lookup controller")
         if isinstance(controller_field.raw_value, int):
             controller_raw_value = controller_field.raw_value
         else:
@@ -163,6 +165,8 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
         indirect_lookup_values = IndirectLookupEncodeMaps['{{ field.LookupIndirectEnumeration }}'].get(controller_raw_value)
         if indirect_lookup_values is None:
             raise ValueError("Cant encode this message, '{{ field.Name }}' controller value is missing")
+        if not isinstance({{ field_ref }}.value, str):
+            raise ValueError("Cant encode this message, '{{ field.Name }}' must be a string")
         field_value = indirect_lookup_values.get({{ field_ref }}.value)
         if field_value is None:
             raise ValueError("Cant encode this message, '{{ field.Name }}' indirect lookup value is missing")
@@ -171,11 +175,13 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     field_value = {{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, int) else encode_iso_name({{ field_ref }}.value)
     field_bit_length = {{ field.BitLength }}
     {%- elif field.FieldType == 'BINARY' %}
-    field_bytes = normalize_binary_data({{ field_ref }}.raw_value) if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data({{ field_ref }}.value)
+    field_bytes = normalize_binary_data({{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else {{ field_ref }}.value)
     field_value = encode_binary_data(field_bytes)
         {%- if field.BitLengthField is defined %}
             {%- set length_field = pgn.Fields[field.BitLengthField - 1] %}
     length_field = nmea2000Message.get_field_by_id("{{ generate_field_id(length_field.Id, length_field.FieldType, length_field.BitOffset) }}")
+    if length_field is None:
+        raise ValueError("Cant encode this message, missing binary length field")
     if isinstance(length_field.raw_value, (int, float)):
         field_bit_length = int(length_field.raw_value)
     else:
@@ -186,7 +192,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     field_bit_length = {{ field.BitLength }}
         {%- endif %}
     {%- elif field.FieldType == 'VARIABLE' %}
-    field_bytes = normalize_binary_data({{ field_ref }}.raw_value) if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data({{ field_ref }}.value)
+    field_bytes = normalize_binary_data({{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else {{ field_ref }}.value)
     field_value = encode_binary_data(field_bytes)
     field_bit_length = binary_data_bit_length(field_bytes)
     advance_running_offset = False
@@ -216,7 +222,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
         field_value = {{ field_ref }}.value
         field_bytes = b""
     else:
-        field_bytes = normalize_binary_data({{ field_ref }}.raw_value) if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else normalize_binary_data({{ field_ref }}.value)
+        field_bytes = normalize_binary_data({{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else {{ field_ref }}.value)
         field_value = encode_binary_data(field_bytes)
     {%- if field.Order > 1 and pgn.Fields[field.Order - 2].FieldType == 'DYNAMIC_FIELD_LENGTH' %}
         {%- set length_field = pgn.Fields[field.Order - 2] %}
@@ -226,6 +232,8 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
         {%- else %}
     length_field = nmea2000Message.get_field_by_id("{{ length_field_id }}")
         {%- endif %}
+    if length_field is None:
+        raise ValueError("Cant encode this message, missing dynamic field length")
     if isinstance(length_field.raw_value, (int, float)):
         field_bit_length = int(length_field.raw_value) * 8
     else:
@@ -372,6 +380,8 @@ def is_fast_pgn_{{ pgns_in_group[0].PGN }}() -> bool:
 {%- if pgns_in_group | length  > 1 and ns_pgn.has_match == true %}
 # Complex PGN. number of matches: {{ pgns_in_group | length }}
 def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int, data_length_bits: int | None = None) -> NMEA2000Message | None:
+    if data_length_bits is None:
+        data_length_bits = data_raw.bit_length()
     {%- for pgn in pgns_in_group if pgn.Fallback is not defined or pgn.Fallback == false %}
     # {{ pgn.Id }} | Description: {{ pgn.Description }}
     if (
@@ -394,7 +404,7 @@ def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int, data_length_bits: int |
 {%- else %}
 {%- set func_name_suffix = pgn.PGN %}
 {%- endif %}
-def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Message:
+def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Message:{% if pgns_in_group | length > 1 and ns_pgn.has_match == false %}  # pyright: ignore[reportRedeclaration]{% endif %}
     """Decode PGN {{ pgn.PGN }}."""
     nmea2000Message = NMEA2000Message(PGN={{pgn.PGN}}, id='{{pgn.Id}}', description='{{pgn.Description}}'{% if pgn.TransmissionInterval is defined -%}, ttl=timedelta(milliseconds={{pgn.TransmissionInterval}}){%- endif -%})
     {%- set ns_fields = namespace() %}
@@ -612,7 +622,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
     {%- endif %}
     return nmea2000Message
 
-def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes:
+def encode_pgn_{{ func_name_suffix }}(nmea2000Message: NMEA2000Message) -> bytes:{% if pgns_in_group | length > 1 and ns_pgn.has_match == false %}  # pyright: ignore[reportRedeclaration]{% endif %}
     """Encode Nmea2000Message object to binary data for PGN {{ pgn.PGN }}."""
     data_raw = 0
     running_bit_offset = 0

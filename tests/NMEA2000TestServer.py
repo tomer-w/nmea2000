@@ -5,16 +5,16 @@ import math
 import time
 
 from nmea2000.consts import FieldTypes, PhysicalQuantities
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat
 from nmea2000.message import NMEA2000Field, NMEA2000Message
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("NMEA2000TestServer")
+
 
 class NMEA2000TestServer:
     """Test TCP server that simulates a NMEA2000 gateway."""
@@ -32,11 +32,13 @@ class NMEA2000TestServer:
         self.server = None
         self.clients: list[asyncio.StreamWriter] = []
         self.running = False
-        self.encoder = NMEA2000Encoder(output_format=N2KFormat.EBYTE)
+        self.encoder = create_encoder(N2KFormat.EBYTE)
 
-    async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    async def handle_client(
+        self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter
+    ):
         """Handle a new client connection."""
-        addr = writer.get_extra_info('peername')
+        addr = writer.get_extra_info("peername")
         logger.info(f"New connection from {addr}")
 
         self.clients.append(writer)
@@ -78,15 +80,16 @@ class NMEA2000TestServer:
         if self.type == N2KFormat.EBYTE:
             message = self._generate_test_message()
 
-            # Encode the message using the NMEA2000Encoder
+            # Encode the message for the EByte transport
             tcp_data = self.encoder.encode(message)[0]
+            assert isinstance(tcp_data, bytes)
             logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
         elif self.type == N2KFormat.N2K_ASCII_RAW:
             tcp_data = b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
         elif self.type == N2KFormat.CAN_FRAME_ASCII:
             tcp_data = b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n"
         else:
-            raise Exception ("Type not supported")
+            raise Exception("Type not supported")
         # Send the encoded message to all connected clients
         await self.send_to_clients(tcp_data)
 
@@ -121,7 +124,7 @@ class NMEA2000TestServer:
                     value=0,
                     raw_value=0,
                     physical_quantities=None,
-                    type=FieldTypes.NUMBER
+                    type=FieldTypes.NUMBER,
                 ),
                 NMEA2000Field(
                     id="heading",
@@ -131,7 +134,7 @@ class NMEA2000TestServer:
                     value=self._generate_heading(),
                     raw_value=self._generate_heading_raw(),
                     physical_quantities=PhysicalQuantities.ANGLE,
-                    type=FieldTypes.FLOAT
+                    type=FieldTypes.FLOAT,
                 ),
                 NMEA2000Field(
                     id="deviation",
@@ -141,7 +144,7 @@ class NMEA2000TestServer:
                     value=0,
                     raw_value=0,
                     physical_quantities=PhysicalQuantities.ANGLE,
-                    type=FieldTypes.FLOAT
+                    type=FieldTypes.FLOAT,
                 ),
                 NMEA2000Field(
                     id="variation",
@@ -151,7 +154,7 @@ class NMEA2000TestServer:
                     value=0,
                     raw_value=0,
                     physical_quantities=PhysicalQuantities.ANGLE,
-                    type=FieldTypes.FLOAT
+                    type=FieldTypes.FLOAT,
                 ),
                 NMEA2000Field(
                     id="reference",
@@ -161,16 +164,16 @@ class NMEA2000TestServer:
                     value=0,
                     raw_value=0,
                     physical_quantities=None,
-                    type=FieldTypes.LOOKUP
+                    type=FieldTypes.LOOKUP,
                 ),
                 NMEA2000Field(
                     id="reserved_58",
                     name="Reserved",
                     value=0,
                     raw_value=0,
-                    type=FieldTypes.RESERVED
-                )
-            ]
+                    type=FieldTypes.RESERVED,
+                ),
+            ],
         )
         return message
 
@@ -208,7 +211,7 @@ class NMEA2000TestServer:
         )
 
         addr = self.server.sockets[0].getsockname()
-        logger.info(f'NMEA2000 Test Server running on {addr}')
+        logger.info(f"NMEA2000 Test Server running on {addr}")
 
     def start_broadcast(self):
         # Start broadcasting test messages
@@ -239,10 +242,17 @@ class NMEA2000TestServer:
 
 async def main():
     """Run the test server."""
-    parser = argparse.ArgumentParser(description='NMEA2000 Test TCP Server')
-    parser.add_argument('--host', type=str, default='127.0.0.1', help='Host address to bind to')
-    parser.add_argument('--port', type=int, default=8881, help='Port to listen on')
-    parser.add_argument("--type", type=lambda s: N2KFormat[s.upper()], default=N2KFormat.N2K_ASCII_RAW, help="Type of TCP server (e.g. EBYTE or N2K_ASCII_RAW)")
+    parser = argparse.ArgumentParser(description="NMEA2000 Test TCP Server")
+    parser.add_argument(
+        "--host", type=str, default="127.0.0.1", help="Host address to bind to"
+    )
+    parser.add_argument("--port", type=int, default=8881, help="Port to listen on")
+    parser.add_argument(
+        "--type",
+        type=lambda s: N2KFormat[s.upper()],
+        default=N2KFormat.N2K_ASCII_RAW,
+        help="Type of TCP server (e.g. EBYTE or N2K_ASCII_RAW)",
+    )
     args = parser.parse_args()
 
     server = NMEA2000TestServer(host=args.host, port=args.port, type=args.type)

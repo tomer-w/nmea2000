@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 
 from nmea2000.device import N2KDevice
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.ioclient import State
 from nmea2000.message import NMEA2000Field, NMEA2000Message
 
@@ -15,7 +15,7 @@ class FakeClient:
         self.receive_callback = None
         self.status_callback = None
         self.sent_messages: list[NMEA2000Message] = []
-        self.encoder = NMEA2000Encoder()
+        self.encoder = create_encoder()
 
     def set_receive_callback(self, callback):
         self.receive_callback = callback
@@ -47,7 +47,9 @@ class EncodingFakeClient(FakeClient):
         await super().send(message)
 
 
-def _build_iso_request(requested_pgn: int, *, source: int = 10, destination: int = 255) -> NMEA2000Message:
+def _build_iso_request(
+    requested_pgn: int, *, source: int = 10, destination: int = 255
+) -> NMEA2000Message:
     return NMEA2000Message(
         PGN=59904,
         id="isoRequest",
@@ -84,7 +86,9 @@ def _build_address_claim(source: int, unique_number: int) -> NMEA2000Message:
     )
 
 
-def _build_group_function_request(source: int, requested_pgn: int, destination: int) -> NMEA2000Message:
+def _build_group_function_request(
+    source: int, requested_pgn: int, destination: int
+) -> NMEA2000Message:
     return NMEA2000Message(
         PGN=126208,
         id="nmeaRequestGroupFunction",
@@ -146,7 +150,9 @@ async def test_device_start_claims_address_and_filters_management_messages(tmp_p
     raw_message = await raw_messages.get()
     assert raw_message.PGN == 59904
 
-    data_message = NMEA2000Message(PGN=127250, id="vesselHeading", source=44, destination=255, priority=2)
+    data_message = NMEA2000Message(
+        PGN=127250, id="vesselHeading", source=44, destination=255, priority=2
+    )
     await client.emit(data_message)
     forwarded = await asyncio.wait_for(data_messages.get(), timeout=1)
     assert forwarded.PGN == 127250
@@ -169,11 +175,17 @@ async def test_device_announces_product_information_on_startup(tmp_path):
     finally:
         await device.close()
 
-    assert [message.PGN for message in client.sent_messages[:3]] == [59904, 60928, 126996]
+    assert [message.PGN for message in client.sent_messages[:3]] == [
+        59904,
+        60928,
+        126996,
+    ]
 
 
 @pytest.mark.asyncio
-async def test_device_announces_configuration_information_on_startup_when_present(tmp_path):
+async def test_device_announces_configuration_information_on_startup_when_present(
+    tmp_path,
+):
     client = EncodingFakeClient()
     device = N2KDevice(
         client,
@@ -191,7 +203,12 @@ async def test_device_announces_configuration_information_on_startup_when_presen
     finally:
         await device.close()
 
-    assert [message.PGN for message in client.sent_messages[:4]] == [59904, 60928, 126996, 126998]
+    assert [message.PGN for message in client.sent_messages[:4]] == [
+        59904,
+        60928,
+        126996,
+        126998,
+    ]
 
 
 @pytest.mark.asyncio
@@ -214,7 +231,9 @@ async def test_device_conflict_increments_address_when_it_loses(tmp_path):
     await asyncio.sleep(0.05)
 
     assert device.address == 101
-    resent_messages = [message for message in client.sent_messages if message.source == 101]
+    resent_messages = [
+        message for message in client.sent_messages if message.source == 101
+    ]
     assert [message.PGN for message in resent_messages[-2:]] == [60928, 126996]
 
 
@@ -238,9 +257,14 @@ async def test_device_conflict_keeps_address_when_it_wins(tmp_path):
     await asyncio.sleep(0.05)
 
     assert device.address == 100
-    resent_messages = [message for message in client.sent_messages if message.source == 100]
+    resent_messages = [
+        message for message in client.sent_messages if message.source == 100
+    ]
     assert [message.PGN for message in resent_messages[-2:]] == [60928, 126996]
-    assert not any(message.PGN == 60928 and message.source == 101 for message in client.sent_messages)
+    assert not any(
+        message.PGN == 60928 and message.source == 101
+        for message in client.sent_messages
+    )
 
 
 @pytest.mark.asyncio

@@ -119,7 +119,7 @@ def decode_date(days_since_epoch: int | float | None) -> date | None:
     return decoded_date
 
 
-def encode_date(decoded_date: date | str | None, bit_length: int = 16) -> int:
+def encode_date(decoded_date: object, bit_length: int = 16) -> int:
     """
     Encodes a date into an integer representing the number of days since 1970-01-01 (UNIX epoch)
     """
@@ -127,6 +127,8 @@ def encode_date(decoded_date: date | str | None, bit_length: int = 16) -> int:
         return (1 << bit_length) - 1
     if isinstance(decoded_date, str):
         decoded_date = date.fromisoformat(decoded_date)
+    if not isinstance(decoded_date, date):
+        raise ValueError(f"Cannot encode date from {type(decoded_date).__name__}")
 
     # Define the start date as 1970-01-01
     start_date = date(1970, 1, 1)
@@ -161,7 +163,7 @@ def decode_time(seconds_since_midnight: int | float | None) -> time | None:
 
 
 def encode_time(
-    decoded_time: time | str | None,
+    decoded_time: object,
     bit_length: int,
     resolution: float = 1,
     signed: bool = False,
@@ -175,6 +177,8 @@ def encode_time(
         decoded_time = time.fromisoformat(decoded_time)
     if decoded_time is None:
         return (1 << (bit_length - int(signed))) - 1
+    if not isinstance(decoded_time, time):
+        raise ValueError(f"Cannot encode time from {type(decoded_time).__name__}")
 
     # Calculate the number of seconds since midnight
     seconds_since_midnight = (
@@ -206,12 +210,14 @@ def decode_decimal(number_int: int | None) -> int | None:
     return decimal_value
 
 
-def encode_decimal(decimal_value: int | float | None) -> int | None:
+def encode_decimal(decimal_value: object) -> int | None:
     """
     Encodes a numeric value into BCD format where each byte represents 2 decimal digits.
     """
     if decimal_value is None:
         return None
+    if not isinstance(decimal_value, (int, float)):
+        raise ValueError(f"Cannot encode decimal from {type(decimal_value).__name__}")
 
     number_int = 0
     shift = 0
@@ -389,12 +395,14 @@ def encode_number_raw(
 
 
 def raw_number_matches_value(
-    raw_value: int | float | None, value: float | None, resolution: float
+    raw_value: int | float | None, value: object, resolution: float
 ) -> bool:
     if not isinstance(raw_value, int):
         return False
     if value is None:
         return False
+    if not isinstance(value, (int, float)):
+        raise ValueError(f"Cannot compare numeric value from {type(value).__name__}")
     return math.isclose(
         raw_value * resolution,
         value,
@@ -466,9 +474,7 @@ def calculate_canbus_checksum(data) -> int:
     return checksum & 0xFF
 
 
-def encode_string_fix(
-    value: str | bytes | bytearray | memoryview | None, bit_length: int
-) -> int:
+def encode_string_fix(value: object, bit_length: int) -> int:
     if value is None:
         encoded = b""
     elif isinstance(value, memoryview):
@@ -489,7 +495,7 @@ def encode_string_fix(
     )
 
 
-def encode_string_lz(value: str | bytes | bytearray | memoryview | None) -> bytes:
+def encode_string_lz(value: object) -> bytes:
     if value is None:
         return b"\x00\x00"
     if isinstance(value, memoryview):
@@ -505,7 +511,7 @@ def encode_string_lz(value: str | bytes | bytearray | memoryview | None) -> byte
     return bytes([len(encoded)]) + encoded + b"\x00"
 
 
-def encode_string_lau(value: str | bytes | bytearray | memoryview | None) -> bytes:
+def encode_string_lau(value: object) -> bytes:
     if value is None:
         return b"\x02\x01"
     if isinstance(value, memoryview):
@@ -556,7 +562,7 @@ def encode_bit_lookup(value, bit_lookup_dict: dict[int, str]) -> int:
     return encoded_value
 
 
-def normalize_binary_data(value: bytes | bytearray | memoryview | None) -> bytes:
+def normalize_binary_data(value: object) -> bytes:
     if value is None:
         return b""
     if isinstance(value, memoryview):

@@ -4,7 +4,7 @@ from pathlib import Path
 import can.message
 import pytest
 
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat, detect_format
 from nmea2000.message import NMEA2000Message
 
@@ -113,7 +113,7 @@ def test_detect_format_supports_python_can_messages():
     msg = decoder.decode(N2K_ASCII_FRAME)
     assert isinstance(msg, NMEA2000Message)
 
-    can_encoder = NMEA2000Encoder(output_format=N2KFormat.PYTHON_CAN)
+    can_encoder = create_encoder(N2KFormat.PYTHON_CAN)
     can_msg = can_encoder.encode(msg)[0]
     assert isinstance(can_msg, can.message.Message)
     assert detect_format(can_msg) == N2KFormat.PYTHON_CAN
@@ -155,7 +155,7 @@ def test_decoder_decode_autosenses_python_can_messages():
     msg = decoder.decode(N2K_ASCII_FRAME)
     assert isinstance(msg, NMEA2000Message)
 
-    encoder = NMEA2000Encoder(output_format=N2KFormat.PYTHON_CAN)
+    encoder = create_encoder(N2KFormat.PYTHON_CAN)
     can_msg = encoder.encode(msg)[0]
 
     redecoded = _get_decoder().decode(can_msg)
@@ -173,7 +173,7 @@ def test_encoder_encode_defaults_to_n2k_ascii_raw_output():
     msg = decoder.decode(N2K_ASCII_FRAME)
     assert isinstance(msg, NMEA2000Message)
 
-    encoded = NMEA2000Encoder().encode(msg)
+    encoded = create_encoder().encode(msg)
     assert encoded == N2K_ASCII_RAW_PACKET
 
 
@@ -181,9 +181,10 @@ def test_encoder_can_roundtrip_can_frame_ascii_packets_via_generic_api():
     original = _get_decoder().decode(CAN_FRAME_ASCII_FRAME)
     assert isinstance(original, NMEA2000Message)
 
-    encoder = NMEA2000Encoder(output_format=N2KFormat.CAN_FRAME_ASCII)
+    encoder = create_encoder(N2KFormat.CAN_FRAME_ASCII)
     encoded = encoder.encode(original)
     assert isinstance(encoded, list)
+    assert isinstance(encoded[0], bytes)
     encoded_packet = encoded[0].decode().strip()
     assert detect_format(encoded_packet) == N2KFormat.CAN_FRAME_ASCII
 
@@ -214,7 +215,8 @@ def test_encoder_roundtrips_additional_single_frame_output_formats(
     assert isinstance(original, NMEA2000Message)
     prepared = _prepare_roundtrip_message(original, output_format)
 
-    encoded = NMEA2000Encoder(output_format=output_format).encode(prepared)
+    encoded = create_encoder(output_format).encode(prepared)
+    assert isinstance(encoded, (str, bytes))
     redecoded = _get_decoder().decode(encoded)
     assert isinstance(redecoded, NMEA2000Message)
     _assert_semantic_roundtrip(prepared, redecoded)
@@ -224,7 +226,7 @@ def test_encoder_rejects_pdgy_debug_output():
     original = _get_decoder().decode(BASIC_STRING_FRAME)
     assert isinstance(original, NMEA2000Message)
 
-    encoder = NMEA2000Encoder(output_format=N2KFormat.PDGY_DEBUG)
+    encoder = create_encoder(N2KFormat.PDGY_DEBUG)
     with pytest.raises(ValueError, match="PDGY debug lines are not supported"):
         encoder.encode(original)
 
@@ -242,13 +244,17 @@ def test_encoder_rejects_pdgy_debug_output():
 def test_encoder_roundtrips_fast_packet_text_output_lists(output_format: N2KFormat):
     original = _load_fast_packet_message()
 
-    encoded = NMEA2000Encoder(output_format=output_format).encode(original)
+    encoded = create_encoder(output_format).encode(original)
     assert isinstance(encoded, list)
 
     decoder = _get_decoder()
     redecoded: NMEA2000Message | None = None
     for item in encoded:
-        line = item.decode("utf-8") if isinstance(item, (bytes, bytearray, memoryview)) else item
+        line = (
+            item.decode("utf-8")
+            if isinstance(item, (bytes, bytearray, memoryview))
+            else item
+        )
         redecoded = decoder.decode(line)
     assert isinstance(redecoded, NMEA2000Message)
     _assert_semantic_roundtrip(original, redecoded)
@@ -269,7 +275,7 @@ def test_encoder_roundtrips_fast_packet_combined_output_formats(
     original = _load_fast_packet_message()
     prepared = _prepare_roundtrip_message(original, output_format)
 
-    encoded = NMEA2000Encoder(output_format=output_format).encode(prepared)
+    encoded = create_encoder(output_format).encode(prepared)
     assert isinstance(encoded, str)
 
     redecoded = _get_decoder().decode(encoded)

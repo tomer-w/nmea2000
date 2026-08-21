@@ -5,7 +5,7 @@ Test data captured from a real PRO-NDC-1E2K device (GitHub issue #46).
 
 import pytest
 
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.encoder_formats import _compute_bst_checksum
 from nmea2000.input_formats import N2KFormat, detect_format
 from nmea2000.ioclient import bdtp_unwrap, bdtp_wrap
@@ -136,11 +136,12 @@ class TestBst95Encoder:
         original = decoder.decode(BST_95_HEADING)
         assert original is not None
 
-        encoder = NMEA2000Encoder(output_format=N2KFormat.BST_95)
+        encoder = create_encoder(N2KFormat.BST_95)
         packets = encoder.encode(original)
         assert len(packets) == 1
 
         packet = packets[0]
+        assert isinstance(packet, bytes)
         assert packet[0] == 0x95
         assert sum(packet) & 0xFF == 0, "Checksum must be zero-sum"
 
@@ -158,10 +159,11 @@ class TestBst95Encoder:
             msg = decoder.decode(frame)
         assert msg is not None
 
-        encoder = NMEA2000Encoder(output_format=N2KFormat.BST_95)
+        encoder = create_encoder(N2KFormat.BST_95)
         packets = encoder.encode(msg)
         assert len(packets) > 1
         for pkt in packets:
+            assert isinstance(pkt, bytes)
             assert pkt[0] == 0x95
             assert sum(pkt) & 0xFF == 0
 

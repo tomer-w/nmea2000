@@ -6,7 +6,7 @@ from datetime import datetime
 
 import can.message
 
-from .encoder import EncoderBase, EncoderInterface, NMEA2000Encoder
+from .encoder import N2KEncoded, EncoderBase, EncoderInterface
 from .input_formats import N2KFormat
 from .message import NMEA2000Message
 from .utils import calculate_canbus_checksum
@@ -64,10 +64,7 @@ def _encode_can_frame_packets(
     for message in encoded_messages:
         # Construct and return the full packet
         text_msg = (
-            frame_id_bytes.hex().upper()
-            + " "
-            + _bytes_to_hex_string(message)
-            + "\r\n"
+            frame_id_bytes.hex().upper() + " " + _bytes_to_hex_string(message) + "\r\n"
         )
         result.append(text_msg.encode())
     return result
@@ -86,9 +83,7 @@ def _encode_python_can_messages(
     )
 
     # python-can expects timestamp as a float (Unix epoch seconds)
-    ts = nmea200_message.timestamp
-    if hasattr(ts, "timestamp"):
-        ts = ts.timestamp()
+    ts = nmea200_message.timestamp.timestamp()
     result = []
     for message in encoded_messages:
         result.append(
@@ -105,7 +100,7 @@ def _encode_python_can_messages(
     return result
 
 
-class N2kAsciiRawEncoder(EncoderInterface, EncoderBase):
+class N2kAsciiRawEncoder(EncoderInterface[str], EncoderBase):
     """Encoder for N2K ASCII raw (no timestamp) packet strings."""
 
     def _encode_packet(self, nmea200_message: NMEA2000Message) -> str:
@@ -133,9 +128,7 @@ class N2kAsciiRawEncoder(EncoderInterface, EncoderBase):
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str:
-        self._assert_output_format(output_format)
         return self._encode_packet(nmea200_message)
 
 
@@ -145,22 +138,17 @@ class N2kAsciiEncoder(N2kAsciiRawEncoder):
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str:
-        self._assert_output_format(output_format)
         return f"A000000.000 {self._encode_packet(nmea200_message)}"
 
 
-class BasicStringEncoder(EncoderInterface, EncoderBase):
+class BasicStringEncoder(EncoderInterface[str], EncoderBase):
     """Encoder for the basic CSV string format."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str:
-        self._assert_output_format(output_format)
-
         can_data_bytes = self._call_encode_function(nmea200_message)
         timestamp = _format_basic_timestamp(nmea200_message.timestamp)
         data_hex = [f"{byte:02x}" for byte in can_data_bytes]
@@ -177,27 +165,23 @@ class BasicStringEncoder(EncoderInterface, EncoderBase):
         )
 
 
-class CanFrameAsciiEncoder(EncoderInterface, EncoderBase):
+class CanFrameAsciiEncoder(EncoderInterface[list[bytes]], EncoderBase):
     """Encoder for CAN Frame ASCII packet strings."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> list[bytes]:
-        self._assert_output_format(output_format)
         return _encode_can_frame_packets(self, nmea200_message)
 
 
-class CanFrameAsciiRawOutEncoder(EncoderInterface, EncoderBase):
+class CanFrameAsciiRawOutEncoder(EncoderInterface[str | list[str]], EncoderBase):
     """Encoder for CAN Frame ASCII raw output text (no timestamp)."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str | list[str]:
-        self._assert_output_format(output_format)
         lines = [
             frame.decode("utf-8").rstrip("\r\n")
             for frame in _encode_can_frame_packets(self, nmea200_message)
@@ -205,15 +189,13 @@ class CanFrameAsciiRawOutEncoder(EncoderInterface, EncoderBase):
         return _match_text_output(lines)
 
 
-class CanFrameAsciiRawEncoder(EncoderInterface, EncoderBase):
+class CanFrameAsciiRawEncoder(EncoderInterface[str | list[str]], EncoderBase):
     """Encoder for timestamped CAN Frame ASCII text."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str | list[str]:
-        self._assert_output_format(output_format)
         time_token = _format_time_of_day(nmea200_message.timestamp)
         lines = [
             f"{time_token} R {frame_text}"
@@ -223,15 +205,13 @@ class CanFrameAsciiRawEncoder(EncoderInterface, EncoderBase):
         return _match_text_output(lines)
 
 
-class Candump1Encoder(EncoderInterface, EncoderBase):
+class Candump1Encoder(EncoderInterface[str | list[str]], EncoderBase):
     """Encoder for candump1 text."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str | list[str]:
-        self._assert_output_format(output_format)
         lines = [
             f"<0x{frame.arbitration_id:08X}> [{len(frame.data)}] "
             f"{_bytes_to_hex_string(bytes(frame.data))}"
@@ -240,15 +220,13 @@ class Candump1Encoder(EncoderInterface, EncoderBase):
         return _match_text_output(lines)
 
 
-class Candump2Encoder(EncoderInterface, EncoderBase):
+class Candump2Encoder(EncoderInterface[str | list[str]], EncoderBase):
     """Encoder for candump2 text."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str | list[str]:
-        self._assert_output_format(output_format)
         lines = [
             f"can0  {frame.arbitration_id:08X}   [{len(frame.data)}]  "
             f"{_bytes_to_hex_string(bytes(frame.data))}"
@@ -257,15 +235,13 @@ class Candump2Encoder(EncoderInterface, EncoderBase):
         return _match_text_output(lines)
 
 
-class Candump3Encoder(EncoderInterface, EncoderBase):
+class Candump3Encoder(EncoderInterface[str | list[str]], EncoderBase):
     """Encoder for candump3 text."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str | list[str]:
-        self._assert_output_format(output_format)
         timestamp_token = _format_candump3_timestamp(nmea200_message.timestamp)
         lines = [
             f"{timestamp_token} slcan0 {frame.arbitration_id:08X}"
@@ -275,15 +251,13 @@ class Candump3Encoder(EncoderInterface, EncoderBase):
         return _match_text_output(lines)
 
 
-class PcdinEncoder(EncoderInterface, EncoderBase):
+class PcdinEncoder(EncoderInterface[str], EncoderBase):
     """Encoder for PCDIN sentences."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str:
-        self._assert_output_format(output_format)
         payload = self._call_encode_function(nmea200_message)
         sentence = (
             f"$PCDIN,{nmea200_message.PGN:06X},00000000,"
@@ -292,15 +266,13 @@ class PcdinEncoder(EncoderInterface, EncoderBase):
         return sentence + _compute_0183_checksum(sentence)
 
 
-class MxpgnEncoder(EncoderInterface, EncoderBase):
+class MxpgnEncoder(EncoderInterface[str], EncoderBase):
     """Encoder for MXPGN sentences."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str:
-        self._assert_output_format(output_format)
         send_bit = 0 if nmea200_message.destination == 255 else 1
         address = (
             nmea200_message.source if send_bit == 0 else nmea200_message.destination
@@ -317,15 +289,13 @@ class MxpgnEncoder(EncoderInterface, EncoderBase):
         return sentence + _compute_0183_checksum(sentence)
 
 
-class PdgyEncoder(EncoderInterface, EncoderBase):
+class PdgyEncoder(EncoderInterface[str], EncoderBase):
     """Encoder for PDGY sentences."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str:
-        self._assert_output_format(output_format)
         payload = self._call_encode_function(nmea200_message)
         data = base64.b64encode(payload).decode("ascii")
         return ",".join(
@@ -341,29 +311,24 @@ class PdgyEncoder(EncoderInterface, EncoderBase):
         )
 
 
-class PdgyDebugEncoder(EncoderInterface, EncoderBase):
+class PdgyDebugEncoder(EncoderInterface[str], EncoderBase):
     """Encoder for explicitly unsupported PDGY debug output."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> str:
         del nmea200_message
-        self._assert_output_format(output_format)
         raise ValueError("PDGY debug lines are not supported")
 
 
-class TcpEncoder(EncoderInterface, EncoderBase):
+class TcpEncoder(EncoderInterface[list[bytes]], EncoderBase):
     """Encoder for TCP / EByte packets."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> list[bytes]:
-        self._assert_output_format(output_format)
-
         encoded_messages = self._encode(nmea200_message)
         # Construct the frame ID
         frame_id_int = type(self)._build_header(
@@ -382,16 +347,13 @@ class TcpEncoder(EncoderInterface, EncoderBase):
         return result
 
 
-class UsbEncoder(EncoderInterface, EncoderBase):
+class UsbEncoder(EncoderInterface[list[bytes]], EncoderBase):
     """Encoder for USB packets."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> list[bytes]:
-        self._assert_output_format(output_format)
-
         encoded_messages = self._encode(nmea200_message)
         frame_id_int = type(self)._build_header(
             nmea200_message.PGN,
@@ -407,7 +369,9 @@ class UsbEncoder(EncoderInterface, EncoderBase):
             format_type_byte = 0x02  # 0x02-Setting (for sending and receiving data with a fixed 20-byte protocol); 0x12-Setting (for sending and receiving data with a variable protocol)
             framework_format_byte = 0x01  # No idea what is it
             # Construct and return the full packet
-            msg_bytes = bytes([0xAA, 0x55, frame_type_byte, format_type_byte, framework_format_byte])
+            msg_bytes = bytes(
+                [0xAA, 0x55, frame_type_byte, format_type_byte, framework_format_byte]
+            )
             msg_bytes += frame_id_bytes
             msg_bytes += bytes([len(message)])
             msg_bytes += message
@@ -420,15 +384,13 @@ class UsbEncoder(EncoderInterface, EncoderBase):
         return result
 
 
-class PythonCanEncoder(EncoderInterface, EncoderBase):
+class PythonCanEncoder(EncoderInterface[list[can.message.Message]], EncoderBase):
     """Encoder for python-can Message objects."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> list[can.message.Message]:
-        self._assert_output_format(output_format)
         return _encode_python_can_messages(self, nmea200_message)
 
 
@@ -437,15 +399,13 @@ def _compute_bst_checksum(data: bytes) -> int:
     return (256 - (sum(data) % 256)) % 256
 
 
-class BstD0Encoder(EncoderInterface, EncoderBase):
+class BstD0Encoder(EncoderInterface[list[bytes]], EncoderBase):
     """Encoder for Actisense BST D0 binary format."""
 
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> list[bytes]:
-        self._assert_output_format(output_format)
         payload = self._call_encode_function(nmea200_message)
 
         pgn = nmea200_message.PGN
@@ -465,24 +425,29 @@ class BstD0Encoder(EncoderInterface, EncoderBase):
         timestamp_bytes = (0).to_bytes(4, byteorder="little")
         length = 13 + len(payload)
 
-        header = bytes([
-            0xD0,
-            length & 0xFF,
-            (length >> 8) & 0xFF,
-            nmea200_message.destination & 0xFF,
-            nmea200_message.source & 0xFF,
-            pdus,
-            pduf,
-            dpp,
-            control,
-        ]) + timestamp_bytes
+        header = (
+            bytes(
+                [
+                    0xD0,
+                    length & 0xFF,
+                    (length >> 8) & 0xFF,
+                    nmea200_message.destination & 0xFF,
+                    nmea200_message.source & 0xFF,
+                    pdus,
+                    pduf,
+                    dpp,
+                    control,
+                ]
+            )
+            + timestamp_bytes
+        )
 
         message = header + payload
         checksum = _compute_bst_checksum(message)
         return [message + bytes([checksum])]
 
 
-class Bst95Encoder(EncoderInterface, EncoderBase):
+class Bst95Encoder(EncoderInterface[list[bytes]], EncoderBase):
     """Encoder for Actisense BST 95 binary CAN frame format.
 
     Produces raw CAN frames wrapped in BST 95 framing.  Fast-packet PGNs
@@ -492,9 +457,7 @@ class Bst95Encoder(EncoderInterface, EncoderBase):
     def encode(
         self,
         nmea200_message: NMEA2000Message,
-        output_format: N2KFormat | str | None = None,
     ) -> list[bytes]:
-        self._assert_output_format(output_format)
         can_frames = self._encode(nmea200_message)
         result: list[bytes] = []
 
@@ -513,36 +476,44 @@ class Bst95Encoder(EncoderInterface, EncoderBase):
 
         for can_data in can_frames:
             length = 6 + len(can_data)
-            message = bytes([
-                0x95,
-                length,
-                0x00, 0x00,  # timestamp
-                nmea200_message.source & 0xFF,
-                pdus,
-                pduf,
-                dppc,
-            ]) + can_data
+            message = (
+                bytes(
+                    [
+                        0x95,
+                        length,
+                        0x00,
+                        0x00,  # timestamp
+                        nmea200_message.source & 0xFF,
+                        pdus,
+                        pduf,
+                        dppc,
+                    ]
+                )
+                + can_data
+            )
             checksum = _compute_bst_checksum(message)
             result.append(message + bytes([checksum]))
 
         return result
 
 
-NMEA2000Encoder.add_handler(N2KFormat.N2K_ASCII_RAW, N2kAsciiRawEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.N2K_ASCII, N2kAsciiEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.BASIC_STRING, BasicStringEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.CAN_FRAME_ASCII, CanFrameAsciiEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.CAN_FRAME_ASCII_RAW, CanFrameAsciiRawEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.CAN_FRAME_ASCII_RAW_OUT, CanFrameAsciiRawOutEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.PCDIN, PcdinEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.MXPGN, MxpgnEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.PDGY, PdgyEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.PDGY_DEBUG, PdgyDebugEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.CANDUMP1, Candump1Encoder)
-NMEA2000Encoder.add_handler(N2KFormat.CANDUMP2, Candump2Encoder)
-NMEA2000Encoder.add_handler(N2KFormat.CANDUMP3, Candump3Encoder)
-NMEA2000Encoder.add_handler(N2KFormat.EBYTE, TcpEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.WAVESHARE, UsbEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.PYTHON_CAN, PythonCanEncoder)
-NMEA2000Encoder.add_handler(N2KFormat.BST_D0, BstD0Encoder)
-NMEA2000Encoder.add_handler(N2KFormat.BST_95, Bst95Encoder)
+ENCODER_CLASSES: dict[N2KFormat, type[EncoderInterface[N2KEncoded]]] = {
+    N2KFormat.N2K_ASCII_RAW: N2kAsciiRawEncoder,
+    N2KFormat.N2K_ASCII: N2kAsciiEncoder,
+    N2KFormat.BASIC_STRING: BasicStringEncoder,
+    N2KFormat.CAN_FRAME_ASCII: CanFrameAsciiEncoder,
+    N2KFormat.CAN_FRAME_ASCII_RAW: CanFrameAsciiRawEncoder,
+    N2KFormat.CAN_FRAME_ASCII_RAW_OUT: CanFrameAsciiRawOutEncoder,
+    N2KFormat.PCDIN: PcdinEncoder,
+    N2KFormat.MXPGN: MxpgnEncoder,
+    N2KFormat.PDGY: PdgyEncoder,
+    N2KFormat.PDGY_DEBUG: PdgyDebugEncoder,
+    N2KFormat.CANDUMP1: Candump1Encoder,
+    N2KFormat.CANDUMP2: Candump2Encoder,
+    N2KFormat.CANDUMP3: Candump3Encoder,
+    N2KFormat.EBYTE: TcpEncoder,
+    N2KFormat.WAVESHARE: UsbEncoder,
+    N2KFormat.PYTHON_CAN: PythonCanEncoder,
+    N2KFormat.BST_D0: BstD0Encoder,
+    N2KFormat.BST_95: Bst95Encoder,
+}

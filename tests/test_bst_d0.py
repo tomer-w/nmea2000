@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.encoder_formats import _compute_bst_checksum
 from nmea2000.input_formats import N2KFormat, detect_format
 from nmea2000.ioclient import bdtp_unwrap, bdtp_wrap
@@ -101,7 +101,7 @@ class TestBstD0Encoder:
         original = decoder.decode(BST_D0_PACKET)
         assert isinstance(original, NMEA2000Message)
 
-        encoder = NMEA2000Encoder(output_format=N2KFormat.BST_D0)
+        encoder = create_encoder(N2KFormat.BST_D0)
         encoded = encoder.encode(original)
         assert isinstance(encoded, list) and len(encoded) == 1
         packet = encoded[0]
@@ -120,7 +120,7 @@ class TestBstD0Encoder:
     def test_encode_fast_packet_combined(self):
         """BST D0 sends pre-assembled payloads, so fast packets encode as one message."""
         original = _load_fast_packet_message()
-        encoder = NMEA2000Encoder(output_format=N2KFormat.BST_D0)
+        encoder = create_encoder(N2KFormat.BST_D0)
         encoded = encoder.encode(original)
         assert isinstance(encoded, list) and len(encoded) == 1
         packet = encoded[0]

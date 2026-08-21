@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import cast
 
 import pytest
 
@@ -7,8 +8,7 @@ from nmea2000.ioclient import WaveShareNmea2000Gateway
 from nmea2000.message import NMEA2000Message
 
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 
@@ -22,7 +22,12 @@ class MockSerialReader:
         if self._chunks:
             return self._chunks.pop(0)
         # Block forever once data is exhausted (simulates waiting for more data)
-        await asyncio.Future()
+        future: asyncio.Future[bytes] = asyncio.Future()
+        return await future
+
+
+def _mock_reader(chunks: list[bytes]) -> asyncio.StreamReader:
+    return cast(asyncio.StreamReader, MockSerialReader(chunks))
 
 
 def _create_gateway() -> WaveShareNmea2000Gateway:
@@ -30,10 +35,15 @@ def _create_gateway() -> WaveShareNmea2000Gateway:
     gw = WaveShareNmea2000Gateway.__new__(WaveShareNmea2000Gateway)
     # Initialize only what _receive_impl needs
     from nmea2000.decoder import NMEA2000Decoder
+
     gw.decoder = NMEA2000Decoder(
-        exclude_pgns=[], include_pgns=[],
-        exclude_manufacturer_code=[], include_manufacturer_code=[],
-        preferred_units={}, dump_to_file=None, dump_pgns=[],
+        exclude_pgns=[],
+        include_pgns=[],
+        exclude_manufacturer_code=[],
+        include_manufacturer_code=[],
+        preferred_units={},
+        dump_to_file=None,
+        dump_pgns=[],
         build_network_map=False,
     )
     gw.queue = asyncio.Queue()
@@ -51,7 +61,7 @@ VALID_PACKET = bytes.fromhex(VALID_PACKET_HEX)
 async def test_single_valid_packet():
     """A single valid 20-byte packet should be decoded and queued."""
     gw = _create_gateway()
-    gw.reader = MockSerialReader([VALID_PACKET])
+    gw.reader = _mock_reader([VALID_PACKET])
 
     await gw._receive_impl()
 
@@ -65,7 +75,7 @@ async def test_single_valid_packet():
 async def test_multiple_valid_packets():
     """Multiple concatenated valid packets should all be decoded."""
     gw = _create_gateway()
-    gw.reader = MockSerialReader([VALID_PACKET * 3])
+    gw.reader = _mock_reader([VALID_PACKET * 3])
 
     await gw._receive_impl()
 
@@ -77,7 +87,7 @@ async def test_garbage_before_valid_packet():
     """Garbage bytes before a valid packet should be skipped."""
     gw = _create_gateway()
     garbage = bytes([0x00, 0x11, 0x22, 0x33, 0x44])
-    gw.reader = MockSerialReader([garbage + VALID_PACKET])
+    gw.reader = _mock_reader([garbage + VALID_PACKET])
 
     await gw._receive_impl()
 
@@ -95,7 +105,7 @@ async def test_resync_after_checksum_failure():
     # The first aa55 at offset 0 grabs 20 bytes that span both chunks → checksum fails.
     # After resync (advance 2), the real aa55 at offset 8 is found.
     false_start = bytes.fromhex("aa550102ffff003e")  # 8 bytes with aa55 header
-    gw.reader = MockSerialReader([false_start + VALID_PACKET])
+    gw.reader = _mock_reader([false_start + VALID_PACKET])
 
     await gw._receive_impl()
 
@@ -113,7 +123,7 @@ async def test_resync_with_issue_13_packet():
     gw = _create_gateway()
     # This is one of the corrupted packets from issue #13
     corrupted = bytes.fromhex("aa550102ffff003eaa550102012412f2190861ff")
-    gw.reader = MockSerialReader([corrupted + VALID_PACKET])
+    gw.reader = _mock_reader([corrupted + VALID_PACKET])
 
     await gw._receive_impl()
 
@@ -130,7 +140,7 @@ async def test_resync_does_not_lose_following_valid_packets():
     all be decoded (no cascading misalignment)."""
     gw = _create_gateway()
     corrupted = bytes.fromhex("aa550102ffff003eaa550102012412f2190861ff")
-    gw.reader = MockSerialReader([corrupted + VALID_PACKET * 3])
+    gw.reader = _mock_reader([corrupted + VALID_PACKET * 3])
 
     await gw._receive_impl()
 
@@ -143,7 +153,7 @@ async def test_buffer_accumulation_across_reads():
     gw = _create_gateway()
     first_half = VALID_PACKET[:10]
     second_half = VALID_PACKET[10:]
-    gw.reader = MockSerialReader([first_half, second_half])
+    gw.reader = _mock_reader([first_half, second_half])
 
     # First read: not enough data for a full packet
     await gw._receive_impl()
@@ -161,10 +171,11 @@ async def test_only_corrupted_packets():
     gw = _create_gateway()
     # Two corrupted packets with no valid data following
     corrupted = bytes.fromhex("aa550102ffff003eaa550102012412f2190861ff")
-    gw.reader = MockSerialReader([corrupted * 2])
+    gw.reader = _mock_reader([corrupted * 2])
 
     await gw._receive_impl()
 
     assert gw.queue.qsize() == 0
     # Buffer should only contain leftover bytes that couldn't form a packet
+    assert gw._buffer is not None
     assert len(gw._buffer) < 20

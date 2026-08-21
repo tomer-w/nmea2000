@@ -1,4 +1,5 @@
 """NMEA2000 Decoder module to decode NMEA2000 messages from various input formats."""
+
 from __future__ import annotations
 
 import logging
@@ -53,13 +54,13 @@ class DecoderStaticsMixin:
         Returns a tuple of `(pgn_id, source_id, dest, priority)`.
         based on the 29 bits (ID0 - ID28) in https://canboat.github.io/canboat/canboat.html
         """
-        source_id = frame_id_int & 0xFF             # bits 0-7 = 8 bits
+        source_id = frame_id_int & 0xFF  # bits 0-7 = 8 bits
         pgn_id_raw = (frame_id_int >> 8) & 0x3FFFF  # bits 8-25 = 18 bits
-        priority = (frame_id_int >> 26) & 0x07      # bits 26-28 = 3 bits
+        priority = (frame_id_int >> 26) & 0x07  # bits 26-28 = 3 bits
 
-        dp = (pgn_id_raw >> 16) & 0x3    # bits 16-17
-        pf = (pgn_id_raw >> 8) & 0xFF    # bits 8-15
-        ps = pgn_id_raw & 0xFF           # bits 0-7
+        dp = (pgn_id_raw >> 16) & 0x3  # bits 16-17
+        pf = (pgn_id_raw >> 8) & 0xFF  # bits 8-15
+        ps = pgn_id_raw & 0xFF  # bits 0-7
 
         if pf < 0xF0:
             # PDU1 format: PS is destination address
@@ -76,7 +77,9 @@ class DecoderStaticsMixin:
     def is_fast_pgn(pgn_id: int) -> bool | None:
         """Return whether a PGN is a fast packet PGN, or `None` if unsupported."""
         is_fast_func_name = f"is_fast_pgn_{pgn_id}"
-        is_fast_func: Callable[[], bool] | None = getattr(pgns_module, is_fast_func_name, None)
+        is_fast_func: Callable[[], bool] | None = getattr(
+            pgns_module, is_fast_func_name, None
+        )
 
         if is_fast_func and callable(is_fast_func):
             is_fast: bool = is_fast_func()  # pylint: disable=not-callable
@@ -177,7 +180,9 @@ class DecoderBase(DecoderStaticsMixin):
         self.include_pgns, self.include_pgns_ids = self.split_pgn_list(include_pgns)
         self.exclude_manufacturer_code = {k.lower() for k in exclude_manufacturer_code}
         self.include_manufacturer_code = {k.lower() for k in include_manufacturer_code}
-        self.dump_include_pgns, self.dump_include_pgns_ids = self.split_pgn_list(dump_pgns)
+        self.dump_include_pgns, self.dump_include_pgns_ids = self.split_pgn_list(
+            dump_pgns
+        )
         self.preferred_units = {k: v.lower() for k, v in preferred_units.items()}
         self.source_to_iso_name: dict[int, IsoName] = {}
         self.logged_unsupported_pgns: set[int] = set()
@@ -186,7 +191,10 @@ class DecoderBase(DecoderStaticsMixin):
             (ISO_CLAIM_PGN in self.exclude_pgns)
             or (ISO_CLAIM_PGN_ID in self.exclude_pgns_ids)
             or (len(self.include_pgns) and ISO_CLAIM_PGN not in self.include_pgns)
-            or (len(self.include_pgns_ids) and ISO_CLAIM_PGN_ID not in self.include_pgns_ids)
+            or (
+                len(self.include_pgns_ids)
+                and ISO_CLAIM_PGN_ID not in self.include_pgns_ids
+            )
         )
         if self.iso_claim_filter:
             while ISO_CLAIM_PGN in self.exclude_pgns:
@@ -195,11 +203,14 @@ class DecoderBase(DecoderStaticsMixin):
                 self.exclude_pgns_ids.remove(ISO_CLAIM_PGN_ID)
             logger.info("iso address claim will be removed later")
 
-        logger.info("PGN filter exclude: %s, %s", self.exclude_pgns, self.exclude_pgns_ids)
-        logger.info("PGN filter include: %s, %s", self.include_pgns, self.include_pgns_ids)
+        logger.info(
+            "PGN filter exclude: %s, %s", self.exclude_pgns, self.exclude_pgns_ids
+        )
+        logger.info(
+            "PGN filter include: %s, %s", self.include_pgns, self.include_pgns_ids
+        )
         logger.info("Preffered units: %s", self.preferred_units)
         logger.info("Dump location: %s, PGNs: %s", dump_to_file, dump_pgns)
-
 
     def _decode_fast_message(
         self,
@@ -259,7 +270,9 @@ class DecoderBase(DecoderStaticsMixin):
                 )
                 return None
             if frame_counter in fast_pgn.frames:
-                logger.debug("Frame %s for PGN %s is already stored.", frame_counter, pgn)
+                logger.debug(
+                    "Frame %s for PGN %s is already stored.", frame_counter, pgn
+                )
                 return None
             # For subsequent frames, exclude the last byte from the payload
             data_payload = can_data[:-1]
@@ -271,10 +284,14 @@ class DecoderBase(DecoderStaticsMixin):
         fast_pgn.bytes_stored += byte_length  # Update the count of bytes stored
 
         # Log the extracted values
-        logger.debug("Sequence Counter: %s, Frame Counter: %s", sequence_counter, frame_counter)
+        logger.debug(
+            "Sequence Counter: %s, Frame Counter: %s", sequence_counter, frame_counter
+        )
         if total_bytes is not None:
             logger.debug("Total Payload Bytes: %s", total_bytes)
-        logger.debug("Orig Payload (hex): %s, Data Payload (hex): %s", can_data, data_payload)
+        logger.debug(
+            "Orig Payload (hex): %s, Data Payload (hex): %s", can_data, data_payload
+        )
         logger.debug("PGN Data: %s", fast_pgn)
 
         # Check if all expected bytes have been stored
@@ -283,7 +300,11 @@ class DecoderBase(DecoderStaticsMixin):
 
             # All data for this PGN has been received, proceed to publish
             combined_payload = bytes(
-                [b for idx in sorted(fast_pgn.frames) for b in fast_pgn.frames[idx][::-1]]
+                [
+                    b
+                    for idx in sorted(fast_pgn.frames)
+                    for b in fast_pgn.frames[idx][::-1]
+                ]
             )[::-1]
 
             nmea = None
@@ -305,7 +326,10 @@ class DecoderBase(DecoderStaticsMixin):
             del self.data[fast_packet_key]
             return nmea
 
-        logger.debug("Waiting for %s more bytes.", fast_pgn.payload_length - fast_pgn.bytes_stored)
+        logger.debug(
+            "Waiting for %s more bytes.",
+            fast_pgn.payload_length - fast_pgn.bytes_stored,
+        )
         return None
 
     def _log_unsupported_pgn_once(self, pgn_id: int) -> None:
@@ -327,11 +351,17 @@ class DecoderBase(DecoderStaticsMixin):
         """Decode a single PGN message."""
         source_iso_name = None
         # Check if the PGN should be excluded or included
-        if pgn != ISO_CLAIM_PGN:  # The ISO_CLAIM_PGN should bypass this check so we can build the map later
+        if (
+            pgn != ISO_CLAIM_PGN
+        ):  # The ISO_CLAIM_PGN should bypass this check so we can build the map later
             if pgn in self.exclude_pgns:
                 logger.debug("Excluding PGN: %s", pgn)
                 return None
-            if len(self.include_pgns) > 0 and len(self.include_pgns_ids) == 0 and pgn not in self.include_pgns:
+            if (
+                len(self.include_pgns) > 0
+                and len(self.include_pgns_ids) == 0
+                and pgn not in self.include_pgns
+            ):
                 logger.debug("Excluding (by include) PGN: %s", pgn)
                 return None
 
@@ -350,7 +380,10 @@ class DecoderBase(DecoderStaticsMixin):
                     pgn,
                 )
 
-            if source_iso_name is not None and source_iso_name.manufacturer_code is not None:
+            if (
+                source_iso_name is not None
+                and source_iso_name.manufacturer_code is not None
+            ):
                 # Check if the PGN should be excluded or included based on manufacturer
                 manufacturer_code = source_iso_name.manufacturer_code.lower()
                 if manufacturer_code in self.exclude_manufacturer_code:
@@ -427,7 +460,9 @@ class DecoderBase(DecoderStaticsMixin):
             return None
 
         data_int = int.from_bytes(data, "big")
-        payload_length_bits = data_length_bits if data_length_bits is not None else len(data) * 8
+        payload_length_bits = (
+            data_length_bits if data_length_bits is not None else len(data) * 8
+        )
         nmea2000_message: NMEA2000Message | None = decode_func(  # pylint: disable=not-callable
             data_int,
             payload_length_bits,
@@ -445,7 +480,9 @@ class DecoderBase(DecoderStaticsMixin):
                 source_iso_name = old_source
             else:
                 new_source = IsoName(nmea2000_message, data_int)
-                logger.info("Using new ISO_CLAIM_PGN for source %s: %s", src, new_source)
+                logger.info(
+                    "Using new ISO_CLAIM_PGN for source %s: %s", src, new_source
+                )
                 source_iso_name = self.source_to_iso_name[src] = new_source
             if self.iso_claim_filter:
                 logger.debug("Excluding ISO_CLAIM_PGN")
@@ -462,7 +499,9 @@ class DecoderBase(DecoderStaticsMixin):
             and len(self.include_pgns_ids) > 0
             and msg_id not in self.include_pgns_ids
         ):
-            logger.debug("Excluding (by include) PGN %d by id: %s", pgn, nmea2000_message.id)
+            logger.debug(
+                "Excluding (by include) PGN %d by id: %s", pgn, nmea2000_message.id
+            )
             return None
 
         nmea2000_message.add_data(
@@ -477,13 +516,10 @@ class DecoderBase(DecoderStaticsMixin):
         nmea2000_message.apply_preferred_units(self.preferred_units)
 
         # Handle dump to file
-        if (
-            self.dump_file is not None
-            and (
-                len(self.dump_include_pgns) + len(self.dump_include_pgns_ids) == 0
-                or nmea2000_message.PGN in self.dump_include_pgns
-                or nmea2000_message.id in self.dump_include_pgns_ids
-            )
+        if self.dump_file is not None and (
+            len(self.dump_include_pgns) + len(self.dump_include_pgns_ids) == 0
+            or nmea2000_message.PGN in self.dump_include_pgns
+            or nmea2000_message.id in self.dump_include_pgns_ids
         ):
             json_str = nmea2000_message.to_json() + "\n"
             self.dump_file.write(json_str)
@@ -501,7 +537,7 @@ class DecoderBase(DecoderStaticsMixin):
 class NMEA2000Decoder(DecoderInterface):
     """Thin public dispatcher that binds to one concrete format decoder."""
 
-    HANDLERS: ClassVar[dict[N2KFormat, type[DecoderInterface]]] = {}
+    HANDLERS: ClassVar[dict[N2KFormat, Callable[..., DecoderInterface]]] = {}
 
     def __init__(
         self,
@@ -515,11 +551,13 @@ class NMEA2000Decoder(DecoderInterface):
             self._bind_delegate(bound_format)
 
     @classmethod
-    def add_handler(cls, input_format: N2KFormat, handler_cls: type[DecoderInterface]) -> None:
+    def add_handler(
+        cls, input_format: N2KFormat, handler_cls: type[DecoderInterface]
+    ) -> None:
         cls.HANDLERS[input_format] = handler_cls
 
     @classmethod
-    def get_handler(cls, input_format: N2KFormat) -> type[DecoderInterface]:
+    def get_handler(cls, input_format: N2KFormat) -> Callable[..., DecoderInterface]:
         handler_cls = cls.HANDLERS.get(input_format)
         if handler_cls is None:
             raise ValueError(f"Unsupported input format: {input_format}")
@@ -536,6 +574,7 @@ class NMEA2000Decoder(DecoderInterface):
             return self._delegate
 
         if self._bound_format != input_format:
+            assert self._bound_format is not None
             raise ValueError(
                 "This NMEA2000Decoder instance is already bound to "
                 f"{self._bound_format.value}; create a new decoder for {input_format.value}."
@@ -554,7 +593,6 @@ class NMEA2000Decoder(DecoderInterface):
     def close(self):
         if self._delegate:
             self._delegate.close()
-
 
 
 import_module(".decoder_formats", __package__)

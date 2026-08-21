@@ -8,7 +8,7 @@ import pytest
 import nmea2000.decoder_formats as decoder_formats
 from nmea2000.consts import FieldTypes, PhysicalQuantities
 from nmea2000.decoder import InvalidFrameError, NMEA2000Decoder, NMEA2000Message
-from nmea2000.encoder import NMEA2000Encoder
+from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat
 from nmea2000.message import IsoName, NMEA2000Field
 
@@ -498,7 +498,7 @@ def test_fast_parse():
 
 def test_encode():
     decoder = _get_decoder()
-    encoder = NMEA2000Encoder()
+    encoder = create_encoder()
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert isinstance(msg, NMEA2000Message)
     nmea_str = encoder.encode(msg)
@@ -565,7 +565,7 @@ def test_iso_request_decode():
     decoder = _get_decoder()
     msg = decoder.decode("2012-06-17-15:02:11.000,6,59904,0,255,3,14,f0,01")
     assert isinstance(msg, NMEA2000Message)
-    encoder = NMEA2000Encoder(output_format=N2KFormat.WAVESHARE)
+    encoder = create_encoder(N2KFormat.WAVESHARE)
     msg_bytes = encoder.encode(msg)[0]
     assert isinstance(msg_bytes, bytes)
     msg2 = _get_decoder().decode(msg_bytes)
@@ -621,7 +621,7 @@ def test_python_can_decode():
     decoder = _get_decoder()
     # Build a CAN message for PGN 65280 (Furuno: Heave)
     # Using the same data as test_single_parse but via python-can Message
-    encoder = NMEA2000Encoder(output_format=N2KFormat.PYTHON_CAN)
+    encoder = create_encoder(N2KFormat.PYTHON_CAN)
     original_msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert isinstance(original_msg, NMEA2000Message)
 
@@ -746,6 +746,7 @@ def test_pgn_127503_repeating_fields_are_nmea2000field():
     """Test that PGN 127503 repeating field entries contain NMEA2000Field objects with full metadata."""
     decoder = _get_decoder(already_combined=True)
     msg = decoder.decode(PGN_127503_SAMPLE)
+    assert msg is not None
 
     assert msg.PGN == 127503
     assert len(msg.fields) == 3
@@ -784,6 +785,7 @@ def test_pgn_127503_unavailable_fields():
     """Test that PGN 127503 with unavailable field values decodes None correctly."""
     decoder = _get_decoder(already_combined=True)
     msg = decoder.decode(PGN_127503_UNAVAILABLE)
+    assert msg is not None
 
     # These fields have 0xFFFF raw values — should decode as None
     assert msg.get_list_field_by_id(0, "current").value is None
@@ -801,6 +803,7 @@ def test_pgn_127504_repeating_fields_are_nmea2000field():
     """Test that PGN 127504 (AC Output Status) repeating fields are also NMEA2000Field."""
     decoder = _get_decoder(already_combined=True)
     msg = decoder.decode(PGN_127504_SAMPLE)
+    assert msg is not None
 
     assert msg.PGN == 127504
     assert msg.get_list_field_size() == 1

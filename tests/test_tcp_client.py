@@ -13,13 +13,14 @@ from .NMEA2000TestServer import NMEA2000TestServer
 
 # Configure logging
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("test_tcp_client")
 
 
-async def _wait_for_server_client(server: NMEA2000TestServer, timeout: float = 1.0) -> None:
+async def _wait_for_server_client(
+    server: NMEA2000TestServer, timeout: float = 1.0
+) -> None:
     deadline = asyncio.get_running_loop().time() + timeout
     while not server.clients and asyncio.get_running_loop().time() < deadline:
         await asyncio.sleep(0.01)
@@ -46,21 +47,26 @@ def _create_server_client(type: N2KFormat):
     if type == N2KFormat.EBYTE:
         client = EByteNmea2000Gateway("127.0.0.1", 8881)
     elif type == N2KFormat.N2K_ASCII_RAW:
-        client = TextNmea2000Gateway("127.0.0.1", 8881, format=type, seed_network_map=False)
+        client = TextNmea2000Gateway(
+            "127.0.0.1", 8881, format=type, seed_network_map=False
+        )
     elif type == N2KFormat.CAN_FRAME_ASCII:
-        client = TextNmea2000Gateway("127.0.0.1", 8881, format=type)            
+        client = TextNmea2000Gateway("127.0.0.1", 8881, format=type)
     client.set_receive_callback(handle_received_message)
     client.set_status_callback(handle_status_change)
 
     return server, client, receive_signal, receive_queue
 
+
 @pytest.mark.asyncio
 async def test_single_message_EBYTE():
-    server,client, receive_signal, receive_queue = _create_server_client(N2KFormat.EBYTE)
+    server, client, receive_signal, receive_queue = _create_server_client(
+        N2KFormat.EBYTE
+    )
     await server.start()
     await client.connect()
     await _wait_for_server_client(server)
-    
+
     # Wait for the signal that a message was received
     try:
         await server.send_single_message()
@@ -74,13 +80,16 @@ async def test_single_message_EBYTE():
     await client.close()
     await server.stop()
 
+
 @pytest.mark.asyncio
 async def test_single_message_N2K_ASCII_RAW_1():
-    server,client, receive_signal, receive_queue = _create_server_client(N2KFormat.N2K_ASCII_RAW)
+    server, client, receive_signal, receive_queue = _create_server_client(
+        N2KFormat.N2K_ASCII_RAW
+    )
     await server.start()
     await client.connect()
     await _wait_for_server_client(server)
-    
+
     # Wait for the signal that a message was received
     try:
         await server.send_to_clients(b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n")
@@ -93,16 +102,21 @@ async def test_single_message_N2K_ASCII_RAW_1():
     await client.close()
     await server.stop()
 
+
 @pytest.mark.asyncio
 async def test_single_message_N2K_ASCII_RAW_2():
-    server,client, receive_signal, receive_queue = _create_server_client(N2KFormat.N2K_ASCII_RAW)
+    server, client, receive_signal, receive_queue = _create_server_client(
+        N2KFormat.N2K_ASCII_RAW
+    )
     await server.start()
     await client.connect()
     await _wait_for_server_client(server)
-    
+
     # Wait for the signal that a message was received
     try:
-        await server.send_to_clients(b"A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000\n")
+        await server.send_to_clients(
+            b"A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000\n"
+        )
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
     except TimeoutError:
         raise AssertionError("Timed out waiting for receive signal")
@@ -112,16 +126,21 @@ async def test_single_message_N2K_ASCII_RAW_2():
     await client.close()
     await server.stop()
 
+
 @pytest.mark.asyncio
 async def test_single_message_CAN_FRAME_ASCII():
-    server,client, receive_signal, receive_queue = _create_server_client(N2KFormat.CAN_FRAME_ASCII)
+    server, client, receive_signal, receive_queue = _create_server_client(
+        N2KFormat.CAN_FRAME_ASCII
+    )
     await server.start()
     await client.connect()
     await _wait_for_server_client(server)
-    
+
     # Wait for the signal that a message was received
     try:
-        await server.send_to_clients(b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n")
+        await server.send_to_clients(
+            b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n"
+        )
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
     except TimeoutError:
         raise AssertionError("Timed out waiting for receive signal")
@@ -132,20 +151,20 @@ async def test_single_message_CAN_FRAME_ASCII():
     assert msg.source == 16
     assert msg.destination == 255
     assert msg.description == "Attitude"
-    assert len(msg.fields) == 5  
+    assert len(msg.fields) == 5
     assert msg.fields[0].id == "sid"
     assert msg.fields[0].value == 0
     assert msg.fields[1].id == "yaw"
     assert msg.fields[1].value == 0
-    assert msg.fields[1].unit_of_measurement == 'rad'
+    assert msg.fields[1].unit_of_measurement == "rad"
     assert msg.fields[1].physical_quantities == PhysicalQuantities.ANGLE
     assert msg.fields[2].id == "pitch"
     assert msg.fields[2].value == 0.3045
-    assert msg.fields[2].unit_of_measurement == 'rad'
+    assert msg.fields[2].unit_of_measurement == "rad"
     assert msg.fields[2].physical_quantities == PhysicalQuantities.ANGLE
     assert msg.fields[3].id == "roll"
     assert msg.fields[3].value == -0.0227
-    assert msg.fields[3].unit_of_measurement == 'rad'
+    assert msg.fields[3].unit_of_measurement == "rad"
     assert msg.fields[3].physical_quantities == PhysicalQuantities.ANGLE
     assert msg.fields[4].id == "reserved_56"
     assert msg.fields[4].value == 255
@@ -172,9 +191,7 @@ async def test_auto_sense_decodes_n2k_ascii():
     await _wait_for_server_client(server)
 
     try:
-        await server.send_to_clients(
-            b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
-        )
+        await server.send_to_clients(b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n")
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
     except TimeoutError:
         raise AssertionError("Timed out waiting for auto-sensed message")
@@ -225,6 +242,7 @@ async def test_auto_sense_decodes_can_frame_ascii():
 async def test_auto_sense_encode_raises():
     """Encoding must fail when format=None (auto-sense mode)."""
     from nmea2000.ioclient import TextNmea2000Gateway as _TG
+
     client = _TG("127.0.0.1", 8881, format=None, seed_network_map=False)
     dummy_msg = NMEA2000Message.from_json(
         '{"PGN":59904,"id":"isoRequest","description":"ISO Request",'
@@ -234,3 +252,27 @@ async def test_auto_sense_encode_raises():
     )
     with pytest.raises(ValueError, match="auto-sense"):
         client._encode_impl(dummy_msg)
+
+
+@pytest.mark.asyncio
+async def test_text_gateway_encodes_transport_bytes():
+    client = TextNmea2000Gateway(
+        "127.0.0.1",
+        8881,
+        format=N2KFormat.N2K_ASCII_RAW,
+        seed_network_map=False,
+    )
+    message = NMEA2000Message.from_json(
+        '{"PGN":59904,"id":"isoRequest","description":"ISO Request",'
+        '"fields":[{"id":"pgn","name":"PGN","value":60928,"raw_value":60928}],'
+        '"source":0,"destination":255,"priority":6,'
+        '"timestamp":"2012-06-17T15:02:11"}'
+    )
+
+    try:
+        encoded = client._encode_impl(message)
+    finally:
+        await client.close()
+
+    assert len(encoded) == 1
+    assert encoded[0].endswith(b"\r\n")
