@@ -340,8 +340,8 @@ class N2KDevice:
         if self._status_callback is not None:
             try:
                 await self._status_callback(state)
-            except Exception as exc:  # pylint: disable=broad-exception-caught
-                logger.exception("Error in device status callback: %s", exc)
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception("Error in device status callback")
 
     async def _handle_client_message(self, message: NMEA2000Message) -> None:
         self._remember_device(message)
@@ -349,8 +349,8 @@ class N2KDevice:
         if self._raw_receive_callback is not None:
             try:
                 await self._raw_receive_callback(message)
-            except Exception as exc:  # pylint: disable=broad-exception-caught
-                logger.exception("Error in raw receive callback: %s", exc)
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception("Error in raw receive callback")
 
         if message.PGN in MANAGEMENT_PGNS:
             await self._handle_management_message(message)
@@ -359,8 +359,8 @@ class N2KDevice:
         if self._receive_callback is not None:
             try:
                 await self._receive_callback(message)
-            except Exception as exc:  # pylint: disable=broad-exception-caught
-                logger.exception("Error in receive callback: %s", exc)
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception("Error in receive callback")
 
     async def _handle_management_message(self, message: NMEA2000Message) -> None:
         if message.PGN == 60928:

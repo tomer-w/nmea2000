@@ -5,7 +5,6 @@ import asyncio
 import logging
 
 # pylint: disable=protected-access
-
 import pytest
 
 from nmea2000.consts import PhysicalQuantities

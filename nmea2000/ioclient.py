@@ -17,7 +17,7 @@ from tenacity.asyncio import AsyncRetrying
 
 from .consts import PhysicalQuantities
 from .decoder import InvalidFrameError, NMEA2000Decoder
-from .encoder import N2KEncoded, EncoderInterface, create_encoder
+from .encoder import EncoderInterface, N2KEncoded, create_encoder
 from .input_formats import TEXT_FORMATS, N2KFormat
 from .message import NMEA2000Message
 from .utils import calculate_canbus_checksum
@@ -208,8 +208,8 @@ class AsyncIOClient(ABC):
         if self.status_callback:
             try:
                 await self.status_callback(self.state)
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                self.logger.exception("Error in status callback: %s", e)
+            except Exception:  # pylint: disable=broad-exception-caught
+                self.logger.exception("Error in status callback")
 
     async def connect(self):
         """Establish connection to the NMEA2000 gateway.
@@ -289,11 +289,9 @@ class AsyncIOClient(ABC):
         try:
             while self._state != State.CLOSED:
                 await self._receive_impl()
-        except Exception as ex:  # pylint: disable=broad-exception-caught
+        except Exception:  # pylint: disable=broad-exception-caught
             if self._state != State.CLOSED:
-                self.logger.exception(
-                    "Connection lost while reading. Error: %s. Reconnecting...", ex
-                )
+                self.logger.exception("Connection lost while reading; reconnecting")
                 await self._update_state(State.DISCONNECTED)
                 asyncio.create_task(self.connect())
         self.logger.info("Received loop terminated")
@@ -323,9 +321,7 @@ class AsyncIOClient(ABC):
         except Exception as ex:
             if self._state != State.CLOSED:
                 if self._should_reconnect_on_send_error(ex):
-                    self.logger.exception(
-                        "Connection lost while sending. Error %s. Reconnecting...", ex
-                    )
+                    self.logger.exception("Connection lost while sending; reconnecting")
                     await self._update_state(State.DISCONNECTED)
                     asyncio.create_task(self.connect())
                 else:
@@ -371,8 +367,8 @@ class AsyncIOClient(ABC):
             if receive_callback:
                 try:
                     await receive_callback(data)
-                except Exception as e:  # pylint: disable=broad-exception-caught
-                    self.logger.exception("Error in receive callback: %s", e)
+                except Exception:  # pylint: disable=broad-exception-caught
+                    self.logger.exception("Error in receive callback")
             self.queue.task_done()
         self.logger.info("process queue loop terminated")
 

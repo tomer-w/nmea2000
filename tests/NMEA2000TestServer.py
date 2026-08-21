@@ -9,7 +9,6 @@ import math
 import time
 
 # pylint: disable=broad-exception-caught
-
 from nmea2000.consts import FieldTypes, PhysicalQuantities
 from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat

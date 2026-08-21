@@ -6,7 +6,6 @@ import logging
 from typing import cast
 
 # pylint: disable=protected-access
-
 import pytest
 
 from nmea2000.decoder import NMEA2000Decoder

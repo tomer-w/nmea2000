@@ -167,7 +167,7 @@ class DecoderBase(DecoderStaticsMixin):
             dir_name = os.path.dirname(dump_to_file)
             if dir_name:
                 os.makedirs(dir_name, exist_ok=True)
-            self.dump_file = open(  # pylint: disable=consider-using-with
+            self.dump_file = open(  # noqa: SIM115  # pylint: disable=consider-using-with
                 dump_to_file, "a", encoding="utf-8"
             )
 

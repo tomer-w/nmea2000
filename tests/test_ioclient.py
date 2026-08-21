@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 # pylint: disable=protected-access
-
 import asyncio
 import logging
 from datetime import datetime

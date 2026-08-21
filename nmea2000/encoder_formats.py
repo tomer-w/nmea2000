@@ -8,7 +8,7 @@ from datetime import datetime
 
 import can.message
 
-from .encoder import N2KEncoded, EncoderBase, EncoderInterface
+from .encoder import EncoderBase, EncoderInterface, N2KEncoded
 from .input_formats import N2KFormat
 from .message import NMEA2000Message
 from .utils import calculate_canbus_checksum
