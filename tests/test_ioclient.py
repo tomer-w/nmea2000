@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime
+import logging
 from typing import cast
 
 import can
@@ -177,7 +178,9 @@ async def test_python_can_client_send_uses_bus_instead_of_writer() -> None:
 
 
 @pytest.mark.asyncio
-async def test_python_can_client_retries_transient_buffer_pressure() -> None:
+async def test_python_can_client_retries_transient_buffer_pressure(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     encoded_message = can.message.Message(
         arbitration_id=0x19F1120A,
         is_extended_id=True,
@@ -196,6 +199,7 @@ async def test_python_can_client_retries_transient_buffer_pressure() -> None:
         ),
     )
     client.bus = bus
+    caplog.set_level(logging.DEBUG, logger=client.logger.name)
 
     try:
         await client.send(_build_message())
@@ -204,12 +208,19 @@ async def test_python_can_client_retries_transient_buffer_pressure() -> None:
 
     assert bus.sent_messages == [encoded_message]
     assert bus.timeouts == [0.2, 0.2, 0.2]
+    retry_records = [
+        record
+        for record in caplog.records
+        if "python-can transmit queue full" in record.getMessage()
+    ]
+    assert [record.levelno for record in retry_records] == [logging.DEBUG] * 2
+    assert all(record.exc_info is None for record in retry_records)
 
 
 @pytest.mark.asyncio
-async def test_python_can_client_raises_persistent_buffer_pressure_without_reconnect() -> (
-    None
-):
+async def test_python_can_client_raises_persistent_buffer_pressure_without_reconnect(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     encoded_message = can.message.Message(
         arbitration_id=0x19F1120A,
         is_extended_id=True,
@@ -227,6 +238,7 @@ async def test_python_can_client_raises_persistent_buffer_pressure_without_recon
     )
     client.bus = bus
     client._state = State.CONNECTED
+    caplog.set_level(logging.DEBUG, logger=client.logger.name)
 
     try:
         with pytest.raises(can.CanOperationError):
@@ -237,6 +249,13 @@ async def test_python_can_client_raises_persistent_buffer_pressure_without_recon
 
     assert client.state == State.CLOSED
     assert bus.timeouts == [0.05, 0.05]
+    failure_records = [
+        record
+        for record in caplog.records
+        if "Send failed without reconnecting" in record.getMessage()
+    ]
+    assert [record.levelno for record in failure_records] == [logging.WARNING]
+    assert failure_records[0].exc_info is not None
 
 
 @pytest.mark.asyncio
