@@ -1,22 +1,24 @@
 import asyncio
 import logging
 import socket
+from abc import ABC, abstractmethod
+from collections.abc import Awaitable, Callable, Sequence
 from enum import Enum
-from typing import Callable, Awaitable, Optional, Sequence
-import serial_asyncio
+from typing import ClassVar
+
 import can.cli
 import can.interface
 import can.message
-from tenacity import stop_never, wait_exponential, retry_if_exception_type
+import serial_asyncio
+from tenacity import retry_if_exception_type, stop_never, wait_exponential
 from tenacity.asyncio import AsyncRetrying
-from abc import ABC, abstractmethod
 
 from .consts import PhysicalQuantities
-from .utils import calculate_canbus_checksum
-from .decoder import NMEA2000Decoder, InvalidFrameError
+from .decoder import InvalidFrameError, NMEA2000Decoder
 from .encoder import NMEA2000Encoder
-from .input_formats import N2KFormat, TEXT_FORMATS
+from .input_formats import TEXT_FORMATS, N2KFormat
 from .message import NMEA2000Message
+from .utils import calculate_canbus_checksum
 
 EncodedMessage = bytes | can.message.Message
 
@@ -72,17 +74,14 @@ class AsyncIOClient(ABC):
     @abstractmethod
     async def _connect_impl(self):
         """Subclasses must implement."""
-        pass
 
     @abstractmethod
     async def _receive_impl(self):
         """Subclasses must implement."""
-        pass
 
     @abstractmethod
     def _encode_impl(self, nmea2000Message: NMEA2000Message) -> Sequence[EncodedMessage]:
         """Subclasses must implement."""
-        pass
 
     async def _send_impl(self, encoded_message: EncodedMessage):
         """Send an already encoded message using the transport's native writer."""
@@ -101,13 +100,13 @@ class AsyncIOClient(ABC):
         return True
 
     def __init__(self, 
-                 exclude_pgns:list[int | str], 
-                 include_pgns:list[int | str],
-                 exclude_manufacturer_code:list[str],
-                 include_manufacturer_code:list[str],
-                 preferred_units:dict[PhysicalQuantities, str],
+                 exclude_pgns:list[int | str] | None,
+                 include_pgns:list[int | str] | None,
+                 exclude_manufacturer_code:list[str] | None,
+                 include_manufacturer_code:list[str] | None,
+                 preferred_units:dict[PhysicalQuantities, str] | None,
                  dump_to_file: str | None,
-                 dump_pgns:list[int | str],
+                 dump_pgns:list[int | str] | None,
                  build_network_map: bool,
                  seed_network_map: bool,
                  bound_format: N2KFormat | None = None,
@@ -147,7 +146,7 @@ class AsyncIOClient(ABC):
         self._receive_task = None  # Track the receive loop task
 
 
-    def set_status_callback(self, callback: Optional[Callable[[State], Awaitable[None]]]):
+    def set_status_callback(self, callback: Callable[[State], Awaitable[None]] | None):
         """Registers a callback to be executed when the connection status changes.
         
         Args:
@@ -155,7 +154,7 @@ class AsyncIOClient(ABC):
         """
         self.status_callback = callback
 
-    def set_receive_callback(self, callback: Optional[Callable[[NMEA2000Message], Awaitable[None]]]):
+    def set_receive_callback(self, callback: Callable[[NMEA2000Message], Awaitable[None]] | None):
         """Registers a callback to be executed when data is received.
         
         Args:
@@ -192,7 +191,7 @@ class AsyncIOClient(ABC):
             try:
                 await self.status_callback(self.state)
             except Exception as e:
-                self.logger.error(f"Error in status callback: {e}", exc_info=True)
+                self.logger.exception("Error in status callback: %s", e)
 
     async def connect(self):
         """Establish connection to the NMEA2000 gateway.
@@ -272,7 +271,9 @@ class AsyncIOClient(ABC):
                 await self._receive_impl()
         except Exception as ex:
             if self._state != State.CLOSED:
-                self.logger.error(f"Connection lost while reading. Error: {ex}. Reconnecting...", exc_info=True)
+                self.logger.exception(
+                    "Connection lost while reading. Error: %s. Reconnecting...", ex
+                )
                 await self._update_state(State.DISCONNECTED)
                 asyncio.create_task(self.connect())
         self.logger.info("Received loop terminated")
@@ -302,7 +303,9 @@ class AsyncIOClient(ABC):
         except Exception as ex:
             if self._state != State.CLOSED:
                 if self._should_reconnect_on_send_error(ex):
-                    self.logger.error("Connection lost while sending. Error %s. Reconnecting...", ex, exc_info=True)
+                    self.logger.exception(
+                        "Connection lost while sending. Error %s. Reconnecting...", ex
+                    )
                     await self._update_state(State.DISCONNECTED)
                     asyncio.create_task(self.connect())
                 else:
@@ -347,7 +350,7 @@ class AsyncIOClient(ABC):
                 try:
                     await receive_callback(data)
                 except Exception as e:
-                    self.logger.error(f"Error in receive callback: {e}", exc_info=True)
+                    self.logger.exception("Error in receive callback: %s", e)
             self.queue.task_done()
         self.logger.info("process queue loop terminated")
 
@@ -382,13 +385,13 @@ class EByteNmea2000Gateway(AsyncIOClient):
     def __init__(self,
                  host: str,
                  port: int, 
-                 exclude_pgns:list[int | str]=[], 
-                 include_pgns:list[int | str]=[],
-                 exclude_manufacturer_code:list[str]=[],
-                 include_manufacturer_code:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={},
+                 exclude_pgns:list[int | str] | None=None,
+                 include_pgns:list[int | str] | None=None,
+                 exclude_manufacturer_code:list[str] | None=None,
+                 include_manufacturer_code:list[str] | None=None,
+                 preferred_units:dict[PhysicalQuantities, str] | None=None,
                  dump_to_file: str | None = None,
-                 dump_pgns:list[int | str]=[],
+                 dump_pgns:list[int | str] | None=None,
                  build_network_map: bool = False):
         """Initialize a TCP NMEA2000 gateway client.
         
@@ -474,13 +477,13 @@ class TextNmea2000Gateway(AsyncIOClient):
                  host: str,
                  port: int, 
                  format: N2KFormat | None = None,
-                 exclude_pgns:list[int | str]=[],
-                 include_pgns:list[int | str]=[],
-                 exclude_manufacturer_code:list[str]=[],
-                 include_manufacturer_code:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={},
+                 exclude_pgns:list[int | str] | None=None,
+                 include_pgns:list[int | str] | None=None,
+                 exclude_manufacturer_code:list[str] | None=None,
+                 include_manufacturer_code:list[str] | None=None,
+                 preferred_units:dict[PhysicalQuantities, str] | None=None,
                  dump_to_file: str | None = None,
-                 dump_pgns:list[int | str]=[],
+                 dump_pgns:list[int | str] | None=None,
                  build_network_map: bool = False,
                  seed_network_map: bool = True):
         """Initialize a TCP NMEA2000 gateway client.
@@ -566,13 +569,13 @@ class WaveShareNmea2000Gateway(AsyncIOClient):
     """
     def __init__(self,
                  port: str,
-                 exclude_pgns:list[int | str]=[], 
-                 include_pgns:list[int | str]=[],
-                 exclude_manufacturer_code:list[str]=[],
-                 include_manufacturer_code:list[str]=[],
-                 preferred_units:dict[PhysicalQuantities, str]={},
+                 exclude_pgns:list[int | str] | None=None,
+                 include_pgns:list[int | str] | None=None,
+                 exclude_manufacturer_code:list[str] | None=None,
+                 include_manufacturer_code:list[str] | None=None,
+                 preferred_units:dict[PhysicalQuantities, str] | None=None,
                  dump_to_file: str | None = None,
-                 dump_pgns:list[int | str]=[],
+                 dump_pgns:list[int | str] | None=None,
                  build_network_map: bool = False):
         """Initialize a USB/Serial NMEA2000 gateway client.
         
@@ -711,13 +714,13 @@ class PythonCanAsyncIOClient(AsyncIOClient):
     def __init__(self,
                  interface: str,
                  channel: str,
-                 exclude_pgns: list[int | str] = [],
-                 include_pgns: list[int | str] = [],
-                 exclude_manufacturer_code: list[str] = [],
-                 include_manufacturer_code: list[str] = [],
-                 preferred_units: dict[PhysicalQuantities, str] = {},
+                 exclude_pgns: list[int | str] | None = None,
+                 include_pgns: list[int | str] | None = None,
+                 exclude_manufacturer_code: list[str] | None = None,
+                 include_manufacturer_code: list[str] | None = None,
+                 preferred_units: dict[PhysicalQuantities, str] | None = None,
                  dump_to_file: str | None = None,
-                 dump_pgns: list[int | str] = [],
+                 dump_pgns: list[int | str] | None = None,
                  build_network_map: bool = False,
                  send_timeout: float = 0.1,
                  send_retry_count: int = 3,
@@ -900,18 +903,18 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
     Suitable for devices like the PRO-NDC-1E2K.
     """
 
-    _SUPPORTED_BST_CMDS = {0xD0, 0x95}
+    _SUPPORTED_BST_CMDS: ClassVar[set[int]] = {0xD0, 0x95}
 
     def __init__(self,
                  host: str,
                  port: int,
-                 exclude_pgns: list[int | str] = [],
-                 include_pgns: list[int | str] = [],
-                 exclude_manufacturer_code: list[str] = [],
-                 include_manufacturer_code: list[str] = [],
-                 preferred_units: dict[PhysicalQuantities, str] = {},
+                 exclude_pgns: list[int | str] | None = None,
+                 include_pgns: list[int | str] | None = None,
+                 exclude_manufacturer_code: list[str] | None = None,
+                 include_manufacturer_code: list[str] | None = None,
+                 preferred_units: dict[PhysicalQuantities, str] | None = None,
                  dump_to_file: str | None = None,
-                 dump_pgns: list[int | str] = [],
+                 dump_pgns: list[int | str] | None = None,
                  build_network_map: bool = False):
         super().__init__(
             exclude_pgns=exclude_pgns,

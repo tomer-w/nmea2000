@@ -1,6 +1,8 @@
 import logging
-import pytest
 import sys
+
+import pytest
+
 
 @pytest.fixture(autouse=True, scope="session")
 def configure_pytest_logging():
@@ -21,4 +23,4 @@ def configure_pytest_logging():
                 handler = logging.StreamHandler(sys.stdout)
                 handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
                 logger.addHandler(handler)
-    return None
+    return

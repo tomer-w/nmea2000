@@ -1,23 +1,24 @@
 import argparse
 import asyncio
-import sys
 import logging
+import sys
+from pathlib import Path
 
 import can.cli
 
-from .message import NMEA2000Message
-from .ioclient import (
-    AsyncIOClient,
-    EByteNmea2000Gateway,
-    State,
-    WaveShareNmea2000Gateway,
-    TextNmea2000Gateway,
-    ActisenseBstNmea2000Gateway,
-    PythonCanAsyncIOClient,
-)
 from .decoder import NMEA2000Decoder
 from .encoder import NMEA2000Encoder
-from .input_formats import N2KFormat, TEXT_FORMATS
+from .input_formats import TEXT_FORMATS, N2KFormat
+from .ioclient import (
+    ActisenseBstNmea2000Gateway,
+    AsyncIOClient,
+    EByteNmea2000Gateway,
+    PythonCanAsyncIOClient,
+    State,
+    TextNmea2000Gateway,
+    WaveShareNmea2000Gateway,
+)
+from .message import NMEA2000Message
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +72,6 @@ async def interactive_client(client: AsyncIOClient, json_output: bool = False):
                     continue
     except KeyboardInterrupt:
         sys.stdout.flush()
-        pass
     finally:
         await client.close()
         print("Connection closed.")
@@ -94,7 +94,6 @@ def parse(filename: str, decoder: NMEA2000Decoder):
                     print(f"Error: {e}")
     except KeyboardInterrupt:
         sys.stdout.flush()
-        pass
 
 
 def _add_common_client_args(sub: argparse.ArgumentParser):
@@ -266,8 +265,9 @@ async def async_main():
 
         # Encode from a json file
         elif args.file:
-            with open(args.file, "r") as file:
-                json_string = file.read()
+            json_string = await asyncio.to_thread(
+                Path(args.file).read_text, encoding="utf-8"
+            )
             encoded = encoder.encode(NMEA2000Message.from_json(json_string))
             print(encoded)
         else:

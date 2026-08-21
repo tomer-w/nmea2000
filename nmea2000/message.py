@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import binascii
-from datetime import date, datetime, time, timedelta
-from dataclasses import dataclass, field
 import hashlib
 import logging
+from dataclasses import dataclass, field
+from datetime import date, datetime, time, timedelta
 from typing import Any, TypeAlias
+
 import orjson
-from .consts import PhysicalQuantities, FieldTypes
+
+from .consts import FieldTypes, PhysicalQuantities
 from .utils import (
     kelvin_to_celsius,
     kelvin_to_fahrenheit,
@@ -49,7 +51,7 @@ class NMEA2000Message:
     source: int = 0
     destination: int = 0
     priority: int = 0
-    timestamp: datetime = datetime.now()
+    timestamp: datetime = field(default_factory=datetime.now)
     source_iso_name: IsoName | None = None
     hash: str | None = None
     raw_can_data: bytes | str | None = None

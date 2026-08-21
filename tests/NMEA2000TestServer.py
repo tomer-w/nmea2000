@@ -1,13 +1,13 @@
+import argparse
 import asyncio
 import logging
-import argparse
-import time
 import math
-from typing import List
-from nmea2000.input_formats import N2KFormat
-from nmea2000.message import NMEA2000Message, NMEA2000Field
+import time
+
+from nmea2000.consts import FieldTypes, PhysicalQuantities
 from nmea2000.encoder import NMEA2000Encoder
-from nmea2000.consts import PhysicalQuantities, FieldTypes
+from nmea2000.input_formats import N2KFormat
+from nmea2000.message import NMEA2000Field, NMEA2000Message
 
 # Configure logging
 logging.basicConfig(
@@ -30,7 +30,7 @@ class NMEA2000TestServer:
         self.port = port
         self.type = type
         self.server = None
-        self.clients: List[asyncio.StreamWriter] = []
+        self.clients: list[asyncio.StreamWriter] = []
         self.running = False
         self.encoder = NMEA2000Encoder(output_format=N2KFormat.EBYTE)
 
@@ -53,7 +53,7 @@ class NMEA2000TestServer:
                         logger.info(f"Echoed back: {data.hex()}")
                     else:
                         await asyncio.sleep(0.01)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     # Timeout is expected when no data is received
                     pass
                 except asyncio.IncompleteReadError:
@@ -82,9 +82,9 @@ class NMEA2000TestServer:
             tcp_data = self.encoder.encode(message)[0]
             logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
         elif self.type == N2KFormat.N2K_ASCII_RAW:
-            tcp_data = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
+            tcp_data = b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
         elif self.type == N2KFormat.CAN_FRAME_ASCII:
-            tcp_data = "00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n".encode('utf-8')
+            tcp_data = b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n"
         else:
             raise Exception ("Type not supported")
         # Send the encoded message to all connected clients

@@ -1,17 +1,18 @@
 """NMEA2000 Decoder module to decode NMEA2000 messages from various input formats."""
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from importlib import import_module
 import logging
 import os
+from abc import ABC, abstractmethod
+from collections.abc import Callable
 from datetime import datetime, timedelta
-from typing import Callable, Dict, List, Optional, Tuple
+from importlib import import_module
+from typing import ClassVar
 
+from . import pgns as pgns_module
 from .consts import PhysicalQuantities
 from .input_formats import N2KFormat, N2KInput, detect_format
 from .message import IsoName, NMEA2000Message
-from . import pgns as pgns_module
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class DecoderStaticsMixin:
     """Shared stateless decoder helpers used by the interface and base mechanics."""
 
     @staticmethod
-    def extract_header(frame_id_int: int) -> Tuple[int, int, int, int]:
+    def extract_header(frame_id_int: int) -> tuple[int, int, int, int]:
         """
         Extract PGN, source ID, destination, and priority from a 29-bit CAN frame ID.
 
@@ -84,7 +85,7 @@ class DecoderStaticsMixin:
         return None
 
     @staticmethod
-    def split_pgn_list(pgn_list: list[int | str]) -> Tuple[list[int], list[str]]:
+    def split_pgn_list(pgn_list: list[int | str]) -> tuple[list[int], list[str]]:
         """Split a list of PGNs into integer and string IDs."""
         int_list = []
         str_list = []
@@ -113,7 +114,6 @@ class DecoderInterface(DecoderStaticsMixin, ABC):
     @abstractmethod
     def close(self):
         """Close any resources held by the decoder, such as dump files."""
-        pass
 
     def __enter__(self):
         return self
@@ -128,13 +128,13 @@ class DecoderBase(DecoderStaticsMixin):
     def __init__(
         self,
         *,
-        exclude_pgns: Optional[List[int | str]] = None,
-        include_pgns: Optional[List[int | str]] = None,
-        exclude_manufacturer_code: Optional[List[str]] = None,
-        include_manufacturer_code: Optional[List[str]] = None,
-        preferred_units: Optional[Dict[PhysicalQuantities, str]] = None,
+        exclude_pgns: list[int | str] | None = None,
+        include_pgns: list[int | str] | None = None,
+        exclude_manufacturer_code: list[str] | None = None,
+        include_manufacturer_code: list[str] | None = None,
+        preferred_units: dict[PhysicalQuantities, str] | None = None,
         dump_to_file: str | None = None,
-        dump_pgns: Optional[List[int | str]] = None,
+        dump_pgns: list[int | str] | None = None,
         build_network_map: bool = False,
         bound_format: N2KFormat | None = None,
         started_at: datetime | None = None,
@@ -164,7 +164,7 @@ class DecoderBase(DecoderStaticsMixin):
             dir_name = os.path.dirname(dump_to_file)
             if dir_name:
                 os.makedirs(dir_name, exist_ok=True)
-            self.dump_file = open(dump_to_file, "a", encoding="utf-8")
+            self.dump_file = open(dump_to_file, "a", encoding="utf-8")  # noqa: SIM115
 
         if not isinstance(exclude_pgns, list):
             raise ValueError("exclude_pgns must be a list")
@@ -501,7 +501,7 @@ class DecoderBase(DecoderStaticsMixin):
 class NMEA2000Decoder(DecoderInterface):
     """Thin public dispatcher that binds to one concrete format decoder."""
 
-    HANDLERS: dict[N2KFormat, type[DecoderInterface]] = {}
+    HANDLERS: ClassVar[dict[N2KFormat, type[DecoderInterface]]] = {}
 
     def __init__(
         self,

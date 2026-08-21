@@ -44,6 +44,16 @@ include = ["nmea2000*"]
 extend-exclude = [ "nmea2000/pgns.py", "nmea2000/consts.py" ]
 force-exclude = true
 
+[tool.ruff.lint]
+# NMEA 2000 timestamps are UTC-naive; numeric APIs explicitly document int inputs.
+ignore = ["DTZ001", "DTZ005", "DTZ006", "DTZ007", "PYI041", "TRY004"]
+
+[tool.ruff.lint.per-file-ignores]
+"nmea2000/cli.py" = ["BLE001"]
+"nmea2000/device.py" = ["BLE001"]
+"nmea2000/ioclient.py" = ["BLE001", "TRY002"]
+"tests/NMEA2000TestServer.py" = ["BLE001", "N999", "S110", "TRY002", "UP035"]
+
 [tool.pylint.messages_control]
 disable = ["line-too-long"]
 

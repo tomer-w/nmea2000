@@ -1,7 +1,9 @@
 from datetime import date, time
+
 from nmea2000.decoder import NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.input_formats import N2KFormat
+
 from .test_decoder import _get_decoder
 
 

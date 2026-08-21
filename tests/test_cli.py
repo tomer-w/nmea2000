@@ -1,11 +1,12 @@
 import asyncio
 import json
 import logging
+import os
 import subprocess
 import sys
-import os
 
 import pytest
+
 from nmea2000.input_formats import N2KFormat
 from tests.NMEA2000TestServer import NMEA2000TestServer
 
@@ -141,7 +142,7 @@ class TestCliTcpClientJson:
             assert actisense_server.clients, "CLI client did not connect to server"
 
             await actisense_server.send_to_clients(
-                "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
+                b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
             )
 
             lines = []
@@ -154,7 +155,7 @@ class TestCliTcpClientJson:
                     if decoded.startswith("{"):
                         lines.append(decoded)
                         break
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
 
             assert len(lines) >= 1, "Expected at least one JSON line from --json output"
@@ -195,7 +196,7 @@ class TestCliTcpClientJson:
                     decoded = line.decode().strip()
                     if decoded.startswith("{"):
                         break
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
 
             decoded = line.decode().strip()
@@ -226,7 +227,7 @@ class TestCliTcpClientJson:
             assert yacht_devices_server.clients, "CLI client did not connect to server"
 
             await yacht_devices_server.send_to_clients(
-                "00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n".encode('utf-8')
+                b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n"
             )
 
             line = b""
@@ -236,7 +237,7 @@ class TestCliTcpClientJson:
                     decoded = line.decode().strip()
                     if decoded.startswith("{"):
                         break
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
 
             decoded = line.decode().strip()
@@ -272,7 +273,7 @@ class TestCliTcpClientJson:
             assert actisense_server.clients, "CLI client did not connect to server"
 
             await actisense_server.send_to_clients(
-                "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
+                b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
             )
 
             lines = []
@@ -285,7 +286,7 @@ class TestCliTcpClientJson:
                     if decoded.startswith("Received:"):
                         lines.append(decoded)
                         break
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
 
             assert len(lines) >= 1, "Expected at least one 'Received:' line"
@@ -317,11 +318,11 @@ class TestCliTcpClientJson:
 
             # Send two messages
             await actisense_server.send_to_clients(
-                "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
+                b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
             )
             await asyncio.sleep(0.2)
             await actisense_server.send_to_clients(
-                "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
+                b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
             )
 
             json_lines = []
@@ -333,7 +334,7 @@ class TestCliTcpClientJson:
                     decoded = line.decode().strip()
                     if decoded.startswith("{"):
                         json_lines.append(decoded)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
 
             assert len(json_lines) == 2, f"Expected 2 JSON lines, got {len(json_lines)}"
@@ -365,7 +366,7 @@ class TestCliTcpClientJson:
             assert actisense_server.clients, "CLI client did not connect to server"
 
             await actisense_server.send_to_clients(
-                "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8')
+                b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
             )
 
             json_line = None
@@ -378,7 +379,7 @@ class TestCliTcpClientJson:
                     if decoded.startswith("{"):
                         json_line = decoded
                         break
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
 
             assert json_line is not None, "Expected JSON output"

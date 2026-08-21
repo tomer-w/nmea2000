@@ -1,15 +1,17 @@
 from datetime import date, time
+
 import pytest
+
 from nmea2000.utils import (
-    decode_decimal,
-    encode_decimal,
-    decode_float,
-    encode_float,
     decode_date,
-    encode_date,
-    decode_time,
-    encode_time,
+    decode_decimal,
+    decode_float,
     decode_number,
+    decode_time,
+    encode_date,
+    encode_decimal,
+    encode_float,
+    encode_time,
 )
 
 
@@ -58,7 +60,7 @@ def test_encode_decimal_large_number():
 
 
 def test_encode_decode_decimal():
-    for i in range(0, 99999):
+    for i in range(99999):
         encoded = encode_decimal(i)
         assert encoded is not None
         assert decode_decimal(encoded) == i

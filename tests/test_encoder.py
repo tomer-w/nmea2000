@@ -11,7 +11,6 @@ from nmea2000.message import NMEA2000Field, NMEA2000Message
 
 from .test_decoder import _get_decoder
 
-
 _ROUNDTRIP_FIXTURE_PATH = Path(__file__).with_name("canboatjs_roundtrip.json")
 with _ROUNDTRIP_FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
     _CANBOATJS_ROUNDTRIP_CASES = json.load(fixture_file)["cases"]
@@ -163,7 +162,7 @@ def test_yacht_devices_encode():
     msg = decoder.decode("21:31:42.671 T 01F010B3 FF FF 0C 4F 70 BE 3E 33")
     assert isinstance(msg, NMEA2000Message)
     msg_bytes = encoder.encode(msg)[0]
-    assert msg_bytes == "01F010B3 FF FF 0C 4F 70 BE 3E 33\r\n".encode()
+    assert msg_bytes == b"01F010B3 FF FF 0C 4F 70 BE 3E 33\r\n"
 
 
 def test_python_can_encode():
@@ -183,7 +182,7 @@ def test_python_can_encode():
     assert can_msg.is_rx is False
     assert len(can_msg.data) == 8
 
-    pgn_id, source_id, dest, priority = NMEA2000Decoder.extract_header(
+    pgn_id, source_id, _dest, priority = NMEA2000Decoder.extract_header(
         can_msg.arbitration_id
     )
     assert pgn_id == 65280

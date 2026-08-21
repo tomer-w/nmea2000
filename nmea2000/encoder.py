@@ -2,16 +2,16 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from importlib import import_module
-from typing import Callable, TypeAlias
+from typing import ClassVar, TypeAlias
 
 import can.message
 
+from . import pgns as pgns_module
 from .decoder import NMEA2000Decoder
 from .input_formats import N2KFormat
 from .message import NMEA2000Message
-from . import pgns as pgns_module
-
 
 N2KEncoded: TypeAlias = str | list[str] | list[bytes] | list[can.message.Message]
 
@@ -158,7 +158,7 @@ class EncoderBase:
 class NMEA2000Encoder(EncoderInterface):
     """Thin public dispatcher that binds to one concrete format encoder."""
 
-    HANDLERS: dict[N2KFormat, type[EncoderInterface]] = {}
+    HANDLERS: ClassVar[dict[N2KFormat, type[EncoderInterface]]] = {}
 
     def __init__(self, output_format: N2KFormat | str = N2KFormat.N2K_ASCII_RAW):
         self.output_format = EncoderBase._normalize_output_format(output_format)

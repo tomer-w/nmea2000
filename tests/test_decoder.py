@@ -1,27 +1,27 @@
-from datetime import datetime, timedelta
 import json
 import os
 import uuid
+from datetime import datetime, timedelta
 
 import pytest
+
 import nmea2000.decoder_formats as decoder_formats
-from nmea2000.consts import PhysicalQuantities, FieldTypes
-from nmea2000.decoder import NMEA2000Decoder, NMEA2000Message, InvalidFrameError
+from nmea2000.consts import FieldTypes, PhysicalQuantities
+from nmea2000.decoder import InvalidFrameError, NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.input_formats import N2KFormat
 from nmea2000.message import IsoName, NMEA2000Field
-
 
 dump_to_file = None
 # dump_to_file = './dumps/pgn_dump.jsonl'
 
 
 def _get_decoder(
-    exclude_pgns=[],
-    include_pgns=[],
-    preferred_units={},
+    exclude_pgns=None,
+    include_pgns=None,
+    preferred_units=None,
     build_network_map=False,
-    exclude_manufacturer_code={},
+    exclude_manufacturer_code=None,
     already_combined=False,
 ):
     return NMEA2000Decoder(
@@ -970,6 +970,7 @@ def test_field_is_numeric():
 def test_pgn_129540_five_sats_in_view():
     """Test that PGN 129540 with 5 sats_in_view returns 5 repeating field entries."""
     import struct
+
     from nmea2000.pgns import decode_pgn_129540
 
     def make_sat(prn, elev_raw, azim_raw, snr_raw, rr_raw, status):

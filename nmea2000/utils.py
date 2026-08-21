@@ -1,10 +1,9 @@
 # Standard Library Imports
 
-from datetime import date, timedelta
 import logging
-import struct
 import math
-from datetime import time
+import struct
+from datetime import date, time, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -185,7 +184,7 @@ def encode_time(
         + decoded_time.microsecond / 1_000_000
     )
 
-    return int(round(seconds_since_midnight / resolution))
+    return round(seconds_since_midnight / resolution)
 
 
 def decode_decimal(number_int: int | None) -> int | None:
@@ -339,7 +338,7 @@ def encode_number(
             return (1 << bit_length) - 1
 
     # Scale using resolution
-    number_int = int(round(value / resolution))
+    number_int = round(value / resolution)
 
     # Check bounds
     if signed:

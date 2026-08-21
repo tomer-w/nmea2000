@@ -4,7 +4,7 @@ import base64
 import binascii
 import logging
 from collections.abc import Callable
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import can.message
 
@@ -41,7 +41,7 @@ def _parse_basic_timestamp(timestamp: str) -> datetime:
 
 
 def _utc_datetime_from_timestamp(timestamp: float) -> datetime:
-    return datetime.fromtimestamp(timestamp, tz=timezone.utc).replace(tzinfo=None)
+    return datetime.fromtimestamp(timestamp, tz=UTC).replace(tzinfo=None)
 
 
 def _get_0183_sentence(line: str) -> str:

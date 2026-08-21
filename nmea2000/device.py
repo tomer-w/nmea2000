@@ -4,12 +4,14 @@ import asyncio
 import json
 import logging
 import random
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import datetime
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Optional
+from typing import Any
 
+from .input_formats import N2KFormat
 from .ioclient import (
     ActisenseBstNmea2000Gateway,
     AsyncIOClient,
@@ -19,7 +21,6 @@ from .ioclient import (
     TextNmea2000Gateway,
     WaveShareNmea2000Gateway,
 )
-from .input_formats import N2KFormat
 from .message import IsoName, NMEA2000Field, NMEA2000Message
 
 logger = logging.getLogger(__name__)
@@ -152,15 +153,15 @@ class N2KDevice:
         """Return ``True`` once the device has claimed an address and is ready to send."""
         return self._ready
 
-    def set_receive_callback(self, callback: Optional[MessageCallback]) -> None:
+    def set_receive_callback(self, callback: MessageCallback | None) -> None:
         """Register a callback for non-management messages delivered to this device."""
         self._receive_callback = callback
 
-    def set_raw_receive_callback(self, callback: Optional[MessageCallback]) -> None:
+    def set_raw_receive_callback(self, callback: MessageCallback | None) -> None:
         """Register a callback for every received message before management handling."""
         self._raw_receive_callback = callback
 
-    def set_status_callback(self, callback: Optional[StatusCallback]) -> None:
+    def set_status_callback(self, callback: StatusCallback | None) -> None:
         """Register a callback for underlying client state changes."""
         self._status_callback = callback
 
@@ -172,7 +173,7 @@ class N2KDevice:
         *,
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
-    ) -> "N2KDevice":
+    ) -> N2KDevice:
         """Create a device that communicates through an EByte TCP gateway."""
         client = EByteNmea2000Gateway(
             host, port, **cls._prepare_client_options(client_options)
@@ -184,11 +185,11 @@ class N2KDevice:
         cls,
         host: str,
         port: int,
-        format: "N2KFormat",
+        format: N2KFormat,
         *,
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
-    ) -> "N2KDevice":
+    ) -> N2KDevice:
         """Create a device that communicates through a text/line-based TCP gateway.
 
         Args:
@@ -208,7 +209,7 @@ class N2KDevice:
         *,
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
-    ) -> "N2KDevice":
+    ) -> N2KDevice:
         """Create a device that communicates through a Waveshare USB-CAN gateway."""
         client = WaveShareNmea2000Gateway(
             port, **cls._prepare_client_options(client_options)
@@ -223,7 +224,7 @@ class N2KDevice:
         *,
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
-    ) -> "N2KDevice":
+    ) -> N2KDevice:
         """Create a device that communicates through a ``python-can`` interface."""
         client_kwargs = cls._prepare_client_options(client_options)
         client = PythonCanAsyncIOClient(interface, channel, **client_kwargs)
@@ -237,7 +238,7 @@ class N2KDevice:
         *,
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
-    ) -> "N2KDevice":
+    ) -> N2KDevice:
         """Create a device that communicates through an Actisense BST TCP gateway."""
         client = ActisenseBstNmea2000Gateway(
             host, port, **cls._prepare_client_options(client_options)
@@ -252,7 +253,7 @@ class N2KDevice:
         *,
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
-    ) -> "N2KDevice":
+    ) -> N2KDevice:
         """Convenience shortcut for ``for_text_gateway`` with N2K_ASCII_RAW format."""
         from .input_formats import N2KFormat
 
@@ -308,7 +309,7 @@ class N2KDevice:
             try:
                 await self._status_callback(state)
             except Exception as exc:
-                logger.error("Error in device status callback: %s", exc, exc_info=True)
+                logger.exception("Error in device status callback: %s", exc)
 
     async def _handle_client_message(self, message: NMEA2000Message) -> None:
         self._remember_device(message)
@@ -317,7 +318,7 @@ class N2KDevice:
             try:
                 await self._raw_receive_callback(message)
             except Exception as exc:
-                logger.error("Error in raw receive callback: %s", exc, exc_info=True)
+                logger.exception("Error in raw receive callback: %s", exc)
 
         if message.PGN in MANAGEMENT_PGNS:
             await self._handle_management_message(message)
@@ -327,7 +328,7 @@ class N2KDevice:
             try:
                 await self._receive_callback(message)
             except Exception as exc:
-                logger.error("Error in receive callback: %s", exc, exc_info=True)
+                logger.exception("Error in receive callback: %s", exc)
 
     async def _handle_management_message(self, message: NMEA2000Message) -> None:
         if message.PGN == 60928:

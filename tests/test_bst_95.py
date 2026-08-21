@@ -8,10 +8,9 @@ import pytest
 from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.encoder_formats import _compute_bst_checksum
 from nmea2000.input_formats import N2KFormat, detect_format
-from nmea2000.ioclient import bdtp_wrap, bdtp_unwrap
+from nmea2000.ioclient import bdtp_unwrap, bdtp_wrap
 
 from .test_decoder import _get_decoder
-
 
 # --- Real captured packets from PRO-NDC-1E2K ---
 
@@ -176,7 +175,7 @@ class TestBst95BdtpRoundtrip:
     def test_wrap_unwrap_bst_95(self):
         """A BST 95 packet survives BDTP wrap/unwrap."""
         wrapped = bdtp_wrap(BST_95_HEADING)
-        payload, consumed = bdtp_unwrap(bytearray(wrapped))
+        payload, _consumed = bdtp_unwrap(bytearray(wrapped))
         assert payload == BST_95_HEADING
 
     def test_multiple_frames_in_stream(self):

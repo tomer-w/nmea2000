@@ -243,4 +243,4 @@ def detect_format(data: N2KInput) -> N2KFormat:
     )
 
 
-__all__ = ["N2KFormat", "N2KInput", "TEXT_FORMATS", "detect_format"]
+__all__ = ["TEXT_FORMATS", "N2KFormat", "N2KInput", "detect_format"]

@@ -7,11 +7,10 @@ import pytest
 from nmea2000.encoder import NMEA2000Encoder
 from nmea2000.encoder_formats import _compute_bst_checksum
 from nmea2000.input_formats import N2KFormat, detect_format
-from nmea2000.ioclient import bdtp_wrap, bdtp_unwrap
+from nmea2000.ioclient import bdtp_unwrap, bdtp_wrap
 from nmea2000.message import NMEA2000Message
 
 from .test_decoder import _get_decoder
-
 
 # PGN 65280 (Furuno Heave), PDU2: PDUF=0xFF, PDUS=0x00, priority=7, src=9, dst=255
 BST_D0_PACKET = bytes.fromhex("d01500ff0900ff1c00000000003f9fdcffffffffff43")
@@ -166,12 +165,12 @@ class TestBdtpFraming:
 
     def test_unwrap_incomplete(self):
         buf = bytearray([0x10, 0x02, 0x01, 0x02])
-        payload, consumed = bdtp_unwrap(buf)
+        payload, _consumed = bdtp_unwrap(buf)
         assert payload is None
 
     def test_unwrap_no_frame(self):
         buf = bytearray([0x01, 0x02, 0x03])
-        payload, consumed = bdtp_unwrap(buf)
+        payload, _consumed = bdtp_unwrap(buf)
         assert payload is None
 
     def test_unwrap_leading_garbage(self):
@@ -204,5 +203,5 @@ class TestBdtpFraming:
         assert p1 == b"\x01"
         buf = buf[c1:]
 
-        p2, c2 = bdtp_unwrap(buf)
+        p2, _c2 = bdtp_unwrap(buf)
         assert p2 == b"\x02"

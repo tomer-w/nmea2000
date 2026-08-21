@@ -1,13 +1,15 @@
+import asyncio
 import logging
 
 import pytest
+
 from nmea2000.consts import PhysicalQuantities
-from nmea2000.ioclient import EByteNmea2000Gateway, State, TextNmea2000Gateway
 from nmea2000.input_formats import N2KFormat
+from nmea2000.ioclient import EByteNmea2000Gateway, State, TextNmea2000Gateway
 from nmea2000.message import NMEA2000Message
-from tests.test_decoder import _validate_130842_message, _validate_65280_message
+from tests.test_decoder import _validate_65280_message, _validate_130842_message
+
 from .NMEA2000TestServer import NMEA2000TestServer
-import asyncio
 
 # Configure logging
 logging.basicConfig(
@@ -63,7 +65,7 @@ async def test_single_message_EBYTE():
     try:
         await server.send_single_message()
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise AssertionError("Timed out waiting for receive signal")
     received_msg = await receive_queue.get()
     assert isinstance(received_msg, NMEA2000Message)
@@ -81,9 +83,9 @@ async def test_single_message_N2K_ASCII_RAW_1():
     
     # Wait for the signal that a message was received
     try:
-        await server.send_to_clients("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode('utf-8'))
+        await server.send_to_clients(b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n")
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise AssertionError("Timed out waiting for receive signal")
     received_msg = await receive_queue.get()
     assert isinstance(received_msg, NMEA2000Message)
@@ -100,9 +102,9 @@ async def test_single_message_N2K_ASCII_RAW_2():
     
     # Wait for the signal that a message was received
     try:
-        await server.send_to_clients("A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000\n".encode('utf-8'))
+        await server.send_to_clients(b"A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000\n")
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise AssertionError("Timed out waiting for receive signal")
     received_msg = await receive_queue.get()
     assert isinstance(received_msg, NMEA2000Message)
@@ -119,9 +121,9 @@ async def test_single_message_CAN_FRAME_ASCII():
     
     # Wait for the signal that a message was received
     try:
-        await server.send_to_clients("00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n".encode('utf-8'))
+        await server.send_to_clients(b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n")
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise AssertionError("Timed out waiting for receive signal")
     msg = await receive_queue.get()
     assert isinstance(msg, NMEA2000Message)
@@ -171,10 +173,10 @@ async def test_auto_sense_decodes_n2k_ascii():
 
     try:
         await server.send_to_clients(
-            "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n".encode("utf-8")
+            b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
         )
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise AssertionError("Timed out waiting for auto-sensed message")
 
     msg = await receive_queue.get()
@@ -205,10 +207,10 @@ async def test_auto_sense_decodes_can_frame_ascii():
 
     try:
         await server.send_to_clients(
-            "00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n".encode("utf-8")
+            b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n"
         )
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise AssertionError("Timed out waiting for auto-sensed message")
 
     msg = await receive_queue.get()
