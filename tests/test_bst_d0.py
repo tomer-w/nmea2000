@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 """Tests for BST D0 format support (Actisense PRO-NDC-1E2K)."""
 
 from pathlib import Path
@@ -38,10 +39,14 @@ def _load_fast_packet_message() -> NMEA2000Message:
 
 
 class TestBstD0FormatDetection:
+    """Verify BST D0 packets are identified without breaking other formats."""
+
     def test_detect_bst_d0(self):
+        """Detects a BST D0 single-frame PDU2 packet by its transport header."""
         assert detect_format(BST_D0_PACKET) == N2KFormat.BST_D0
 
     def test_detect_bst_d0_pdu1(self):
+        """Detects a BST D0 single-frame PDU1 packet by its transport header."""
         assert detect_format(BST_D0_PDU1_PACKET) == N2KFormat.BST_D0
 
     def test_existing_formats_unaffected(self):
@@ -56,7 +61,10 @@ class TestBstD0FormatDetection:
 
 
 class TestBstD0Decoder:
+    """Verify BST D0 frames decode correctly and reject malformed input."""
+
     def test_decode_pdu2_pgn_65280(self):
+        """Decodes a BST D0 PDU2 packet into the expected PGN and addressing fields."""
         decoder = _get_decoder()
         msg = decoder.decode(BST_D0_PACKET)
         assert isinstance(msg, NMEA2000Message)
@@ -66,6 +74,7 @@ class TestBstD0Decoder:
         assert msg.priority == 7
 
     def test_decode_pdu1_pgn_59904(self):
+        """Decodes a BST D0 PDU1 packet while preserving destination addressing."""
         decoder = _get_decoder()
         msg = decoder.decode(BST_D0_PDU1_PACKET)
         assert isinstance(msg, NMEA2000Message)
@@ -75,16 +84,19 @@ class TestBstD0Decoder:
         assert msg.priority == 6
 
     def test_reject_bad_checksum(self):
+        """Rejects BST D0 packets whose trailing checksum is corrupted."""
         bad_packet = bytearray(BST_D0_PACKET)
         bad_packet[-1] ^= 0xFF  # corrupt checksum
         with pytest.raises(ValueError, match="checksum"):
             _get_decoder().decode(bytes(bad_packet))
 
     def test_reject_too_short(self):
+        """Rejects BST D0 packets that end before the required frame length."""
         with pytest.raises(ValueError):
             _get_decoder().decode(b"\xd0\x0d\x00")
 
     def test_reject_wrong_id(self):
+        """Falls through to format detection failure when the BST D0 header byte is wrong."""
         bad = bytearray(BST_D0_PACKET)
         bad[0] = 0xAA
         with pytest.raises(ValueError, match="Parser not found"):
@@ -95,6 +107,8 @@ class TestBstD0Decoder:
 
 
 class TestBstD0Encoder:
+    """Verify BST D0 encoding preserves payload and checksum semantics."""
+
     def test_encode_roundtrip_single_frame(self):
         """Decode a BST D0 packet, re-encode, and verify the result decodes identically."""
         decoder = _get_decoder()
@@ -132,6 +146,7 @@ class TestBstD0Encoder:
         assert redecoded.PGN == original.PGN
 
     def test_checksum_helper(self):
+        """Computes a checksum byte that makes the BST D0 frame sum to zero."""
         data = bytes([0xD0, 0x15, 0x00])
         cs = _compute_bst_checksum(data)
         assert (sum(data) + cs) & 0xFF == 0
@@ -141,45 +156,55 @@ class TestBstD0Encoder:
 
 
 class TestBdtpFraming:
+    """Verify BDTP framing wraps and unwraps BST payload streams correctly."""
+
     def test_wrap_simple(self):
+        """Wraps a simple payload with BDTP start and end delimiters."""
         data = bytes([0x01, 0x02, 0x03])
         wrapped = bdtp_wrap(data)
         assert wrapped == bytes([0x10, 0x02, 0x01, 0x02, 0x03, 0x10, 0x03])
 
     def test_wrap_escapes_dle(self):
+        """Escapes in-band DLE bytes when wrapping a BDTP payload."""
         data = bytes([0x10, 0xAA])
         wrapped = bdtp_wrap(data)
         assert wrapped == bytes([0x10, 0x02, 0x10, 0x10, 0xAA, 0x10, 0x03])
 
     def test_unwrap_simple(self):
+        """Unwraps a complete BDTP frame and reports the consumed byte count."""
         buf = bytearray([0x10, 0x02, 0x01, 0x02, 0x03, 0x10, 0x03])
         payload, consumed = bdtp_unwrap(buf)
         assert payload == bytes([0x01, 0x02, 0x03])
         assert consumed == 7
 
     def test_unwrap_with_escaped_dle(self):
+        """Restores escaped DLE bytes when unwrapping a BDTP frame."""
         buf = bytearray([0x10, 0x02, 0x10, 0x10, 0xAA, 0x10, 0x03])
         payload, consumed = bdtp_unwrap(buf)
         assert payload == bytes([0x10, 0xAA])
         assert consumed == 7
 
     def test_unwrap_incomplete(self):
+        """Returns no payload when the BDTP frame has not reached its terminator yet."""
         buf = bytearray([0x10, 0x02, 0x01, 0x02])
         payload, _consumed = bdtp_unwrap(buf)
         assert payload is None
 
     def test_unwrap_no_frame(self):
+        """Returns no payload when the buffer does not contain a BDTP frame."""
         buf = bytearray([0x01, 0x02, 0x03])
         payload, _consumed = bdtp_unwrap(buf)
         assert payload is None
 
     def test_unwrap_leading_garbage(self):
+        """Skips leading garbage bytes before the first valid BDTP frame."""
         buf = bytearray([0xFF, 0xAA, 0x10, 0x02, 0x42, 0x10, 0x03])
         payload, consumed = bdtp_unwrap(buf)
         assert payload == bytes([0x42])
         assert consumed == 7
 
     def test_wrap_unwrap_roundtrip(self):
+        """Round-trips arbitrary payload bytes through BDTP wrapping and unwrapping."""
         original = bytes([0x10, 0x02, 0x03, 0x10, 0xFF, 0x00])
         wrapped = bdtp_wrap(original)
         buf = bytearray(wrapped)

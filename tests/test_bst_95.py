@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 """Tests for BST 95 format support (Actisense PRO-NDC-1E2K, CAN Actisense mode).
 
 Test data captured from a real PRO-NDC-1E2K device (GitHub issue #46).
@@ -42,10 +43,14 @@ BST_95_SDK_EXAMPLE = bytes.fromhex("950e01203002f809fffc370a0010ffffbf")
 
 
 class TestBst95FormatDetection:
+    """Verify BST 95 packets are detected without confusing nearby formats."""
+
     def test_detect_bst_95(self):
+        """Detects a BST 95 single-frame PDU2 packet by its transport header."""
         assert detect_format(BST_95_HEADING) == N2KFormat.BST_95
 
     def test_detect_bst_95_pdu1(self):
+        """Detects a BST 95 single-frame PDU1 packet by its transport header."""
         assert detect_format(BST_95_PDU1) == N2KFormat.BST_95
 
     def test_no_false_positive_on_bst_d0(self):
@@ -55,7 +60,10 @@ class TestBst95FormatDetection:
 
 
 class TestBst95Decoder:
+    """Verify BST 95 frames decode correctly for single-frame and fast-packet traffic."""
+
     def test_decode_vessel_heading(self):
+        """Decodes the captured BST 95 heading frame into PGN 127250 metadata."""
         decoder = _get_decoder()
         msg = decoder.decode(BST_95_HEADING)
         assert msg is not None
@@ -66,6 +74,7 @@ class TestBst95Decoder:
         assert msg.destination == 255
 
     def test_decode_position_rapid_update(self):
+        """Decodes the captured BST 95 position update into PGN 129025."""
         decoder = _get_decoder()
         msg = decoder.decode(BST_95_POSITION)
         assert msg is not None
@@ -74,6 +83,7 @@ class TestBst95Decoder:
         assert msg.source == 7
 
     def test_decode_attitude(self):
+        """Decodes the captured BST 95 attitude frame into PGN 127257."""
         decoder = _get_decoder()
         msg = decoder.decode(BST_95_ATTITUDE)
         assert msg is not None
@@ -105,6 +115,7 @@ class TestBst95Decoder:
         assert len(msg.fields) > 0
 
     def test_bad_checksum(self):
+        """Rejects BST 95 packets whose trailing checksum has been corrupted."""
         bad_packet = bytearray(BST_95_HEADING)
         bad_packet[-1] ^= 0xFF
         decoder = _get_decoder()
@@ -112,6 +123,7 @@ class TestBst95Decoder:
             decoder.decode(bytes(bad_packet))
 
     def test_bad_length(self):
+        """Rejects BST 95 packets whose encoded length byte is inconsistent."""
         bad = bytearray(BST_95_HEADING)
         bad[1] = 0x02  # wrong length
         decoder = _get_decoder()
@@ -130,6 +142,8 @@ class TestBst95Decoder:
 
 
 class TestBst95Encoder:
+    """Verify BST 95 encoding preserves checksums and packetization."""
+
     def test_roundtrip_single_frame(self):
         """Decode a BST 95 packet, re-encode, and verify the result decodes identically."""
         decoder = _get_decoder()
@@ -168,12 +182,15 @@ class TestBst95Encoder:
             assert sum(pkt) & 0xFF == 0
 
     def test_checksum_helper(self):
+        """Computes a checksum byte that makes the BST 95 frame sum to zero."""
         data = bytes([0x95, 0x0E, 0x00])
         cs = _compute_bst_checksum(data)
         assert (sum(data) + cs) % 256 == 0
 
 
 class TestBst95BdtpRoundtrip:
+    """Verify BDTP framing preserves BST 95 packets in streamed transport."""
+
     def test_wrap_unwrap_bst_95(self):
         """A BST 95 packet survives BDTP wrap/unwrap."""
         wrapped = bdtp_wrap(BST_95_HEADING)

@@ -1,3 +1,5 @@
+"""Import canboatjs fixture modules and rewrite them into one JSON test file."""
+
 from __future__ import annotations
 
 import argparse
@@ -7,6 +9,7 @@ from pathlib import Path
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments and resolve input and output paths relative to the repo."""
     parser = argparse.ArgumentParser(
         description=(
             "Import canboatjs PGN fixtures into a single JSON file without "
@@ -34,6 +37,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def list_fixture_files(input_dir: Path) -> list[Path]:
+    """Return JavaScript fixture files sorted by numeric PGN stem."""
     return sorted(input_dir.glob("*.js"), key=lambda path: int(path.stem))
 
 
@@ -98,10 +102,15 @@ def _convert_jsish_to_python_literal(text: str) -> str:
             while next_index < len(text) and text[next_index].isspace():
                 next_index += 1
 
-            if next_index < len(text) and text[next_index] == ":" and previous_char in {
-                "{",
-                ",",
-            }:
+            if (
+                next_index < len(text)
+                and text[next_index] == ":"
+                and previous_char
+                in {
+                    "{",
+                    ",",
+                }
+            ):
                 output.append(repr(token))
             elif token == "true":
                 output.append("True")
@@ -122,6 +131,7 @@ def _convert_jsish_to_python_literal(text: str) -> str:
 
 
 def load_fixture_cases(fixture_path: Path) -> list[dict]:
+    """Load one canboatjs fixture module into a list of Python dictionaries."""
     module_text = fixture_path.read_text(encoding="utf-8")
     python_literal = _convert_jsish_to_python_literal(
         _strip_module_wrapper(module_text, fixture_path)
@@ -135,6 +145,7 @@ def load_fixture_cases(fixture_path: Path) -> list[dict]:
 
 
 def convert_fixtures(input_dir: Path, output_file: Path) -> dict:
+    """Combine all fixture modules into one JSON object and write it to disk."""
     cases: list[dict] = []
 
     for fixture_path in list_fixture_files(input_dir):
@@ -166,6 +177,7 @@ def convert_fixtures(input_dir: Path, output_file: Path) -> dict:
 
 
 def main() -> int:
+    """Run the fixture import CLI and report how many cases were written."""
     args = parse_args()
     output = convert_fixtures(args.input_dir, args.output_file)
     print(f"Wrote {output['caseCount']} test cases to {args.output_file}")

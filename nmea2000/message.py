@@ -1,9 +1,11 @@
+"""Core message, field, and ISO NAME data structures for decoded PGNs."""
+
 from __future__ import annotations
 
 import binascii
 import hashlib
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field as dataclass_field
 from datetime import date, datetime, time, timedelta
 from typing import Any, TypeAlias
 
@@ -15,7 +17,7 @@ from .utils import (
     kelvin_to_fahrenheit,
     mps_to_knots,
     pascal_to_bar,
-    pascal_to_PSI,
+    pascal_to_psi,
     radians_to_degrees,
 )
 
@@ -35,6 +37,7 @@ FieldValue: TypeAlias = "FieldScalarValue | list[RepeatingFieldEntry]"
 
 # Helper function
 def int_to_bytes(value):
+    """Return the shortest big-endian byte string that can represent an integer."""
     # Determine the number of bytes needed
     byte_length = (value.bit_length() + 8) // 8 or 1
     return value.to_bytes(byte_length, byteorder="big", signed=False)
@@ -43,15 +46,17 @@ def int_to_bytes(value):
 # NMEA2000Message class represents a single NMEA 2000 PGN
 @dataclass
 class NMEA2000Message:
-    PGN: int
+    """Decoded or synthetic NMEA 2000 PGN with field values and routing metadata."""
+
+    PGN: int  # pylint: disable=invalid-name
     id: str = ""
     description: str = ""
     ttl: timedelta | None = None
-    fields: list[NMEA2000Field] = field(default_factory=list)
+    fields: list[NMEA2000Field] = dataclass_field(default_factory=list)
     source: int = 0
     destination: int = 0
     priority: int = 0
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp: datetime = dataclass_field(default_factory=datetime.now)
     source_iso_name: IsoName | None = None
     hash: str | None = None
     raw_can_data: bytes | str | None = None
@@ -66,6 +71,7 @@ class NMEA2000Message:
         build_network_map: bool,
         raw_can_data: bytes | str,
     ):
+        """Attach transport metadata and optionally build a stable network-map hash."""
         self.source = src
         self.destination = dest
         self.priority = priority
@@ -88,6 +94,7 @@ class NMEA2000Message:
             self.hash = hashlib.md5(primary_key.encode()).hexdigest()
 
     def apply_preferred_units(self, preferred_units: dict[PhysicalQuantities, str]):
+        """Convert numeric field values in place to the caller's preferred units."""
         if len(preferred_units) == 0:
             return
 
@@ -120,7 +127,7 @@ class NMEA2000Message:
                 f.value = pascal_to_bar(NMEA2000Message._numeric_value(f))
             elif requested_unit == "psi":
                 f.unit_of_measurement = "PSI"
-                f.value = pascal_to_PSI(NMEA2000Message._numeric_value(f))
+                f.value = pascal_to_psi(NMEA2000Message._numeric_value(f))
         if f.physical_quantities == PhysicalQuantities.ANGLE:
             requested_unit = preferred_units.get(PhysicalQuantities.ANGLE, None)
             if requested_unit == "deg":
@@ -141,16 +148,21 @@ class NMEA2000Message:
         )
 
     def __str__(self):
+        """Return a readable summary of the message header and decoded fields."""
         return f"NMEA2000Message(PGN={self.PGN}, id={self.id}, pri={self.priority}, src={self.source}, source_iso_name={self.source_iso_name}, dest={self.destination}, description={self.description}, fields={self.fields})"
 
     def __repr__(self):
+        """Return the same human-readable representation used by __str__."""
         return self.__str__()
 
     def to_string_test_style(self):
+        """Render the message using the compact comparison format used in tests."""
         fields_str = ", ".join([field.to_string_test_style() for field in self.fields])
         return f"{self.PGN} {self.description}: {fields_str}"
 
     def to_json(self):
+        """Serialize the message to JSON, converting bytes and timedeltas explicitly."""
+
         def default(obj: Any) -> Any:
             if isinstance(obj, (bytes, bytearray)):
                 return obj.hex()
@@ -158,11 +170,14 @@ class NMEA2000Message:
                 return obj.total_seconds()
             raise TypeError
 
-        return orjson.dumps(self.__dict__, default=default).decode()
+        return orjson.dumps(  # pylint: disable=no-member
+            self.__dict__, default=default
+        ).decode()
 
     @staticmethod
     def from_json(json_str):
-        data = orjson.loads(json_str)
+        """Deserialize a JSON string into an NMEA2000Message and field objects."""
+        data = orjson.loads(json_str)  # pylint: disable=no-member
         if isinstance(data.get("timestamp"), str):
             data["timestamp"] = datetime.fromisoformat(data["timestamp"])
         msg = NMEA2000Message(**data)
@@ -170,18 +185,21 @@ class NMEA2000Message:
         return msg
 
     def get_field_by_id(self, field_id: str) -> NMEA2000Field:
+        """Return the decoded field with a matching identifier or raise if absent."""
         nmea_field = next((f for f in self.fields if f.id == field_id), None)
         if nmea_field is None:
             raise ValueError(f"PGN: {self.id}: Field with id '{field_id}' is missing.")
         return nmea_field
 
     def get_list_field_size(self) -> int:
+        """Return the number of repeating-list entries stored under ##list##."""
         list_fields = self.get_field_by_id("##list##")
         if list_fields.value is None or not isinstance(list_fields.value, list):
             raise ValueError(f"PGN: {self.id}: Field with id '##list##' is not a list.")
         return len(list_fields.value)
 
     def get_list_field_by_id(self, list_index: int, field_id: str) -> NMEA2000Field:
+        """Return one field from a specific repeating-list entry by index and id."""
         list_fields = self.get_field_by_id("##list##")
         if list_fields.value is None or not isinstance(list_fields.value, list):
             raise ValueError(f"PGN: {self.id}: Field with id '##list##' is not a list.")
@@ -200,41 +218,44 @@ class NMEA2000Message:
         return nmea_field
 
     def get_field_int_value_by_id(
-        self, id: str, default_value: int | None = None
+        self, field_id: str, default_value: int | None = None
     ) -> int:
-        field = self.get_field_by_id(id)
-        if not isinstance(field.value, int):
+        """Return an integer field value or a caller-supplied default when allowed."""
+        nmea_field = self.get_field_by_id(field_id)
+        if not isinstance(nmea_field.value, int):
             if default_value is not None:
                 return default_value
             raise ValueError(
-                f"PGN: {self.id}: Field with id '{id}' is not an integer. It is {type(field.value).__name__}."
+                f"PGN: {self.id}: Field with id '{field_id}' is not an integer. It is {type(nmea_field.value).__name__}."
             )
-        return field.value
+        return nmea_field.value
 
     def get_field_str_value_by_id(self, field_id: str) -> str | None:
-        field = self.get_field_by_id(field_id)
-        if field.value is None:
+        """Return a string field value, logging when the field value is explicitly None."""
+        nmea_field = self.get_field_by_id(field_id)
+        if nmea_field.value is None:
             logger.warning(
                 "PGN: %s: Field with id '%s' is None. Raw value is: %s",
                 self.id,
                 field_id,
-                field.raw_value,
+                nmea_field.raw_value,
             )
             return None
-        if not isinstance(field.value, str):
+        if not isinstance(nmea_field.value, str):
             raise ValueError(
-                f"PGN: {self.id}: Field with id '{field_id}' is not a string. It is {type(field.value).__name__}."
+                f"PGN: {self.id}: Field with id '{field_id}' is not a string. It is {type(nmea_field.value).__name__}."
             )
-        return field.value
+        return nmea_field.value
 
     def get_field_raw_int_by_id(
         self, field_id: str, default_value: int | None = None
     ) -> int:
-        field = self.get_field_by_id(field_id)
-        if isinstance(field.raw_value, int):
-            return field.raw_value
-        if isinstance(field.value, int):
-            return field.value
+        """Return the raw integer value for a field, falling back to its decoded int value."""
+        nmea_field = self.get_field_by_id(field_id)
+        if isinstance(nmea_field.raw_value, int):
+            return nmea_field.raw_value
+        if isinstance(nmea_field.value, int):
+            return nmea_field.value
         if default_value is not None:
             return default_value
         raise ValueError(
@@ -242,15 +263,16 @@ class NMEA2000Message:
         )
 
     def get_field_display_string_by_id(self, field_id: str) -> str:
-        field = self.get_field_by_id(field_id)
-        if isinstance(field.value, str):
-            return field.value
-        if isinstance(field.raw_value, str):
-            return field.raw_value
-        if isinstance(field.raw_value, int):
-            return str(field.raw_value)
-        if isinstance(field.value, int):
-            return str(field.value)
+        """Return a string form suitable for display from decoded or raw field data."""
+        nmea_field = self.get_field_by_id(field_id)
+        if isinstance(nmea_field.value, str):
+            return nmea_field.value
+        if isinstance(nmea_field.raw_value, str):
+            return nmea_field.raw_value
+        if isinstance(nmea_field.raw_value, int):
+            return str(nmea_field.raw_value)
+        if isinstance(nmea_field.value, int):
+            return str(nmea_field.value)
         raise ValueError(
             f"PGN: {self.id}: Field with id '{field_id}' does not have a string display value."
         )
@@ -259,6 +281,8 @@ class NMEA2000Message:
 # NMEA2000Field class represents a single NMEA 2000 field
 @dataclass
 class NMEA2000Field:
+    """One decoded PGN field, including display value, raw value, and units."""
+
     id: str
     name: str | None = None
     description: str | None = None
@@ -275,12 +299,15 @@ class NMEA2000Field:
         return self.type in _NUMERIC_FIELD_TYPES
 
     def __str__(self):
+        """Return a readable summary of the field metadata and values."""
         return f"NMEA2000Field(id={self.id}, name={self.name}, description={self.description}, unit_of_measurement={self.unit_of_measurement}, value={self.value}, raw_value={self.raw_value}, physical_quantities={self.physical_quantities}, type={self.type}, part_of_primary_key = {self.part_of_primary_key})"
 
     def __repr__(self):
+        """Return the same readable representation used by __str__."""
         return self.__str__()
 
     def to_string_test_style(self):
+        """Render the field using the byte-oriented format expected by tests."""
         if isinstance(self.raw_value, int):
             # Convert integer to bytes (big-endian)
             value_bytes = int_to_bytes(self.raw_value)
@@ -292,6 +319,8 @@ class NMEA2000Field:
 
 
 class LookupFieldTypeEnumeration:
+    """Schema metadata describing one lookup-backed field type declaration."""
+
     name: str
     field_type: FieldTypes
     resolution: float | None
@@ -318,6 +347,8 @@ class LookupFieldTypeEnumeration:
 
 @dataclass
 class IsoName:
+    """Parsed ISO Address Claim NAME fields and their packed 64-bit value."""
+
     unique_number: int
     manufacturer_code: str
     device_instance: int
@@ -444,4 +475,5 @@ class IsoName:
         )
 
     def __repr__(self):
+        """Return the same readable representation used by __str__."""
         return self.__str__()

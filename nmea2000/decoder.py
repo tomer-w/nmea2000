@@ -167,7 +167,9 @@ class DecoderBase(DecoderStaticsMixin):
             dir_name = os.path.dirname(dump_to_file)
             if dir_name:
                 os.makedirs(dir_name, exist_ok=True)
-            self.dump_file = open(dump_to_file, "a", encoding="utf-8")  # noqa: SIM115
+            self.dump_file = open(  # pylint: disable=consider-using-with
+                dump_to_file, "a", encoding="utf-8"
+            )
 
         if not isinstance(exclude_pgns, list):
             raise ValueError("exclude_pgns must be a list")
@@ -554,10 +556,12 @@ class NMEA2000Decoder(DecoderInterface):
     def add_handler(
         cls, input_format: N2KFormat, handler_cls: type[DecoderInterface]
     ) -> None:
+        """Register the concrete decoder class for one detected input format."""
         cls.HANDLERS[input_format] = handler_cls
 
     @classmethod
     def get_handler(cls, input_format: N2KFormat) -> Callable[..., DecoderInterface]:
+        """Return the registered decoder class for an input format."""
         handler_cls = cls.HANDLERS.get(input_format)
         if handler_cls is None:
             raise ValueError(f"Unsupported input format: {input_format}")

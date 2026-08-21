@@ -1,8 +1,14 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""Async TCP test server helpers for exercising gateway clients."""
+
+# pylint: disable=invalid-name
 import argparse
 import asyncio
 import logging
 import math
 import time
+
+# pylint: disable=broad-exception-caught
 
 from nmea2000.consts import FieldTypes, PhysicalQuantities
 from nmea2000.encoder import create_encoder
@@ -19,7 +25,7 @@ logger = logging.getLogger("NMEA2000TestServer")
 class NMEA2000TestServer:
     """Test TCP server that simulates a NMEA2000 gateway."""
 
-    def __init__(self, host, port: int, type: N2KFormat):
+    def __init__(self, host, port: int, input_format: N2KFormat):
         """Initialize the test server.
 
         Args:
@@ -28,7 +34,7 @@ class NMEA2000TestServer:
         """
         self.host = host
         self.port = port
-        self.type = type
+        self.input_format = input_format
         self.server = None
         self.clients: list[asyncio.StreamWriter] = []
         self.running = False
@@ -39,7 +45,7 @@ class NMEA2000TestServer:
     ):
         """Handle a new client connection."""
         addr = writer.get_extra_info("peername")
-        logger.info(f"New connection from {addr}")
+        logger.info("New connection from %s", addr)
 
         self.clients.append(writer)
         try:
@@ -48,11 +54,11 @@ class NMEA2000TestServer:
                     # Read data from the client (if any)
                     data = await asyncio.wait_for(reader.read(8), timeout=0.1)
                     if data:
-                        logger.info(f"Received from {addr}: {data.hex()}")
+                        logger.info("Received from %s: %s", addr, data.hex())
                         # Echo back the received data
                         writer.write(data)
                         await writer.drain()
-                        logger.info(f"Echoed back: {data.hex()}")
+                        logger.info("Echoed back: %s", data.hex())
                     else:
                         await asyncio.sleep(0.01)
                 except TimeoutError:
@@ -60,10 +66,10 @@ class NMEA2000TestServer:
                     pass
                 except asyncio.IncompleteReadError:
                     # Client disconnected
-                    logger.info(f"Client {addr} disconnected")
+                    logger.info("Client %s disconnected", addr)
                     break
         except Exception as e:
-            logger.error(f"Error handling client {addr}: {e}")
+            logger.error("Error handling client %s: %s", addr, e)
         finally:
             # Clean up
             if writer in self.clients:
@@ -73,23 +79,26 @@ class NMEA2000TestServer:
                 await writer.wait_closed()
             except Exception:
                 pass
-            logger.info(f"Connection from {addr} closed")
+            logger.info("Connection from %s closed", addr)
 
     async def send_single_message(self):
+        """Send one format-specific sample message to every connected client."""
         # Generate a test message
-        if self.type == N2KFormat.EBYTE:
+        if self.input_format == N2KFormat.EBYTE:
             message = self._generate_test_message()
 
             # Encode the message for the EByte transport
             tcp_data = self.encoder.encode(message)[0]
             assert isinstance(tcp_data, bytes)
-            logger.info(f"Broadcasting message (PGN {message.PGN}): {tcp_data.hex()}")
-        elif self.type == N2KFormat.N2K_ASCII_RAW:
+            logger.info(
+                "Broadcasting message (PGN %s): %s", message.PGN, tcp_data.hex()
+            )
+        elif self.input_format == N2KFormat.N2K_ASCII_RAW:
             tcp_data = b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
-        elif self.type == N2KFormat.CAN_FRAME_ASCII:
+        elif self.input_format == N2KFormat.CAN_FRAME_ASCII:
             tcp_data = b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n"
         else:
-            raise Exception("Type not supported")
+            raise ValueError("Type not supported")
         # Send the encoded message to all connected clients
         await self.send_to_clients(tcp_data)
 
@@ -103,7 +112,7 @@ class NMEA2000TestServer:
             try:
                 await self.send_single_message()
             except Exception as e:
-                logger.error(f"Error broadcasting message: {e}")
+                logger.error("Error broadcasting message: %s", e)
 
             await asyncio.sleep(1)
 
@@ -195,7 +204,7 @@ class NMEA2000TestServer:
                 writer.write(data)
                 await writer.drain()
             except Exception as e:
-                logger.error(f"Error sending to client: {e}")
+                logger.error("Error sending to client: %s", e)
                 disconnected_clients.append(writer)
 
         # Remove disconnected clients
@@ -211,13 +220,15 @@ class NMEA2000TestServer:
         )
 
         addr = self.server.sockets[0].getsockname()
-        logger.info(f"NMEA2000 Test Server running on {addr}")
+        logger.info("NMEA2000 Test Server running on %s", addr)
 
     def start_broadcast(self):
+        """Start the background task that periodically broadcasts test data."""
         # Start broadcasting test messages
         asyncio.create_task(self.broadcast_test_messages())
 
     async def wait(self):
+        """Serve clients until the test server is stopped or cancelled."""
         assert self.server is not None
         async with self.server:
             await self.server.serve_forever()
@@ -255,7 +266,7 @@ async def main():
     )
     args = parser.parse_args()
 
-    server = NMEA2000TestServer(host=args.host, port=args.port, type=args.type)
+    server = NMEA2000TestServer(host=args.host, port=args.port, input_format=args.type)
     await server.start()
     server.start_broadcast()
     try:

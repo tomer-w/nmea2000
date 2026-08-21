@@ -2,13 +2,17 @@
 
 import subprocess
 import sys
+from pathlib import Path
 
-subprocess.check_call([sys.executable, "canboat2python.py"])
-result = subprocess.run(
-    ["git", "diff", "--exit-code", "nmea2000/pgns.py", "nmea2000/consts.py"]
-)
-if result.returncode != 0:
+GENERATED_FILES = (Path("nmea2000/pgns.py"), Path("nmea2000/consts.py"))
+
+before = {path: path.read_bytes() for path in GENERATED_FILES}
+subprocess.run([sys.executable, "canboat2python.py"], check=True)
+changed = [path for path in GENERATED_FILES if path.read_bytes() != before[path]]
+
+if changed:
     print(
-        "ERROR: Generated files are out of date. Run 'python canboat2python.py' and stage the results."
+        "ERROR: Generated files were out of date: "
+        + ", ".join(str(path) for path in changed)
     )
-sys.exit(result.returncode)
+    sys.exit(1)

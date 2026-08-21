@@ -1,9 +1,15 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""WaveShare gateway receive-path tests for framing, resync, and buffering."""
+
 import asyncio
 import logging
 from typing import cast
 
+# pylint: disable=protected-access
+
 import pytest
 
+from nmea2000.decoder import NMEA2000Decoder
 from nmea2000.ioclient import WaveShareNmea2000Gateway
 from nmea2000.message import NMEA2000Message
 
@@ -16,9 +22,11 @@ class MockSerialReader:
     """Mock serial reader that yields pre-loaded data chunks."""
 
     def __init__(self, chunks: list[bytes]):
+        """Store the byte chunks that successive reads should return."""
         self._chunks = list(chunks)
 
-    async def read(self, n: int) -> bytes:
+    async def read(self, _n: int) -> bytes:
+        """Return the next chunk or wait forever once the mock input is exhausted."""
         if self._chunks:
             return self._chunks.pop(0)
         # Block forever once data is exhausted (simulates waiting for more data)
@@ -27,6 +35,7 @@ class MockSerialReader:
 
 
 def _mock_reader(chunks: list[bytes]) -> asyncio.StreamReader:
+    """Wrap chunked bytes in a StreamReader-compatible mock object."""
     return cast(asyncio.StreamReader, MockSerialReader(chunks))
 
 
@@ -34,8 +43,6 @@ def _create_gateway() -> WaveShareNmea2000Gateway:
     """Create a WaveShareNmea2000Gateway with internal state ready for testing."""
     gw = WaveShareNmea2000Gateway.__new__(WaveShareNmea2000Gateway)
     # Initialize only what _receive_impl needs
-    from nmea2000.decoder import NMEA2000Decoder
-
     gw.decoder = NMEA2000Decoder(
         exclude_pgns=[],
         include_pgns=[],

@@ -1,3 +1,5 @@
+"""Concrete encoders that serialize messages into supported output formats."""
+
 from __future__ import annotations
 
 import base64
@@ -51,9 +53,9 @@ def _encode_can_frame_packets(
     encoder: EncoderBase,
     nmea200_message: NMEA2000Message,
 ) -> list[bytes]:
-    encoded_messages = encoder._encode(nmea200_message)
+    encoded_messages = encoder._encode(nmea200_message)  # pylint: disable=protected-access
     # Construct the frame ID
-    frame_id_int = type(encoder)._build_header(
+    frame_id_int = type(encoder)._build_header(  # pylint: disable=protected-access
         nmea200_message.PGN,
         nmea200_message.source,
         nmea200_message.destination,
@@ -74,8 +76,8 @@ def _encode_python_can_messages(
     encoder: EncoderBase,
     nmea200_message: NMEA2000Message,
 ) -> list[can.message.Message]:
-    encoded_messages = encoder._encode(nmea200_message)
-    arbitration_id = type(encoder)._build_header(
+    encoded_messages = encoder._encode(nmea200_message)  # pylint: disable=protected-access
+    arbitration_id = type(encoder)._build_header(  # pylint: disable=protected-access
         nmea200_message.PGN,
         nmea200_message.source,
         nmea200_message.destination,

@@ -1,5 +1,10 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""TCP gateway client integration tests across supported wire formats."""
+
 import asyncio
 import logging
+
+# pylint: disable=protected-access
 
 import pytest
 
@@ -21,19 +26,22 @@ logger = logging.getLogger("test_tcp_client")
 async def _wait_for_server_client(
     server: NMEA2000TestServer, timeout: float = 1.0
 ) -> None:
+    """Wait until the test server has accepted one client connection."""
     deadline = asyncio.get_running_loop().time() + timeout
     while not server.clients and asyncio.get_running_loop().time() < deadline:
         await asyncio.sleep(0.01)
     assert server.clients, "Test server did not register a client connection"
 
 
-def _create_server_client(type: N2KFormat):
+def _create_server_client(input_format: N2KFormat):
+    """Create a test server, matching client, and receive synchronization primitives."""
     # Create a queue and a signal
     receive_queue = asyncio.Queue()
     receive_signal = asyncio.Event()
 
     # Define receive callback
     async def handle_received_message(message: NMEA2000Message):
+        """Queue the decoded message and notify waiting tests."""
         print(f"Received: {message}")
         await receive_queue.put(message)
         receive_signal.set()
@@ -43,15 +51,17 @@ def _create_server_client(type: N2KFormat):
         """Callback function for status changes."""
         print(f"Connection status: {state}")
 
-    server = NMEA2000TestServer("127.0.0.1", 8881, type)
-    if type == N2KFormat.EBYTE:
+    server = NMEA2000TestServer("127.0.0.1", 8881, input_format)
+    if input_format == N2KFormat.EBYTE:
         client = EByteNmea2000Gateway("127.0.0.1", 8881)
-    elif type == N2KFormat.N2K_ASCII_RAW:
+    elif input_format == N2KFormat.N2K_ASCII_RAW:
         client = TextNmea2000Gateway(
-            "127.0.0.1", 8881, format=type, seed_network_map=False
+            "127.0.0.1", 8881, output_format=input_format, seed_network_map=False
         )
-    elif type == N2KFormat.CAN_FRAME_ASCII:
-        client = TextNmea2000Gateway("127.0.0.1", 8881, format=type)
+    elif input_format == N2KFormat.CAN_FRAME_ASCII:
+        client = TextNmea2000Gateway("127.0.0.1", 8881, output_format=input_format)
+    else:
+        raise ValueError(f"Unsupported test format: {input_format}")
     client.set_receive_callback(handle_received_message)
     client.set_status_callback(handle_status_change)
 
@@ -59,7 +69,8 @@ def _create_server_client(type: N2KFormat):
 
 
 @pytest.mark.asyncio
-async def test_single_message_EBYTE():
+async def test_single_message_ebyte():
+    """An EBYTE client should decode one broadcast vessel-heading packet."""
     server, client, receive_signal, receive_queue = _create_server_client(
         N2KFormat.EBYTE
     )
@@ -71,8 +82,8 @@ async def test_single_message_EBYTE():
     try:
         await server.send_single_message()
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except TimeoutError:
-        raise AssertionError("Timed out waiting for receive signal")
+    except TimeoutError as exc:
+        raise AssertionError("Timed out waiting for receive signal") from exc
     received_msg = await receive_queue.get()
     assert isinstance(received_msg, NMEA2000Message)
     assert received_msg.PGN == 127250
@@ -82,7 +93,8 @@ async def test_single_message_EBYTE():
 
 
 @pytest.mark.asyncio
-async def test_single_message_N2K_ASCII_RAW_1():
+async def test_single_message_n2k_ascii_raw_1():
+    """A text gateway should decode the sample Furuno heave N2K ASCII frame."""
     server, client, receive_signal, receive_queue = _create_server_client(
         N2KFormat.N2K_ASCII_RAW
     )
@@ -94,8 +106,8 @@ async def test_single_message_N2K_ASCII_RAW_1():
     try:
         await server.send_to_clients(b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n")
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except TimeoutError:
-        raise AssertionError("Timed out waiting for receive signal")
+    except TimeoutError as exc:
+        raise AssertionError("Timed out waiting for receive signal") from exc
     received_msg = await receive_queue.get()
     assert isinstance(received_msg, NMEA2000Message)
     _validate_65280_message(received_msg)
@@ -104,7 +116,8 @@ async def test_single_message_N2K_ASCII_RAW_1():
 
 
 @pytest.mark.asyncio
-async def test_single_message_N2K_ASCII_RAW_2():
+async def test_single_message_n2k_ascii_raw_2():
+    """A text gateway should decode the multi-field proprietary N2K ASCII sample."""
     server, client, receive_signal, receive_queue = _create_server_client(
         N2KFormat.N2K_ASCII_RAW
     )
@@ -118,8 +131,8 @@ async def test_single_message_N2K_ASCII_RAW_2():
             b"A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000\n"
         )
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except TimeoutError:
-        raise AssertionError("Timed out waiting for receive signal")
+    except TimeoutError as exc:
+        raise AssertionError("Timed out waiting for receive signal") from exc
     received_msg = await receive_queue.get()
     assert isinstance(received_msg, NMEA2000Message)
     _validate_130842_message(received_msg)
@@ -128,7 +141,8 @@ async def test_single_message_N2K_ASCII_RAW_2():
 
 
 @pytest.mark.asyncio
-async def test_single_message_CAN_FRAME_ASCII():
+async def test_single_message_can_frame_ascii():
+    """A text gateway should decode one CAN frame ASCII attitude message with expected fields."""
     server, client, receive_signal, receive_queue = _create_server_client(
         N2KFormat.CAN_FRAME_ASCII
     )
@@ -142,8 +156,8 @@ async def test_single_message_CAN_FRAME_ASCII():
             b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n"
         )
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except TimeoutError:
-        raise AssertionError("Timed out waiting for receive signal")
+    except TimeoutError as exc:
+        raise AssertionError("Timed out waiting for receive signal") from exc
     msg = await receive_queue.get()
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 127257
@@ -179,11 +193,14 @@ async def test_auto_sense_decodes_n2k_ascii():
     receive_signal = asyncio.Event()
 
     async def on_message(message: NMEA2000Message):
+        """Store one auto-sensed message and wake the waiting test."""
         await receive_queue.put(message)
         receive_signal.set()
 
     server = NMEA2000TestServer("127.0.0.1", 8881, N2KFormat.N2K_ASCII_RAW)
-    client = TextNmea2000Gateway("127.0.0.1", 8881, format=None, seed_network_map=False)
+    client = TextNmea2000Gateway(
+        "127.0.0.1", 8881, output_format=None, seed_network_map=False
+    )
     client.set_receive_callback(on_message)
 
     await server.start()
@@ -193,8 +210,8 @@ async def test_auto_sense_decodes_n2k_ascii():
     try:
         await server.send_to_clients(b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n")
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except TimeoutError:
-        raise AssertionError("Timed out waiting for auto-sensed message")
+    except TimeoutError as exc:
+        raise AssertionError("Timed out waiting for auto-sensed message") from exc
 
     msg = await receive_queue.get()
     assert isinstance(msg, NMEA2000Message)
@@ -211,11 +228,14 @@ async def test_auto_sense_decodes_can_frame_ascii():
     receive_signal = asyncio.Event()
 
     async def on_message(message: NMEA2000Message):
+        """Store one auto-sensed message and wake the waiting test."""
         await receive_queue.put(message)
         receive_signal.set()
 
     server = NMEA2000TestServer("127.0.0.1", 8881, N2KFormat.CAN_FRAME_ASCII)
-    client = TextNmea2000Gateway("127.0.0.1", 8881, format=None, seed_network_map=False)
+    client = TextNmea2000Gateway(
+        "127.0.0.1", 8881, output_format=None, seed_network_map=False
+    )
     client.set_receive_callback(on_message)
 
     await server.start()
@@ -227,8 +247,8 @@ async def test_auto_sense_decodes_can_frame_ascii():
             b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n"
         )
         await asyncio.wait_for(receive_signal.wait(), timeout=10)
-    except TimeoutError:
-        raise AssertionError("Timed out waiting for auto-sensed message")
+    except TimeoutError as exc:
+        raise AssertionError("Timed out waiting for auto-sensed message") from exc
 
     msg = await receive_queue.get()
     assert isinstance(msg, NMEA2000Message)
@@ -241,9 +261,9 @@ async def test_auto_sense_decodes_can_frame_ascii():
 @pytest.mark.asyncio
 async def test_auto_sense_encode_raises():
     """Encoding must fail when format=None (auto-sense mode)."""
-    from nmea2000.ioclient import TextNmea2000Gateway as _TG
-
-    client = _TG("127.0.0.1", 8881, format=None, seed_network_map=False)
+    client = TextNmea2000Gateway(
+        "127.0.0.1", 8881, output_format=None, seed_network_map=False
+    )
     dummy_msg = NMEA2000Message.from_json(
         '{"PGN":59904,"id":"isoRequest","description":"ISO Request",'
         '"fields":[{"id":"pgn","name":"PGN","value":60928,"raw_value":60928}],'
@@ -256,10 +276,11 @@ async def test_auto_sense_encode_raises():
 
 @pytest.mark.asyncio
 async def test_text_gateway_encodes_transport_bytes():
+    """Text gateway encoding should append transport line endings to the emitted frame bytes."""
     client = TextNmea2000Gateway(
         "127.0.0.1",
         8881,
-        format=N2KFormat.N2K_ASCII_RAW,
+        output_format=N2KFormat.N2K_ASCII_RAW,
         seed_network_map=False,
     )
     message = NMEA2000Message.from_json(

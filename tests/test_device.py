@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""Device behavior tests for address claiming, startup announcements, and replies."""
+
 import asyncio
 from datetime import datetime
 
@@ -10,7 +13,10 @@ from nmea2000.message import NMEA2000Field, NMEA2000Message
 
 
 class FakeClient:
+    """Minimal async client double that records sent messages and callbacks."""
+
     def __init__(self):
+        """Initialize disconnected client state and message capture storage."""
         self.state = State.DISCONNECTED
         self.receive_callback = None
         self.status_callback = None
@@ -18,31 +24,40 @@ class FakeClient:
         self.encoder = create_encoder()
 
     def set_receive_callback(self, callback):
+        """Register the coroutine used to deliver received messages."""
         self.receive_callback = callback
 
     def set_status_callback(self, callback):
+        """Register the coroutine used to observe state changes."""
         self.status_callback = callback
 
     async def connect(self):
+        """Mark the client connected and notify the status callback once."""
         self.state = State.CONNECTED
         if self.status_callback is not None:
             await self.status_callback(self.state)
 
     async def close(self):
+        """Mark the client closed and notify the status callback once."""
         self.state = State.CLOSED
         if self.status_callback is not None:
             await self.status_callback(self.state)
 
     async def send(self, message: NMEA2000Message):
+        """Record every message the device asks the client to send."""
         self.sent_messages.append(message)
 
     async def emit(self, message: NMEA2000Message):
+        """Deliver an inbound message to the registered receive callback."""
         if self.receive_callback is not None:
             await self.receive_callback(message)
 
 
 class EncodingFakeClient(FakeClient):
+    """Fake client variant that also verifies messages encode successfully."""
+
     async def send(self, message: NMEA2000Message):
+        """Encode the message before recording it to mimic transport validation."""
         self.encoder.encode(message)
         await super().send(message)
 
@@ -50,6 +65,7 @@ class EncodingFakeClient(FakeClient):
 def _build_iso_request(
     requested_pgn: int, *, source: int = 10, destination: int = 255
 ) -> NMEA2000Message:
+    """Build an ISO Request asking a device to transmit one PGN."""
     return NMEA2000Message(
         PGN=59904,
         id="isoRequest",
@@ -63,6 +79,7 @@ def _build_iso_request(
 
 
 def _build_address_claim(source: int, unique_number: int) -> NMEA2000Message:
+    """Build an address claim message for collision-resolution tests."""
     return NMEA2000Message(
         PGN=60928,
         id="isoAddressClaim",
@@ -89,6 +106,7 @@ def _build_address_claim(source: int, unique_number: int) -> NMEA2000Message:
 def _build_group_function_request(
     source: int, requested_pgn: int, destination: int
 ) -> NMEA2000Message:
+    """Build a group-function request directed at one device address."""
     return NMEA2000Message(
         PGN=126208,
         id="nmeaRequestGroupFunction",
@@ -106,6 +124,7 @@ def _build_group_function_request(
 
 
 def _transmit_pgns_from_message(message: NMEA2000Message) -> list[int]:
+    """Extract advertised transmit PGNs from a packed PGN list payload."""
     payload = message.get_field_by_id("data").raw_value
     assert isinstance(payload, bytes)
     return [
@@ -116,6 +135,7 @@ def _transmit_pgns_from_message(message: NMEA2000Message) -> list[int]:
 
 @pytest.mark.asyncio
 async def test_device_start_claims_address_and_filters_management_messages(tmp_path):
+    """Startup should claim an address, answer ISO requests, and suppress management PGNs from data callbacks."""
     client = FakeClient()
     device = N2KDevice(
         client,
@@ -129,9 +149,11 @@ async def test_device_start_claims_address_and_filters_management_messages(tmp_p
     raw_messages = asyncio.Queue()
 
     async def handle_data(message: NMEA2000Message):
+        """Capture forwarded non-management messages."""
         await data_messages.put(message)
 
     async def handle_raw(message: NMEA2000Message):
+        """Capture raw inbound management messages before filtering."""
         await raw_messages.put(message)
 
     device.set_receive_callback(handle_data)
@@ -160,6 +182,7 @@ async def test_device_start_claims_address_and_filters_management_messages(tmp_p
 
 @pytest.mark.asyncio
 async def test_device_announces_product_information_on_startup(tmp_path):
+    """Startup should transmit product information immediately after address claim messages."""
     client = EncodingFakeClient()
     device = N2KDevice(
         client,
@@ -186,6 +209,7 @@ async def test_device_announces_product_information_on_startup(tmp_path):
 async def test_device_announces_configuration_information_on_startup_when_present(
     tmp_path,
 ):
+    """Startup should advertise configuration information when descriptive fields are configured."""
     client = EncodingFakeClient()
     device = N2KDevice(
         client,
@@ -213,6 +237,7 @@ async def test_device_announces_configuration_information_on_startup_when_presen
 
 @pytest.mark.asyncio
 async def test_device_conflict_increments_address_when_it_loses(tmp_path):
+    """A losing address claim should move the device to the next address and re-announce."""
     client = FakeClient()
     device = N2KDevice(
         client,
@@ -239,6 +264,7 @@ async def test_device_conflict_increments_address_when_it_loses(tmp_path):
 
 @pytest.mark.asyncio
 async def test_device_conflict_keeps_address_when_it_wins(tmp_path):
+    """A winning address claim should keep the current address and avoid moving to a new one."""
     client = FakeClient()
     device = N2KDevice(
         client,
@@ -269,6 +295,7 @@ async def test_device_conflict_keeps_address_when_it_wins(tmp_path):
 
 @pytest.mark.asyncio
 async def test_device_responds_with_iso_nak_and_group_function_ack(tmp_path):
+    """Unsupported requests should produce ISO NAK and group-function acknowledge responses."""
     client = FakeClient()
     device = N2KDevice(
         client,
@@ -295,6 +322,7 @@ async def test_device_responds_with_iso_nak_and_group_function_ack(tmp_path):
 
 @pytest.mark.asyncio
 async def test_device_heartbeat_messages_encode_with_na_controller_states(tmp_path):
+    """Heartbeat messages should encode N/A controller states and reserved bits with their raw defaults."""
     client = EncodingFakeClient()
     device = N2KDevice(
         client,
@@ -327,6 +355,7 @@ async def test_device_heartbeat_messages_encode_with_na_controller_states(tmp_pa
 
 @pytest.mark.asyncio
 async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
+    """Product information replies should scale the NMEA version field to raw thousandths."""
     client = EncodingFakeClient()
     device = N2KDevice(
         client,
@@ -352,6 +381,7 @@ async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
 
 @pytest.mark.asyncio
 async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
+    """Reported transmit PGN lists should always include required management PGNs."""
     client = FakeClient()
     device = N2KDevice(
         client,

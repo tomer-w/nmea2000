@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""Fast-packet reassembly tests for decode and encode of multi-frame messages."""
+
 from datetime import date, time
 
 from nmea2000.decoder import NMEA2000Message
@@ -8,6 +11,7 @@ from .test_decoder import _get_decoder
 
 
 def _validate_129029_message(msg: NMEA2000Message | None):
+    """Assert the reassembled GNSS Position Data message matches the fixture values."""
     assert isinstance(msg, NMEA2000Message)
     assert msg.PGN == 129029
     assert msg.priority == 3
@@ -36,7 +40,8 @@ def _validate_129029_message(msg: NMEA2000Message | None):
 
 
 def test_decode_strings_from_file_1():
-    with open("tests/recombine-frames-1.in", "r") as f:
+    """Fixture 1 should emit Environmental Parameters and GNSS messages at the expected frame counts."""
+    with open("tests/recombine-frames-1.in", "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
 
     decoder = _get_decoder()
@@ -64,7 +69,8 @@ def test_decode_strings_from_file_1():
 
 
 def test_decode_strings_from_file_2():
-    with open("tests/recombine-frames-2.in", "r") as f:
+    """Fixture 2 should reassemble GNSS data and a Garmin proprietary fast-packet message."""
+    with open("tests/recombine-frames-2.in", "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
 
     decoder = _get_decoder()
@@ -96,7 +102,8 @@ def test_decode_strings_from_file_2():
 
 
 def test_decode_strings_from_file_2_exclude_id():
-    with open("tests/recombine-frames-2.in", "r") as f:
+    """Excluding the proprietary PGN id should leave only the GNSS message from fixture 2."""
+    with open("tests/recombine-frames-2.in", "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
 
     decoder = _get_decoder(
@@ -117,7 +124,8 @@ def test_decode_strings_from_file_2_exclude_id():
 
 
 def test_decode_strings_from_file_3():
-    with open("tests/recombine-frames-3.in", "r") as f:
+    """Fixture 3 should emit only the GNSS message once the fast packet is complete."""
+    with open("tests/recombine-frames-3.in", "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
 
     decoder = _get_decoder()
@@ -136,7 +144,8 @@ def test_decode_strings_from_file_3():
 
 
 def test_decode_strings_from_file_4():
-    with open("tests/recombine-frames-4.in", "r") as f:
+    """Fixture 4 should emit only the GNSS message after fragmented reassembly."""
+    with open("tests/recombine-frames-4.in", "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
 
     decoder = _get_decoder()
@@ -155,7 +164,8 @@ def test_decode_strings_from_file_4():
 
 
 def test_decode_strings_from_file_5():
-    with open("tests/recombine-frames-5.in", "r") as f:
+    """Fixture 5 should reassemble the Maretron proprietary temperature message."""
+    with open("tests/recombine-frames-5.in", "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
 
     decoder = _get_decoder()
@@ -182,6 +192,7 @@ def test_decode_strings_from_file_5():
 
 
 def test_encode_fast():
+    """Encoding GNSS Position Data to EBYTE packets should decode back to the same fixture message."""
     json = '{"PGN":129029,"id":"gnssPositionData","description":"GNSS Position Data","fields":[{"id":"sid","name":"SID","description":null,"unit_of_measurement":null,"value":231,"raw_value":231,"physical_quantities":null,"type":[1],"part_of_primary_key":false},{"id":"date","name":"Date","description":null,"unit_of_measurement":"d","value":"2013-03-01","raw_value":15765,"physical_quantities":[18],"type":[9],"part_of_primary_key":false},{"id":"time","name":"Time","description":"Seconds since midnight","unit_of_measurement":"s","value":"19:29:52","raw_value":70192.0,"physical_quantities":[19],"type":[8],"part_of_primary_key":false},{"id":"latitude","name":"Latitude","description":null,"unit_of_measurement":"deg","value":42.496768422109845,"raw_value":42.496768422109845,"physical_quantities":[20],"type":[1],"part_of_primary_key":false},{"id":"longitude","name":"Longitude","description":null,"unit_of_measurement":"deg","value":-71.58366365704198,"raw_value":-71.58366365704198,"physical_quantities":[20],"type":[1],"part_of_primary_key":false},{"id":"altitude","name":"Altitude","description":"Altitude referenced to WGS-84","unit_of_measurement":"m","value":90.98460299999999,"raw_value":90.98460299999999,"physical_quantities":[10],"type":[1],"part_of_primary_key":false},{"id":"gnssType","name":"GNSS type","description":null,"unit_of_measurement":null,"value":"GPS+SBAS/WAAS","raw_value":3,"physical_quantities":null,"type":[4],"part_of_primary_key":false},{"id":"method","name":"Method","description":null,"unit_of_measurement":null,"value":"GNSS fix","raw_value":1,"physical_quantities":null,"type":[4],"part_of_primary_key":false},{"id":"integrity","name":"Integrity","description":null,"unit_of_measurement":null,"value":"No integrity checking","raw_value":0,"physical_quantities":null,"type":[4],"part_of_primary_key":false},{"id":"reserved_258","name":"Reserved","description":null,"unit_of_measurement":null,"value":63,"raw_value":63,"physical_quantities":null,"type":[14],"part_of_primary_key":false},{"id":"numberOfSvs","name":"Number of SVs","description":"Number of satellites used in solution","unit_of_measurement":null,"value":8,"raw_value":8,"physical_quantities":null,"type":[1],"part_of_primary_key":false},{"id":"hdop","name":"HDOP","description":"Horizontal dilution of precision","unit_of_measurement":null,"value":1.11,"raw_value":1.11,"physical_quantities":null,"type":[1],"part_of_primary_key":false},{"id":"pdop","name":"PDOP","description":"Positional dilution of precision","unit_of_measurement":null,"value":1.9000000000000001,"raw_value":1.9000000000000001,"physical_quantities":null,"type":[1],"part_of_primary_key":false},{"id":"geoidalSeparation","name":"Geoidal Separation","description":"Geoidal Separation","unit_of_measurement":"m","value":-33.63,"raw_value":-33.63,"physical_quantities":[10],"type":[1],"part_of_primary_key":false},{"id":"referenceStations","name":"Reference Stations","description":"Number of reference stations","unit_of_measurement":null,"value":0,"raw_value":0,"physical_quantities":null,"type":[1],"part_of_primary_key":false},{"id":"referenceStationType","name":"Reference Station Type","description":null,"unit_of_measurement":null,"value":null,"raw_value":15,"physical_quantities":null,"type":[4],"part_of_primary_key":false},{"id":"referenceStationId","name":"Reference Station ID","description":null,"unit_of_measurement":null,"value":null,"raw_value":null,"physical_quantities":null,"type":[1],"part_of_primary_key":false},{"id":"ageOfDgnssCorrections","name":"Age of DGNSS Corrections","description":null,"unit_of_measurement":"s","value":null,"raw_value":null,"physical_quantities":[19],"type":[8],"part_of_primary_key":false}],"source":0,"destination":255,"priority":3,"timestamp":"2022-09-28T11:36:59.668000"}'
     msg1 = NMEA2000Message.from_json(json)
     msg1.get_field_by_id("date").raw_value = None

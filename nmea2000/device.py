@@ -1,3 +1,5 @@
+"""High-level device abstraction built on top of asynchronous NMEA 2000 clients."""
+
 from __future__ import annotations
 
 import asyncio
@@ -29,18 +31,32 @@ StatusCallback = Callable[[State], Awaitable[None]]
 
 
 class N2KClient(Protocol):
+    """Transport interface required by N2KDevice for bus communication."""
+
     @property
-    def state(self) -> State: ...
+    def state(self) -> State:
+        """Return the current connection state of the transport."""
+        ...  # pylint: disable=unnecessary-ellipsis
 
-    def set_receive_callback(self, callback: MessageCallback | None) -> None: ...
+    def set_receive_callback(self, callback: MessageCallback | None) -> None:
+        """Register the callback invoked for received messages."""
+        ...  # pylint: disable=unnecessary-ellipsis
 
-    def set_status_callback(self, callback: StatusCallback | None) -> None: ...
+    def set_status_callback(self, callback: StatusCallback | None) -> None:
+        """Register the callback invoked when transport state changes."""
+        ...  # pylint: disable=unnecessary-ellipsis
 
-    async def connect(self) -> None: ...
+    async def connect(self) -> None:
+        """Open the underlying transport connection."""
+        ...  # pylint: disable=unnecessary-ellipsis
 
-    async def close(self) -> None: ...
+    async def close(self) -> None:
+        """Close the underlying transport connection."""
+        ...  # pylint: disable=unnecessary-ellipsis
 
-    async def send(self, message: NMEA2000Message, /) -> None: ...
+    async def send(self, message: NMEA2000Message, /) -> None:
+        """Send one NMEA 2000 message through the transport."""
+        ...  # pylint: disable=unnecessary-ellipsis
 
 
 MANAGEMENT_PGNS = frozenset(
@@ -200,7 +216,7 @@ class N2KDevice:
         cls,
         host: str,
         port: int,
-        format: N2KFormat,
+        output_format: N2KFormat,
         *,
         client_options: dict[str, Any] | None = None,
         **device_options: Any,
@@ -210,10 +226,13 @@ class N2KDevice:
         Args:
             host: Server hostname or IP address.
             port: Server port number.
-            format: The N2KFormat used by the gateway (e.g. CAN_FRAME_ASCII, N2K_ASCII_RAW).
+            output_format: The N2KFormat used by the gateway (e.g. CAN_FRAME_ASCII, N2K_ASCII_RAW).
         """
         client = TextNmea2000Gateway(
-            host, port, format=format, **cls._prepare_client_options(client_options)
+            host,
+            port,
+            output_format=output_format,
+            **cls._prepare_client_options(client_options),
         )
         return cls(client, **device_options)
 
@@ -270,8 +289,6 @@ class N2KDevice:
         **device_options: Any,
     ) -> N2KDevice:
         """Convenience shortcut for ``for_text_gateway`` with N2K_ASCII_RAW format."""
-        from .input_formats import N2KFormat
-
         return cls.for_text_gateway(
             host,
             port,
@@ -323,7 +340,7 @@ class N2KDevice:
         if self._status_callback is not None:
             try:
                 await self._status_callback(state)
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 logger.exception("Error in device status callback: %s", exc)
 
     async def _handle_client_message(self, message: NMEA2000Message) -> None:
@@ -332,7 +349,7 @@ class N2KDevice:
         if self._raw_receive_callback is not None:
             try:
                 await self._raw_receive_callback(message)
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 logger.exception("Error in raw receive callback: %s", exc)
 
         if message.PGN in MANAGEMENT_PGNS:
@@ -342,7 +359,7 @@ class N2KDevice:
         if self._receive_callback is not None:
             try:
                 await self._receive_callback(message)
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 logger.exception("Error in receive callback: %s", exc)
 
     async def _handle_management_message(self, message: NMEA2000Message) -> None:
@@ -745,7 +762,7 @@ class N2KDevice:
             return {}
         try:
             return json.loads(self.persistence_path.read_text(encoding="utf-8"))
-        except Exception as exc:
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
             logger.warning(
                 "Failed to read persistence file %s: %s", self.persistence_path, exc
             )

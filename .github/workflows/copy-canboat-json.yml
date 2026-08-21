@@ -27,20 +27,20 @@ jobs:
         run: |
           if cmp -s canboat.json canboat.json.new; then
             echo "No changes detected."
-            echo "changed=false" >> $GITHUB_ENV
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           else
             echo "canboat.json changed, proceeding with further steps."
             mv canboat.json.new canboat.json
-            echo "changed=true" >> $GITHUB_ENV
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Compile CANBoat to Python
-        if: env.changed == 'true'  # Run only if the file has changed
+        if: steps.check_changes.outputs.changed == 'true'
         run: python3 canboat2python.py
 
       - name: Create Pull Request
-        if: env.changed == 'true'  # Run only if the file has changed
+        if: steps.check_changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
           branch: update-synced-file

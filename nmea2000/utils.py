@@ -1,3 +1,5 @@
+"""Numeric, time, string, and binary conversion helpers used by encoders and decoders."""
+
 # Standard Library Imports
 
 import logging
@@ -39,23 +41,27 @@ def kelvin_to_celsius(kelvin: float | None) -> float | None:
 
 
 def pascal_to_bar(pascal: float | None) -> float | None:
+    """Convert a pressure value from pascals to bar."""
     if pascal is None:
         return None
 
     # Convert pascal to bar
-    bar = pascal / 100000
+    bar_value = pascal / 100000
 
-    return bar
+    return bar_value
 
 
-def pascal_to_PSI(pascal: float | None) -> float | None:
+def pascal_to_psi(
+    pascal: float | None,
+) -> float | None:
+    """Convert a pressure value from pascals to pounds per square inch."""
     if pascal is None:
         return None
 
     # Convert pascal to PSI
-    PSI = pascal / 6894.76
+    psi = pascal / 6894.76
 
-    return PSI
+    return psi
 
 
 def mps_to_knots(mps: float | None) -> float | None:
@@ -91,6 +97,7 @@ def radians_to_degrees(radians: float | None) -> float | None:
 
 
 def decode_int(data_raw: int, bit_offset: int, bit_length: int) -> int:
+    """Extract an unsigned integer value from a bit range within a raw payload."""
     data_raw = data_raw >> bit_offset
     # Create a mask with the desired number of bits set to 1
     mask = (1 << bit_length) - 1
@@ -120,9 +127,7 @@ def decode_date(days_since_epoch: int | float | None) -> date | None:
 
 
 def encode_date(decoded_date: object, bit_length: int = 16) -> int:
-    """
-    Encodes a date into an integer representing the number of days since 1970-01-01 (UNIX epoch)
-    """
+    """Encode a date as days since the Unix epoch or the NMEA not-available value."""
     if decoded_date is None:
         return (1 << bit_length) - 1
     if isinstance(decoded_date, str):
@@ -152,7 +157,7 @@ def decode_time(seconds_since_midnight: int | float | None) -> time | None:
     seconds_since_midnight = int(seconds_since_midnight)
 
     # Validate input
-    if not (0 <= seconds_since_midnight < 86400):  # There are 86400 seconds in a day
+    if not 0 <= seconds_since_midnight < 86400:  # There are 86400 seconds in a day
         return time(hour=0, minute=0, second=0)
 
     hours = seconds_since_midnight // 3600  # 3600 seconds in an hour
@@ -240,7 +245,7 @@ def decode_float(
     """
     number_int = decode_int(data_raw, bit_offset, bit_length)
     # Ensure the input integer fits in 32 bits
-    if not (0 <= number_int <= 0xFFFFFFFF):
+    if not 0 <= number_int <= 0xFFFFFFFF:
         return 0
 
     # Convert the integer to bytes. The '<I' format specifies little-endian unsigned 32-bit integer.
@@ -338,10 +343,9 @@ def encode_number(
         # Set to "not available" value
         if bit_length <= 3:
             return (1 << bit_length) - 1
-        elif signed:
+        if signed:
             return (1 << (bit_length - 1)) - 1
-        else:
-            return (1 << bit_length) - 1
+        return (1 << bit_length) - 1
 
     # Scale using resolution
     number_int = round(value / resolution)
@@ -354,7 +358,7 @@ def encode_number(
         min_val = 0
         max_val = (1 << bit_length) - 2  # reserve max for "not available"
 
-    if not (min_val <= number_int <= max_val):
+    if not min_val <= number_int <= max_val:
         raise ValueError(f"Value {value} out of range after scaling")
 
     # Handle sign bit if negative
@@ -367,6 +371,7 @@ def encode_number(
 def encode_number_raw(
     raw_value: int | float | None, bit_length: int, signed: bool
 ) -> int:
+    """Validate and encode an already-scaled integer for a numeric field."""
     if raw_value is None:
         return encode_number(None, bit_length, signed, 1)
 
@@ -385,7 +390,7 @@ def encode_number_raw(
         min_val = 0
         max_val = (1 << bit_length) - 2
 
-    if not (min_val <= raw_value <= max_val):
+    if not min_val <= raw_value <= max_val:
         raise ValueError(f"Raw value {raw_value} out of range")
 
     if signed and raw_value < 0:
@@ -397,6 +402,7 @@ def encode_number_raw(
 def raw_number_matches_value(
     raw_value: int | float | None, value: object, resolution: float
 ) -> bool:
+    """Return whether a raw integer matches a scaled numeric value within tolerance."""
     if not isinstance(raw_value, int):
         return False
     if value is None:
@@ -412,19 +418,21 @@ def raw_number_matches_value(
 
 
 def decode_bit_lookup(data_raw: int, bit_lookup_dict: dict) -> str:
+    """Decode a bitset integer into a comma-separated list of lookup labels."""
     bit = 0
     flags = []
     while data_raw != 0:
         if data_raw & 1 == 1:
-            str = bit_lookup_dict.get(bit, None)
-            if str is not None:
-                flags.append(str)
+            label = bit_lookup_dict.get(bit, None)
+            if label is not None:
+                flags.append(label)
         bit += 1
         data_raw >>= 1
     return ", ".join(flags)
 
 
 def decode_string_fix(data_raw: int, bit_offset: int, bit_length: int) -> str:
+    """Decode a fixed-width string field and discard its raw byte payload."""
     decoded_str, _ = decode_string_fix_raw(data_raw, bit_offset, bit_length)
     return decoded_str
 
@@ -432,6 +440,7 @@ def decode_string_fix(data_raw: int, bit_offset: int, bit_length: int) -> str:
 def decode_string_fix_raw(
     data_raw: int, bit_offset: int, bit_length: int
 ) -> tuple[str, bytes]:
+    """Decode a fixed-width string field and return both text and source bytes."""
     number_int = decode_int(data_raw, bit_offset, bit_length)
     num_bytes = (bit_length + 7) // 8
     byte_arr = number_int.to_bytes(num_bytes, "little")
@@ -444,6 +453,7 @@ def decode_string_fix_raw(
 
 
 def decode_string_lz(data_raw: int, bit_offset: int) -> str:
+    """Decode a length-prefixed UTF-8 string terminated with a trailing NUL byte."""
     data_raw = data_raw >> bit_offset
     byte_arr = data_raw.to_bytes((data_raw.bit_length() + 7) // 8, byteorder="little")
     str_len = byte_arr[0]
@@ -453,6 +463,7 @@ def decode_string_lz(data_raw: int, bit_offset: int) -> str:
 
 
 def decode_string_lau(data_raw: int, bit_offset: int) -> tuple[str | None, int]:
+    """Decode a STRING_LAU field and return the text with its consumed bit length."""
     data_raw = data_raw >> bit_offset
     byte_arr = data_raw.to_bytes(
         ((data_raw.bit_length() + 7) // 8) + 1, byteorder="little"
@@ -470,11 +481,13 @@ def decode_string_lau(data_raw: int, bit_offset: int) -> tuple[str | None, int]:
 
 
 def calculate_canbus_checksum(data) -> int:
+    """Compute the one-byte checksum used by supported CAN bus packet wrappers."""
     checksum = sum(data[2:19])
     return checksum & 0xFF
 
 
 def encode_string_fix(value: object, bit_length: int) -> int:
+    """Encode a fixed-width UTF-8 or binary string field into a little-endian integer."""
     if value is None:
         encoded = b""
     elif isinstance(value, memoryview):
@@ -496,6 +509,7 @@ def encode_string_fix(value: object, bit_length: int) -> int:
 
 
 def encode_string_lz(value: object) -> bytes:
+    """Encode a UTF-8 string as a length-prefixed payload with trailing NUL."""
     if value is None:
         return b"\x00\x00"
     if isinstance(value, memoryview):
@@ -512,6 +526,7 @@ def encode_string_lz(value: object) -> bytes:
 
 
 def encode_string_lau(value: object) -> bytes:
+    """Encode a string using the NMEA LAU header and ASCII or UTF-16 payload."""
     if value is None:
         return b"\x02\x01"
     if isinstance(value, memoryview):
@@ -535,6 +550,7 @@ def encode_string_lau(value: object) -> bytes:
 
 
 def encode_bit_lookup(value, bit_lookup_dict: dict[int, str]) -> int:
+    """Encode lookup labels or bit indexes into a packed integer bitset."""
     if value is None or value == "":
         return 0
     if isinstance(value, int):
@@ -563,6 +579,7 @@ def encode_bit_lookup(value, bit_lookup_dict: dict[int, str]) -> int:
 
 
 def normalize_binary_data(value: object) -> bytes:
+    """Normalize bytes-like binary input to immutable bytes."""
     if value is None:
         return b""
     if isinstance(value, memoryview):
@@ -573,6 +590,7 @@ def normalize_binary_data(value: object) -> bytes:
 
 
 def encode_binary_data(value: bytes | bytearray | memoryview | None) -> int:
+    """Encode bytes-like data into a big-endian integer payload."""
     payload = normalize_binary_data(value)
     if not payload:
         return 0
@@ -580,6 +598,7 @@ def encode_binary_data(value: bytes | bytearray | memoryview | None) -> int:
 
 
 def encode_little_endian_data(value: bytes | bytearray | memoryview | None) -> int:
+    """Encode bytes-like data into a little-endian integer payload."""
     payload = normalize_binary_data(value)
     if not payload:
         return 0
@@ -587,10 +606,12 @@ def encode_little_endian_data(value: bytes | bytearray | memoryview | None) -> i
 
 
 def binary_data_bit_length(value: bytes | bytearray | memoryview | None) -> int:
+    """Return the bit length of a bytes-like payload after normalization."""
     return len(normalize_binary_data(value)) * 8
 
 
 def encode_iso_name(value) -> int:
+    """Encode an ISO NAME integer or object exposing a numeric name attribute."""
     if value is None:
         raise ValueError("Cannot encode None as ISO_NAME")
 

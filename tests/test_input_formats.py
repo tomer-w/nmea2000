@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""Input-format detection and generic encode/decode round-trip tests."""
+
 import copy
 from pathlib import Path
 
@@ -39,6 +42,7 @@ def _assert_semantic_roundtrip(
     original: NMEA2000Message,
     decoded: NMEA2000Message,
 ) -> None:
+    """Assert that a format round-trip preserves header and field values."""
     assert decoded.PGN == original.PGN
     assert decoded.priority == original.priority
     assert decoded.source == original.source
@@ -62,6 +66,7 @@ def _assert_semantic_roundtrip(
 
 
 def _load_fast_packet_message() -> NMEA2000Message:
+    """Load the GNSS fast-packet fixture message used for multi-frame tests."""
     decoder = _get_decoder()
     with _FAST_PACKET_FIXTURE.open("r", encoding="utf-8") as fixture:
         for line in fixture:
@@ -78,6 +83,7 @@ def _prepare_roundtrip_message(
     original: NMEA2000Message,
     output_format: N2KFormat,
 ) -> NMEA2000Message:
+    """Normalize message fields for formats that cannot preserve all header values."""
     prepared = copy.deepcopy(original)
     if output_format == N2KFormat.PCDIN:
         prepared.priority = 0
@@ -105,10 +111,12 @@ def _prepare_roundtrip_message(
     ],
 )
 def test_detect_format_supported_inputs(input_data, expected_format: N2KFormat):
+    """detect_format should recognize each supported text and binary transport sample."""
     assert detect_format(input_data) == expected_format
 
 
 def test_detect_format_supports_python_can_messages():
+    """detect_format should classify python-can Message objects as PYTHON_CAN."""
     decoder = _get_decoder()
     msg = decoder.decode(N2K_ASCII_FRAME)
     assert isinstance(msg, NMEA2000Message)
@@ -120,6 +128,7 @@ def test_detect_format_supports_python_can_messages():
 
 
 def test_detect_format_rejects_unknown_input():
+    """detect_format should reject unsupported input strings with a parser error."""
     with pytest.raises(ValueError, match="Parser not found"):
         detect_format("foo bar baz")
 
@@ -144,6 +153,7 @@ def test_detect_format_rejects_unknown_input():
     ],
 )
 def test_decoder_decode_autosenses_supported_inputs(input_data, expected_pgn: int):
+    """The generic decoder should auto-sense supported inputs and recover the expected PGN."""
     decoder = _get_decoder()
     msg = decoder.decode(input_data)
     assert isinstance(msg, NMEA2000Message)
@@ -151,6 +161,7 @@ def test_decoder_decode_autosenses_supported_inputs(input_data, expected_pgn: in
 
 
 def test_decoder_decode_autosenses_python_can_messages():
+    """The generic decoder should decode python-can messages produced by the encoder."""
     decoder = _get_decoder()
     msg = decoder.decode(N2K_ASCII_FRAME)
     assert isinstance(msg, NMEA2000Message)
@@ -164,11 +175,13 @@ def test_decoder_decode_autosenses_python_can_messages():
 
 
 def test_decoder_decode_rejects_pdgy_debug():
+    """PDGY debug lines should be rejected because they are not decodable payload frames."""
     with pytest.raises(ValueError, match="PDGY debug lines are not supported"):
         _get_decoder().decode(PDGY_DEBUG_FRAME)
 
 
 def test_encoder_encode_defaults_to_n2k_ascii_raw_output():
+    """The default encoder should emit N2K ASCII raw text when no format is supplied."""
     decoder = _get_decoder()
     msg = decoder.decode(N2K_ASCII_FRAME)
     assert isinstance(msg, NMEA2000Message)
@@ -178,6 +191,7 @@ def test_encoder_encode_defaults_to_n2k_ascii_raw_output():
 
 
 def test_encoder_can_roundtrip_can_frame_ascii_packets_via_generic_api():
+    """Generic encoder output for CAN frame ASCII should decode back to the same message."""
     original = _get_decoder().decode(CAN_FRAME_ASCII_FRAME)
     assert isinstance(original, NMEA2000Message)
 
@@ -211,6 +225,7 @@ def test_encoder_can_roundtrip_can_frame_ascii_packets_via_generic_api():
 def test_encoder_roundtrips_additional_single_frame_output_formats(
     output_format: N2KFormat,
 ):
+    """Single-frame text formats should round-trip a decoded attitude message semantically."""
     original = _get_decoder().decode(BASIC_STRING_FRAME)
     assert isinstance(original, NMEA2000Message)
     prepared = _prepare_roundtrip_message(original, output_format)
@@ -223,6 +238,7 @@ def test_encoder_roundtrips_additional_single_frame_output_formats(
 
 
 def test_encoder_rejects_pdgy_debug_output():
+    """The encoder should refuse to emit PDGY debug output."""
     original = _get_decoder().decode(BASIC_STRING_FRAME)
     assert isinstance(original, NMEA2000Message)
 
@@ -242,6 +258,7 @@ def test_encoder_rejects_pdgy_debug_output():
     ],
 )
 def test_encoder_roundtrips_fast_packet_text_output_lists(output_format: N2KFormat):
+    """Fast-packet list outputs should reassemble into the original GNSS message."""
     original = _load_fast_packet_message()
 
     encoded = create_encoder(output_format).encode(original)
@@ -272,6 +289,7 @@ def test_encoder_roundtrips_fast_packet_text_output_lists(output_format: N2KForm
 def test_encoder_roundtrips_fast_packet_combined_output_formats(
     output_format: N2KFormat,
 ):
+    """Combined fast-packet text formats should decode back to the prepared GNSS message."""
     original = _load_fast_packet_message()
     prepared = _prepare_roundtrip_message(original, output_format)
 

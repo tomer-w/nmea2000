@@ -21,6 +21,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "build",
+    "pylint",
     "pytest",
     "pytest-asyncio",
     "pytest-cov",
@@ -57,13 +59,39 @@ ignore = ["DTZ001", "DTZ005", "DTZ006", "DTZ007", "PYI041", "TRY004"]
 [tool.pyright]
 typeCheckingMode = "basic"
 exclude = [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.*",
     ".venv",
     ".venv-*",
     "build",
 ]
 
+[tool.pylint.main]
+ignore-paths = [
+    ".*[\\\\/]nmea2000[\\\\/]consts\\.py$",
+    ".*[\\\\/]nmea2000[\\\\/]pgns\\.py$",
+]
+
 [tool.pylint.messages_control]
-disable = ["line-too-long"]
+# Protocol codecs and their fixtures naturally exceed Pylint's generic size
+# heuristics. Public API documentation is maintained in README.md.
+disable = [
+    # The encoder factory lazily imports its concrete registry to break the
+    # runtime cycle between encoder.py and encoder_formats.py.
+    "cyclic-import",
+    "duplicate-code",
+    "line-too-long",
+    "too-few-public-methods",
+    "too-many-arguments",
+    "too-many-branches",
+    "too-many-instance-attributes",
+    "too-many-lines",
+    "too-many-locals",
+    "too-many-positional-arguments",
+    "too-many-return-statements",
+    "too-many-statements",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

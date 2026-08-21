@@ -45,10 +45,11 @@ nmea2000-cli decode --frame "09FF7 0FF00 3F9FDCFFFFFFFFFF"
 
 65280 Furuno: Heave: Manufacturer Code = Furuno (bytes = "3F 07"), Reserved = 3 (bytes = "03"), Industry Code = Marine (bytes = "04"), Heave = -0.036000000000000004 (bytes = "DC"), Reserved = 65535 (bytes = "FF FF 00")
 ```
-```json
-Or in JSON format:
-{"PGN":65280,"id":"furunoHeave","description":"Furuno: Heave","fields":[{"id":"manufacturer_code","name":"Manufacturer Code","description":"Furuno","unit_of_measurement":"","value":"Furuno","raw_value":1855},{"id":"reserved_11","name":"Reserved","description":"","unit_of_measurement":"","value":3,"raw_value":3},{"id":"industry_code","name":"Industry Code","description":"Marine Industry","unit_of_measurement":"","value":"Marine","raw_value":4},{"id":"heave","name":"Heave","description":"","unit_of_measurement":"m","value":-0.036000000000000004,"raw_value":-36},{"id":"reserved_48","name":"Reserved","description":"","unit_of_measurement":"","value":65535,"raw_value":65535}],"source":9,"destination":255,"priority":7}
 
+Or in JSON format:
+
+```json
+{"PGN":65280,"id":"furunoHeave","description":"Furuno: Heave","fields":[{"id":"manufacturer_code","name":"Manufacturer Code","description":"Furuno","unit_of_measurement":"","value":"Furuno","raw_value":1855},{"id":"reserved_11","name":"Reserved","description":"","unit_of_measurement":"","value":3,"raw_value":3},{"id":"industry_code","name":"Industry Code","description":"Marine Industry","unit_of_measurement":"","value":"Marine","raw_value":4},{"id":"heave","name":"Heave","description":"","unit_of_measurement":"m","value":-0.036000000000000004,"raw_value":-36},{"id":"reserved_48","name":"Reserved","description":"","unit_of_measurement":"","value":65535,"raw_value":65535}],"source":9,"destination":255,"priority":7}
 ```
 
 ### Example Code
@@ -90,7 +91,8 @@ for field in msg.fields:
 ```
 
 Output:
-```
+
+```text
 AC Line 0:
   Line: Line 1
   Acceptability: Bad level
@@ -226,14 +228,15 @@ client.set_receive_callback(handle_received_data)  # Register callback
 ```
 
 ### Encode NMEA 2000 Frame (CLI)
+
 You can also encode data into NMEA 2000 frames using the `encode` command:
 
 ```bash
 nmea2000-cli encode --data "your_data_to_encode"
 ```
 
+#### CLI Example
 
-#### Example:
 ```bash
 nmea2000-cli encode --data '{"PGN":65280,"id":"furunoHeave","description":"Furuno: Heave","fields":[{"id":"manufacturer_code","name":"Manufacturer Code","description":"Furuno","unit_of_measurement":"","value":"Furuno","raw_value":1855},{"id":"reserved_11","name":"Reserved","description":"","unit_of_measurement":"","value":3,"raw_value":3},{"id":"industry_code","name":"Industry Code","description":"Marine Industry","unit_of_measurement":"","value":"Marine","raw_value":4},{"id":"heave","name":"Heave","description":"","unit_of_measurement":"m","value":-0.036000000000000004,"raw_value":-36},{"id":"reserved_48","name":"Reserved","description":"","unit_of_measurement":"","value":65535,"raw_value":65535}],"source":9,"destination":255,"priority":7}'
 Encoding frame: {"PGN":65280,"id":"furunoHeave","description":"Furuno: Heave","fields":[{"id":"manufacturer_code","name":"Manufacturer Code","description":"Furuno","unit_of_measurement":"","value":"Furuno","raw_value":1855},{"id":"reserved_11","name":"Reserved","description":"","unit_of_measurement":"","value":3,"raw_value":3},{"id":"industry_code","name":"Industry Code","description":"Marine Industry","unit_of_measurement":"","value":"Marine","raw_value":4},{"id":"heave","name":"Heave","description":"","unit_of_measurement":"m","value":-0.036000000000000004,"raw_value":-36},{"id":"reserved_48","name":"Reserved","description":"","unit_of_measurement":"","value":65535,"raw_value":65535}],"source":9,"destination":255,"priority":7}'
@@ -242,9 +245,8 @@ output:
 09FF7 0FF00 3F9FDCFFFFFFFFFF
 ```
 
+#### Encoder Example
 
-
-#### Example Code
 ```python
 from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat
@@ -306,6 +308,7 @@ You can stream decoded NMEA 2000 data into [Node-RED](https://nodered.org/) usin
 2. **JSON node** — connect the exec node's first output (stdout) to a `json` node to parse each line into a JavaScript object.
 
 3. **Process the data** — use a `switch` or `function` node to route by PGN:
+
    ```js
    // Example function node: add topic by PGN
    msg.topic = "nmea2000/pgn/" + msg.payload.PGN;

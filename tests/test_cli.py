@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""CLI integration tests for decode, encode, and TCP client output modes."""
+
 import asyncio
 import json
 import logging
@@ -8,6 +11,7 @@ import sys
 import pytest
 
 from nmea2000.input_formats import N2KFormat
+from nmea2000.message import NMEA2000Message
 from tests.NMEA2000TestServer import NMEA2000TestServer
 
 logging.basicConfig(
@@ -25,11 +29,13 @@ class TestCliDecode:
     """Tests for the CLI decode command."""
 
     def test_decode_frame(self):
+        """Decode a frame string into the expected Furuno heave message header."""
         result = subprocess.run(
             [*CLI_MODULE, "decode", "--frame", N2K_ASCII_FRAME],
             capture_output=True,
             text=True,
             timeout=10,
+            check=False,
         )
         assert result.returncode == 0
         output = result.stdout.strip()
@@ -41,11 +47,13 @@ class TestCliDecode:
         assert data["priority"] == 7
 
     def test_decode_frame_fields(self):
+        """Decode output should expose the expected first decoded field values."""
         result = subprocess.run(
             [*CLI_MODULE, "decode", "--frame", N2K_ASCII_FRAME],
             capture_output=True,
             text=True,
             timeout=10,
+            check=False,
         )
         data = json.loads(result.stdout.strip())
         fields = data["fields"]
@@ -54,12 +62,18 @@ class TestCliDecode:
         assert fields[0]["value"] == "Furuno"
 
     def test_decode_missing_args(self):
+        """Decode without a frame or file should fail instead of succeeding silently."""
         result = subprocess.run(
-            [*CLI_MODULE, "decode"], capture_output=True, text=True, timeout=10
+            [*CLI_MODULE, "decode"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
         )
         assert result.returncode != 0 or "Error" in result.stdout
 
     def test_decode_file(self, tmp_path):
+        """Decode should accept a file containing a single N2K ASCII frame."""
         frame_file = tmp_path / "frames.txt"
         frame_file.write_text(N2K_ASCII_FRAME + "\n")
         result = subprocess.run(
@@ -67,6 +81,7 @@ class TestCliDecode:
             capture_output=True,
             text=True,
             timeout=10,
+            check=False,
         )
         assert result.returncode == 0
 
@@ -77,16 +92,19 @@ class TestCliEncode:
     SAMPLE_JSON = '{"PGN":65280,"id":"furunoHeave","description":"Furuno: Heave","fields":[{"id":"manufacturerCode","name":"Manufacturer Code","value":"Furuno","raw_value":1855},{"id":"reserved_11","name":"Reserved","value":3,"raw_value":3},{"id":"industryCode","name":"Industry Code","value":"Marine Industry","raw_value":4},{"id":"heave","name":"Heave","unit_of_measurement":"m","value":-0.036,"raw_value":-0.036},{"id":"reserved_48","name":"Reserved","value":65535,"raw_value":65535}],"source":9,"destination":255,"priority":7}'
 
     def test_encode_frame(self):
+        """Encode a JSON message string into the expected N2K ASCII payload."""
         result = subprocess.run(
             [*CLI_MODULE, "encode", "--frame", self.SAMPLE_JSON],
             capture_output=True,
             text=True,
             timeout=10,
+            check=False,
         )
         assert result.returncode == 0
         assert "09FF7" in result.stdout
 
     def test_encode_file(self, tmp_path):
+        """Encode should read a JSON message from a file and emit frame text."""
         json_file = tmp_path / "message.json"
         json_file.write_text(self.SAMPLE_JSON)
         result = subprocess.run(
@@ -94,13 +112,19 @@ class TestCliEncode:
             capture_output=True,
             text=True,
             timeout=10,
+            check=False,
         )
         assert result.returncode == 0
         assert "09FF7" in result.stdout
 
     def test_encode_missing_args(self):
+        """Encode without a frame or file should report an error condition."""
         result = subprocess.run(
-            [*CLI_MODULE, "encode"], capture_output=True, text=True, timeout=10
+            [*CLI_MODULE, "encode"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
         )
         assert result.returncode != 0 or "Error" in result.stdout
 
@@ -110,6 +134,7 @@ class TestCliTcpClientJson:
 
     @pytest.fixture
     async def actisense_server(self):
+        """Start and stop a test server that emits N2K ASCII frames."""
         server = NMEA2000TestServer("127.0.0.1", 18881, N2KFormat.N2K_ASCII_RAW)
         await server.start()
         yield server
@@ -117,6 +142,7 @@ class TestCliTcpClientJson:
 
     @pytest.fixture
     async def ebyte_server(self):
+        """Start and stop a test server that emits EBYTE packets."""
         server = NMEA2000TestServer("127.0.0.1", 18882, N2KFormat.EBYTE)
         await server.start()
         yield server
@@ -124,6 +150,7 @@ class TestCliTcpClientJson:
 
     @pytest.fixture
     async def yacht_devices_server(self):
+        """Start and stop a test server that emits CAN frame ASCII lines."""
         server = NMEA2000TestServer("127.0.0.1", 18883, N2KFormat.CAN_FRAME_ASCII)
         await server.start()
         yield server
@@ -185,7 +212,7 @@ class TestCliTcpClientJson:
 
     @pytest.mark.asyncio
     async def test_tcp_client_json_ebyte(self, ebyte_server):
-        """ebyte --json should output valid JSON for EBYTE gateway."""
+        """ebyte --json should emit a decoded heading message as JSON."""
         proc = await asyncio.create_subprocess_exec(
             *CLI_MODULE,
             "ebyte",
@@ -229,7 +256,7 @@ class TestCliTcpClientJson:
 
     @pytest.mark.asyncio
     async def test_tcp_client_json_yacht_devices(self, yacht_devices_server):
-        """text --json should output valid JSON for Yacht Devices gateway."""
+        """text --json should decode CAN frame ASCII gateway traffic into JSON."""
         proc = await asyncio.create_subprocess_exec(
             *CLI_MODULE,
             "text",
@@ -279,7 +306,7 @@ class TestCliTcpClientJson:
 
     @pytest.mark.asyncio
     async def test_tcp_client_no_json_flag(self, actisense_server):
-        """Without --json, output should use the default 'Received:' format."""
+        """Without --json, the client should print human-readable Received lines instead of JSON."""
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
         proc = await asyncio.create_subprocess_exec(
@@ -332,7 +359,7 @@ class TestCliTcpClientJson:
 
     @pytest.mark.asyncio
     async def test_tcp_client_json_multiple_messages(self, actisense_server):
-        """Multiple messages should each produce a separate JSON line."""
+        """Two inbound frames should produce two separate JSON output lines."""
         proc = await asyncio.create_subprocess_exec(
             *CLI_MODULE,
             "text",
@@ -386,9 +413,7 @@ class TestCliTcpClientJson:
 
     @pytest.mark.asyncio
     async def test_tcp_client_json_roundtrip(self, actisense_server):
-        """JSON output should be parseable back into NMEA2000Message via from_json."""
-        from nmea2000.message import NMEA2000Message
-
+        """JSON output should round-trip through NMEA2000Message.from_json."""
         proc = await asyncio.create_subprocess_exec(
             *CLI_MODULE,
             "text",

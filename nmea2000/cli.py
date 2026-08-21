@@ -1,3 +1,5 @@
+"""Command-line entry points for decoding, encoding, and gateway access."""
+
 import argparse
 import asyncio
 import logging
@@ -62,14 +64,13 @@ async def interactive_client(client: AsyncIOClient, json_output: bool = False):
             line = line.strip()
             if line.lower() == "exit":
                 break
-            else:
-                try:
-                    message = NMEA2000Message.from_json(line)
-                    await client.send(message)
-                except Exception as e:
-                    print(f"Error: {e}")
-                    print("Not valid NMEA2000Message json")
-                    continue
+            try:
+                message = NMEA2000Message.from_json(line)
+                await client.send(message)
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                print(f"Error: {e}")
+                print("Not valid NMEA2000Message json")
+                continue
     except KeyboardInterrupt:
         sys.stdout.flush()
     finally:
@@ -78,8 +79,9 @@ async def interactive_client(client: AsyncIOClient, json_output: bool = False):
 
 
 def parse(filename: str, decoder: NMEA2000Decoder):
+    """Decode each non-comment line from a file with the provided decoder."""
     try:
-        with open(filename, "r") as file:
+        with open(filename, "r", encoding="utf-8") as file:
             while True:
                 line = file.readline()
                 if not line:
@@ -87,10 +89,10 @@ def parse(filename: str, decoder: NMEA2000Decoder):
                 if line.startswith("#") or len(line) <= 1:
                     continue
                 line = line.strip()
-                logger.info(f"Processing: {line}")
+                logger.info("Processing: %s", line)
                 try:
                     decoder.decode(line)
-                except Exception as e:
+                except Exception as e:  # pylint: disable=broad-exception-caught
                     print(f"Error: {e}")
     except KeyboardInterrupt:
         sys.stdout.flush()
@@ -110,6 +112,7 @@ def _add_common_client_args(sub: argparse.ArgumentParser):
 
 
 async def async_main():
+    """Parse CLI arguments and execute the selected command asynchronously."""
     logging.basicConfig(filename="parser.log", level=logging.NOTSET)
     parser = argparse.ArgumentParser(description="NMEA 2000 CLI Tool")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose mode")
@@ -170,11 +173,11 @@ async def async_main():
             return None
         try:
             fmt = N2KFormat[val_upper]
-        except KeyError:
+        except KeyError as exc:
             valid = ", ".join(f.name for f in _TEXT_FORMATS_SORTED)
             raise argparse.ArgumentTypeError(
                 f"Invalid format: {value}. Valid options are: AUTO, {valid}."
-            )
+            ) from exc
         if fmt not in TEXT_FORMATS:
             valid = ", ".join(f.name for f in _TEXT_FORMATS_SORTED)
             raise argparse.ArgumentTypeError(
@@ -251,7 +254,7 @@ async def async_main():
             parse(args.file, decoder)
         else:
             print("Error: You must provide either a frame or a file to decode.")
-            exit(1)
+            sys.exit(1)
 
     elif args.command == "encode":
         encoder = create_encoder(N2KFormat.N2K_ASCII_RAW)
@@ -272,7 +275,7 @@ async def async_main():
             print(encoded)
         else:
             print("Error: You must provide either a frame or a file to encode.")
-            exit(1)
+            sys.exit(1)
 
     elif args.command == "ebyte":
         logger.info(
@@ -299,7 +302,7 @@ async def async_main():
         client = TextNmea2000Gateway(
             args.server,
             args.port,
-            format=args.format,
+            output_format=args.format,
             dump_to_file=args.dump_file,
             dump_pgns=args.dump_pgns,
         )
@@ -337,6 +340,7 @@ async def async_main():
 
 
 def main():
+    """Run the CLI entry point and translate Ctrl+C into a clean exit message."""
     try:
         asyncio.run(async_main())
     except KeyboardInterrupt:

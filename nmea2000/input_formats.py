@@ -1,3 +1,5 @@
+"""Input format detection helpers and shared format type definitions."""
+
 from __future__ import annotations
 
 import re
@@ -29,67 +31,65 @@ class N2KFormat(StrEnum):
     """
 
     # -- Reassembled N2K messages, ASCII ---------------------------------
-    N2K_ASCII_RAW = "n2k_ascii_raw"    # ``09FF7 0FF00 3F9FDCFF…``
-    N2K_ASCII = "n2k_ascii"            # ``A173321.107 23FF7 1F513 012F…``
+    N2K_ASCII_RAW = "n2k_ascii_raw"  # ``09FF7 0FF00 3F9FDCFF…``
+    N2K_ASCII = "n2k_ascii"  # ``A173321.107 23FF7 1F513 012F…``
 
     # -- CSV / basic string ----------------------------------------------
-    BASIC_STRING = "basic_string"      # ``2016-04-09T16:41:09.078Z,3,127257,…``
+    BASIC_STRING = "basic_string"  # ``2016-04-09T16:41:09.078Z,3,127257,…``
 
     # -- Raw CAN frames, ASCII -------------------------------------------
-    CAN_FRAME_ASCII = "can_frame_ascii"              # ``17:33:21.107 R 19F51323 01 2F…``
-    CAN_FRAME_ASCII_RAW = "can_frame_ascii_raw"      # ``19F51323 01 2F 30 70…`` (no timestamp)
+    CAN_FRAME_ASCII = "can_frame_ascii"  # ``17:33:21.107 R 19F51323 01 2F…``
+    CAN_FRAME_ASCII_RAW = (
+        "can_frame_ascii_raw"  # ``19F51323 01 2F 30 70…`` (no timestamp)
+    )
     CAN_FRAME_ASCII_RAW_OUT = "can_frame_ascii_raw_out"  # output-only variant
 
     # -- NMEA 0183 sentence formats --------------------------------------
-    PCDIN = "pcdin"            # ``$PCDIN,…``  (SeaSmart)
-    MXPGN = "mxpgn"            # ``$MXPGN,…``  (Shipmodul)
-    PDGY = "pdgy"              # ``!PDGY,…``   (Digital Yacht)
+    PCDIN = "pcdin"  # ``$PCDIN,…``  (SeaSmart)
+    MXPGN = "mxpgn"  # ``$MXPGN,…``  (Shipmodul)
+    PDGY = "pdgy"  # ``!PDGY,…``   (Digital Yacht)
     PDGY_DEBUG = "pdgy_debug"  # ``$PDGY,…``   (debug, decode-only)
 
     # -- Linux can-utils log formats -------------------------------------
-    CANDUMP1 = "candump1"      # ``<0x18EEFF01> [8] 05 A0…``
-    CANDUMP2 = "candump2"      # ``can0  18EEFF01   [8]  05 A0…``
-    CANDUMP3 = "candump3"      # ``(1502979132.106111) slcan0 18EEFF01#05A0…``
+    CANDUMP1 = "candump1"  # ``<0x18EEFF01> [8] 05 A0…``
+    CANDUMP2 = "candump2"  # ``can0  18EEFF01   [8]  05 A0…``
+    CANDUMP3 = "candump3"  # ``(1502979132.106111) slcan0 18EEFF01#05A0…``
 
     # -- Binary formats --------------------------------------------------
-    BST_D0 = "bst_d0"          # Actisense BST D0 (reassembled N2K, binary, BDTP-framed)
-    BST_95 = "bst_95"          # Actisense BST 95 (raw CAN frames, binary, BDTP-framed)
-    EBYTE = "ebyte"            # https://www.cdebyte.com/products/ECAN-E01
-    WAVESHARE = "waveshare"    # https://www.waveshare.com/wiki/USB-CAN-A
+    BST_D0 = "bst_d0"  # Actisense BST D0 (reassembled N2K, binary, BDTP-framed)
+    BST_95 = "bst_95"  # Actisense BST 95 (raw CAN frames, binary, BDTP-framed)
+    EBYTE = "ebyte"  # https://www.cdebyte.com/products/ECAN-E01
+    WAVESHARE = "waveshare"  # https://www.waveshare.com/wiki/USB-CAN-A
 
     # -- Library-level ---------------------------------------------------
     PYTHON_CAN = "python_can"  # python-can ``can.message.Message`` objects
 
 
-TEXT_FORMATS: frozenset[N2KFormat] = frozenset({
-    N2KFormat.N2K_ASCII_RAW,
-    N2KFormat.N2K_ASCII,
-    N2KFormat.BASIC_STRING,
-    N2KFormat.CAN_FRAME_ASCII,
-    N2KFormat.CAN_FRAME_ASCII_RAW,
-    N2KFormat.PCDIN,
-    N2KFormat.MXPGN,
-    N2KFormat.PDGY,
-    N2KFormat.PDGY_DEBUG,
-    N2KFormat.CANDUMP1,
-    N2KFormat.CANDUMP2,
-    N2KFormat.CANDUMP3,
-})
+TEXT_FORMATS: frozenset[N2KFormat] = frozenset(
+    {
+        N2KFormat.N2K_ASCII_RAW,
+        N2KFormat.N2K_ASCII,
+        N2KFormat.BASIC_STRING,
+        N2KFormat.CAN_FRAME_ASCII,
+        N2KFormat.CAN_FRAME_ASCII_RAW,
+        N2KFormat.PCDIN,
+        N2KFormat.MXPGN,
+        N2KFormat.PDGY,
+        N2KFormat.PDGY_DEBUG,
+        N2KFormat.CANDUMP1,
+        N2KFormat.CANDUMP2,
+        N2KFormat.CANDUMP3,
+    }
+)
 
-N2KInput: TypeAlias = (
-    str
-    | bytes
-    | bytearray
-    | memoryview
-    | can.message.Message
+N2KInput: TypeAlias = (  # pylint: disable=invalid-name
+    str | bytes | bytearray | memoryview | can.message.Message
 )
 
 _N2K_ASCII_RE = re.compile(
     r"^A\d+\.\d+\s+[0-9A-Fa-f]{5}\s+[0-9A-Fa-f]{5,6}\s+[0-9A-Fa-f]+$"
 )
-_N2K_ASCII_RAW_RE = re.compile(
-    r"^[0-9A-Fa-f]{5}\s+[0-9A-Fa-f]{5,6}\s+[0-9A-Fa-f]+$"
-)
+_N2K_ASCII_RAW_RE = re.compile(r"^[0-9A-Fa-f]{5}\s+[0-9A-Fa-f]{5,6}\s+[0-9A-Fa-f]+$")
 _BASIC_STRING_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}\.\d+Z?|\-\d{2}:\d{2}:\d{2}\.\d+)"
     r"(?:,\d+){5}(?:,[0-9A-Fa-f]{2})+$"
@@ -97,18 +97,12 @@ _BASIC_STRING_RE = re.compile(
 _CAN_FRAME_ASCII_RE = re.compile(
     r"^\d{2}:\d{2}:\d{2}\.\d+\s+[RT]\s+[0-9A-Fa-f]{8}(?:\s+[0-9A-Fa-f]{2})+$"
 )
-_CAN_FRAME_ASCII_RAW_RE = re.compile(
-    r"^[0-9A-Fa-f]{8}(?:\s+[0-9A-Fa-f]{2})+$"
-)
-_CANDUMP1_RE = re.compile(
-    r"^<0x[0-9A-Fa-f]+>\s+\[\d+\](?:\s+[0-9A-Fa-f]{2})+\s*$"
-)
+_CAN_FRAME_ASCII_RAW_RE = re.compile(r"^[0-9A-Fa-f]{8}(?:\s+[0-9A-Fa-f]{2})+$")
+_CANDUMP1_RE = re.compile(r"^<0x[0-9A-Fa-f]+>\s+\[\d+\](?:\s+[0-9A-Fa-f]{2})+\s*$")
 _CANDUMP2_RE = re.compile(
     r"^[A-Za-z][A-Za-z0-9_-]*\s+[0-9A-Fa-f]{8}\s+\[\d+\](?:\s+[0-9A-Fa-f]{2})+\s*$"
 )
-_CANDUMP3_RE = re.compile(
-    r"^\([^)]+\)\s+\S+\s+[0-9A-Fa-f]{8}#[0-9A-Fa-f]+\s*$"
-)
+_CANDUMP3_RE = re.compile(r"^\([^)]+\)\s+\S+\s+[0-9A-Fa-f]{8}#[0-9A-Fa-f]+\s*$")
 
 
 def _get_0183_sentence(line: str) -> str:
@@ -197,6 +191,7 @@ def _is_bst_95(packet: bytes) -> bool:
 
 
 def detect_format(data: N2KInput) -> N2KFormat:
+    """Infer the NMEA 2000 wire format from one text, binary, or python-can input."""
     if isinstance(data, can.message.Message):
         return N2KFormat.PYTHON_CAN
 

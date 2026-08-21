@@ -13,7 +13,9 @@ from .decoder import NMEA2000Decoder
 from .input_formats import N2KFormat
 from .message import NMEA2000Message
 
-N2KEncoded: TypeAlias = str | list[str] | list[bytes] | list[can.message.Message]
+N2KEncoded: TypeAlias = (  # pylint: disable=invalid-name
+    str | list[str] | list[bytes] | list[can.message.Message]
+)
 EncodedT_co = TypeVar("EncodedT_co", covariant=True)
 
 
@@ -126,8 +128,7 @@ class EncoderBase:
         if is_fast:
             bytes_list = self._encode_fast_message(can_data_bytes)
             return bytes_list
-        else:
-            return [can_data_bytes]
+        return [can_data_bytes]
 
 
 def _normalize_output_format(output_format: N2KFormat | str) -> N2KFormat:
@@ -196,7 +197,9 @@ def create_encoder(
     output_format: N2KFormat | str = N2KFormat.N2K_ASCII_RAW,
 ) -> EncoderInterface[N2KEncoded]:
     """Create an encoder bound to one output format."""
-    from .encoder_formats import ENCODER_CLASSES
+    from .encoder_formats import (  # pylint: disable=import-outside-toplevel
+        ENCODER_CLASSES,
+    )
 
     normalized_format = _normalize_output_format(output_format)
     encoder_cls = ENCODER_CLASSES.get(normalized_format)

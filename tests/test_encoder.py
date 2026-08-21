@@ -1,6 +1,10 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""Encoder round-trip tests for transport-specific and auto-sensed formats."""
+
 import json
 from pathlib import Path
 
+import can.message
 import pytest
 
 from nmea2000.consts import PhysicalQuantities
@@ -22,6 +26,7 @@ _GNSS_PRECISION_TOLERANCES = {
 
 
 def _roundtrip_case_id(case: dict) -> str:
+    """Build a stable pytest id from the canboatjs PGN and case index."""
     return f"{case['pgn']}-{case['caseIndex']}"
 
 
@@ -29,6 +34,7 @@ def _assert_semantic_roundtrip(
     original: NMEA2000Message,
     decoded: NMEA2000Message,
 ) -> None:
+    """Assert that encode and decode preserve message header and field semantics."""
     assert decoded.PGN == original.PGN
     assert decoded.priority == original.priority
     assert decoded.source == original.source
@@ -68,6 +74,7 @@ def _assert_payload_roundtrip(
     *,
     allow_basic_string_canonicalization: bool = False,
 ) -> None:
+    """Encode and decode a message again using the expected transport format."""
     output_format = (
         N2KFormat.BASIC_STRING
         if allow_basic_string_canonicalization
@@ -93,6 +100,7 @@ def _assert_payload_roundtrip(
 
 
 def _decode_roundtrip_case(case: dict) -> NMEA2000Message:
+    """Decode one canboatjs fixture case from either single or multi-frame input."""
     data = case["input"]
     if isinstance(data, list):
         return _decode_list_input(data)
@@ -138,6 +146,7 @@ def _generate_test_message() -> NMEA2000Message:
 
 
 def test_tcp_encode():
+    """EBYTE transport encoding should preserve a one-radian heading as 57 degrees on decode."""
     encoder = create_encoder(N2KFormat.EBYTE)
     msg_bytes = encoder.encode(_generate_test_message())[0]
     decoder = _get_decoder(preferred_units={PhysicalQuantities.ANGLE: "deg"})
@@ -147,6 +156,7 @@ def test_tcp_encode():
 
 
 def test_tcp_encode_2():
+    """Decoding and re-encoding an EBYTE packet should reproduce identical bytes."""
     decoder = _get_decoder()
     encoder = create_encoder(N2KFormat.EBYTE)
     msg = decoder.decode(bytes.fromhex("8800ff00093f9fdcffffffffff"))
@@ -158,6 +168,7 @@ def test_tcp_encode_2():
 
 
 def test_usb_encode():
+    """Decoding and re-encoding a WaveShare packet should reproduce identical bytes."""
     decoder = _get_decoder()
     encoder = create_encoder(N2KFormat.WAVESHARE)
     msg = decoder.decode(bytes.fromhex("aa550102010113f10908fffac2ffffffffff00d0"))
@@ -169,6 +180,7 @@ def test_usb_encode():
 
 
 def test_yacht_devices_encode():
+    """CAN frame ASCII encoding should reproduce the original Yacht Devices frame payload."""
     decoder = _get_decoder()
     encoder = create_encoder(N2KFormat.CAN_FRAME_ASCII)
     msg = decoder.decode("21:31:42.671 T 01F010B3 FF FF 0C 4F 70 BE 3E 33")
@@ -179,8 +191,6 @@ def test_yacht_devices_encode():
 
 def test_python_can_encode():
     """Test encoding a NMEA2000 message to python-can Message objects."""
-    import can.message
-
     decoder = _get_decoder()
     encoder = create_encoder(N2KFormat.PYTHON_CAN)
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
@@ -225,6 +235,7 @@ def test_python_can_roundtrip():
     ids=_roundtrip_case_id,
 )
 def test_canboatjs_autosense_roundtrip_cases(case: dict):
+    """Each canboatjs autosense fixture should decode and re-encode without semantic drift."""
     expected = case["expected"]
 
     msg = _decode_roundtrip_case(case)

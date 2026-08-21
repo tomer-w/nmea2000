@@ -1,4 +1,9 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""IO client tests for send paths, retries, and virtual python-can readiness."""
+
 from __future__ import annotations
+
+# pylint: disable=protected-access
 
 import asyncio
 import logging
@@ -17,6 +22,7 @@ from nmea2000.message import NMEA2000Message
 
 
 def _build_message() -> NMEA2000Message:
+    """Build a minimal vessel heading message for send-path tests."""
     return NMEA2000Message(
         PGN=127250,
         id="vesselHeading",
@@ -29,23 +35,32 @@ def _build_message() -> NMEA2000Message:
 
 
 class FakeWriter:
+    """StreamWriter test double that records writes, drains, and close state."""
+
     def __init__(self) -> None:
+        """Initialize empty write tracking for stream send assertions."""
         self.writes: list[bytes] = []
         self.drain_calls = 0
         self.closed = False
 
     def write(self, data: bytes) -> None:
+        """Record one chunk written by the client."""
         self.writes.append(data)
 
     async def drain(self) -> None:
+        """Count each flush request from the client."""
         self.drain_calls += 1
 
     def close(self) -> None:
+        """Mark the writer as closed."""
         self.closed = True
 
 
 class RecordingClient(AsyncIOClient):
+    """AsyncIO client subclass that returns predetermined encoded byte chunks."""
+
     def __init__(self, encoded_messages: list[bytes]) -> None:
+        """Store encoded messages that the test send path should write verbatim."""
         super().__init__(
             exclude_pgns=[],
             include_pgns=[],
@@ -60,49 +75,65 @@ class RecordingClient(AsyncIOClient):
         self.encoded_messages = encoded_messages
 
     async def _connect_impl(self) -> None:
+        """No-op connect implementation for isolated send tests."""
         return
 
     async def _receive_impl(self) -> None:
+        """No-op receive implementation for isolated send tests."""
         return
 
-    def _encode_impl(self, nmea2000Message: NMEA2000Message) -> list[bytes]:
+    def _encode_impl(self, message: NMEA2000Message) -> list[bytes]:
+        """Return the preloaded encoded byte chunks regardless of message content."""
+        del message
         return self.encoded_messages
 
 
 class PythonCanSendClient(PythonCanAsyncIOClient):
+    """python-can client subclass that returns one predetermined CAN message."""
+
     def __init__(self, encoded_message: can.message.Message, **kwargs) -> None:
+        """Initialize the client with a canned encoded message for send assertions."""
         super().__init__("virtual", "test-python-can-send", **kwargs)
         self.encoded_message = encoded_message
 
-    def _encode_impl(
-        self, nmea2000Message: NMEA2000Message
-    ) -> list[can.message.Message]:
+    def _encode_impl(self, message: NMEA2000Message) -> list[can.message.Message]:
+        """Return the prebuilt CAN message instead of encoding dynamically."""
+        del message
         return [self.encoded_message]
 
 
 class FakeBus:
+    """CAN bus test double that records sent messages, timeouts, and shutdowns."""
+
     def __init__(self) -> None:
+        """Initialize empty send tracking for python-can client tests."""
         self.sent_messages: list[can.message.Message] = []
         self.timeouts: list[float | None] = []
         self.shutdown_called = False
 
     def send(self, message: can.message.Message, timeout: float | None = None) -> None:
+        """Record a bus send call and its timeout value."""
         self.timeouts.append(timeout)
         self.sent_messages.append(message)
 
     def shutdown(self) -> None:
+        """Record that the client shut the bus down."""
         self.shutdown_called = True
 
 
 class FlakyBus(FakeBus):
+    """CAN bus double that raises a configured operation error before succeeding."""
+
     def __init__(
         self, failures_before_success: int, error: can.CanOperationError
     ) -> None:
+        """Configure how many sends fail before the bus starts accepting messages."""
         super().__init__()
         self.failures_before_success = failures_before_success
         self.error = error
 
     def send(self, message: can.message.Message, timeout: float | None = None) -> None:
+        """Fail a fixed number of sends before recording a successful transmit."""
         self.timeouts.append(timeout)
         if self.failures_before_success > 0:
             self.failures_before_success -= 1
@@ -112,6 +143,7 @@ class FlakyBus(FakeBus):
 
 @pytest.mark.asyncio
 async def test_seed_network_map_parses_timestamp_for_python_can(monkeypatch) -> None:
+    """Seeded management PGNs should encode to python-can messages with float timestamps."""
     client = RecordingClient([])
     seeded_pgns: list[object] = []
     seeded_timestamps: list[datetime] = []
@@ -119,9 +151,11 @@ async def test_seed_network_map_parses_timestamp_for_python_can(monkeypatch) -> 
     encoder = create_encoder(N2KFormat.PYTHON_CAN)
 
     async def no_sleep(_delay: float) -> None:
+        """Eliminate test delays while seeding the network map."""
         return
 
     async def record_message(message: NMEA2000Message) -> None:
+        """Capture seeded messages and verify they encode to python-can objects."""
         seeded_pgns.append(message.fields[0].value)
         seeded_timestamps.append(message.timestamp)
         encoded = encoder.encode(message)
@@ -147,6 +181,7 @@ async def test_seed_network_map_parses_timestamp_for_python_can(monkeypatch) -> 
 
 @pytest.mark.asyncio
 async def test_asyncio_client_send_uses_default_stream_send_impl() -> None:
+    """AsyncIOClient.send should write every encoded chunk through the stream writer."""
     client = RecordingClient([b"\x01\x02", b"\x03\x04"])
     writer = FakeWriter()
     client.writer = cast(asyncio.StreamWriter, writer)
@@ -163,6 +198,7 @@ async def test_asyncio_client_send_uses_default_stream_send_impl() -> None:
 
 @pytest.mark.asyncio
 async def test_python_can_client_send_uses_bus_instead_of_writer() -> None:
+    """PythonCanAsyncIOClient.send should transmit on the CAN bus with the configured timeout."""
     encoded_message = can.message.Message(
         arbitration_id=0x19F1120A,
         is_extended_id=True,
@@ -186,6 +222,7 @@ async def test_python_can_client_send_uses_bus_instead_of_writer() -> None:
 async def test_python_can_client_retries_transient_buffer_pressure(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
+    """Transient CAN buffer pressure should be retried and logged at debug level."""
     encoded_message = can.message.Message(
         arbitration_id=0x19F1120A,
         is_extended_id=True,
@@ -226,6 +263,7 @@ async def test_python_can_client_retries_transient_buffer_pressure(
 async def test_python_can_client_raises_persistent_buffer_pressure_without_reconnect(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
+    """Persistent buffer pressure should raise after retries and log one warning without reconnecting."""
     encoded_message = can.message.Message(
         arbitration_id=0x19F1120A,
         is_extended_id=True,
@@ -265,6 +303,7 @@ async def test_python_can_client_raises_persistent_buffer_pressure_without_recon
 
 @pytest.mark.asyncio
 async def test_python_can_device_becomes_ready_on_virtual_bus(tmp_path) -> None:
+    """A python-can device on a virtual bus should become ready after startup."""
     device = N2KDevice.for_python_can(
         "virtual",
         "test-python-can-ready",

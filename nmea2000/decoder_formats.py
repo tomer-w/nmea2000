@@ -1,3 +1,5 @@
+"""Concrete decoder implementations for supported NMEA 2000 wire formats."""
+
 from __future__ import annotations
 
 import base64
@@ -72,7 +74,7 @@ def _decode_raw_can_frame(
     timestamp: datetime | None = None,
 ) -> NMEA2000Message | None:
     pgn_id, source_id, dest, priority = type(decoder).extract_header(can_id)
-    return decoder._decode(
+    return decoder._decode(  # pylint: disable=protected-access
         pgn_id,
         priority,
         source_id,
@@ -94,7 +96,7 @@ def _decode_combined_payload(
     raw_input: bytes | str,
     timestamp: datetime | None = None,
 ) -> NMEA2000Message | None:
-    return decoder._decode(
+    return decoder._decode(  # pylint: disable=protected-access
         pgn_id,
         priority,
         source_id,

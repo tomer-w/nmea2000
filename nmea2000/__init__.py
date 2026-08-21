@@ -1,3 +1,5 @@
+"""Public package exports for the nmea2000 library."""
+
 from .consts import FieldTypes, ManufacturerCodes, PhysicalQuantities
 from .decoder import NMEA2000Decoder
 from .device import N2KDevice

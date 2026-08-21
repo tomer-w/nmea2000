@@ -1,19 +1,25 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+"""Verify NMEA 2000 decoding across supported frame formats and field types."""
+
 import json
+import math
 import os
+import struct
 import uuid
 from datetime import datetime, timedelta
 
 import pytest
 
-import nmea2000.decoder_formats as decoder_formats
+from nmea2000 import decoder_formats
 from nmea2000.consts import FieldTypes, PhysicalQuantities
 from nmea2000.decoder import InvalidFrameError, NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat
 from nmea2000.message import IsoName, NMEA2000Field
+from nmea2000.pgns import decode_pgn_127503, decode_pgn_129540
 
-dump_to_file = None
-# dump_to_file = './dumps/pgn_dump.jsonl'
+DUMP_TO_FILE = None
+# DUMP_TO_FILE = './dumps/pgn_dump.jsonl'
 
 
 def _get_decoder(
@@ -29,7 +35,7 @@ def _get_decoder(
         include_pgns=include_pgns,
         exclude_manufacturer_code=exclude_manufacturer_code,
         preferred_units=preferred_units,
-        dump_to_file=dump_to_file,
+        dump_to_file=DUMP_TO_FILE,
         build_network_map=build_network_map,
         already_combined=already_combined,
     )
@@ -60,24 +66,27 @@ def _validate_65280_message(msg: NMEA2000Message | None):
 
 
 def test_single_parse():
+    """Decodes the sample Furuno heave ASCII frame into PGN 65280 fields."""
     decoder = _get_decoder()
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
 
 
 def test_single_parse_with_json():
+    """Writes configured dump output only for decoded PGN 65280 messages."""
     filename = f"./dumps/pgn_dump_{uuid.uuid4().hex[:8]}.jsonl"
     with NMEA2000Decoder(dump_to_file=filename, dump_pgns=[65280]) as decoder:
         msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
     assert os.path.exists(filename)
-    with open(filename, "r") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
         assert len(lines) == 1
     os.remove(filename)
 
 
 def test_yacht_devices_decode():
+    """Decodes Yacht Devices text input into the expected pressure message fields."""
     decoder = _get_decoder()
     msg = decoder.decode("00:01:54.330 R 15FD0A10 00 00 00 68 65 0F 00 FF")
     assert isinstance(msg, NMEA2000Message)
@@ -103,7 +112,11 @@ def test_yacht_devices_decode():
 
 
 def test_yacht_devices_decode_uses_current_date(monkeypatch):
+    """Uses the current date when a Yacht Devices timestamp omits the calendar date."""
+
     class FrozenDateTime(datetime):
+        """Returns a deterministic current date for timestamp reconstruction."""
+
         @classmethod
         def now(cls, tz=None):
             current = cls(2026, 4, 9, 12, 0, 0)
@@ -121,6 +134,7 @@ def test_yacht_devices_decode_uses_current_date(monkeypatch):
 
 
 def test_bitlookup_parse():
+    """Decodes bit lookup fields and preferred temperature units in engine data."""
     decoder = _get_decoder(
         preferred_units={PhysicalQuantities.TEMPERATURE: "C"}, already_combined=True
     )
@@ -167,6 +181,7 @@ def test_bitlookup_parse():
 
 
 def test_bitlookup_parse2():
+    """Applies preferred pressure and temperature units to decoded engine fields."""
     decoder = _get_decoder(
         preferred_units={
             PhysicalQuantities.TEMPERATURE: "C",
@@ -223,7 +238,8 @@ def test_bitlookup_parse2():
     assert msg.fields[13].unit_of_measurement == "%"
 
 
-def test_INDIRECT_LOOKUP_parse():
+def test_indirect_lookup_parse():
+    """Decodes ISO address claim fields that use indirect lookup tables."""
     decoder = _get_decoder(already_combined=True)
     msg = decoder.decode(
         "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
@@ -255,7 +271,8 @@ def test_INDIRECT_LOOKUP_parse():
     assert msg.fields[9].value == "Yes"
 
 
-def test_STRING_FIX_parse():
+def test_string_fix_parse():
+    """Decodes fixed-length string fields from product information messages."""
     decoder = _get_decoder(already_combined=True)
     msg = decoder.decode(
         "2011-04-25-06:25:02.017,6,126996,60,255,134,ba,04,96,26,4d,61,73,74,65,72,42,75,73,20,4e,4d,45,41,20,49,6e,74,65,72,66,61,63,65,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,31,2e,30,30,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,58,44,31,38,41,30,30,31,39,00,00,00,00,00,00,00,00,4e,4d,45,41,32,30,30,30,00,00,00,00,00,00,00,03,00"
@@ -285,7 +302,8 @@ def test_STRING_FIX_parse():
     assert msg.fields[7].value == 0
 
 
-def test_STRING_LZ_parse():
+def test_string_lz_parse():
+    """Decodes length-prefixed zero-terminated strings in Fusion tuner messages."""
     decoder = _get_decoder(already_combined=True)
     msg = decoder.decode(
         "2020-08-22T13:52:52.054Z,7,130820,49,255,20,a3,99,0b,80,01,02,00,c6,3e,05,c7,08,41,56,52,4f,54,52,4f,53"
@@ -311,7 +329,8 @@ def test_STRING_LZ_parse():
     assert msg.fields[8].value == "AVROTROS"
 
 
-def test_STRING_LAU_parse():
+def test_string_lau_parse():
+    """Decodes LAU string fields, including Unicode text, from configuration data."""
     decoder = _get_decoder(already_combined=True)
     msg = decoder.decode(
         "2021-01-30-20:43:21.684,6,126998,1,255,19,07,01,68,65,6C,6C,6F,0c,00,77,00,F3,00,72,00,6C,00,64,00"
@@ -332,6 +351,7 @@ def test_STRING_LAU_parse():
 
 
 def test_json():
+    """Serializes and deserializes decoded messages without losing field data."""
     decoder = _get_decoder()
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert isinstance(msg, NMEA2000Message)
@@ -400,6 +420,7 @@ def _validate_130842_message(msg: NMEA2000Message | None):
 
 
 def test_iso_address_parse():
+    """Reuses an address-claim ISO name when later messages share the same source."""
     decoder = _get_decoder(build_network_map=True, already_combined=True)
     msg_60928 = decoder.decode(
         "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
@@ -423,6 +444,7 @@ def test_iso_address_parse():
 
 
 def test_iso_address_parse_zero():
+    """Decodes an ISO address claim whose packed name includes zero-valued fields."""
     decoder = _get_decoder(already_combined=True)
     msg_60928 = decoder.decode(
         "2000-09-10T12:10:16.614Z,6,60928,5,255,8,f5,01,c0,2c,ef,aa,46,c0"
@@ -432,6 +454,7 @@ def test_iso_address_parse_zero():
 
 
 def test_iso_name_pack_name_from_message():
+    """Packs the source ISO name from a decoded address-claim message."""
     decoder = _get_decoder(already_combined=True)
     msg_60928 = decoder.decode(
         "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
@@ -442,6 +465,7 @@ def test_iso_name_pack_name_from_message():
 
 
 def test_iso_address_parse_exclude():
+    """Falls back to the encoded source ISO name when address-claim PGNs are excluded."""
     decoder = _get_decoder(exclude_pgns=[60928], already_combined=True)
     msg_60928 = decoder.decode(
         "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
@@ -457,6 +481,7 @@ def test_iso_address_parse_exclude():
 
 
 def test_iso_address_parse_exclude_2():
+    """Supports excluding address claims by PGN id string as well as by number."""
     decoder = _get_decoder(exclude_pgns=["isoAddressClaim"], already_combined=True)
     msg_60928 = decoder.decode(
         "2022-09-10T12:10:16.614Z,6,60928,5,255,8,fb,9b,70,22,00,9b,50,c0"
@@ -472,6 +497,7 @@ def test_iso_address_parse_exclude_2():
 
 
 def test_exclude_manufacturer_code():
+    """Drops messages whose decoded manufacturer code is configured as excluded."""
     decoder = _get_decoder(
         exclude_pgns=[60928],
         exclude_manufacturer_code=["Navico"],
@@ -489,6 +515,7 @@ def test_exclude_manufacturer_code():
 
 
 def test_fast_parse():
+    """Decodes the sample fast-packet Furuno motion message into PGN 130842."""
     decoder = _get_decoder()
     msg = decoder.decode(
         "A000057.063 09FF7 1FF1A 3F9F24000000FFFFFFFFEFFFFFFF009AFFFFFFADFFFFFF050000000000"
@@ -497,6 +524,7 @@ def test_fast_parse():
 
 
 def test_encode():
+    """Re-encodes a decoded single-frame message back to its ASCII payload form."""
     decoder = _get_decoder()
     encoder = create_encoder()
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
@@ -506,18 +534,21 @@ def test_encode():
 
 
 def test_exclude():
+    """Returns no message when the decoded PGN is explicitly excluded."""
     decoder = _get_decoder(exclude_pgns=[65280])
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     assert msg is None
 
 
 def test_include():
+    """Decodes a message when its PGN is explicitly included."""
     decoder = _get_decoder(include_pgns=[65280])
     msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
     _validate_65280_message(msg)
 
 
 def test_include_with_network_map():
+    """Keeps included PGNs decodable even when excluded claims are omitted from the network map."""
     decoder = _get_decoder(
         include_pgns=[126998], build_network_map=True, already_combined=True
     )
@@ -532,36 +563,42 @@ def test_include_with_network_map():
 
 
 def test_tcp_bytes():
+    """Decodes a TCP-format byte frame into the same PGN 65280 message."""
     decoder = _get_decoder()
     msg = decoder.decode(bytes.fromhex("881cff00093f9fdcffffffffff"))
     _validate_65280_message(msg)
 
 
 def test_usb_bytes():
+    """Decodes a WaveShare USB-format byte frame into PGN 65280."""
     decoder = _get_decoder()
     msg = decoder.decode(bytes.fromhex("aa550102010900ff1c083f9fdcffffffffff00e5"))
     _validate_65280_message(msg)
 
 
 def test_usb_bytes_invalid_checksum():
+    """Rejects USB-format frames whose checksum does not match the payload."""
     decoder = _get_decoder()
     with pytest.raises(InvalidFrameError, match="Invalid checksum"):
         decoder.decode(bytes.fromhex("aa550102010900ff1c083f9fdcffffffffff00ff"))
 
 
 def test_usb_bytes_invalid_header():
+    """Rejects USB-format frames with an unexpected header prefix."""
     decoder = _get_decoder()
     with pytest.raises(InvalidFrameError, match="prefix"):
         decoder.decode(bytes.fromhex("bb550102010900ff1c083f9fdcffffffffff00e5"))
 
 
 def test_usb_bytes_invalid_length():
+    """Rejects truncated USB-format frames before attempting to decode them."""
     decoder = _get_decoder()
     with pytest.raises(InvalidFrameError, match="not 20 bytes"):
         decoder.decode(bytes.fromhex("aa550102010900ff1c08"))
 
 
 def test_iso_request_decode():
+    """Preserves ISO Request field values through binary and JSON round-trips."""
     decoder = _get_decoder()
     msg = decoder.decode("2012-06-17-15:02:11.000,6,59904,0,255,3,14,f0,01")
     assert isinstance(msg, NMEA2000Message)
@@ -580,18 +617,21 @@ def test_iso_request_decode():
 
 
 def test_decode_yacht_devices_receive():
+    """Decodes a Yacht Devices transmit-status frame into a message object."""
     decoder = _get_decoder()
     msg = decoder.decode("21:31:42.671 T 01F010B3 FF FF 0C 4F 70 BE 3E 33")
     assert isinstance(msg, NMEA2000Message)
 
 
 def test_decode_yacht_devices_receive_2():
+    """Decodes a second Yacht Devices transmit-status frame into a message object."""
     decoder = _get_decoder()
     msg = decoder.decode("21:31:42.520 T 01F119B3 57 00 00 8D 0B FA FE FF")
     assert isinstance(msg, NMEA2000Message)
 
 
 def test_decode_speed():
+    """Converts decoded wind speed into the configured preferred speed units."""
     decoder = _get_decoder(preferred_units={PhysicalQuantities.SPEED: "kts"})
     msg = decoder.decode("A000057.067 22FF2 1FD02 075101744CFAFFFF")
     assert isinstance(msg, NMEA2000Message)
@@ -608,6 +648,7 @@ def test_decode_speed():
 
 
 def test_fusion():
+    """Decodes the captured Fusion proprietary message as PGN 126720."""
     decoder = _get_decoder(already_combined=True)
     msg = decoder.decode(
         "2025-06-20T19:33:12.240Z,7,126720,0,255,11,a3,99,09,00,0b,07,00,00,00,02,02"
@@ -818,8 +859,6 @@ def test_pgn_127504_repeating_fields_are_nmea2000field():
 
 def test_pgn_127503_multiple_lines():
     """Test that PGN 127503 with multiple AC lines creates multiple list entries."""
-    from nmea2000.pgns import decode_pgn_127503
-
     # Construct a 2-line payload: instance=0, numberOfLines=2, then two repeating sets
     line1 = bytes(
         [
@@ -972,9 +1011,6 @@ def test_field_is_numeric():
 
 def test_pgn_129540_five_sats_in_view():
     """Test that PGN 129540 with 5 sats_in_view returns 5 repeating field entries."""
-    import struct
-
-    from nmea2000.pgns import decode_pgn_129540
 
     def make_sat(prn, elev_raw, azim_raw, snr_raw, rr_raw, status):
         """Build 12-byte repeating entry for one satellite."""
@@ -1092,8 +1128,6 @@ def test_pgn_129540_five_sats_in_view():
 
 def test_pgn_129540_apply_preferred_units_to_list_fields():
     """Test that apply_preferred_units converts ANGLE fields inside repeating list entries."""
-    import math
-
     decoder = _get_decoder(
         preferred_units={PhysicalQuantities.ANGLE: "deg"}, already_combined=True
     )
