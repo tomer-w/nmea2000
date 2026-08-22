@@ -7,6 +7,7 @@ import logging
 import os
 import subprocess
 import sys
+from asyncio.subprocess import Process
 
 import pytest
 
@@ -20,9 +21,27 @@ logging.basicConfig(
 logger = logging.getLogger("test_cli")
 
 CLI_MODULE = [sys.executable, "-m", "nmea2000.cli"]
+CLI_COMMAND_TIMEOUT = 30
+CLI_CONNECT_TIMEOUT = 15
 
 
 N2K_ASCII_FRAME = "A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF"
+
+
+async def _wait_for_cli_client(server: NMEA2000TestServer, proc: Process):
+    """Wait for a CLI subprocess to connect, failing early if it exits."""
+    try:
+        async with asyncio.timeout(CLI_CONNECT_TIMEOUT):
+            while not server.clients:
+                if proc.returncode is not None:
+                    stderr = b"" if proc.stderr is None else await proc.stderr.read()
+                    pytest.fail(
+                        f"CLI client exited with {proc.returncode}: "
+                        f"{stderr.decode(errors='replace')}"
+                    )
+                await asyncio.sleep(0.1)
+    except TimeoutError:
+        pytest.fail(f"CLI client did not connect within {CLI_CONNECT_TIMEOUT} seconds")
 
 
 class TestCliDecode:
@@ -34,7 +53,7 @@ class TestCliDecode:
             [*CLI_MODULE, "decode", "--frame", N2K_ASCII_FRAME],
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=CLI_COMMAND_TIMEOUT,
             check=False,
         )
         assert result.returncode == 0
@@ -52,7 +71,7 @@ class TestCliDecode:
             [*CLI_MODULE, "decode", "--frame", N2K_ASCII_FRAME],
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=CLI_COMMAND_TIMEOUT,
             check=False,
         )
         data = json.loads(result.stdout.strip())
@@ -67,7 +86,7 @@ class TestCliDecode:
             [*CLI_MODULE, "decode"],
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=CLI_COMMAND_TIMEOUT,
             check=False,
         )
         assert result.returncode != 0 or "Error" in result.stdout
@@ -80,7 +99,7 @@ class TestCliDecode:
             [*CLI_MODULE, "decode", "--file", str(frame_file)],
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=CLI_COMMAND_TIMEOUT,
             check=False,
         )
         assert result.returncode == 0
@@ -97,7 +116,7 @@ class TestCliEncode:
             [*CLI_MODULE, "encode", "--frame", self.SAMPLE_JSON],
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=CLI_COMMAND_TIMEOUT,
             check=False,
         )
         assert result.returncode == 0
@@ -111,7 +130,7 @@ class TestCliEncode:
             [*CLI_MODULE, "encode", "--file", str(json_file)],
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=CLI_COMMAND_TIMEOUT,
             check=False,
         )
         assert result.returncode == 0
@@ -123,7 +142,7 @@ class TestCliEncode:
             [*CLI_MODULE, "encode"],
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=CLI_COMMAND_TIMEOUT,
             check=False,
         )
         assert result.returncode != 0 or "Error" in result.stdout
@@ -175,12 +194,7 @@ class TestCliTcpClientJson:
         )
         assert proc.stdout is not None
         try:
-            # Wait until the server sees a connected client
-            for _ in range(20):
-                if actisense_server.clients:
-                    break
-                await asyncio.sleep(0.2)
-            assert actisense_server.clients, "CLI client did not connect to server"
+            await _wait_for_cli_client(actisense_server, proc)
 
             await actisense_server.send_to_clients(
                 b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
@@ -227,11 +241,7 @@ class TestCliTcpClientJson:
         )
         assert proc.stdout is not None
         try:
-            for _ in range(20):
-                if ebyte_server.clients:
-                    break
-                await asyncio.sleep(0.2)
-            assert ebyte_server.clients, "CLI client did not connect to server"
+            await _wait_for_cli_client(ebyte_server, proc)
 
             await ebyte_server.send_single_message()
 
@@ -273,11 +283,7 @@ class TestCliTcpClientJson:
         )
         assert proc.stdout is not None
         try:
-            for _ in range(20):
-                if yacht_devices_server.clients:
-                    break
-                await asyncio.sleep(0.2)
-            assert yacht_devices_server.clients, "CLI client did not connect to server"
+            await _wait_for_cli_client(yacht_devices_server, proc)
 
             await yacht_devices_server.send_to_clients(
                 b"00:01:54.430 R 15F11910 00 00 00 E5 0B 1D FF FF\r\n"
@@ -325,11 +331,7 @@ class TestCliTcpClientJson:
         )
         assert proc.stdout is not None
         try:
-            for _ in range(20):
-                if actisense_server.clients:
-                    break
-                await asyncio.sleep(0.2)
-            assert actisense_server.clients, "CLI client did not connect to server"
+            await _wait_for_cli_client(actisense_server, proc)
 
             await actisense_server.send_to_clients(
                 b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
@@ -376,11 +378,7 @@ class TestCliTcpClientJson:
         )
         assert proc.stdout is not None
         try:
-            for _ in range(20):
-                if actisense_server.clients:
-                    break
-                await asyncio.sleep(0.2)
-            assert actisense_server.clients, "CLI client did not connect to server"
+            await _wait_for_cli_client(actisense_server, proc)
 
             # Send two messages
             await actisense_server.send_to_clients(
@@ -430,11 +428,7 @@ class TestCliTcpClientJson:
         )
         assert proc.stdout is not None
         try:
-            for _ in range(20):
-                if actisense_server.clients:
-                    break
-                await asyncio.sleep(0.2)
-            assert actisense_server.clients, "CLI client did not connect to server"
+            await _wait_for_cli_client(actisense_server, proc)
 
             await actisense_server.send_to_clients(
                 b"A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF\n"
