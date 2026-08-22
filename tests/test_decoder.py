@@ -16,7 +16,11 @@ from nmea2000.decoder import InvalidFrameError, NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat
 from nmea2000.message import IsoName, NMEA2000Field
-from nmea2000.pgns import decode_pgn_127503, decode_pgn_129540
+from nmea2000.pgns import (
+    decode_pgn_127503,
+    decode_pgn_129540,
+    encode_pgn_130823_navicoDataTypeSourceDirectory,
+)
 
 DUMP_TO_FILE = None
 # DUMP_TO_FILE = './dumps/pgn_dump.jsonl'
@@ -952,6 +956,38 @@ def test_dynamic_field_decode():
     value_field = msg.get_list_field_by_id(0, "value")
     assert value_field.type == FieldTypes.DYNAMIC_FIELD_VALUE
     assert value_field.value is not None
+
+
+def test_dynamic_field_length_overhead_decode_and_encode():
+    """Use Navico record lengths excluding their three-byte record headers."""
+    decoder = _get_decoder(already_combined=True)
+    msg = decoder.decode(
+        "2026-07-02-10:43:45.052,3,130823,19,255,43,"
+        "13,99,ff,00,05,01,00,0a,00,55,02,bc,2f,00,96,50,c0,ff,"
+        "04,02,26,00,00,04,02,27,00,00,04,02,7d,00,00,"
+        "04,02,a5,00,00,04,02,99,01,00"
+    )
+
+    assert isinstance(msg, NMEA2000Message)
+    assert msg.description == "Navico: Data Type Source Directory"
+    assert msg.get_list_field_size() == 6
+    assert msg.get_list_field_by_id(0, "length").value == 10
+    assert msg.get_list_field_by_id(0, "dataType").value == (
+        "Yanmar Fuel Level Tank1 Stbd"
+    )
+    first_value = msg.get_list_field_by_id(0, "value").value
+    assert isinstance(first_value, bytes)
+    assert len(first_value) == 7
+    assert msg.get_list_field_by_id(1, "length").value == 4
+    assert msg.get_list_field_by_id(1, "dataType").value == "Current Set"
+    assert msg.get_list_field_by_id(1, "value").value == b"\x00"
+
+    encoded = encode_pgn_130823_navicoDataTypeSourceDirectory(msg)
+    assert encoded == bytes.fromhex(
+        "13 99 ff 00 05 01 00 0a 00 55 02 bc 2f 00 96 50 c0 ff "
+        "04 02 26 00 00 04 02 27 00 00 04 02 7d 00 00 "
+        "04 02 a5 00 00 04 02 99 01 00"
+    )
 
 
 def test_decimal_decode():

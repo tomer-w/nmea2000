@@ -146952,10 +146952,7 @@ def decode_pgn_130822_navicoConfigurationSet(_data_raw_: int, _data_length_bits_
 
     # 15:value | Offset: 128, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 128
-    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-        _dyn_bits = dyn_kv_metadata.bits
-    else:
-        _dyn_bits = _data_length_bits_ - running_bit_offset
+    _dyn_bits = max(0, int(length_raw or 0) - 0) * 8
     if _dyn_bits > 0:
         value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -147344,10 +147341,10 @@ def encode_pgn_130822_navicoConfigurationSet(nmea2000Message: NMEA2000Message) -
     if length_field is None:
         raise ValueError("Cant encode this message, missing dynamic field length")
     if isinstance(length_field.raw_value, (int, float)):
-        field_bit_length = int(length_field.raw_value) * 8
+        field_bit_length = max(0, int(length_field.raw_value) - 0) * 8
     else:
         assert length_field.value is None or isinstance(length_field.value, (int, float))
-        field_bit_length = int(length_field.value or 0) * 8
+        field_bit_length = max(0, int(length_field.value or 0) - 0) * 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Value' cannot be negative")
@@ -148111,10 +148108,7 @@ def decode_pgn_130822_navicoUdbDatabaseObjectDump(_data_raw_: int, _data_length_
 
     # 16:value | Offset: 144, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 144
-    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-        _dyn_bits = dyn_kv_metadata.bits
-    else:
-        _dyn_bits = _data_length_bits_ - running_bit_offset
+    _dyn_bits = max(0, int(length_raw or 0) - 3) * 8
     if _dyn_bits > 0:
         value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -148143,7 +148137,7 @@ def decode_pgn_130822_navicoUdbDatabaseObjectDump(_data_raw_: int, _data_length_
         data_type = master_dict['NAVICO_DATA_TYPE'].get(data_type_raw, None)
         running_bit_offset += 16
         repeating_entry['dataType'] = NMEA2000Field('dataType', 'Data Type', None, None, data_type, data_type_raw, None, FieldTypes.LOOKUP, False)
-        _dyn_value_bit_length = int(data_type_raw or 0) * 8
+        _dyn_value_bit_length = max(0, int(length_raw or 0) - 3) * 8
         if _dyn_value_bit_length > 0:
             value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_value_bit_length))
         else:
@@ -148574,10 +148568,14 @@ def encode_pgn_130822_navicoUdbDatabaseObjectDump(nmea2000Message: NMEA2000Messa
         else:
             field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
             field_value = encode_binary_data(field_bytes)
-        if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-            field_bit_length = dyn_kv_metadata.bits
+        length_field = repeating_entry.get("length")
+        if length_field is None:
+            raise ValueError("Cant encode this message, missing dynamic field length")
+        if isinstance(length_field.raw_value, (int, float)):
+            field_bit_length = max(0, int(length_field.raw_value) - 3) * 8
         else:
-            field_bit_length = binary_data_bit_length(field_bytes)
+            assert length_field.value is None or isinstance(length_field.value, (int, float))
+            field_bit_length = max(0, int(length_field.value or 0) - 3) * 8
         assert isinstance(field_value, int)
         if field_value < 0:
             raise ValueError("Cant encode this message, 'Value' cannot be negative")
@@ -150154,10 +150152,7 @@ def decode_pgn_130823_navicoDataTypeSourceDirectory(_data_raw_: int, _data_lengt
 
     # 12:value | Offset: 88, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-        _dyn_bits = dyn_kv_metadata.bits
-    else:
-        _dyn_bits = _data_length_bits_ - running_bit_offset
+    _dyn_bits = max(0, int(length_raw or 0) - 3) * 8
     if _dyn_bits > 0:
         value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -150186,7 +150181,7 @@ def decode_pgn_130823_navicoDataTypeSourceDirectory(_data_raw_: int, _data_lengt
         data_type = master_dict['NAVICO_DATA_TYPE'].get(data_type_raw, None)
         running_bit_offset += 16
         repeating_entry['dataType'] = NMEA2000Field('dataType', 'Data Type', None, None, data_type, data_type_raw, None, FieldTypes.LOOKUP, False)
-        _dyn_value_bit_length = int(data_type_raw or 0) * 8
+        _dyn_value_bit_length = max(0, int(length_raw or 0) - 3) * 8
         if _dyn_value_bit_length > 0:
             value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_value_bit_length))
         else:
@@ -150514,10 +150509,14 @@ def encode_pgn_130823_navicoDataTypeSourceDirectory(nmea2000Message: NMEA2000Mes
         else:
             field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
             field_value = encode_binary_data(field_bytes)
-        if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-            field_bit_length = dyn_kv_metadata.bits
+        length_field = repeating_entry.get("length")
+        if length_field is None:
+            raise ValueError("Cant encode this message, missing dynamic field length")
+        if isinstance(length_field.raw_value, (int, float)):
+            field_bit_length = max(0, int(length_field.raw_value) - 3) * 8
         else:
-            field_bit_length = binary_data_bit_length(field_bytes)
+            assert length_field.value is None or isinstance(length_field.value, (int, float))
+            field_bit_length = max(0, int(length_field.value or 0) - 3) * 8
         assert isinstance(field_value, int)
         if field_value < 0:
             raise ValueError("Cant encode this message, 'Value' cannot be negative")
@@ -150612,10 +150611,7 @@ def decode_pgn_130823_navicoDataTypeSourceDirectoryFullReport(_data_raw_: int, _
 
     # 12:value | Offset: 88, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-        _dyn_bits = dyn_kv_metadata.bits
-    else:
-        _dyn_bits = _data_length_bits_ - running_bit_offset
+    _dyn_bits = max(0, int(length_raw or 0) - 3) * 8
     if _dyn_bits > 0:
         value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -150644,7 +150640,7 @@ def decode_pgn_130823_navicoDataTypeSourceDirectoryFullReport(_data_raw_: int, _
         data_type = master_dict['NAVICO_DATA_TYPE'].get(data_type_raw, None)
         running_bit_offset += 16
         repeating_entry['dataType'] = NMEA2000Field('dataType', 'Data Type', None, None, data_type, data_type_raw, None, FieldTypes.LOOKUP, False)
-        _dyn_value_bit_length = int(data_type_raw or 0) * 8
+        _dyn_value_bit_length = max(0, int(length_raw or 0) - 3) * 8
         if _dyn_value_bit_length > 0:
             value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_value_bit_length))
         else:
@@ -150972,10 +150968,14 @@ def encode_pgn_130823_navicoDataTypeSourceDirectoryFullReport(nmea2000Message: N
         else:
             field_bytes = normalize_binary_data(field.raw_value if isinstance(field.raw_value, (bytes, bytearray, memoryview)) else field.value)
             field_value = encode_binary_data(field_bytes)
-        if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-            field_bit_length = dyn_kv_metadata.bits
+        length_field = repeating_entry.get("length")
+        if length_field is None:
+            raise ValueError("Cant encode this message, missing dynamic field length")
+        if isinstance(length_field.raw_value, (int, float)):
+            field_bit_length = max(0, int(length_field.raw_value) - 3) * 8
         else:
-            field_bit_length = binary_data_bit_length(field_bytes)
+            assert length_field.value is None or isinstance(length_field.value, (int, float))
+            field_bit_length = max(0, int(length_field.value or 0) - 3) * 8
         assert isinstance(field_value, int)
         if field_value < 0:
             raise ValueError("Cant encode this message, 'Value' cannot be negative")
@@ -151355,10 +151355,7 @@ def decode_pgn_130824_bGKeyValueData(_data_raw_: int, _data_length_bits_: int) -
 
     # 6:value | Offset: 32, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-        _dyn_bits = dyn_kv_metadata.bits
-    else:
-        _dyn_bits = _data_length_bits_ - running_bit_offset
+    _dyn_bits = max(0, int(length_raw or 0) - 0) * 8
     if _dyn_bits > 0:
         value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -151383,7 +151380,7 @@ def decode_pgn_130824_bGKeyValueData(_data_raw_: int, _data_length_bits_: int) -
         length = length_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 1, 0, 13)
         running_bit_offset += 4
         repeating_entry['length'] = NMEA2000Field('length', 'Length', 'Length of field 6', None, length, length_raw, None, FieldTypes.DYNAMIC_FIELD_LENGTH, False)
-        _dyn_value_bit_length = int(length_raw or 0) * 8
+        _dyn_value_bit_length = max(0, int(length_raw or 0) - 0) * 8
         if _dyn_value_bit_length > 0:
             value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_value_bit_length))
         else:
@@ -151563,10 +151560,10 @@ def encode_pgn_130824_bGKeyValueData(nmea2000Message: NMEA2000Message) -> bytes:
         if length_field is None:
             raise ValueError("Cant encode this message, missing dynamic field length")
         if isinstance(length_field.raw_value, (int, float)):
-            field_bit_length = int(length_field.raw_value) * 8
+            field_bit_length = max(0, int(length_field.raw_value) - 0) * 8
         else:
             assert length_field.value is None or isinstance(length_field.value, (int, float))
-            field_bit_length = int(length_field.value or 0) * 8
+            field_bit_length = max(0, int(length_field.value or 0) - 0) * 8
         assert isinstance(field_value, int)
         if field_value < 0:
             raise ValueError("Cant encode this message, 'Value' cannot be negative")
@@ -151892,10 +151889,7 @@ def decode_pgn_130824_mercuryEngineKeyValueData(_data_raw_: int, _data_length_bi
 
     # 6:value | Offset: 32, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 32
-    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-        _dyn_bits = dyn_kv_metadata.bits
-    else:
-        _dyn_bits = _data_length_bits_ - running_bit_offset
+    _dyn_bits = max(0, int(length_raw or 0) - 0) * 8
     if _dyn_bits > 0:
         value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -151920,7 +151914,7 @@ def decode_pgn_130824_mercuryEngineKeyValueData(_data_raw_: int, _data_length_bi
         length = length_raw = decode_number(_data_raw_, running_bit_offset, 4, False, 1, 0, 13)
         running_bit_offset += 4
         repeating_entry['length'] = NMEA2000Field('length', 'Length', 'Length of field 6', None, length, length_raw, None, FieldTypes.DYNAMIC_FIELD_LENGTH, False)
-        _dyn_value_bit_length = int(length_raw or 0) * 8
+        _dyn_value_bit_length = max(0, int(length_raw or 0) - 0) * 8
         if _dyn_value_bit_length > 0:
             value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_value_bit_length))
         else:
@@ -152100,10 +152094,10 @@ def encode_pgn_130824_mercuryEngineKeyValueData(nmea2000Message: NMEA2000Message
         if length_field is None:
             raise ValueError("Cant encode this message, missing dynamic field length")
         if isinstance(length_field.raw_value, (int, float)):
-            field_bit_length = int(length_field.raw_value) * 8
+            field_bit_length = max(0, int(length_field.raw_value) - 0) * 8
         else:
             assert length_field.value is None or isinstance(length_field.value, (int, float))
-            field_bit_length = int(length_field.value or 0) * 8
+            field_bit_length = max(0, int(length_field.value or 0) - 0) * 8
         assert isinstance(field_value, int)
         if field_value < 0:
             raise ValueError("Cant encode this message, 'Value' cannot be negative")
@@ -165859,10 +165853,7 @@ def decode_pgn_130846_simnetParameterSet(_data_raw_: int, _data_length_bits_: in
 
     # 11:value | Offset: 88, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 88
-    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-        _dyn_bits = dyn_kv_metadata.bits
-    else:
-        _dyn_bits = _data_length_bits_ - running_bit_offset
+    _dyn_bits = max(0, int(length_raw or 0) - 0) * 8
     if _dyn_bits > 0:
         value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -166151,10 +166142,10 @@ def encode_pgn_130846_simnetParameterSet(nmea2000Message: NMEA2000Message) -> by
     if length_field is None:
         raise ValueError("Cant encode this message, missing dynamic field length")
     if isinstance(length_field.raw_value, (int, float)):
-        field_bit_length = int(length_field.raw_value) * 8
+        field_bit_length = max(0, int(length_field.raw_value) - 0) * 8
     else:
         assert length_field.value is None or isinstance(length_field.value, (int, float))
-        field_bit_length = int(length_field.value or 0) * 8
+        field_bit_length = max(0, int(length_field.value or 0) - 0) * 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Value' cannot be negative")
@@ -172545,10 +172536,7 @@ def decode_pgn_130852(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Messa
 
     # 7:value | Offset: 40, Length: , Signed: False Resolution: , Field Type: DYNAMIC_FIELD_VALUE, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
-        _dyn_bits = dyn_kv_metadata.bits
-    else:
-        _dyn_bits = _data_length_bits_ - running_bit_offset
+    _dyn_bits = max(0, int(length_raw or 0) - 0) * 8
     if _dyn_bits > 0:
         value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -172573,7 +172561,7 @@ def decode_pgn_130852(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Messa
         length = length_raw = decode_number(_data_raw_, running_bit_offset, 8, False, 1, 0, 252)
         running_bit_offset += 8
         repeating_entry['length'] = NMEA2000Field('length', 'Length', 'Value width in bytes (observed 1, 2 or 4)', None, length, length_raw, None, FieldTypes.DYNAMIC_FIELD_LENGTH, False)
-        _dyn_value_bit_length = int(length_raw or 0) * 8
+        _dyn_value_bit_length = max(0, int(length_raw or 0) - 0) * 8
         if _dyn_value_bit_length > 0:
             value = value_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_value_bit_length))
         else:
@@ -172779,10 +172767,10 @@ def encode_pgn_130852(nmea2000Message: NMEA2000Message) -> bytes:
         if length_field is None:
             raise ValueError("Cant encode this message, missing dynamic field length")
         if isinstance(length_field.raw_value, (int, float)):
-            field_bit_length = int(length_field.raw_value) * 8
+            field_bit_length = max(0, int(length_field.raw_value) - 0) * 8
         else:
             assert length_field.value is None or isinstance(length_field.value, (int, float))
-            field_bit_length = int(length_field.value or 0) * 8
+            field_bit_length = max(0, int(length_field.value or 0) - 0) * 8
         assert isinstance(field_value, int)
         if field_value < 0:
             raise ValueError("Cant encode this message, 'Value' cannot be negative")

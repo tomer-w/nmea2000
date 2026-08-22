@@ -224,8 +224,16 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     else:
         field_bytes = normalize_binary_data({{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, (bytes, bytearray, memoryview)) else {{ field_ref }}.value)
         field_value = encode_binary_data(field_bytes)
-    {%- if field.Order > 1 and pgn.Fields[field.Order - 2].FieldType == 'DYNAMIC_FIELD_LENGTH' %}
-        {%- set length_field = pgn.Fields[field.Order - 2] %}
+    {%- set ns_dynamic_length = namespace(field=none) %}
+    {%- for candidate_field in pgn.Fields if candidate_field.Order < field.Order %}
+        {%- if candidate_field.FieldType == 'DYNAMIC_FIELD_KEY' %}
+            {%- set ns_dynamic_length.field = none %}
+        {%- elif candidate_field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
+            {%- set ns_dynamic_length.field = candidate_field %}
+        {%- endif %}
+    {%- endfor %}
+    {%- if ns_dynamic_length.field is not none %}
+        {%- set length_field = ns_dynamic_length.field %}
         {%- set length_field_id = generate_field_id(length_field.Id, length_field.FieldType, length_field.BitOffset) %}
         {%- if in_repeating %}
     length_field = repeating_entry.get("{{ length_field_id }}")
@@ -235,10 +243,10 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     if length_field is None:
         raise ValueError("Cant encode this message, missing dynamic field length")
     if isinstance(length_field.raw_value, (int, float)):
-        field_bit_length = int(length_field.raw_value) * 8
+        field_bit_length = max(0, int(length_field.raw_value) - {{ length_field.DynamicFieldLengthOverhead | default(0) }}) * 8
     else:
         assert length_field.value is None or isinstance(length_field.value, (int, float))
-        field_bit_length = int(length_field.value or 0) * 8
+        field_bit_length = max(0, int(length_field.value or 0) - {{ length_field.DynamicFieldLengthOverhead | default(0) }}) * 8
     {%- else %}
     if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
         field_bit_length = dyn_kv_metadata.bits
@@ -407,7 +415,7 @@ def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int, data_length_bits: int |
 def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Message:{% if pgns_in_group | length > 1 and ns_pgn.has_match == false %}  # pyright: ignore[reportRedeclaration]{% endif %}
     """Decode PGN {{ pgn.PGN }}."""
     nmea2000Message = NMEA2000Message(PGN={{pgn.PGN}}, id={{ pgn.Id | pyrepr }}, description={{ pgn.Description | pyrepr }}{% if pgn.TransmissionInterval is defined -%}, ttl=timedelta(milliseconds={{pgn.TransmissionInterval}}){%- endif -%})
-    {%- set ns_fields = namespace() %}
+    {%- set ns_fields = namespace(dynamic_length_name=none, dynamic_length_overhead=0) %}
     running_bit_offset = 0
     {%- if pgn.RepeatingFieldSet1Size is defined %}
     _repeating_field_set_1_offset = 0
@@ -493,16 +501,23 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
         {%- elif field.FieldType == 'ISO_NAME' %}
     {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
         {%- elif field.FieldType == 'DYNAMIC_FIELD_KEY' %}
+            {%- set ns_fields.dynamic_length_name = none %}
     {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
     dyn_kv_metadata = lookup_field_type_{{ field.LookupFieldTypeEnumeration }}({{ field_name }}_raw)
     {{ field_name }} = dyn_kv_metadata.name if dyn_kv_metadata is not None else None
         {%- elif field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
+            {%- set ns_fields.dynamic_length_name = field_name %}
+            {%- set ns_fields.dynamic_length_overhead = field.DynamicFieldLengthOverhead | default(0) %}
     {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
+            {%- if ns_fields.dynamic_length_name is not none %}
+    _dyn_bits = max(0, int({{ ns_fields.dynamic_length_name }}_raw or 0) - {{ ns_fields.dynamic_length_overhead }}) * 8
+            {%- else %}
     if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
         _dyn_bits = dyn_kv_metadata.bits
     else:
         _dyn_bits = _data_length_bits_ - running_bit_offset
+            {%- endif %}
     if _dyn_bits > 0:
         {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, _dyn_bits))
         running_bit_offset += _dyn_bits
@@ -577,21 +592,23 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
         (_repeating_field_set_1_count is not None and len(repeating_field_set_1_entries) < _repeating_field_set_1_count)
     ):
         repeating_entry = {}
-        {%- set ns_dyn = namespace(has_preceding_length=false) %}
+        {%- set ns_dyn = namespace(length_field_name=none, length_overhead=0) %}
         {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
             {%- set repeating_field_name = generate_field_python_name(repeating_field.Name, repeating_field.FieldType, repeating_field.BitOffset) %}
             {%- if repeating_field.FieldType == 'DYNAMIC_FIELD_KEY' %}
+                {%- set ns_dyn.length_field_name = none %}
         {{ repeating_field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ repeating_field.BitLength }})
         dyn_kv_metadata = lookup_field_type_{{ repeating_field.LookupFieldTypeEnumeration }}({{ repeating_field_name }}_raw)
         {{ repeating_field_name }} = dyn_kv_metadata.name if dyn_kv_metadata is not None else {{ repeating_field_name }}_raw
         running_bit_offset += {{ repeating_field.BitLength }}
             {%- elif repeating_field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
-                {%- set ns_dyn.has_preceding_length = true %}
+                {%- set ns_dyn.length_field_name = repeating_field_name %}
+                {%- set ns_dyn.length_overhead = repeating_field.DynamicFieldLengthOverhead | default(0) %}
         {{ repeating_field_name }} = {{ repeating_field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ repeating_field.BitLength }}, {{ repeating_field.Signed | default(false) }}, {{ repeating_field.Resolution }}, {{ repeating_field.RangeMin | default(0) }}, {{ repeating_field.RangeMax }})
         running_bit_offset += {{ repeating_field.BitLength }}
             {%- elif repeating_field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
-                {%- if ns_dyn.has_preceding_length %}
-        _dyn_value_bit_length = int({{ generate_field_python_name(pgn.Fields[repeating_field.Order - 2].Name, pgn.Fields[repeating_field.Order - 2].FieldType, pgn.Fields[repeating_field.Order - 2].BitOffset) }}_raw or 0) * 8
+                {%- if ns_dyn.length_field_name is not none %}
+        _dyn_value_bit_length = max(0, int({{ ns_dyn.length_field_name }}_raw or 0) - {{ ns_dyn.length_overhead }}) * 8
                 {%- else %}
         if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
             _dyn_value_bit_length = dyn_kv_metadata.bits

@@ -40,7 +40,7 @@ FieldValue: TypeAlias = "FieldScalarValue | list[RepeatingFieldEntry]"
 def int_to_bytes(value):
     """Return the shortest big-endian byte string that can represent an integer."""
     # Determine the number of bytes needed
-    byte_length = (value.bit_length() + 8) // 8 or 1
+    byte_length = (value.bit_length() + 7) // 8 or 1
     return value.to_bytes(byte_length, byteorder="big", signed=False)
 
 
