@@ -397,7 +397,7 @@ def _validate_130842_message(msg: NMEA2000Message | None):
     assert msg.source == 9
     assert msg.destination == 255
     assert msg.description == "Furuno: Six Degrees Of Freedom Movement"
-    assert len(msg.fields) == 12
+    assert len(msg.fields) == 11
     assert msg.fields[3].id == "a"
     assert msg.fields[3].value == 36
     assert msg.fields[4].id == "b"
@@ -406,17 +406,18 @@ def _validate_130842_message(msg: NMEA2000Message | None):
     assert msg.fields[5].value == -17
     assert msg.fields[6].id == "d"
     assert msg.fields[6].value == 0
-    assert msg.fields[7].id == "e"
-    assert msg.fields[7].value == -102
+    assert msg.fields[7].id == "rollRate"
+    assert msg.fields[7].value == pytest.approx(-0.0017802358370342163)
+    assert msg.fields[7].unit_of_measurement == "rad/s"
     assert not msg.fields[7].part_of_primary_key
-    assert msg.fields[8].id == "f"
-    assert msg.fields[8].value == -83
-    assert msg.fields[9].id == "g"
-    assert msg.fields[9].value == 5
-    assert msg.fields[10].id == "h"
+    assert msg.fields[8].id == "pitchRate"
+    assert msg.fields[8].value == pytest.approx(-0.0014486232791552935)
+    assert msg.fields[8].unit_of_measurement == "rad/s"
+    assert msg.fields[9].id == "yawRate"
+    assert msg.fields[9].value == pytest.approx(8.726646259971648e-05)
+    assert msg.fields[9].unit_of_measurement == "rad/s"
+    assert msg.fields[10].id == "i"
     assert msg.fields[10].value == 0
-    assert msg.fields[11].id == "i"
-    assert msg.fields[11].value == 0
 
 
 def test_iso_address_parse():

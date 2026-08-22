@@ -164,7 +164,7 @@ def test_decode_strings_from_file_4():
 
 
 def test_decode_strings_from_file_5():
-    """Fixture 5 should reassemble the Maretron proprietary temperature message."""
+    """Fixture 5 should reassemble the Navico boat-speed polar table message."""
     with open("tests/recombine-frames-5.in", "r", encoding="utf-8") as f:
         lines = f.read().splitlines()
 
@@ -182,10 +182,14 @@ def test_decode_strings_from_file_5():
             assert msg.priority == 3
             assert msg.source == 27
             assert msg.destination == 255
-            assert msg.description == "Maretron: Proprietary Temperature High Range"
+            assert msg.description == "Navico: Boat Speed Polar Table"
             assert msg.fields[0].id == "manufacturerCode"
-            assert msg.fields[6].value == 0.1
-            assert msg.fields[7].value == 0.4
+            assert msg.fields[0].value == "Navico"
+            assert msg.fields[5].id == "reportType"
+            assert msg.fields[5].value == 15
+            assert msg.fields[6].id == "part"
+            assert msg.fields[6].value == 1
+            assert msg.fields[8].id == "data"
         else:
             assert msg is None
     assert counter == 32
