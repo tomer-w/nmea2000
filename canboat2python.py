@@ -1,6 +1,7 @@
 """Generate Python constant and PGN modules from the canboat JSON schema."""
 
 import json
+import keyword
 import os
 import re
 
@@ -32,7 +33,7 @@ def generate_field_python_name(field_name, field_type, field_offset):
     if field_type == "RESERVED":
         return "reserved_" + str(field_offset)
     temp = re.sub(FIELD_NAME_PATTERN, "_", field_name).lower()
-    if temp[0].isdigit() or temp == "global":
+    if temp[0].isdigit() or keyword.iskeyword(temp):
         temp = "__" + temp
     return temp
 
@@ -43,6 +44,7 @@ env = Environment(loader=file_loader, extensions=["jinja2.ext.loopcontrols"])
 env.globals["bits_to_hex"] = bits_to_hex
 env.globals["generate_field_id"] = generate_field_id
 env.globals["generate_field_python_name"] = generate_field_python_name
+env.filters["pyrepr"] = lambda value: repr(str(value))
 
 # Load the Jinja2 template
 template = env.get_template("python.consts.j2")

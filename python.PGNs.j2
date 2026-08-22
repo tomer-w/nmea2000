@@ -5,9 +5,9 @@ from .consts import PhysicalQuantities, FieldTypes, IndirectLookupEncodeMaps
 
 master_dict = {
 {% for lookup in data['LookupEnumerations']%}
-    '{{ lookup.Name }}': {
+    {{ lookup.Name | pyrepr }}: {
         {%- for item in lookup.EnumValues %}
-        {{ item.Value }}: "{{ item.Name }}",
+        {{ item.Value }}: {{ item.Name | pyrepr }},
         {%- endfor %}
     },
 {%- endfor %}
@@ -15,9 +15,9 @@ master_dict = {
 
 master_flags_dict = {
 {% for lookup in data['LookupBitEnumerations']%}
-    '{{ lookup.Name }}': {
+    {{ lookup.Name | pyrepr }}: {
         {%- for item in lookup.EnumBitValues %}
-        {{ item.Bit }}: "{{ item.Name }}",
+        {{ item.Bit }}: {{ item.Name | pyrepr }},
         {%- endfor %}
     },
 {%- endfor %}
@@ -25,9 +25,9 @@ master_flags_dict = {
 
 master_indirect_lookup_dict = {
 {% for lookup in data['LookupIndirectEnumerations']%}
-    '{{ lookup.Name }}': {
+    {{ lookup.Name | pyrepr }}: {
         {%- for item in lookup.EnumValues %}
-        "{{ item.Value1 }}_{{ item.Value2 }}": "{{ item.Name }}",
+        {{ (item.Value1 ~ '_' ~ item.Value2) | pyrepr }}: {{ item.Name | pyrepr }},
         {%- endfor %}
     },
 {%- endfor %}
@@ -254,7 +254,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
 {%- macro emit_repeating_decode_value(field, field_name) %}
     {%- set field_signed = field.Signed | default(false) %}
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN' or field.FieldType == 'DURATION' %}
-    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'LOOKUP' %}
     {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
@@ -265,14 +265,14 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     {{ field_name }} = decode_bit_lookup({{ field_name }}_raw, master_flags_dict['{{ field.LookupBitEnumeration }}'])
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'FIELD_INDEX' %}
-    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'TIME' %}
-    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
     {{ field_name }} = decode_time({{ field_name }}_raw)
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'DATE' %}
-    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
     {{ field_name }} = decode_date({{ field_name }}_raw)
     running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
@@ -316,7 +316,7 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
 {% for lookup in data['LookupEnumerations']%}
 lookup_dict_encode_{{ lookup.Name }} = {
     {%- for item in lookup.EnumValues %}
-    "{{ item.Name }}" : {{ item.Value }},
+    {{ item.Name | pyrepr }} : {{ item.Value }},
     {%- endfor %}
 }
 def lookup_encode_{{ lookup.Name }}(value):
@@ -330,7 +330,7 @@ def lookup_encode_{{ lookup.Name }}(value):
 {% for lookup_field_type in data['LookupFieldTypeEnumerations']%}
 lookup_field_type_dict_{{ lookup_field_type.Name }} = {
     {%- for item in lookup_field_type.EnumFieldTypeValues %}
-    {{ item.value }}: LookupFieldTypeEnumeration("{{ item.name }}", FieldTypes.{{ item.FieldType }}, {% if item.Resolution is defined -%}{{item.Resolution}}{%- else -%}None{%- endif -%}, {% if item.Unit is defined -%}"{{item.Unit}}"{%- else -%}None{%- endif -%}, {{ item.Bits }}, {% if item.LookupEnumeration is defined -%}"{{item.LookupEnumeration}}"{%- else -%}None{%- endif -%}),
+    {{ item.value }}: LookupFieldTypeEnumeration({{ item.name | pyrepr }}, FieldTypes.{{ item.FieldType }}, {% if item.Resolution is defined -%}{{item.Resolution}}{%- else -%}None{%- endif -%}, {% if item.Unit is defined -%}{{ item.Unit | pyrepr }}{%- else -%}None{%- endif -%}, {{ item.Bits }}, {% if item.LookupEnumeration is defined -%}{{ item.LookupEnumeration | pyrepr }}{%- else -%}None{%- endif -%}),
     {%- endfor %}
 }
 def lookup_field_type_{{ lookup_field_type.Name }}(value):
@@ -406,7 +406,7 @@ def decode_pgn_{{ pgns_in_group[0].PGN }}(data_raw: int, data_length_bits: int |
 {%- endif %}
 def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Message:{% if pgns_in_group | length > 1 and ns_pgn.has_match == false %}  # pyright: ignore[reportRedeclaration]{% endif %}
     """Decode PGN {{ pgn.PGN }}."""
-    nmea2000Message = NMEA2000Message(PGN={{pgn.PGN}}, id='{{pgn.Id}}', description='{{pgn.Description}}'{% if pgn.TransmissionInterval is defined -%}, ttl=timedelta(milliseconds={{pgn.TransmissionInterval}}){%- endif -%})
+    nmea2000Message = NMEA2000Message(PGN={{pgn.PGN}}, id={{ pgn.Id | pyrepr }}, description={{ pgn.Description | pyrepr }}{% if pgn.TransmissionInterval is defined -%}, ttl=timedelta(milliseconds={{pgn.TransmissionInterval}}){%- endif -%})
     {%- set ns_fields = namespace() %}
     running_bit_offset = 0
     {%- if pgn.RepeatingFieldSet1Size is defined %}
@@ -423,7 +423,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
     _repeating_field_set_1_offset = running_bit_offset
     {%- endif %}
     {%- if field.FieldType == 'NUMBER' or field.FieldType == 'MMSI' or field.FieldType == 'PGN' or field.FieldType == 'DURATION' %}
-    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'LOOKUP' %}
     {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
     {{ field_name }} = master_dict['{{ field.LookupEnumeration }}'].get({{ field_name }}_raw, None)
@@ -454,12 +454,12 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
     {{ field_name }} = {{ field_name }}_raw
     running_bit_offset += bits_to_skip
         {%- elif field.FieldType == 'FLOAT'%}
-    {{ field_name }} = {{ field_name }}_raw = decode_float(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_float(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'TIME' %}
-    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
     {{ field_name }} = decode_time({{ field_name }}_raw)
         {%- elif field.FieldType == 'DATE' %}
-    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
     {{ field_name }} = decode_date({{ field_name }}_raw)
         {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
     {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
@@ -480,7 +480,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
     {{ field_name }} = {{ field_name }}_raw = int_to_bytes(decode_int(_data_raw_, running_bit_offset, int({{ length_field_name }})))
             {%- endif -%}
         {%- elif field.FieldType == 'FIELD_INDEX' %}
-    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'VARIABLE' %}
     _remaining_bits = _data_length_bits_ - running_bit_offset
     if _remaining_bits > 0:
@@ -497,7 +497,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
     dyn_kv_metadata = lookup_field_type_{{ field.LookupFieldTypeEnumeration }}({{ field_name }}_raw)
     {{ field_name }} = dyn_kv_metadata.name if dyn_kv_metadata is not None else None
         {%- elif field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
-    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin }}, {{ field.RangeMax }})
+    {{ field_name }} = {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
         {%- elif field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
     if dyn_kv_metadata is not None and dyn_kv_metadata.bits > 0:
         _dyn_bits = dyn_kv_metadata.bits
@@ -512,7 +512,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
     raise ValueError("PGN {{ pgn.PGN }} FieldType ({{ field.FieldType }}) not supported")
         {%- endif %}
     {%- if field.FieldType != 'KEY_VALUE'  %}
-    nmea2000Message.fields.append(NMEA2000Field('{{ generate_field_id(field.Id, field.FieldType, field.BitOffset) }}', '{{ field.Name }}', {% if field.Description is defined -%}"{{field.Description}}"{%- else -%}None{%- endif -%}, {% if field.Unit is defined -%}'{{field.Unit}}'{%- else -%}None{%- endif -%}, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
+    nmea2000Message.fields.append(NMEA2000Field({{ generate_field_id(field.Id, field.FieldType, field.BitOffset) | pyrepr }}, {{ field.Name | pyrepr }}, {% if field.Description is defined -%}{{ field.Description | pyrepr }}{%- else -%}None{%- endif -%}, {% if field.Unit is defined -%}{{ field.Unit | pyrepr }}{%- else -%}None{%- endif -%}, {{ field_name }}, {{ field_name }}_raw, {% if field.PhysicalQuantity is defined -%}PhysicalQuantities.{{field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{field.FieldType}}, {% if field.PartOfPrimaryKey is defined -%}{{field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%}))
     {% if field.BitLength is defined -%}
     running_bit_offset += {{ field.BitLength }}
     {%- endif -%}
@@ -549,7 +549,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
         {%- for repeating_field in pgn.Fields if repeating_field.Order >= pgn.RepeatingFieldSet1StartField and repeating_field.Order < pgn.RepeatingFieldSet1StartField + pgn.RepeatingFieldSet1Size %}
             {%- set repeating_field_name = generate_field_python_name(repeating_field.Name, repeating_field.FieldType, repeating_field.BitOffset) %}
 {{ emit_repeating_decode_value(repeating_field, repeating_field_name) | indent(4, true) }}
-        repeating_entry["{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}"] = NMEA2000Field('{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}', '{{ repeating_field.Name }}', {% if repeating_field.Description is defined -%}"{{repeating_field.Description}}"{%- else -%}None{%- endif -%}, {% if repeating_field.Unit is defined -%}'{{repeating_field.Unit}}'{%- else -%}None{%- endif -%}, {{ repeating_field_name }}, {{ repeating_field_name }}_raw, {% if repeating_field.PhysicalQuantity is defined -%}PhysicalQuantities.{{repeating_field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{repeating_field.FieldType}}, {% if repeating_field.PartOfPrimaryKey is defined -%}{{repeating_field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%})
+        repeating_entry[{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) | pyrepr }}] = NMEA2000Field({{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) | pyrepr }}, {{ repeating_field.Name | pyrepr }}, {% if repeating_field.Description is defined -%}{{ repeating_field.Description | pyrepr }}{%- else -%}None{%- endif -%}, {% if repeating_field.Unit is defined -%}{{ repeating_field.Unit | pyrepr }}{%- else -%}None{%- endif -%}, {{ repeating_field_name }}, {{ repeating_field_name }}_raw, {% if repeating_field.PhysicalQuantity is defined -%}PhysicalQuantities.{{repeating_field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{repeating_field.FieldType}}, {% if repeating_field.PartOfPrimaryKey is defined -%}{{repeating_field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%})
         {%- endfor %}
         repeating_field_set_1_entries.append(repeating_entry)
     if repeating_field_set_1_entries:
@@ -587,7 +587,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
         running_bit_offset += {{ repeating_field.BitLength }}
             {%- elif repeating_field.FieldType == 'DYNAMIC_FIELD_LENGTH' %}
                 {%- set ns_dyn.has_preceding_length = true %}
-        {{ repeating_field_name }} = {{ repeating_field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ repeating_field.BitLength }}, {{ repeating_field.Signed | default(false) }}, {{ repeating_field.Resolution }}, {{ repeating_field.RangeMin }}, {{ repeating_field.RangeMax }})
+        {{ repeating_field_name }} = {{ repeating_field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ repeating_field.BitLength }}, {{ repeating_field.Signed | default(false) }}, {{ repeating_field.Resolution }}, {{ repeating_field.RangeMin | default(0) }}, {{ repeating_field.RangeMax }})
         running_bit_offset += {{ repeating_field.BitLength }}
             {%- elif repeating_field.FieldType == 'DYNAMIC_FIELD_VALUE' %}
                 {%- if ns_dyn.has_preceding_length %}
@@ -606,7 +606,7 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
             {%- else %}
 {{ emit_repeating_decode_value(repeating_field, repeating_field_name) | indent(4, true) }}
             {%- endif %}
-        repeating_entry["{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}"] = NMEA2000Field('{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) }}', '{{ repeating_field.Name }}', {% if repeating_field.Description is defined -%}"{{repeating_field.Description}}"{%- else -%}None{%- endif -%}, {% if repeating_field.Unit is defined -%}'{{repeating_field.Unit}}'{%- else -%}None{%- endif -%}, {{ repeating_field_name }}, {{ repeating_field_name }}_raw, {% if repeating_field.PhysicalQuantity is defined -%}PhysicalQuantities.{{repeating_field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{repeating_field.FieldType}}, {% if repeating_field.PartOfPrimaryKey is defined -%}{{repeating_field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%})
+        repeating_entry[{{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) | pyrepr }}] = NMEA2000Field({{ generate_field_id(repeating_field.Id, repeating_field.FieldType, repeating_field.BitOffset) | pyrepr }}, {{ repeating_field.Name | pyrepr }}, {% if repeating_field.Description is defined -%}{{ repeating_field.Description | pyrepr }}{%- else -%}None{%- endif -%}, {% if repeating_field.Unit is defined -%}{{ repeating_field.Unit | pyrepr }}{%- else -%}None{%- endif -%}, {{ repeating_field_name }}, {{ repeating_field_name }}_raw, {% if repeating_field.PhysicalQuantity is defined -%}PhysicalQuantities.{{repeating_field.PhysicalQuantity}}{%- else -%}None{%- endif -%}, FieldTypes.{{repeating_field.FieldType}}, {% if repeating_field.PartOfPrimaryKey is defined -%}{{repeating_field.PartOfPrimaryKey}}{%- else -%}False{%- endif -%})
         {%- endfor %}
         repeating_field_set_1_entries.append(repeating_entry)
     if repeating_field_set_1_entries:

@@ -15,12 +15,12 @@ class FieldTypes(Enum):
 {% set manufacturer_codes = data['LookupEnumerations'] | selectattr('Name', 'equalto', 'MANUFACTURER_CODE') | first %}
 ManufacturerCodes: List[str] = [
 {%- for manufacturer in manufacturer_codes.EnumValues %}
-    "{{ manufacturer.Name }}",
+    {{ manufacturer.Name | pyrepr }},
 {%- endfor %}]
 
 IndirectLookupEncodeMaps = {
 {%- for lookup in data['LookupIndirectEnumerations'] %}
-    "{{ lookup.Name }}": {
+    {{ lookup.Name | pyrepr }}: {
     {%- set value1_groups = namespace(groups={}) %}
     {%- for item in lookup.EnumValues %}
         {%- if item.Value1 in value1_groups.groups %}
@@ -32,7 +32,7 @@ IndirectLookupEncodeMaps = {
     {%- for value1, items in value1_groups.groups.items() %}
         {{ value1 }}: {
         {%- for item in items %}
-            "{{ item.Name }}": {{ item.Value2 }},
+            {{ item.Name | pyrepr }}: {{ item.Value2 }},
         {%- endfor %}
         },
     {%- endfor %}
