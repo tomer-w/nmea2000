@@ -488,4 +488,12 @@ IndirectLookupEncodeMaps = {
             'Multimedia Controller': 140,
         },
     },
+    'FUSION_SETTING_VALUE': {
+        7: {
+            'USA': 0,
+            'Europe': 1,
+            'Japan': 2,
+            'Australasia': 3,
+        },
+    },
 }
