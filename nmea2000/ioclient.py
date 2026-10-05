@@ -164,6 +164,15 @@ class AsyncIOClient(ABC):
             self._process_queue()
         )  # Track the process queue task
         self._receive_task = None  # Track the receive loop task
+        # Other tasks (network map seeding, reconnects) cancelled by close()
+        self._background_tasks: set[asyncio.Task] = set()
+
+    def _create_background_task(self, coro) -> asyncio.Task:
+        """Start a task that close() will cancel, so nothing outlives the client."""
+        task = asyncio.create_task(coro)
+        self._background_tasks.add(task)
+        task.add_done_callback(self._background_tasks.discard)
+        return task
 
     def set_status_callback(self, callback: Callable[[State], Awaitable[None]] | None):
         """Registers a callback to be executed when the connection status changes.
@@ -267,7 +276,7 @@ class AsyncIOClient(ABC):
                     # Start a new receive loop task
                     self._receive_task = asyncio.create_task(self._receive_loop())
                     if self.seed_network_map:
-                        asyncio.create_task(self._seed_network_map())
+                        self._create_background_task(self._seed_network_map())
 
     async def _seed_network_map(self):
         # To seed the network map we will send request for 3 PGNS: 60928, 126996, 126998
@@ -296,7 +305,7 @@ class AsyncIOClient(ABC):
             if self._state != State.CLOSED:
                 self.logger.exception("Connection lost while reading; reconnecting")
                 await self._update_state(State.DISCONNECTED)
-                asyncio.create_task(self.connect())
+                self._create_background_task(self.connect())
         self.logger.info("Received loop terminated")
 
     async def send(self, message: NMEA2000Message):
@@ -326,7 +335,7 @@ class AsyncIOClient(ABC):
                 if self._should_reconnect_on_send_error(ex):
                     self.logger.exception("Connection lost while sending; reconnecting")
                     await self._update_state(State.DISCONNECTED)
-                    asyncio.create_task(self.connect())
+                    self._create_background_task(self.connect())
                 else:
                     self.logger.warning(
                         "Send failed without reconnecting. Error %s", ex, exc_info=True
@@ -342,14 +351,22 @@ class AsyncIOClient(ABC):
         await self._update_state(State.CLOSED)
         if self.writer:
             self.writer.close()
-        # Cancel the receive loop task if it exists
-        if self._receive_task and not self._receive_task.done():
-            self._receive_task.cancel()
-            await asyncio.sleep(0.01)  # Allow cancellation to propagate
-        # Cancel the process queue task if it exists
-        if self._process_queue_task and not self._process_queue_task.done():
-            self._process_queue_task.cancel()
-            await asyncio.sleep(0.01)  # Allow cancellation to propagate
+        # Cancel every task the client started and wait for them to finish, so
+        # none of them is left sending on the connection once it is released.
+        # close() may itself be running in one of them (e.g. from a callback).
+        current = asyncio.current_task()
+        tasks = [
+            task
+            for task in (
+                self._receive_task,
+                self._process_queue_task,
+                *self._background_tasks,
+            )
+            if task is not None and task is not current and not task.done()
+        ]
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
         self.logger.info("Connection closed.")
 
     async def _process_queue(self):
@@ -907,6 +924,7 @@ class PythonCanAsyncIOClient(AsyncIOClient):
         finally:
             if self.bus is not None:
                 self.bus.shutdown()
+                self.bus = None
 
 
 # BDTP (Binary Data Transfer Protocol) framing constants
