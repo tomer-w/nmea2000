@@ -467,17 +467,20 @@ class TestCliCanboatGateways:
         logged_in = asyncio.Event()
 
         async def ipg(reader, writer):
-            assert await reader.readuntil(b"\0") == b'CONNECT\t"pw"\t\tMOBILE\0'
-            writer.write(b"CONNECTED\t1234567\0")
-            await writer.drain()
-            assert await reader.readuntil(b"\0") == b"SET_MODE\tBINARY\0"
-            logged_in.set()
-            writer.write(
-                bytes([0xA5, 0x80 | (2 << 4) | (1 << 1) | 1, 0xFD, 0x02, 23, len(wind)])
-                + wind
-            )
-            await writer.drain()
-            await reader.read()
+            try:
+                assert await reader.readuntil(b"\0") == b'CONNECT\t"pw"\t\tMOBILE\0'
+                writer.write(b"CONNECTED\t1234567\0")
+                await writer.drain()
+                assert await reader.readuntil(b"\0") == b"SET_MODE\tBINARY\0"
+                logged_in.set()
+                flags = 0x80 | (2 << 4) | (1 << 1) | 1  # single frame, prio 2
+                writer.write(bytes([0xA5, flags, 0xFD, 0x02, 23, len(wind)]) + wind)
+                await writer.drain()
+                await reader.read()
+            finally:
+                # Since Python 3.12.1 the server's wait_closed() waits for
+                # every connection, so ours must be closed.
+                writer.close()
 
         server = await asyncio.start_server(ipg, "127.0.0.1", 0)
         port = server.sockets[0].getsockname()[1]
