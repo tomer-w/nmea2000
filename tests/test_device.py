@@ -404,7 +404,8 @@ async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
     finally:
         await device.close()
 
-    transmit_list, receive_list = client.sent_messages[-2:]
+    transmit_list = client.sent_messages[-2]
+    receive_list = client.sent_messages[-1]
     assert (transmit_list.PGN, receive_list.PGN) == (126464, 126464)
     assert transmit_list.get_field_by_id("functionCode").value == "Transmit PGN list"
     assert receive_list.get_field_by_id("functionCode").value == "Receive PGN list"
