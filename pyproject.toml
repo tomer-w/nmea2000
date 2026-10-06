@@ -73,6 +73,8 @@ exclude = [
 [tool.pylint.main]
 # The compiled core's type stub is for type checkers, not Pylint.
 ignore-patterns = ["^\\.#", ".*\\.pyi$"]
+# Let Pylint import the compiled core to see its members.
+extension-pkg-allow-list = ["nmea2000._canboat"]
 
 [tool.pylint.messages_control]
 # Protocol codecs and their fixtures naturally exceed Pylint's generic size
