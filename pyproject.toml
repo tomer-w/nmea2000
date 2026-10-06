@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["maturin>=1.9,<2"]
+build-backend = "maturin"
 
 [project]
 name = "nmea2000"
@@ -28,7 +28,6 @@ dev = [
     "pytest-cov",
     "ruff==0.16.7",
     "pre-commit",
-    "jinja2",
 ]
 
 [project.urls]
@@ -39,11 +38,15 @@ Issues = "https://github.com/tomer-w/nmea2000/issues"
 [project.scripts]
 nmea2000-cli = "nmea2000.cli:main"
 
-[tool.setuptools.packages.find]
-include = ["nmea2000*"]
+[tool.maturin]
+# The Rust core (rust/) becomes nmea2000/_canboat; the rest is pure Python.
+manifest-path = "rust/Cargo.toml"
+module-name = "nmea2000._canboat"
+features = ["pyo3/extension-module"]
+exclude = ["nmea2000/**/__pycache__/**"]
 
 [tool.ruff]
-extend-exclude = [ "nmea2000/pgns.py", "nmea2000/consts.py" ]
+extend-exclude = [ "nmea2000/native_units.py" ]
 force-exclude = true
 
 [tool.ruff.lint]
@@ -68,10 +71,8 @@ exclude = [
 ]
 
 [tool.pylint.main]
-ignore-paths = [
-    ".*[\\\\/]nmea2000[\\\\/]consts\\.py$",
-    ".*[\\\\/]nmea2000[\\\\/]pgns\\.py$",
-]
+# The compiled core's type stub is for type checkers, not Pylint.
+ignore-patterns = ["^\\.#", ".*\\.pyi$"]
 
 [tool.pylint.messages_control]
 # Protocol codecs and their fixtures naturally exceed Pylint's generic size

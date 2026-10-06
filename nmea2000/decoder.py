@@ -10,7 +10,8 @@ from datetime import datetime, timedelta
 from importlib import import_module
 from typing import ClassVar
 
-from . import pgns as pgns_module
+from . import _canboat as canboat
+from . import backend
 from .consts import PhysicalQuantities
 from .input_formats import N2KFormat, N2KInput, detect_format
 from .message import IsoName, NMEA2000Message
@@ -54,38 +55,15 @@ class DecoderStaticsMixin:
         Returns a tuple of `(pgn_id, source_id, dest, priority)`.
         based on the 29 bits (ID0 - ID28) in https://canboat.github.io/canboat/canboat.html
         """
-        source_id = frame_id_int & 0xFF  # bits 0-7 = 8 bits
-        pgn_id_raw = (frame_id_int >> 8) & 0x3FFFF  # bits 8-25 = 18 bits
-        priority = (frame_id_int >> 26) & 0x07  # bits 26-28 = 3 bits
-
-        dp = (pgn_id_raw >> 16) & 0x3  # bits 16-17
-        pf = (pgn_id_raw >> 8) & 0xFF  # bits 8-15
-        ps = pgn_id_raw & 0xFF  # bits 0-7
-
-        if pf < 0xF0:
-            # PDU1 format: PS is destination address
-            dest = ps
-            pgn_id = (dp << 16) | (pf << 8)
-        else:
-            # PDU2 format: broadcast, destination is always 255
-            dest = 255
-            pgn_id = (dp << 16) | (pf << 8) | ps
-
+        priority, pgn_id, source_id, dest = canboat.can_id_decompose(
+            frame_id_int & 0x1FFFFFFF
+        )
         return pgn_id, source_id, dest, priority
 
     @staticmethod
     def is_fast_pgn(pgn_id: int) -> bool | None:
         """Return whether a PGN is a fast packet PGN, or `None` if unsupported."""
-        is_fast_func_name = f"is_fast_pgn_{pgn_id}"
-        is_fast_func: Callable[[], bool] | None = getattr(
-            pgns_module, is_fast_func_name, None
-        )
-
-        if is_fast_func and callable(is_fast_func):
-            is_fast: bool = is_fast_func()  # pylint: disable=not-callable
-            logger.debug("Is fast PGN: %s", is_fast)
-            return is_fast
-        return None
+        return backend.is_fast_pgn(pgn_id)
 
     @staticmethod
     def split_pgn_list(pgn_list: list[int | str]) -> tuple[list[int], list[str]]:
@@ -142,6 +120,7 @@ class DecoderBase(DecoderStaticsMixin):
         bound_format: N2KFormat | None = None,
         started_at: datetime | None = None,
         already_combined: bool = False,
+        units: backend.Units = "native",
     ) -> None:
         if exclude_pgns is None:
             exclude_pgns = []
@@ -158,7 +137,14 @@ class DecoderBase(DecoderStaticsMixin):
 
         self.bound_format = bound_format
         self.already_combined = already_combined
+        if units not in backend.UNITS:
+            raise ValueError(
+                f"units must be one of {', '.join(backend.UNITS)}, not {units!r}"
+            )
+        # The unit system values are reported in (see nmea2000.backend)
+        self.units: backend.Units = units
         self.data: dict[str, FastPgnMetadata] = {}
+        self.reassembler = canboat.Reassembler()
         self.dump_file = None
         self.build_network_map = build_network_map
         self.started_at = started_at or datetime.now()
@@ -225,114 +211,26 @@ class DecoderBase(DecoderStaticsMixin):
         source_iso_name: IsoName | None,
         raw_can_data: bytes | str,
     ) -> NMEA2000Message | None:
-        """Parse a fast packet message and store the data until all frames are received."""
-        fast_packet_key = f"{pgn}_{src}_{dest}"
-
-        # Check if this PGN already has a storage structure; if not, create one
-        if self.data.get(fast_packet_key) is None:
-            self.data[fast_packet_key] = FastPgnMetadata()
-
-        fast_pgn = self.data[fast_packet_key]
-
-        # the last byte has the sequence_counter and frame_counter
-        last_byte = can_data[-1]
-
-        # Extract the sequence counter (high 3 bits) and frame counter (low 5 bits) from the last byte
-        sequence_counter = (last_byte >> 5) & 0b111  # Extract high 3 bits
-        frame_counter = last_byte & 0b11111  # Extract low 5 bits
-        total_bytes = None
-
-        if frame_counter != 0 and fast_pgn.payload_length == 0:
-            logger.debug(
-                "Ignoring frame %s for PGN %s as first frame has not been received.",
-                frame_counter,
-                pgn,
-            )
+        """Collect a fast-packet frame; decode the message once it is complete."""
+        # can_data is byte-reversed internally; the reassembler wants wire order
+        try:
+            payload = self.reassembler.push(pgn, can_data[::-1], src, dest, priority)
+        except canboat.ReassemblyError as error:
+            logger.debug("Dropping fast-packet frame for PGN %s: %s", pgn, error)
             return None
-
-        # if this is the first frame of new sequence we will start over
-        if frame_counter == 0 and sequence_counter != fast_pgn.sequence_counter:
-            # Extract the total number of frames from the second-to-last byte
-            total_bytes = can_data[-2]
-
-            # Start a new pgn hass structure
-            fast_pgn.payload_length = total_bytes
-            fast_pgn.sequence_counter = sequence_counter
-            fast_pgn.bytes_stored = 0  # Reset bytes stored for a new message
-            fast_pgn.frames.clear()  # Clear previous frames
-
-            # For the first frame, exclude the last 4 hex characters (2 bytes) from the payload
-            data_payload = can_data[:-2]
-        else:
-            if sequence_counter != fast_pgn.sequence_counter:
-                logger.debug(
-                    "Ignoring frame %s for PGN %s as it does not match current sequence.",
-                    sequence_counter,
-                    pgn,
-                )
-                return None
-            if frame_counter in fast_pgn.frames:
-                logger.debug(
-                    "Frame %s for PGN %s is already stored.", frame_counter, pgn
-                )
-                return None
-            # For subsequent frames, exclude the last byte from the payload
-            data_payload = can_data[:-1]
-
-        byte_length = len(data_payload)
-
-        # Store the frame data
-        fast_pgn.frames[frame_counter] = data_payload
-        fast_pgn.bytes_stored += byte_length  # Update the count of bytes stored
-
-        # Log the extracted values
-        logger.debug(
-            "Sequence Counter: %s, Frame Counter: %s", sequence_counter, frame_counter
+        if payload is None:
+            return None  # waiting for more frames
+        return self._call_decode_function(
+            pgn,
+            priority,
+            src,
+            dest,
+            timestamp,
+            payload[::-1],
+            source_iso_name,
+            raw_can_data,
+            len(payload) * 8,
         )
-        if total_bytes is not None:
-            logger.debug("Total Payload Bytes: %s", total_bytes)
-        logger.debug(
-            "Orig Payload (hex): %s, Data Payload (hex): %s", can_data, data_payload
-        )
-        logger.debug("PGN Data: %s", fast_pgn)
-
-        # Check if all expected bytes have been stored
-        if fast_pgn.bytes_stored >= fast_pgn.payload_length:
-            logger.debug("All Fast packet frames collected for PGN: %d", pgn)
-
-            # All data for this PGN has been received, proceed to publish
-            combined_payload = bytes(
-                [
-                    b
-                    for idx in sorted(fast_pgn.frames)
-                    for b in fast_pgn.frames[idx][::-1]
-                ]
-            )[::-1]
-
-            nmea = None
-            if combined_payload is not None:
-                logger.debug("Combined Payload (hex): %s)", combined_payload)
-                nmea = self._call_decode_function(
-                    pgn,
-                    priority,
-                    src,
-                    dest,
-                    timestamp,
-                    combined_payload,
-                    source_iso_name,
-                    raw_can_data,
-                    fast_pgn.payload_length * 8,
-                )
-
-            # Reset the structure for this PGN
-            del self.data[fast_packet_key]
-            return nmea
-
-        logger.debug(
-            "Waiting for %s more bytes.",
-            fast_pgn.payload_length - fast_pgn.bytes_stored,
-        )
-        return None
 
     def _log_unsupported_pgn_once(self, pgn_id: int) -> None:
         if pgn_id not in self.logged_unsupported_pgns:
@@ -447,30 +345,16 @@ class DecoderBase(DecoderStaticsMixin):
         raw_can_data: bytes | str,
         data_length_bits: int | None = None,
     ) -> NMEA2000Message | None:
-        decode_func_name = f"decode_pgn_{pgn}"
-        decode_func: Callable[..., NMEA2000Message | None] | None = getattr(
-            pgns_module,
-            decode_func_name,
-            None,
-        )
-
-        if not decode_func or not callable(decode_func):
-            logger.error(
-                "No decoding function found for PGN: %s. It should be there as we found the is_fast func",
-                pgn,
-            )
-            return None
-
         data_int = int.from_bytes(data, "big")
         payload_length_bits = (
             data_length_bits if data_length_bits is not None else len(data) * 8
         )
-        nmea2000_message: NMEA2000Message | None = decode_func(  # pylint: disable=not-callable
-            data_int,
-            payload_length_bits,
-        )
+        # data is byte-reversed internally; canboat wants the wire-order bytes
+        # without fast-packet padding
+        payload = data[::-1][: payload_length_bits // 8]
+        nmea2000_message = backend.decode(pgn, payload, src, dest, priority, self.units)
         if nmea2000_message is None:
-            logger.debug("No sub-decoding function found for PGN: %s", pgn)
+            logger.debug("No decoding found for PGN: %s", pgn)
             return None
 
         # Handle ISO Address Claim messages and enrichment
@@ -546,6 +430,11 @@ class NMEA2000Decoder(DecoderInterface):
         bound_format: N2KFormat | None = None,
         **kwargs,
     ) -> None:
+        units = kwargs.get("units", "native")
+        if units not in backend.UNITS:
+            raise ValueError(
+                f"units must be one of {', '.join(backend.UNITS)}, not {units!r}"
+            )
         self._handler_init_kwargs = kwargs
         self._delegate: DecoderInterface | None = None
         self._bound_format: N2KFormat | None = None

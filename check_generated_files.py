@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-GENERATED_FILES = (Path("nmea2000/pgns.py"), Path("nmea2000/consts.py"))
+GENERATED_FILES = (Path("nmea2000/native_units.py"),)
 
 before = {path: path.read_bytes() for path in GENERATED_FILES}
 subprocess.run([sys.executable, "canboat2python.py"], check=True)

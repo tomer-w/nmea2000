@@ -6,6 +6,7 @@ from datetime import datetime
 
 import pytest
 
+from nmea2000 import backend
 from nmea2000.device import N2KDevice
 from nmea2000.encoder import create_encoder
 from nmea2000.ioclient import State
@@ -123,14 +124,13 @@ def _build_group_function_request(
     )
 
 
-def _transmit_pgns_from_message(message: NMEA2000Message) -> list[int]:
-    """Extract advertised transmit PGNs from a packed PGN list payload."""
-    payload = message.get_field_by_id("data").raw_value
-    assert isinstance(payload, bytes)
-    return [
-        int.from_bytes(payload[index : index + 3], byteorder="little", signed=False)
-        for index in range(0, len(payload), 3)
-    ]
+def _pgns_from_message(message: NMEA2000Message) -> list[int]:
+    """Extract the PGNs a PGN list message advertises."""
+    entries = message.get_field_by_id("##list##").value
+    assert isinstance(entries, list)
+    pgns = [entry["pgn"].value for entry in entries]
+    assert all(isinstance(pgn, int) for pgn in pgns)
+    return [pgn for pgn in pgns if isinstance(pgn, int)]
 
 
 @pytest.mark.asyncio
@@ -321,8 +321,8 @@ async def test_device_responds_with_iso_nak_and_group_function_ack(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_device_heartbeat_messages_encode_with_na_controller_states(tmp_path):
-    """Heartbeat messages should encode N/A controller states and reserved bits with their raw defaults."""
+async def test_device_heartbeat_messages_encode(tmp_path):
+    """Heartbeats should encode, advertising their interval and healthy controllers."""
     client = EncodingFakeClient()
     device = N2KDevice(
         client,
@@ -344,18 +344,21 @@ async def test_device_heartbeat_messages_encode_with_na_controller_states(tmp_pa
 
     heartbeat = heartbeats[0]
     assert heartbeat.get_field_by_id("dataTransmitOffset").value == pytest.approx(0.01)
-    assert heartbeat.get_field_by_id("controller1State").value is None
-    assert heartbeat.get_field_by_id("controller1State").raw_value == 3
+    assert heartbeat.priority == 7
+    assert heartbeat.get_field_by_id("controller1State").value == "Error Active"
+    assert heartbeat.get_field_by_id("controller1State").raw_value == 0
+    # there is no second controller
     assert heartbeat.get_field_by_id("controller2State").value is None
     assert heartbeat.get_field_by_id("controller2State").raw_value == 3
-    assert heartbeat.get_field_int_value_by_id("equipmentStatus") == 0
-    assert heartbeat.get_field_by_id("reserved_30").value is None
+    assert heartbeat.get_field_by_id("equipmentStatus").value == "Operational"
+    assert heartbeat.get_field_by_id("equipmentStatus").raw_value == 0
+    assert heartbeat.get_field_by_id("reserved_30").value == (1 << 34) - 1
     assert heartbeat.get_field_by_id("reserved_30").raw_value == (1 << 34) - 1
 
 
 @pytest.mark.asyncio
 async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
-    """Product information replies should scale the NMEA version field to raw thousandths."""
+    """Product information replies should carry the NMEA version in raw thousandths."""
     client = EncodingFakeClient()
     device = N2KDevice(
         client,
@@ -376,7 +379,9 @@ async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
     version_field = product_information.get_field_by_id("nmea2000Version")
     assert product_information.PGN == 126996
     assert version_field.value == pytest.approx(1.3)
-    assert version_field.raw_value == 1300
+    assert version_field.raw_value == pytest.approx(1.3)
+    payload = backend.encode(product_information)
+    assert int.from_bytes(payload[:2], "little") == 1300
 
 
 @pytest.mark.asyncio
@@ -399,10 +404,12 @@ async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
     finally:
         await device.close()
 
-    pgn_list_message = client.sent_messages[-1]
-    advertised_pgns = set(_transmit_pgns_from_message(pgn_list_message))
+    transmit_list, receive_list = client.sent_messages[-2:]
+    assert (transmit_list.PGN, receive_list.PGN) == (126464, 126464)
+    assert transmit_list.get_field_by_id("functionCode").value == "Transmit PGN list"
+    assert receive_list.get_field_by_id("functionCode").value == "Receive PGN list"
+    advertised_pgns = set(_pgns_from_message(transmit_list))
 
-    assert pgn_list_message.PGN == 126464
     assert 127250 in advertised_pgns
     assert {59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998}.issubset(
         advertised_pgns

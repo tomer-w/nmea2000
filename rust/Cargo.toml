@@ -1,0 +1,34 @@
+# The nmea2000 package's compiled core: canboat's NMEA 2000 decoder and
+# encoder (the `canboat` crate), exposed to Python as `nmea2000._canboat`.
+# Built into the wheel by maturin; see pyproject.toml.
+[package]
+name = "nmea2000-canboat"
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+rust-version = "1.96"
+publish = false
+
+[lib]
+name = "_canboat"
+crate-type = ["cdylib"]
+
+[dependencies]
+# A canboat release; the "Sync canboat" workflow moves this and canboat.json
+# to each new release together.
+canboat = { version = "8.3.0", default-features = false, features = ["decode", "node"] }
+# abi3: one wheel per platform serves every CPython from 3.11 up.
+pyo3 = { version = "0.29", features = ["extension-module", "abi3-py311"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
+# Until a release has the APIs nmea2000 uses from canboat's master branch
+# (EncodeValue::Raw, Claimer::send_address, BusProtocol) and the fixes for
+# conditional group-function fields and the heartbeat interval, the crate
+# comes from a fork. Cargo ignores this patch, with a warning, once the
+# version above is newer than the fork's, so it can then be deleted.
+[patch.crates-io]
+canboat = { git = "https://github.com/johncharrington/canboat", branch = "fix/encode-conditional-fields" }
