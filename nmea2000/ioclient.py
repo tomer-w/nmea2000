@@ -6,7 +6,7 @@ import socket
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Sequence
 from enum import Enum
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 import can.cli
 import can.interface
@@ -15,8 +15,11 @@ import serial_asyncio
 from tenacity import retry_if_exception_type, stop_never, wait_exponential
 from tenacity.asyncio import AsyncRetrying
 
+from . import _canboat as canboat
+from . import backend
 from .consts import PhysicalQuantities
 from .decoder import InvalidFrameError, NMEA2000Decoder
+from .decoder_formats import GatewayFrameDecoder
 from .encoder import EncoderInterface, N2KEncoded, create_encoder
 from .input_formats import TEXT_FORMATS, N2KFormat
 from .message import NMEA2000Message
@@ -1054,3 +1057,312 @@ class ActisenseBstNmea2000Gateway(AsyncIOClient):
     def _encode_impl(self, message: NMEA2000Message) -> list[bytes]:
         bst_packets = self.encoder.encode(message)
         return [bdtp_wrap(pkt) for pkt in bst_packets]
+
+
+class _CanboatCodecGateway(AsyncIOClient):
+    """A gateway whose byte protocol is one of canboat's codecs.
+
+    The codec (``nmea2000._canboat.GatewayCodec``) does the protocol: the
+    startup handshake, framing, the transmit list and keepalives. This class
+    only moves bytes between it and an asyncio stream, and drives its timers.
+    """
+
+    _KIND: ClassVar[Literal["ngt1", "ikonvert", "maretron"]]
+    # How often the codec's deadlines advance while the line is quiet
+    _TICK_SECONDS = 0.25
+
+    def __init__(
+        self,
+        *,
+        tx_pgns: list[int] | None,
+        rx_pgns: list[int] | None,
+        password: str,
+        exclude_pgns: list[int | str] | None,
+        include_pgns: list[int | str] | None,
+        exclude_manufacturer_code: list[str] | None,
+        include_manufacturer_code: list[str] | None,
+        preferred_units: dict[PhysicalQuantities, str] | None,
+        dump_to_file: str | None,
+        dump_pgns: list[int | str] | None,
+        build_network_map: bool,
+    ):
+        super().__init__(
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=None,
+            dump_pgns=None,
+            build_network_map=build_network_map,
+            seed_network_map=True,
+        )
+        self._tx_pgns = tx_pgns or []
+        self._rx_pgns = rx_pgns or []
+        self._password = password
+        self._codec: canboat.GatewayCodec | None = None
+        self._frame_decoder = GatewayFrameDecoder(
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+        )
+        self._timer_task: asyncio.Task | None = None
+        self._last_write = 0.0
+
+    @abstractmethod
+    async def _open_stream(self) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
+        """Open the serial port or socket to the gateway."""
+
+    async def _connect_impl(self):
+        self.reader, self.writer = await self._open_stream()
+        # A fresh codec per connection: the handshake starts over.
+        codec = canboat.GatewayCodec(
+            self._KIND,
+            tx_pgns=self._tx_pgns,
+            rx_pgns=self._rx_pgns,
+            password=self._password,
+        )
+        self._codec = codec
+        await self._write(codec.open())
+        if self._timer_task is not None and not self._timer_task.done():
+            self._timer_task.cancel()
+        self._timer_task = asyncio.create_task(self._timer_loop())
+
+    async def _write(self, data: bytes) -> None:
+        if not data or self.writer is None:
+            return
+        self.writer.write(data)
+        await self.writer.drain()
+        self._last_write = asyncio.get_running_loop().time()
+
+    async def _handle_events(self, events: list) -> None:
+        for kind, payload in events:
+            if kind == "frame":
+                try:
+                    message = self._frame_decoder.decode_frame(payload)
+                except Exception:  # pylint: disable=broad-exception-caught
+                    self.logger.warning(
+                        "decoding failed. frame: %s", payload, exc_info=True
+                    )
+                    continue
+                if message is not None:
+                    await self.queue.put(message)
+            elif kind == "send":
+                await self._write(payload)
+            else:
+                self.logger.warning("%s gateway: %s", self._KIND, payload)
+
+    async def _receive_impl(self):
+        assert self.reader is not None and self._codec is not None
+        data = await self.reader.read(4096)
+        if not data:
+            raise ConnectionError("The gateway closed the connection.")
+        await self._handle_events(self._codec.receive(data))
+
+    async def _timer_loop(self) -> None:
+        """Advance the codec's deadlines and send its keepalive while connected."""
+        codec = self._codec
+        if codec is None:
+            return
+        keepalive = codec.keepalive()
+        loop = asyncio.get_running_loop()
+        try:
+            while self._state != State.CLOSED and codec is self._codec:
+                await asyncio.sleep(self._TICK_SECONDS)
+                await self._handle_events(codec.tick())
+                if (
+                    keepalive is not None
+                    and loop.time() - self._last_write >= keepalive[0]
+                ):
+                    await self._write(keepalive[1])
+        except (ConnectionError, OSError) as error:
+            # The receive loop notices the dead link and reconnects.
+            self.logger.debug("%s gateway timer stopped: %s", self._KIND, error)
+
+    def _encode_impl(self, message: NMEA2000Message) -> list[bytes]:
+        if self._codec is None:
+            raise ValueError("Not connected to the gateway.")
+        payload = backend.encode(message)
+        try:
+            return [
+                self._codec.send(
+                    message.PGN,
+                    payload,
+                    message.source,
+                    message.destination,
+                    message.priority,
+                )
+            ]
+        except canboat.EncodeError as error:
+            raise ValueError(str(error)) from error
+
+    async def _send_impl(self, encoded_message):
+        await super()._send_impl(encoded_message)
+        self._last_write = asyncio.get_running_loop().time()
+
+    async def close(self):
+        if self._timer_task is not None and not self._timer_task.done():
+            self._timer_task.cancel()
+            await asyncio.gather(self._timer_task, return_exceptions=True)
+        if (
+            self._codec is not None
+            and self.writer is not None
+            and self._state == State.CONNECTED
+        ):
+            try:
+                await self._write(self._codec.close())
+            except (ConnectionError, OSError):
+                pass
+        await super().close()
+        self._frame_decoder.close()
+
+
+class Ngt1Nmea2000Gateway(_CanboatCodecGateway):
+    """Actisense NGT-1 over its USB serial port (115200 baud).
+
+    The protocol is canboat's ``actisense-serial``. The NGT-1 only transmits
+    PGNs on its transmit list: name every PGN you will send in ``tx_pgns``
+    (the list is written to the gateway at startup); once it names any,
+    other PGNs are refused.
+    """
+
+    _KIND = "ngt1"
+
+    def __init__(
+        self,
+        port: str,
+        tx_pgns: list[int] | None = None,
+        rx_pgns: list[int] | None = None,
+        exclude_pgns: list[int | str] | None = None,
+        include_pgns: list[int | str] | None = None,
+        exclude_manufacturer_code: list[str] | None = None,
+        include_manufacturer_code: list[str] | None = None,
+        preferred_units: dict[PhysicalQuantities, str] | None = None,
+        dump_to_file: str | None = None,
+        dump_pgns: list[int | str] | None = None,
+        build_network_map: bool = False,
+        baudrate: int = 115200,
+    ):
+        super().__init__(
+            tx_pgns=tx_pgns,
+            rx_pgns=rx_pgns,
+            password="",
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+        )
+        self.port = port
+        self.baudrate = baudrate
+
+    async def _open_stream(self) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
+        self.logger.info("Connecting to NGT-1 on %s", self.port)
+        return await serial_asyncio.open_serial_connection(
+            url=self.port, baudrate=self.baudrate
+        )
+
+
+class IkonvertNmea2000Gateway(_CanboatCodecGateway):
+    """Digital Yacht iKonvert over its USB serial port (230400 baud).
+
+    The protocol is canboat's ``ikonvert-serial``, including its
+    acknowledged startup sequence. ``tx_pgns`` and ``rx_pgns`` are written to
+    the gateway's lists at startup; once ``tx_pgns`` names any PGN, other
+    PGNs are refused, as the gateway would reject them.
+    """
+
+    _KIND = "ikonvert"
+
+    def __init__(
+        self,
+        port: str,
+        tx_pgns: list[int] | None = None,
+        rx_pgns: list[int] | None = None,
+        exclude_pgns: list[int | str] | None = None,
+        include_pgns: list[int | str] | None = None,
+        exclude_manufacturer_code: list[str] | None = None,
+        include_manufacturer_code: list[str] | None = None,
+        preferred_units: dict[PhysicalQuantities, str] | None = None,
+        dump_to_file: str | None = None,
+        dump_pgns: list[int | str] | None = None,
+        build_network_map: bool = False,
+        baudrate: int = 230400,
+    ):
+        super().__init__(
+            tx_pgns=tx_pgns,
+            rx_pgns=rx_pgns,
+            password="",
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+        )
+        self.port = port
+        self.baudrate = baudrate
+
+    async def _open_stream(self) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
+        self.logger.info("Connecting to iKonvert on %s", self.port)
+        return await serial_asyncio.open_serial_connection(
+            url=self.port, baudrate=self.baudrate
+        )
+
+
+class MaretronIpgNmea2000Gateway(_CanboatCodecGateway):
+    """Maretron IPG100 / IPG200 over TCP.
+
+    The protocol is canboat's ``maretron-ipg``: log in with ``password``
+    (empty for a unit without security), switch to binary mode, then frames.
+    """
+
+    _KIND = "maretron"
+
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        password: str = "",
+        exclude_pgns: list[int | str] | None = None,
+        include_pgns: list[int | str] | None = None,
+        exclude_manufacturer_code: list[str] | None = None,
+        include_manufacturer_code: list[str] | None = None,
+        preferred_units: dict[PhysicalQuantities, str] | None = None,
+        dump_to_file: str | None = None,
+        dump_pgns: list[int | str] | None = None,
+        build_network_map: bool = False,
+    ):
+        super().__init__(
+            tx_pgns=None,
+            rx_pgns=None,
+            password=password,
+            exclude_pgns=exclude_pgns,
+            include_pgns=include_pgns,
+            exclude_manufacturer_code=exclude_manufacturer_code,
+            include_manufacturer_code=include_manufacturer_code,
+            preferred_units=preferred_units,
+            dump_to_file=dump_to_file,
+            dump_pgns=dump_pgns,
+            build_network_map=build_network_map,
+        )
+        self.host = host
+        self.port = port
+
+    async def _open_stream(self) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
+        self.logger.info("Connecting to Maretron IPG at %s:%s", self.host, self.port)
+        reader, writer = await asyncio.open_connection(self.host, self.port)
+        sock = writer.get_extra_info("socket")
+        if sock:
+            _configure_tcp_keepalive(sock)
+        return reader, writer

@@ -10,6 +10,7 @@ from datetime import UTC, datetime, timedelta
 
 import can.message
 
+from . import _canboat as canboat
 from .decoder import DecoderBase, DecoderInterface, InvalidFrameError, NMEA2000Decoder
 from .input_formats import N2KFormat, N2KInput
 from .message import NMEA2000Message
@@ -64,6 +65,13 @@ def _parse_hex_bytes(parts: list[str], expected_length: int | None = None) -> by
 
     selected_parts = parts if expected_length is None else parts[:expected_length]
     return bytes(int(part, 16) for part in selected_parts)
+
+
+def _parse_frame(
+    format_name: str, line: str
+) -> tuple[int, int, int, int, bytes] | None:
+    """``(priority, pgn, source, destination, data)`` from canboat's parser for the format."""
+    return canboat.parse_line(format_name, line)
 
 
 def _decode_raw_can_frame(
@@ -121,17 +129,25 @@ class N2kAsciiDecoder(DecoderBase, DecoderInterface):
         parts = n2k_ascii_string.split()
 
         if len(parts) == 4 and parts[0].startswith("A"):
-            # Extract the timestamp from the first part
+            # The timestamp, as nmea2000 has always read it
             seconds, milliseconds = map(int, parts[0][1:].split("."))
             offset = timedelta(seconds=seconds, milliseconds=milliseconds)
             timestamp = datetime.now() + offset
-            # Extract the priority, destination, and source from the second part
-            n = int(parts[1], 16)
-            # Extract the PGN from the third part
-            pgn = int(parts[2], 16)
-            # Extract the CAN data from the remaining parts
-            bytes_data = bytes.fromhex(parts[3])
-        elif len(parts) == 3:
+            frame = _parse_frame("actisense_ascii", n2k_ascii_string)
+            if frame is None:
+                return None
+            priority, pgn, src, dest, bytes_data = frame
+            return self._decode(
+                pgn,
+                priority,
+                src,
+                dest,
+                timestamp,
+                bytes_data[::-1],
+                bytes_data,
+                True,
+            )
+        if len(parts) == 3:
             timestamp = datetime.now()
             n = int(parts[0], 16)
             pgn = int(parts[1], 16)
@@ -186,43 +202,21 @@ class BasicStringDecoder(DecoderBase, DecoderInterface):
         basic_string: str,
         already_combined: bool = False,
     ) -> NMEA2000Message | None:
-        # Split the basic string by commas
-        parts = basic_string.split(",")
-
-        if len(parts) < 7:  # should have at least one data bytes probably
-            raise ValueError("Invalid string format")
-
-        # Extract the fields
-        timestamp = _parse_basic_timestamp(parts[0])
-        priority = int(parts[1])
-        pgn_id = int(parts[2])
-        src = int(parts[3])
-        dest = int(parts[4])
-        length = int(parts[5])
-        # Extract the CAN data from the remaining parts
-        can_data = parts[6 : 6 + length][::-1]
-        can_data_bytes = [int(byte, 16) for byte in can_data]
-
-        # Log the extracted information
-        logger.debug(
-            "Priority: %s, Destination: %s, Source: %s, PGN: %s, CAN Data: %s",
-            priority,
-            dest,
-            src,
-            pgn_id,
-            can_data_bytes,
-        )
-
-        # not calling _decode as in this format the fast frames are already combined
+        timestamp = _parse_basic_timestamp(basic_string.split(",", 1)[0])
+        frame = _parse_frame("plain", basic_string)
+        if frame is None:
+            return None
+        priority, pgn_id, src, dest, data = frame
+        # More than 8 bytes is a fast-packet already coalesced by the source.
         return self._decode(
             pgn_id,
             priority,
             src,
             dest,
             timestamp,
-            bytes(can_data_bytes),
+            data[::-1],
             basic_string,
-            already_combined,
+            already_combined or len(data) > 8,
         )
 
     def decode(
@@ -247,13 +241,22 @@ class CanFrameAsciiDecoder(DecoderBase, DecoderInterface):
         parts = can_frame_line.split()
 
         if len(parts) >= 4 and parts[1] in ["R", "T"]:
-            # Extract the timestamp from the first part
             parsed_time = datetime.strptime(parts[0], "%H:%M:%S.%f").time()
             timestamp = datetime.combine(datetime.now().date(), parsed_time)
-            # Extract the PGN, priority, destination, and source from the second part
-            msgid = int(parts[2], 16)
-            can_data_parts = parts[3:]
-        elif len(parts) >= 2:
+            frame = _parse_frame("ydwg02", can_frame_line)
+            if frame is None:
+                return None
+            priority, pgn_id, source_id, dest, data = frame
+            return self._decode(
+                pgn_id,
+                priority,
+                source_id,
+                dest,
+                timestamp,
+                data[::-1],
+                can_frame_line,
+            )
+        if len(parts) >= 2:
             timestamp = datetime.now()
             msgid = int(parts[0], 16)
             can_data_parts = parts[1:]
@@ -328,17 +331,19 @@ class Candump2Decoder(DecoderBase, DecoderInterface):
     """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
-        parts = line.split()
-        if len(parts) < 4:
-            raise ValueError("Invalid candump2 string format")
-
-        can_id = int(parts[1], 16)
-        data_length = int(parts[2][1:-1])
-        return _decode_raw_can_frame(
-            self,
-            can_id,
-            _parse_hex_bytes(parts[3:], data_length),
+        frame = _parse_frame("candump", line)
+        if frame is None:
+            return None
+        priority, pgn_id, source_id, dest, data = frame
+        return self._decode(
+            pgn_id,
+            priority,
+            source_id,
+            dest,
+            datetime.now(),
+            data[::-1],
             line,
+            False,
         )
 
     def decode(
@@ -356,14 +361,20 @@ class Candump3Decoder(DecoderBase, DecoderInterface):
     """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
-        timestamp_str, _, can_frame = line.split(maxsplit=2)
-        can_id_str, data_hex = can_frame.split("#", 1)
-        return _decode_raw_can_frame(
-            self,
-            int(can_id_str, 16),
-            bytes.fromhex(data_hex),
-            line,
+        timestamp_str = line.split(maxsplit=1)[0]
+        frame = _parse_frame("candump", line)
+        if frame is None:
+            return None
+        priority, pgn_id, source_id, dest, data = frame
+        return self._decode(
+            pgn_id,
+            priority,
+            source_id,
+            dest,
             _utc_datetime_from_timestamp(float(timestamp_str[1:-1])),
+            data[::-1],
+            line,
+            False,
         )
 
     def decode(
@@ -381,20 +392,22 @@ class PcdinDecoder(DecoderBase, DecoderInterface):
     """
 
     def _decode_text(self, line: str) -> NMEA2000Message | None:
-        sentence = _strip_checksum(_get_0183_sentence(line))
-        parts = sentence.split(",")
+        sentence = _get_0183_sentence(line)
+        parts = _strip_checksum(sentence).split(",")
         if len(parts) != 5:
             raise ValueError("Invalid PCDIN string format")
-
-        _, pgn_hex, time_hex, src_hex, data_hex = parts
-        timer_seconds = (int(time_hex, 32) / 1024) + 1262304000
+        timer_seconds = (int(parts[2], 32) / 1024) + 1262304000
+        frame = _parse_frame("chetco", sentence)
+        if frame is None:
+            return None
+        priority, pgn_id, source_id, dest, data = frame
         return _decode_combined_payload(
             self,
-            int(pgn_hex, 16),
-            0,
-            int(src_hex, 16),
-            255,
-            bytes.fromhex(data_hex),
+            pgn_id,
+            priority,
+            source_id,
+            dest,
+            data,
             line,
             _utc_datetime_from_timestamp(timer_seconds),
         )
@@ -454,15 +467,12 @@ class PdgyDecoder(DecoderBase, DecoderInterface):
     def _decode_text(self, line: str) -> NMEA2000Message | None:
         parts = line.split(",")
         if len(parts) == 7:
-            _, pgn_id, priority, source_id, dest, _, encoded = parts
+            frame = _parse_frame("ikonvert", line)
+            if frame is None:
+                return None
+            priority, pgn_id, source_id, dest, data = frame
             return _decode_combined_payload(
-                self,
-                int(pgn_id),
-                int(priority),
-                int(source_id),
-                int(dest),
-                base64.b64decode(encoded, validate=True),
-                line,
+                self, pgn_id, priority, source_id, dest, data, line
             )
 
         if len(parts) == 4:
@@ -770,6 +780,24 @@ class Bst95Decoder(DecoderBase, DecoderInterface):
             datetime.now(),
             can_data[::-1],
             packet,
+        )
+
+
+class GatewayFrameDecoder(DecoderBase):
+    """Decoder for the complete PGN payloads a gateway codec delivers.
+
+    Used by the gateway clients built on canboat's codecs (NGT-1, iKonvert,
+    Maretron IPG): the gateway has already reassembled fast-packets, so each
+    frame is ``(priority, pgn, source, destination, data)``.
+    """
+
+    def decode_frame(
+        self, frame: tuple[int, int, int, int, bytes]
+    ) -> NMEA2000Message | None:
+        """Decode one ``(priority, pgn, source, destination, data)`` frame."""
+        priority, pgn_id, source_id, dest, data = frame
+        return self._decode(
+            pgn_id, priority, source_id, dest, datetime.now(), data[::-1], data, True
         )
 
 
