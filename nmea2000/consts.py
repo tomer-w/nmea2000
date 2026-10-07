@@ -37,7 +37,7 @@ class PhysicalQuantities(Enum):
 class FieldTypes(Enum):
     NUMBER = auto(), # Number (Binary numbers are little endian. Number fields that are at least two bits in length use the highest positive value to represent unknown. Number fields with at least 7 as maximum (3 bits unsigned, 4 bits signed) use the highest value minus one as an error indicator. This is likely also true for numbers where 3 is the maximum value, but there are few fields that have this length -- certainly as a number, there are a lot of lookup fields of two bits length.  For signed numbers the maximum values are the maximum positive value and that minus 1, not the all-ones bit encoding which is the maximum negative value.)
     FLOAT = auto(), # 32 bit IEEE-754 floating point number ()
-    DECIMAL = auto(), # An unsigned numeric value where each byte holds the binary value of two decimal digits (0..99) (Each byte contains the binary value of two decimal digits, so 1234 is represented by 2 bytes containing 0x0c (=12) and 0x22 (=34). This is NOT BCD. A value with an odd number of digits is padded with a trailing zero, e.g. the 9-digit MMSI 512000953 is encoded as 5120009530 (5 bytes).)
+    DECIMAL = auto(), # An unsigned numeric value where each byte holds the binary value of two decimal digits (0..99) (Each byte contains the binary value of two decimal digits, so 1234 is represented by 2 bytes containing 0x0c (=12) and 0x22 (=34). This is NOT BCD. A value with an odd number of digits is padded with a trailing zero, e.g. the 9-digit MMSI 512000953 is encoded as 5120009530 (5 bytes). A byte that is not a digit pair (above 99), or a field the packet ends inside, makes the whole value not available.)
     LOOKUP = auto(), # Number value where each value encodes for a distinct meaning (Each lookup has a LookupEnumeration defining what the possible values mean)
     INDIRECT_LOOKUP = auto(), # Number value where each value encodes for a distinct meaning but the meaning also depends on the value in another field (Each lookup has a LookupIndirectEnumeration defining what the possible values mean)
     BITLOOKUP = auto(), # Number value where each bit value encodes for a distinct meaning (Each LookupBit has a LookupBitEnumeration defining what the possible values mean. A bitfield can have any combination of bits set.)
@@ -55,9 +55,10 @@ class FieldTypes(Enum):
     BINARY = auto(), # Binary field (Unspecified content consisting of any number of bits.)
     RESERVED = auto(), # Reserved field (All reserved bits shall be 1)
     SPARE = auto(), # Spare field (All spare bits shall be 0)
-    MMSI = auto(), # MMSI (The MMSI is encoded as a 32 bit number, but is always printed as a 9 digit number and should be considered as a string. The first three or four digits are special, see the USCG link for a detailed explanation.)
+    MMSI = auto(), # MMSI (The MMSI is encoded as a 32 bit number, but is always printed as a 9 digit number and should be considered as a string. The first three or four digits are special, see the USCG link for a detailed explanation. The top three 32-bit values are reserved, as for any number (see below); in addition 0 is not a valid MMSI (no station holds MID 000) and devices send it for "none", so 0 is also treated as not available.)
     VARIABLE = auto(), # Variable (The definition of the field is that of the reference PGN and reference field, this is totally variable.)
     FIELD_INDEX = auto(), # Field Index (Index of the specified field in the PGN referenced.)
+    ADDRESS = auto(), # NMEA 2000 / J1939 network address (One byte holding the bus address of a device. Every value is meaningful, so there are no top-of-range sentinels -- 0..253 are claimable device addresses, 254 is the null address (a device that has not claimed, or cannot claim, an address) and 255 is the global address, meaning broadcast / all devices.)
 
 
 ManufacturerCodes: List[str] = [

@@ -98,6 +98,11 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     if not isinstance(field_value, int):
         raise ValueError("Cant encode this message, '{{ field.Name }}' must be an integer")
     field_bit_length = {{ field.BitLength }}
+    {%- elif field.FieldType == 'ADDRESS' %}
+    field_value = {{ field_ref }}.raw_value if isinstance({{ field_ref }}.raw_value, int) else {{ field_ref }}.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, '{{ field.Name }}' must be an integer")
+    field_bit_length = {{ field.BitLength }}
     {%- elif field.FieldType == 'FLOAT' %}
     assert {{ field_ref }}.value is None or isinstance({{ field_ref }}.value, (int, float))
     field_value = encode_float({{ field_ref }}.value)
@@ -286,6 +291,9 @@ def _lookup_field_type_encode(value, lookup_dict: dict[int, LookupFieldTypeEnume
     {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
     {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
     running_bit_offset += {{ field.BitLength }}
+    {%- elif field.FieldType == 'ADDRESS' %}
+    {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
+    running_bit_offset += {{ field.BitLength }}
     {%- elif field.FieldType == 'STRING_FIX' %}
     {{ field_name }}, {{ field_name }}_raw = decode_string_fix_raw(_data_raw_, running_bit_offset, {{ field.BitLength }})
     running_bit_offset += {{ field.BitLength }}
@@ -470,6 +478,8 @@ def decode_pgn_{{ func_name_suffix }}(_data_raw_: int, _data_length_bits_: int) 
     {{ field_name }}_raw = decode_number(_data_raw_, running_bit_offset, {{ field.BitLength }}, {{ field_signed }}, {{ field.Resolution }}, {{ field.RangeMin | default(0) }}, {{ field.RangeMax }})
     {{ field_name }} = decode_date({{ field_name }}_raw)
         {%- elif field.FieldType == 'RESERVED' or field.FieldType == 'SPARE' %}
+    {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
+        {%- elif field.FieldType == 'ADDRESS' %}
     {{ field_name }} = {{ field_name }}_raw = decode_int(_data_raw_, running_bit_offset, {{ field.BitLength }})
         {%- elif field.FieldType == 'INDIRECT_LOOKUP' %}
             {%- set ns_fields.indirect_lookup_order_orig = field.Order %}
