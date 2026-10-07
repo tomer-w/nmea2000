@@ -35,6 +35,9 @@ logger = logging.getLogger(__name__)
 # whole, so keeping it lets older nmea2000 devices settle conflicts the same way.
 _NAME_SPARE_BIT = 1 << 48
 
+# The longest interval a PGN 126993 heartbeat can advertise, in seconds
+MAX_HEARTBEAT_INTERVAL = 65.532
+
 MessageCallback = Callable[[NMEA2000Message], Awaitable[None]]
 StatusCallback = Callable[[State], Awaitable[None]]
 
@@ -141,7 +144,16 @@ class N2KDevice:
         claim has stood unchallenged for 250 ms (ISO 11783-5 / J1939-81).
         ``address_claim_startup_delay`` and ``address_claim_detection_time``
         are deprecated and ignored.
+
+        ``heartbeat_interval`` is in seconds (the standard's is 60), and at
+        most 65.532, the longest a heartbeat can advertise.
         """
+        if not 0 < heartbeat_interval <= MAX_HEARTBEAT_INTERVAL:
+            raise ValueError(
+                f"heartbeat_interval must be more than 0 and at most "
+                f"{MAX_HEARTBEAT_INTERVAL} s (the longest PGN 126993 can "
+                f"advertise), not {heartbeat_interval}"
+            )
         for name, value in (
             ("address_claim_startup_delay", address_claim_startup_delay),
             ("address_claim_detection_time", address_claim_detection_time),

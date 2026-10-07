@@ -34,7 +34,7 @@ dependencies = [
 [[package]]
 name = "canboat"
 version = "8.3.0"
-source = "git+https://github.com/johncharrington/canboat?branch=fix%2Fencode-conditional-fields#9bee1697b4c80b323fac37650c664975c0f72c4d"
+source = "git+https://github.com/johncharrington/canboat?branch=fix%2Fgroup-function-proprietary-header#104c693b74bb1b6f7399ad5aa9bc55bf4461eae3"
 dependencies = [
  "indexmap",
  "itoa",

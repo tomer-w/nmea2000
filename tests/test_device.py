@@ -145,7 +145,7 @@ async def test_device_start_claims_address_and_filters_management_messages(tmp_p
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     data_messages = asyncio.Queue()
@@ -190,7 +190,7 @@ async def test_device_announces_product_information_on_startup(tmp_path):
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     try:
@@ -215,7 +215,7 @@ async def test_device_announces_configuration_information_on_startup_when_presen
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
         installation_description1="Autopilot demo",
         manufacturer_information="nmea2000 autopilot heading simulator",
     )
@@ -242,7 +242,7 @@ async def test_device_conflict_increments_address_when_it_loses(tmp_path):
         client,
         unique_number=10,
         persistence_path=tmp_path / "device.json",
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     await device.start()
@@ -267,7 +267,7 @@ async def test_device_conflict_keeps_address_when_it_wins(tmp_path):
         client,
         unique_number=1,
         persistence_path=tmp_path / "device.json",
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     await device.start()
@@ -295,7 +295,7 @@ async def test_device_responds_with_iso_nak_and_group_function_ack(tmp_path):
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     await device.start()
@@ -354,7 +354,7 @@ async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     try:
@@ -381,7 +381,7 @@ async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
         client,
         persistence_path=tmp_path / "device.json",
         transmit_pgns=[127250],
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     try:
@@ -436,7 +436,7 @@ async def test_device_claims_with_the_standard_timings(tmp_path, monkeypatch):
 
     client = FakeClient()
     device = N2KDevice(
-        client, persistence_path=tmp_path / "device.json", heartbeat_interval=3600
+        client, persistence_path=tmp_path / "device.json", heartbeat_interval=60
     )
     try:
         await device.start()
@@ -451,3 +451,23 @@ async def test_device_claims_with_the_standard_timings(tmp_path, monkeypatch):
         assert device.ready
     finally:
         await device.close()
+
+
+@pytest.mark.parametrize("interval", [0, -1, 65.533, 3600])
+def test_device_refuses_a_heartbeat_interval_it_cannot_advertise(tmp_path, interval):
+    """PGN 126993 can advertise at most 65.532 s, so a longer interval is refused."""
+    with pytest.raises(ValueError, match="heartbeat_interval"):
+        N2KDevice(
+            FakeClient(),
+            persistence_path=tmp_path / "device.json",
+            heartbeat_interval=interval,
+        )
+
+
+def test_device_accepts_the_longest_heartbeat_interval(tmp_path):
+    """65.532 s is the longest interval a heartbeat can advertise."""
+    N2KDevice(
+        FakeClient(),
+        persistence_path=tmp_path / "device.json",
+        heartbeat_interval=65.532,
+    )
