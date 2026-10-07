@@ -157,15 +157,18 @@ fn product_information_frame<'py>(
         .ok_or_else(|| super::EncodeError::new_err("product information does not encode"))
 }
 
-/// PGN 126993 Heartbeat from `src`, advertising `interval_ms`.
+/// PGN 126993 Heartbeat from `src`, advertising `interval_ms`; an
+/// interval the field cannot carry (over 65.532 s) is an `EncodeError`.
 #[pyfunction]
 fn heartbeat_frame<'py>(
     py: Python<'py>,
     src: u8,
     sequence: u8,
     interval_ms: u64,
-) -> FrameTuple<'py> {
-    frame(py, &device::heartbeat_frame(src, sequence, interval_ms))
+) -> PyResult<FrameTuple<'py>> {
+    device::heartbeat_frame(src, sequence, interval_ms)
+        .map(|f| frame(py, &f))
+        .map_err(|e| super::EncodeError::new_err(e.to_string()))
 }
 
 /// PGN 59392 ISO Acknowledgement: `control` 0 = ACK, 1 = NAK, 2 = Access

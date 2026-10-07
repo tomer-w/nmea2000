@@ -456,7 +456,10 @@ Compared with the generated decoder used before, the canboat backend:
   field they refer to (`'Furuno'` rather than raw bytes);
 - reports an empty string field as `None`;
 - emits only the repeating-set entries actually present in the payload, even
-  when the count field claims more.
+  when the count field claims more;
+- reads the Manufacturer Code / Industry Code header of a 126208 Read Fields,
+  Write Fields or their replies only when the commanded PGN is proprietary, as
+  the standard defines it.
 
 and its encoder:
 
@@ -467,7 +470,10 @@ and its encoder:
 - refuses values it cannot represent (a lookup label that does not exist, a
   number too large for its field), raising `ValueError`, instead of writing
   truncated bits; values outside a field's nominal range that still fit are
-  written as they are.
+  written as they are;
+- writes that 126208 header exactly when the commanded PGN is proprietary,
+  and refuses, with `ValueError`, a proprietary PGN without it or a standard
+  PGN with it.
 
 `N2KDevice` claims its address with canboat's ISO 11783-5 address claimer and
 builds its product information, heartbeat, ISO acknowledgement and PGN list
@@ -483,6 +489,9 @@ What changes:
   sooner;
 - heartbeats are sent at priority 7 and report the CAN controller as
   "Error Active" (working normally) instead of not available;
+- `heartbeat_interval` must be more than 0 and at most 65.532 s, the longest
+  interval a heartbeat can advertise (the standard's is 60 s); anything else
+  raises `ValueError`;
 - an ISO Request for PGN 126464 is answered with both the Transmit and the
   Receive PGN lists, decoded as `##list##` entries of `pgn` fields;
 - messages the device sends are decoded like received ones: lookups carry

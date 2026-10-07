@@ -308,7 +308,7 @@ async def test_python_can_device_becomes_ready_on_virtual_bus(tmp_path) -> None:
         "virtual",
         "test-python-can-ready",
         persistence_path=tmp_path / "python-can-device.json",
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     try:
