@@ -14,7 +14,8 @@ This package is the backend for the Home Assistant [NMEA 2000 Integration](https
      - **Actisense BST** — Actisense devices using the [BST binary protocol](https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/BST.md) over TCP, supporting both [BST-95](https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/bst-detail/BST-95-can-frame.md) (raw CAN frames) and [BST-D0](https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Binary/bst-detail/BST-D0.md) (pre-assembled N2K). Compatible with the [PRO-NDC-1E2K](https://actisense.com/products/pro-ndc-1e2k/) and [W2K-1](https://actisense.com/products/w2k-1-nmea-2000-wifi-gateway/) in CAN Actisense mode
      - **WaveShare** — USB serial devices like [Waveshare USB-CAN-A](https://www.waveshare.com/wiki/USB-CAN-A)
      - **python-can** — any generic USB or SocketCAN device [supported by the python-can library](https://python-can.readthedocs.io/en/stable/interfaces.html)
-- **PGN-specific parsing**: Handle various PGNs with specific parsing rules based on [canboat](https://canboat.github.io/canboat/canboat.html).
+     - **Actisense NGT-1** (`Ngt1Nmea2000Gateway`), **Digital Yacht iKonvert** (`IkonvertNmea2000Gateway`) and **Maretron IPG100/200** (`MaretronIpgNmea2000Gateway`) — using canboat's own protocol implementations, including the NGT-1 and iKonvert transmit lists (pass every PGN you will send as `tx_pgns`; others are refused once any is named)
+- **PGN-specific parsing**: Every PGN in the [canboat](https://canboat.github.io/canboat/canboat.html) database is decoded and encoded by canboat's own Rust decoder, compiled into this package.
 - **Stateful decoder**: The decoder supports NMEA 2000 fast messages, which are split across multiple CANBUS messages.
 - **CLI support**: Built-in command-line interface for encoding and decoding frames.
 
@@ -25,6 +26,13 @@ You can install the library using `pip`:
 ```bash
 pip install nmea2000
 ```
+
+Prebuilt wheels cover Python 3.11 and later on Windows (x64), macOS (Apple
+silicon and Intel) and Linux (x86_64 and ARM64, glibc and musl), and the
+Raspberry Pi on 64-bit Raspberry Pi OS (Pi 3, 4, 5, Zero 2 W) and 32-bit
+Raspberry Pi OS (Pi 2 to 5, Zero 2 W). Elsewhere, including the original Pi
+Zero, Zero W and Pi 1, installing builds from source and needs a
+[Rust toolchain](https://rustup.rs).
 
 Alternatively, you can clone the repository and install it locally:
 
@@ -397,6 +405,119 @@ To run the tests, use:
 ```bash
 pytest
 ```
+
+### How decoding works
+
+Decoding, encoding, fast-packet reassembly and fragmentation, and CAN
+identifiers are all handled by the canboat project's Rust crate and PGN
+database, compiled into this package as `nmea2000._canboat` (the crate is in
+`rust/`). Messages are built straight into this library's own model
+(`NMEA2000Message`, `NMEA2000Field`, the `##list##` repeating-set entries).
+
+### Units
+
+By default values are in the units canboat.json uses (`%`, `rpm`, `L`, `kWh`,
+...), as they always have been. canboat's own unit systems are available too:
+
+```python
+NMEA2000Decoder(units="si")  # ratio, Hz, m3, J, rad, K, Pa, ...
+NMEA2000Decoder(units="metric")  # deg, C, bar, %, rpm, L, ...
+create_encoder("basic_string", units="si")  # values given in SI
+```
+
+An encoder must use the unit system its messages' values are in. The few
+fields where canboat.json's units differ from canboat's SI units are listed in
+the generated `nmea2000/native_units.py`.
+
+Building from source needs a [Rust toolchain](https://rustup.rs);
+`pip install -e .[dev]` compiles the core with [maturin](https://www.maturin.rs).
+
+nmea2000 follows canboat's releases: the "Sync canboat release" workflow runs
+weekly and opens a pull request that moves the `canboat` crate in
+`rust/Cargo.toml` and `canboat.json` to the latest release together, and
+regenerates `nmea2000/native_units.py`. To do the same by hand, set the
+crate's version, download that release's `canboat.json` asset here, run
+`cargo update --package canboat` in `rust/` and then `python canboat2python.py`.
+The `FieldTypes`,
+`PhysicalQuantities` and `ManufacturerCodes` enumerations in
+`nmea2000/consts.py` are built from the crate when nmea2000 is imported; their
+values keep the numbering nmea2000 has always used.
+
+Compared with the generated decoder used before, the canboat backend:
+
+- reports fields beyond the end of a short payload, and canboat's "not
+  available" and "out of range" sentinels, as `None` rather than as values read
+  from missing bits;
+- applies canboat's field offsets (e.g. AC power fields that are offset by
+  2,000,000,000);
+- returns `BINARY` and dynamic field values in wire byte order, at their full
+  field width;
+- decodes a group function's `VARIABLE` parameter values with the type of the
+  field they refer to (`'Furuno'` rather than raw bytes);
+- reports an empty string field as `None`;
+- emits only the repeating-set entries actually present in the payload, even
+  when the count field claims more;
+- reads the Manufacturer Code / Industry Code header of a 126208 Read Fields,
+  Write Fields or their replies only when the commanded PGN is proprietary, as
+  the standard defines it.
+
+and its encoder:
+
+- pads the last frame of a fast-packet to 8 bytes with `0xff`, as the
+  standard requires;
+- writes fixed-length PGNs at their full length, filling unset fields with
+  their "not available" values;
+- refuses values it cannot represent (a lookup label that does not exist, a
+  number too large for its field), raising `ValueError`, instead of writing
+  truncated bits; values outside a field's nominal range that still fit are
+  written as they are;
+- writes that 126208 header exactly when the commanded PGN is proprietary,
+  and refuses, with `ValueError`, a proprietary PGN without it or a standard
+  PGN with it.
+
+`N2KDevice` claims its address with canboat's ISO 11783-5 address claimer and
+builds its product information, heartbeat, ISO acknowledgement and PGN list
+messages with canboat's device module. Its persisted address is unchanged.
+What changes:
+
+- address claiming follows the standard's timings (ISO 11783-5 / SAE
+  J1939-81): the device listens for other devices' claims for 1 s, then uses
+  its address once its claim has stood unchallenged for 250 ms. The
+  `address_claim_startup_delay` and `address_claim_detection_time` options
+  are deprecated and ignored, and passing either raises a `FutureWarning`. The
+  old defaults waited 1 s and then 5 s, so a device is now ready about 5 s
+  sooner;
+- heartbeats are sent at priority 7 and report the CAN controller as
+  "Error Active" (working normally) instead of not available;
+- `heartbeat_interval` must be more than 0 and at most 65.532 s, the longest
+  interval a heartbeat can advertise (the standard's is 60 s); anything else
+  raises `ValueError`;
+- an ISO Request for PGN 126464 is answered with both the Transmit and the
+  Receive PGN lists, decoded as `##list##` entries of `pgn` fields;
+- messages the device sends are decoded like received ones: lookups carry
+  their labels, reserved fields their wire values, and the NMEA 2000 version's
+  `raw_value` is the scaled value (`1.3`), like every other number.
+
+The per-PGN `nmea2000.pgns.decode_pgn_<pgn>` / `encode_pgn_<pgn>` functions
+remain available for existing code.
+
+### Not yet exposed from canboat
+
+The canboat crate has more than this package exposes so far. Each item below
+would be a binding plus a new option or entry point, with no change to
+existing behaviour:
+
+- **Analyzer JSON**: read and write canboat's `analyzer -json` records
+  (crate feature `json-input`, `engine/output/json.rs`), for interchange with
+  canboat, canboatjs and Signal K tooling.
+- **NMEA 0183 and AIS output**: convert decoded messages into 0183 sentences
+  and AIVDM (crate features `nmea0183` and `ais`).
+- **Capture readers**: replay SocketCAN `.pcap` / `.pcap.gz`, Navico `.nif`
+  and EBL captures (`io/container.rs`, part of the `io` feature).
+- **SAE J1939 and Quick**: decode J1939 engine and genset PGNs and Quick's
+  11-bit PCS bus, via a protocol option (`engine/bus_protocol.rs`).
+- **Quirks**: opt-in decode-time corrections for misbehaving devices, such as
+  GPS week-rollover dates (`engine/quirk.rs`).
 
 ### Running the CLI Locally
 

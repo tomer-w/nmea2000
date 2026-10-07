@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 import random
+import time
+import warnings
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import datetime
@@ -13,6 +16,8 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any, Protocol
 
+from . import _canboat as canboat
+from . import backend
 from .input_formats import N2KFormat
 from .ioclient import (
     ActisenseBstNmea2000Gateway,
@@ -25,6 +30,13 @@ from .ioclient import (
 from .message import IsoName, NMEA2000Field, NMEA2000Message
 
 logger = logging.getLogger(__name__)
+
+# The NAME's reserved bit, which nmea2000 has always set: NAMEs are compared
+# whole, so keeping it lets older nmea2000 devices settle conflicts the same way.
+_NAME_SPARE_BIT = 1 << 48
+
+# The longest interval a PGN 126993 heartbeat can advertise, in seconds
+MAX_HEARTBEAT_INTERVAL = 65.532
 
 MessageCallback = Callable[[NMEA2000Message], Awaitable[None]]
 StatusCallback = Callable[[State], Awaitable[None]]
@@ -63,6 +75,13 @@ MANAGEMENT_PGNS = frozenset(
     {59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998}
 )
 
+# canboat frames: (priority, pgn, source, destination, data)
+Frame = tuple[int, int, int, int, bytes]
+
+
+def _now_ms() -> int:
+    return time.monotonic_ns() // 1_000_000
+
 
 @dataclass
 class DiscoveredDevice:
@@ -76,7 +95,14 @@ class DiscoveredDevice:
 
 
 class N2KDevice:
-    """High-level async NMEA 2000 device wrapper with address-claim handling."""
+    """High-level async NMEA 2000 device wrapper with address-claim handling.
+
+    Address claiming (ISO 11783-5: scan, claim, NAME arbitration, moving to a
+    free address on a lost contest) and the standard responses (product
+    information, heartbeat, PGN lists, ISO NAKs) come from canboat's node
+    implementation; this class drives them from the asyncio loop and sends
+    what they produce through the client.
+    """
 
     def __init__(
         self,
@@ -104,14 +130,42 @@ class N2KDevice:
         installation_description2: str = "",
         manufacturer_information: str = "",
         transmit_pgns: list[int] | None = None,
-        address_claim_detection_time: float = 5.0,
-        address_claim_startup_delay: float = 1.0,
+        address_claim_detection_time: float | None = None,
+        address_claim_startup_delay: float | None = None,
         heartbeat_interval: float = 60.0,
         persistence_path: str | Path | None = None,
         persistence_key: str = "default",
         disable_naks: bool = False,
     ):
-        """Create a device around an async transport client and local device identity."""
+        """Create a device around an async transport client and local device identity.
+
+        Address claiming follows the standard's timings: the device listens
+        for other devices' claims for 1 s, then uses its address once its
+        claim has stood unchallenged for 250 ms (ISO 11783-5 / J1939-81).
+        ``address_claim_startup_delay`` and ``address_claim_detection_time``
+        are deprecated and ignored.
+
+        ``heartbeat_interval`` is in seconds (the standard's is 60), and at
+        most 65.532, the longest a heartbeat can advertise.
+        """
+        if not 0 < heartbeat_interval <= MAX_HEARTBEAT_INTERVAL:
+            raise ValueError(
+                f"heartbeat_interval must be more than 0 and at most "
+                f"{MAX_HEARTBEAT_INTERVAL} s (the longest PGN 126993 can "
+                f"advertise), not {heartbeat_interval}"
+            )
+        for name, value in (
+            ("address_claim_startup_delay", address_claim_startup_delay),
+            ("address_claim_detection_time", address_claim_detection_time),
+        ):
+            if value is not None:
+                warnings.warn(
+                    f"N2KDevice's {name} is deprecated and no longer respected: "
+                    "address claiming uses the standard's timings (a 1 s scan, "
+                    "then 250 ms for a claim to settle)",
+                    FutureWarning,
+                    stacklevel=2,
+                )
         self.client = client
         self.client.set_receive_callback(self._handle_client_message)
         self.client.set_status_callback(self._handle_client_status)
@@ -121,14 +175,10 @@ class N2KDevice:
         self._status_callback: StatusCallback | None = None
 
         self.disable_naks = disable_naks
-        self.address_claim_detection_time = address_claim_detection_time
-        self.address_claim_startup_delay = address_claim_startup_delay
         self.heartbeat_interval = heartbeat_interval
         self._started = False
-        self._ready = False
         self._ready_event = asyncio.Event()
-        self._startup_task: asyncio.Task[None] | None = None
-        self._claim_ready_task: asyncio.Task[None] | None = None
+        self._claim_task: asyncio.Task[None] | None = None
         self._heartbeat_task: asyncio.Task[None] | None = None
         self._closing = False
         self.heartbeat_counter = 0
@@ -143,7 +193,7 @@ class N2KDevice:
             if unique_number is not None
             else int(persisted.get("uniqueNumber", self._generate_unique_number()))
         )
-        self.address = int(persisted.get("lastAddress", preferred_address))
+        self.preferred_address = int(persisted.get("lastAddress", preferred_address))
 
         self.manufacturer_code = manufacturer_code
         self.device_function = device_function
@@ -153,9 +203,22 @@ class N2KDevice:
         self.system_instance = system_instance
         self.industry_group = industry_group
         self.arbitrary_address_capable = arbitrary_address_capable
-        self._own_name = IsoName.pack_name_from_message(
-            self._build_address_claim_message()
+        self._own_name = (
+            canboat.iso_name(
+                manufacturer_code,
+                self.unique_number,
+                device_function=device_function,
+                device_class=device_class,
+                device_instance=(device_instance_upper << 3) | device_instance_lower,
+                system_instance=system_instance,
+                industry_group=industry_group,
+                arbitrary_address_capable=arbitrary_address_capable,
+            )
+            | _NAME_SPARE_BIT
         )
+        self._claimer = self._new_claimer()
+        # Set when a claim starts outside the loop, to wake it early
+        self._claimer_wake = asyncio.Event()
 
         self.product_code = product_code
         self.nmea2000_version = nmea2000_version
@@ -182,7 +245,13 @@ class N2KDevice:
     @property
     def ready(self) -> bool:
         """Return ``True`` once the device has claimed an address and is ready to send."""
-        return self._ready
+        return self._started and self._claimer.send_address is not None
+
+    @property
+    def address(self) -> int:
+        """The claimed source address (the preferred one until a claim is made)."""
+        claimed = self._claimer.address
+        return self.preferred_address if claimed is None else claimed
 
     def set_receive_callback(self, callback: MessageCallback | None) -> None:
         """Register a callback for non-management messages delivered to this device."""
@@ -306,9 +375,8 @@ class N2KDevice:
         """Stop background tasks, mark the device not ready, and close the client."""
         self._closing = True
         self._started = False
-        self._set_not_ready()
-        await self._cancel_task(self._startup_task)
-        await self._cancel_task(self._claim_ready_task)
+        self._ready_event.clear()
+        await self._cancel_task(self._claim_task)
         await self._cancel_task(self._heartbeat_task)
         await self.client.close()
 
@@ -328,14 +396,79 @@ class N2KDevice:
             nmea2000_message.source = self.address
         await self.client.send(nmea2000_message)
 
+    # ─────────────────────────── address claiming ───────────────────────────
+
+    def _new_claimer(self) -> canboat.AddressClaimer:
+        return canboat.AddressClaimer(
+            self._own_name, self.preferred_address, self.arbitrary_address_capable
+        )
+
+    async def _run_claimer(self, step: Callable[[int], list[Frame]]) -> None:
+        """Run one claimer step, send what it produces, and act on the outcome."""
+        was_claimed = self._claimer.state == "claimed"
+        for frame in step(_now_ms()):
+            await self._send_frame(frame)
+        claimed = self._claimer.state == "claimed"
+        if self._claimer.is_timing:
+            self._claimer_wake.set()
+        if not self.ready:
+            self._ready_event.clear()
+        if claimed and not was_claimed:
+            await self._on_claimed()
+
+    async def _on_claimed(self) -> None:
+        self._ready_event.set()
+        self._persist(lastAddress=self.address)
+        await self._announce_startup_messages()
+        if self._heartbeat_task is None or self._heartbeat_task.done():
+            self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
+
+    async def _claim_loop(self) -> None:
+        """Start the claim, then advance it until the device stops."""
+        self._claimer = self._new_claimer()
+        await self._run_claimer(self._claimer.start)
+        while self._started and not self._closing:
+            self._claimer_wake.clear()
+            with contextlib.suppress(TimeoutError):
+                await asyncio.wait_for(
+                    self._claimer_wake.wait(),
+                    0.02 if self._claimer.is_timing else 0.25,
+                )
+            await self._run_claimer(self._claimer.tick)
+
+    async def _announce_startup_messages(self) -> None:
+        await self._send_frame(self._product_information_frame())
+        if self._has_configuration_information():
+            await self.client.send(self._build_configuration_information_message())
+
+    async def _heartbeat_loop(self) -> None:
+        while self._started and not self._closing:
+            await asyncio.sleep(self.heartbeat_interval)
+            if not self._started or self._closing:
+                return
+            if self.ready:
+                self.heartbeat_counter = (self.heartbeat_counter + 1) % 253
+                await self._send_frame(
+                    canboat.heartbeat_frame(
+                        self.address,
+                        self.heartbeat_counter,
+                        round(self.heartbeat_interval * 1000),
+                    )
+                )
+
+    # ─────────────────────────── receiving ───────────────────────────
+
     async def _handle_client_status(self, state: State) -> None:
         if state != State.CONNECTED:
-            self._set_not_ready()
-            await self._cancel_task(self._claim_ready_task)
+            self._ready_event.clear()
+            await self._cancel_task(self._claim_task)
             await self._cancel_task(self._heartbeat_task)
+            self._claimer = self._new_claimer()
 
         if state == State.CONNECTED and self._started and not self._closing:
-            await self._schedule_startup_claim()
+            await self._cancel_task(self._claim_task)
+            await self._cancel_task(self._heartbeat_task)
+            self._claim_task = asyncio.create_task(self._claim_loop())
 
         if self._status_callback is not None:
             try:
@@ -364,7 +497,15 @@ class N2KDevice:
 
     async def _handle_management_message(self, message: NMEA2000Message) -> None:
         if message.PGN == 60928:
-            await self._handle_iso_address_claim(message)
+            self._get_or_create_discovered_device(
+                message.source
+            ).address_claim = message
+            their_name = IsoName.pack_name_from_message(message)
+            await self._run_claimer(
+                lambda now: self._claimer.on_address_claim(
+                    now, message.source, their_name
+                )
+            )
             return
 
         if message.PGN == 126996:
@@ -382,75 +523,37 @@ class N2KDevice:
         if not self._should_process_management_message(message):
             return
 
-        if message.PGN == 59904 and self.ready:
+        if message.PGN == 59904:
             await self._handle_iso_request(message)
             return
 
         if message.PGN == 126208 and self.ready:
             await self._handle_group_function(message)
 
-    async def _schedule_startup_claim(self) -> None:
-        await self._cancel_task(self._startup_task)
-        self._startup_task = asyncio.create_task(self._startup_claim_sequence())
-
-    async def _startup_claim_sequence(self) -> None:
-        self._set_not_ready()
-        await self._cancel_task(self._claim_ready_task)
-        await self._cancel_task(self._heartbeat_task)
-        await self.client.send(self._build_iso_request_message(60928, source=254))
-        if self.address_claim_startup_delay > 0:
-            await asyncio.sleep(self.address_claim_startup_delay)
-        await self._send_address_claim()
-
-    async def _send_address_claim(self) -> None:
-        if self._address_is_occupied(self.address):
-            self._increase_address()
-
-        await self.client.send(self._build_address_claim_message())
-        await self._cancel_task(self._claim_ready_task)
-        self._claim_ready_task = asyncio.create_task(self._mark_ready_after_claim())
-
-    async def _mark_ready_after_claim(self) -> None:
-        if self.address_claim_detection_time > 0:
-            await asyncio.sleep(self.address_claim_detection_time)
-
-        self._ready = True
-        self._ready_event.set()
-        self._persist(lastAddress=self.address)
-        await self._announce_startup_messages()
-        if self._heartbeat_task is None or self._heartbeat_task.done():
-            self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
-
-    async def _announce_startup_messages(self) -> None:
-        await self.client.send(self._build_product_information_message())
-        if self._has_configuration_information():
-            await self.client.send(self._build_configuration_information_message())
-
-    async def _heartbeat_loop(self) -> None:
-        while self._started and not self._closing:
-            await asyncio.sleep(self.heartbeat_interval)
-            if not self._started or self._closing:
-                return
-            if self.ready:
-                await self.client.send(self._build_heartbeat_message())
-
     async def _handle_iso_request(self, message: NMEA2000Message) -> None:
         requested_pgn = message.get_field_int_value_by_id("pgn")
         if requested_pgn == 60928:
-            await self.client.send(self._build_address_claim_message())
+            claim = self._claimer.respond_to_claim_request()
+            if claim is not None:
+                await self._send_frame(claim)
+            return
+        if not self.ready:
             return
         if requested_pgn == 126996:
-            await self.client.send(self._build_product_information_message())
+            await self._send_frame(self._product_information_frame())
             return
         if requested_pgn == 126998 and self._has_configuration_information():
             await self.client.send(self._build_configuration_information_message())
             return
         if requested_pgn == 126464:
-            await self.client.send(self._build_pgn_list_message(message.source))
+            for frame in canboat.pgn_list_frames(
+                self.address, message.source, self.transmit_pgns, []
+            ):
+                await self._send_frame(frame)
             return
-        if not self.disable_naks:
-            await self.client.send(
-                self._build_iso_nak_message(message.source, requested_pgn)
+        if not self.disable_naks and requested_pgn is not None:
+            await self._send_frame(
+                canboat.iso_ack_frame(self.address, message.source, 1, requested_pgn)
             )
 
     async def _handle_group_function(self, message: NMEA2000Message) -> None:
@@ -462,22 +565,6 @@ class N2KDevice:
         await self.client.send(
             self._build_group_function_ack_message(message.source, requested_pgn)
         )
-
-    async def _handle_iso_address_claim(self, message: NMEA2000Message) -> None:
-        source = message.source
-        if not self.ready or source != self.address:
-            discovered = self._get_or_create_discovered_device(source)
-            discovered.address_claim = message
-            return
-
-        received_name = IsoName.pack_name_from_message(message)
-        if self._own_name < received_name:
-            await self._send_address_claim()
-        elif self._own_name > received_name:
-            discovered = self._get_or_create_discovered_device(source)
-            discovered.address_claim = message
-            self._increase_address()
-            await self._send_address_claim()
 
     def _should_process_management_message(self, message: NMEA2000Message) -> bool:
         return message.destination == 255 or (
@@ -495,166 +582,31 @@ class N2KDevice:
             self.devices[source] = discovered
         return discovered
 
-    def _address_is_occupied(self, address: int) -> bool:
-        discovered = self.devices.get(address)
-        if discovered is None or discovered.address_claim is None:
-            return False
-        return (
-            IsoName.pack_name_from_message(discovered.address_claim) != self._own_name
-        )
+    # ─────────────────────────── sending ───────────────────────────
 
-    def _increase_address(self) -> None:
-        start_address = self.address
-        while True:
-            self.address = (self.address + 1) % 253
-            if self.address == start_address or not self._address_is_occupied(
-                self.address
-            ):
-                return
+    async def _send_frame(self, frame: Frame) -> None:
+        """Send a frame canboat built, as a message through the client."""
+        priority, pgn, source, destination, data = frame
+        message = backend.decode(pgn, data, source, destination, priority)
+        if message is None:
+            logger.error("canboat built a PGN %s frame that does not decode", pgn)
+            return
+        message.source = source
+        message.destination = destination
+        message.priority = priority
+        await self.client.send(message)
 
-    def _set_not_ready(self) -> None:
-        self._ready = False
-        self._ready_event.clear()
-
-    def _build_iso_request_message(
-        self, requested_pgn: int, *, source: int | None = None, destination: int = 255
-    ) -> NMEA2000Message:
-        return NMEA2000Message(
-            PGN=59904,
-            id="isoRequest",
-            description="ISO Request",
-            source=self.address if source is None else source,
-            destination=destination,
-            priority=6,
-            fields=[NMEA2000Field("pgn", value=requested_pgn, raw_value=requested_pgn)],
-        )
-
-    def _build_address_claim_message(self) -> NMEA2000Message:
-        yes_no = 1 if self.arbitrary_address_capable else 0
-        return NMEA2000Message(
-            PGN=60928,
-            id="isoAddressClaim",
-            description="ISO Address Claim",
-            source=self.address,
-            destination=255,
-            priority=6,
-            fields=[
-                NMEA2000Field(
-                    "uniqueNumber",
-                    value=self.unique_number,
-                    raw_value=self.unique_number,
-                ),
-                NMEA2000Field(
-                    "manufacturerCode",
-                    value=self.manufacturer_code,
-                    raw_value=self.manufacturer_code,
-                ),
-                NMEA2000Field(
-                    "deviceInstanceLower",
-                    value=self.device_instance_lower,
-                    raw_value=self.device_instance_lower,
-                ),
-                NMEA2000Field(
-                    "deviceInstanceUpper",
-                    value=self.device_instance_upper,
-                    raw_value=self.device_instance_upper,
-                ),
-                NMEA2000Field(
-                    "deviceFunction",
-                    value=self.device_function,
-                    raw_value=self.device_function,
-                ),
-                NMEA2000Field("spare", value=1, raw_value=1),
-                NMEA2000Field(
-                    "deviceClass", value=self.device_class, raw_value=self.device_class
-                ),
-                NMEA2000Field(
-                    "systemInstance",
-                    value=self.system_instance,
-                    raw_value=self.system_instance,
-                ),
-                NMEA2000Field(
-                    "industryGroup",
-                    value=self.industry_group,
-                    raw_value=self.industry_group,
-                ),
-                NMEA2000Field(
-                    "arbitraryAddressCapable", value=yes_no, raw_value=yes_no
-                ),
-            ],
-        )
-
-    def _build_heartbeat_message(self) -> NMEA2000Message:
-        self.heartbeat_counter = (self.heartbeat_counter + 1) % 253
-        return NMEA2000Message(
-            PGN=126993,
-            id="heartbeat",
-            description="Heartbeat",
-            source=self.address,
-            destination=255,
-            priority=6,
-            fields=[
-                NMEA2000Field(
-                    "dataTransmitOffset",
-                    value=self.heartbeat_interval,
-                    raw_value=self.heartbeat_interval,
-                ),
-                NMEA2000Field(
-                    "sequenceCounter",
-                    value=self.heartbeat_counter,
-                    raw_value=self.heartbeat_counter,
-                ),
-                NMEA2000Field("controller1State", value=None, raw_value=3),
-                NMEA2000Field("controller2State", value=None, raw_value=3),
-                NMEA2000Field("equipmentStatus", value=0, raw_value=0),
-                NMEA2000Field("reserved_30", value=None, raw_value=(1 << 34) - 1),
-            ],
-        )
-
-    def _build_product_information_message(self) -> NMEA2000Message:
-        return NMEA2000Message(
-            PGN=126996,
-            id="productInformation",
-            description="Product Information",
-            source=self.address,
-            destination=255,
-            priority=6,
-            fields=[
-                NMEA2000Field(
-                    "nmea2000Version",
-                    value=self.nmea2000_version / 1000,
-                    raw_value=self.nmea2000_version,
-                ),
-                NMEA2000Field(
-                    "productCode", value=self.product_code, raw_value=self.product_code
-                ),
-                NMEA2000Field("modelId", value=self.model_id, raw_value=self.model_id),
-                NMEA2000Field(
-                    "softwareVersionCode",
-                    value=self.software_version_code,
-                    raw_value=self.software_version_code,
-                ),
-                NMEA2000Field(
-                    "modelVersion",
-                    value=self.model_version,
-                    raw_value=self.model_version,
-                ),
-                NMEA2000Field(
-                    "modelSerialCode",
-                    value=self.model_serial_code,
-                    raw_value=self.model_serial_code,
-                ),
-                NMEA2000Field(
-                    "certificationLevel",
-                    value=self.certification_level,
-                    raw_value=self.certification_level,
-                ),
-                NMEA2000Field(
-                    "loadEquivalency",
-                    value=self.load_equivalency,
-                    raw_value=self.load_equivalency,
-                ),
-            ],
+    def _product_information_frame(self) -> Frame:
+        return canboat.product_information_frame(
+            self.address,
+            nmea2000_version=self.nmea2000_version,
+            product_code=self.product_code,
+            model_id=self.model_id,
+            software_version=self.software_version_code,
+            model_version=self.model_version,
+            model_serial=self.model_serial_code,
+            certification_level=self.certification_level,
+            load_equivalency=self.load_equivalency,
         )
 
     def _build_configuration_information_message(self) -> NMEA2000Message:
@@ -684,26 +636,8 @@ class N2KDevice:
             ],
         )
 
-    def _build_iso_nak_message(
-        self, destination: int, requested_pgn: int
-    ) -> NMEA2000Message:
-        return NMEA2000Message(
-            PGN=59392,
-            id="isoAcknowledgement",
-            description="ISO Acknowledgement",
-            source=self.address,
-            destination=destination,
-            priority=6,
-            fields=[
-                NMEA2000Field("control", value=1, raw_value=1),
-                NMEA2000Field("groupFunction", value=255, raw_value=255),
-                NMEA2000Field("reserved_16", value=0, raw_value=0),
-                NMEA2000Field("pgn", value=requested_pgn, raw_value=requested_pgn),
-            ],
-        )
-
     def _build_group_function_ack_message(
-        self, destination: int, requested_pgn: int
+        self, destination: int, requested_pgn: int | None
     ) -> NMEA2000Message:
         return NMEA2000Message(
             PGN=126208,
@@ -723,24 +657,6 @@ class N2KDevice:
             ],
         )
 
-    def _build_pgn_list_message(self, destination: int) -> NMEA2000Message:
-        payload = b"".join(
-            pgn.to_bytes(3, byteorder="little", signed=False)
-            for pgn in self.transmit_pgns
-        )
-        return NMEA2000Message(
-            PGN=126464,
-            id="pgnListTransmitAndReceive",
-            description="PGN List (Transmit and Receive)",
-            source=self.address,
-            destination=destination,
-            priority=6,
-            fields=[
-                NMEA2000Field("functionCode", value=0, raw_value=0),
-                NMEA2000Field("data", value=payload, raw_value=payload),
-            ],
-        )
-
     def _has_configuration_information(self) -> bool:
         return any(
             [
@@ -749,6 +665,8 @@ class N2KDevice:
                 self.manufacturer_information,
             ]
         )
+
+    # ─────────────────────────── persistence ───────────────────────────
 
     def _resolve_persistence_path(
         self, persistence_path: str | Path | None, persistence_key: str

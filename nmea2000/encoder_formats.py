@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import logging
+from collections.abc import Callable
 from datetime import datetime
 
 import can.message
@@ -499,7 +500,7 @@ class Bst95Encoder(EncoderInterface[list[bytes]], EncoderBase):
         return result
 
 
-ENCODER_CLASSES: dict[N2KFormat, type[EncoderInterface[N2KEncoded]]] = {
+ENCODER_CLASSES: dict[N2KFormat, Callable[..., EncoderInterface[N2KEncoded]]] = {
     N2KFormat.N2K_ASCII_RAW: N2kAsciiRawEncoder,
     N2KFormat.N2K_ASCII: N2kAsciiEncoder,
     N2KFormat.BASIC_STRING: BasicStringEncoder,

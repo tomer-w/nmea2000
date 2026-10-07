@@ -2,14 +2,20 @@
 """Device behavior tests for address claiming, startup announcements, and replies."""
 
 import asyncio
+import warnings
 from datetime import datetime
+from typing import Any
 
 import pytest
 
+from nmea2000 import backend
+from nmea2000 import device as device_module
 from nmea2000.device import N2KDevice
 from nmea2000.encoder import create_encoder
 from nmea2000.ioclient import State
 from nmea2000.message import NMEA2000Field, NMEA2000Message
+
+pytestmark = pytest.mark.usefixtures("fast_claim_clock")
 
 
 class FakeClient:
@@ -123,14 +129,13 @@ def _build_group_function_request(
     )
 
 
-def _transmit_pgns_from_message(message: NMEA2000Message) -> list[int]:
-    """Extract advertised transmit PGNs from a packed PGN list payload."""
-    payload = message.get_field_by_id("data").raw_value
-    assert isinstance(payload, bytes)
-    return [
-        int.from_bytes(payload[index : index + 3], byteorder="little", signed=False)
-        for index in range(0, len(payload), 3)
-    ]
+def _pgns_from_message(message: NMEA2000Message) -> list[int]:
+    """Extract the PGNs a PGN list message advertises."""
+    entries = message.get_field_by_id("##list##").value
+    assert isinstance(entries, list)
+    pgns = [entry["pgn"].value for entry in entries]
+    assert all(isinstance(pgn, int) for pgn in pgns)
+    return [pgn for pgn in pgns if isinstance(pgn, int)]
 
 
 @pytest.mark.asyncio
@@ -140,9 +145,7 @@ async def test_device_start_claims_address_and_filters_management_messages(tmp_p
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     data_messages = asyncio.Queue()
@@ -187,9 +190,7 @@ async def test_device_announces_product_information_on_startup(tmp_path):
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     try:
@@ -214,9 +215,7 @@ async def test_device_announces_configuration_information_on_startup_when_presen
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
         installation_description1="Autopilot demo",
         manufacturer_information="nmea2000 autopilot heading simulator",
     )
@@ -243,9 +242,7 @@ async def test_device_conflict_increments_address_when_it_loses(tmp_path):
         client,
         unique_number=10,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     await device.start()
@@ -270,9 +267,7 @@ async def test_device_conflict_keeps_address_when_it_wins(tmp_path):
         client,
         unique_number=1,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     await device.start()
@@ -300,9 +295,7 @@ async def test_device_responds_with_iso_nak_and_group_function_ack(tmp_path):
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     await device.start()
@@ -321,14 +314,12 @@ async def test_device_responds_with_iso_nak_and_group_function_ack(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_device_heartbeat_messages_encode_with_na_controller_states(tmp_path):
-    """Heartbeat messages should encode N/A controller states and reserved bits with their raw defaults."""
+async def test_device_heartbeat_messages_encode(tmp_path):
+    """Heartbeats should encode, advertising their interval and healthy controllers."""
     client = EncodingFakeClient()
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=0.01,
     )
 
@@ -344,25 +335,26 @@ async def test_device_heartbeat_messages_encode_with_na_controller_states(tmp_pa
 
     heartbeat = heartbeats[0]
     assert heartbeat.get_field_by_id("dataTransmitOffset").value == pytest.approx(0.01)
-    assert heartbeat.get_field_by_id("controller1State").value is None
-    assert heartbeat.get_field_by_id("controller1State").raw_value == 3
+    assert heartbeat.priority == 7
+    assert heartbeat.get_field_by_id("controller1State").value == "Error Active"
+    assert heartbeat.get_field_by_id("controller1State").raw_value == 0
+    # there is no second controller
     assert heartbeat.get_field_by_id("controller2State").value is None
     assert heartbeat.get_field_by_id("controller2State").raw_value == 3
-    assert heartbeat.get_field_int_value_by_id("equipmentStatus") == 0
-    assert heartbeat.get_field_by_id("reserved_30").value is None
+    assert heartbeat.get_field_by_id("equipmentStatus").value == "Operational"
+    assert heartbeat.get_field_by_id("equipmentStatus").raw_value == 0
+    assert heartbeat.get_field_by_id("reserved_30").value == (1 << 34) - 1
     assert heartbeat.get_field_by_id("reserved_30").raw_value == (1 << 34) - 1
 
 
 @pytest.mark.asyncio
 async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
-    """Product information replies should scale the NMEA version field to raw thousandths."""
+    """Product information replies should carry the NMEA version in raw thousandths."""
     client = EncodingFakeClient()
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     try:
@@ -376,7 +368,9 @@ async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
     version_field = product_information.get_field_by_id("nmea2000Version")
     assert product_information.PGN == 126996
     assert version_field.value == pytest.approx(1.3)
-    assert version_field.raw_value == 1300
+    assert version_field.raw_value == pytest.approx(1.3)
+    payload = backend.encode(product_information)
+    assert int.from_bytes(payload[:2], "little") == 1300
 
 
 @pytest.mark.asyncio
@@ -387,9 +381,7 @@ async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
         client,
         persistence_path=tmp_path / "device.json",
         transmit_pgns=[127250],
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     try:
@@ -399,11 +391,83 @@ async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
     finally:
         await device.close()
 
-    pgn_list_message = client.sent_messages[-1]
-    advertised_pgns = set(_transmit_pgns_from_message(pgn_list_message))
+    transmit_list = client.sent_messages[-2]
+    receive_list = client.sent_messages[-1]
+    assert (transmit_list.PGN, receive_list.PGN) == (126464, 126464)
+    assert transmit_list.get_field_by_id("functionCode").value == "Transmit PGN list"
+    assert receive_list.get_field_by_id("functionCode").value == "Receive PGN list"
+    advertised_pgns = set(_pgns_from_message(transmit_list))
 
-    assert pgn_list_message.PGN == 126464
     assert 127250 in advertised_pgns
     assert {59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998}.issubset(
         advertised_pgns
+    )
+
+
+@pytest.mark.parametrize(
+    "option", ["address_claim_startup_delay", "address_claim_detection_time"]
+)
+def test_device_warns_that_claim_timing_options_are_ignored(tmp_path, option):
+    """The old claim timing options still construct, but warn that they are ignored."""
+    options: dict[str, Any] = {option: 0.1}
+    with pytest.warns(
+        FutureWarning, match=f"{option} is deprecated and no longer respected"
+    ):
+        N2KDevice(FakeClient(), persistence_path=tmp_path / "device.json", **options)
+
+
+def test_device_does_not_warn_by_default(tmp_path):
+    """A device built without the old options raises no warning."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        N2KDevice(FakeClient(), persistence_path=tmp_path / "device.json")
+
+
+@pytest.mark.asyncio
+async def test_device_claims_with_the_standard_timings(tmp_path, monkeypatch):
+    """A 1 s scan, then the claim, then 250 ms before the address is used."""
+    now = 0
+    monkeypatch.setattr(device_module, "_now_ms", lambda: now)
+
+    async def at(ms: int) -> None:
+        nonlocal now
+        now = ms
+        await asyncio.sleep(0.1)  # several of the claim loop's 20 ms polls
+
+    client = FakeClient()
+    device = N2KDevice(
+        client, persistence_path=tmp_path / "device.json", heartbeat_interval=60
+    )
+    try:
+        await device.start()
+        await at(0)  # the claim loop starts, and the scan with it
+        await at(999)
+        assert [m.PGN for m in client.sent_messages] == [59904]  # still scanning
+        await at(1000)
+        assert [m.PGN for m in client.sent_messages] == [59904, 60928]  # claimed
+        await at(1249)
+        assert not device.ready
+        await at(1250)
+        assert device.ready
+    finally:
+        await device.close()
+
+
+@pytest.mark.parametrize("interval", [0, -1, 65.533, 3600])
+def test_device_refuses_a_heartbeat_interval_it_cannot_advertise(tmp_path, interval):
+    """PGN 126993 can advertise at most 65.532 s, so a longer interval is refused."""
+    with pytest.raises(ValueError, match="heartbeat_interval"):
+        N2KDevice(
+            FakeClient(),
+            persistence_path=tmp_path / "device.json",
+            heartbeat_interval=interval,
+        )
+
+
+def test_device_accepts_the_longest_heartbeat_interval(tmp_path):
+    """65.532 s is the longest interval a heartbeat can advertise."""
+    N2KDevice(
+        FakeClient(),
+        persistence_path=tmp_path / "device.json",
+        heartbeat_interval=65.532,
     )

@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Callable
 from typing import Generic, Literal, TypeAlias, TypeVar, overload
 
 import can.message
 
-from . import pgns as pgns_module
+from . import _canboat as canboat
+from . import backend
 from .decoder import NMEA2000Decoder
 from .input_formats import N2KFormat
 from .message import NMEA2000Message
@@ -33,86 +33,27 @@ class EncoderInterface(ABC, Generic[EncodedT_co]):
 class EncoderBase:
     """Shared encoder mechanics used by concrete format handlers."""
 
-    def __init__(self) -> None:
+    def __init__(self, units: backend.Units = "native") -> None:
+        # The unit system the messages' values are in (see nmea2000.backend)
+        self.units: backend.Units = units
         # Sequence counter (3 bits)
         self.sequence_counter = 0
 
     def _call_encode_function(self, nmea200_message: NMEA2000Message) -> bytes:
-        encode_func_name = f"encode_pgn_{nmea200_message.PGN}"
-        encode_func: Callable[[NMEA2000Message], bytes] | None = getattr(
-            pgns_module,
-            encode_func_name,
-            None,
-        )
-
-        # if we have multiple functions we need to use the ID as well
-        if not encode_func:
-            encode_func_name = f"encode_pgn_{nmea200_message.PGN}_{nmea200_message.id}"
-            encode_func = getattr(pgns_module, encode_func_name, None)
-
-            if not encode_func:
-                raise ValueError(
-                    f"No encoding function found for PGN: {nmea200_message.PGN}"
-                )
-
-        try:
-            can_data_bytes = encode_func(nmea200_message)  # pylint: disable=not-callable
-        except Exception as exc:
-            raise ValueError(exc) from exc
-        return can_data_bytes
+        return backend.encode(nmea200_message, self.units)
 
     def _encode_fast_message(self, payload_bytes: bytes) -> list[bytes]:
-        payload_length = len(payload_bytes)
-
-        first_frame_capacity = 6
-        if payload_length <= first_frame_capacity:
-            total_frames = 1
-        else:
-            leftover = payload_length - first_frame_capacity
-            total_frames = 1 + (leftover + 7 - 1) // 7
-
-        packets = []
-        frame_offset = 0
-        for frame_counter in range(total_frames):
-            chunk_size = first_frame_capacity if frame_counter == 0 else 7
-            start_index = frame_offset
-            end_index = min(start_index + chunk_size, payload_length)
-            frame_data = payload_bytes[start_index:end_index]
-            frame_offset = end_index
-
-            frame_bytes = bytes([(self.sequence_counter << 5) | frame_counter])
-            if frame_counter == 0:
-                frame_bytes += bytes([payload_length])
-            frame_bytes += frame_data
-
-            packets.append(frame_bytes)
-
+        """Split a fast-packet payload into 8-byte CAN frames (the last padded with 0xff)."""
+        frames = canboat.fast_packet_fragment(self.sequence_counter, payload_bytes)
         self.sequence_counter = (self.sequence_counter + 1) % 8
-        return packets
+        return frames
 
     @staticmethod
     def _build_header(pgn_id: int, source: int, dest: int, priority: int) -> int:
-        """
-        Builds a 29-bit CAN frame ID (ID0 - ID28) from PGN, source ID, destination, and priority.
-        Based on https://canboat.github.io/canboat/canboat.html
-        """
-        dp = (pgn_id >> 16) & 0x03  # Extract DP (and reserved)
-        pf = (pgn_id >> 8) & 0xFF  # Extract PF
-        ps = 0
-
-        if pf < 0xF0:
-            # PDU1 format: destination-specific, use `dest` in PS
-            ps = dest
-        else:
-            # PDU2 format: broadcast, PGN includes PS
-            ps = pgn_id & 0xFF
-
-        pgn_field = (dp << 16) | (pf << 8) | ps  # 18 bits
-        frame_id = (priority & 0x7) << 26  # 3 bits: Priority
-        frame_id |= (pgn_field & 0x3FFFF) << 8  # 18 bits: PGN
-        frame_id |= source & 0xFF  # 8 bits: Source
-
-        return frame_id
+        """Build the 29-bit CAN identifier for a PGN, source, destination and priority."""
+        return canboat.can_id_compose(
+            priority & 0x7, pgn_id & 0x3FFFF, source & 0xFF, dest & 0xFF
+        )
 
     def _encode(self, nmea200_message: NMEA2000Message) -> list[bytes]:
         """Construct a single NMEA 2000 TCP packet from PGN, source ID, priority, and CAN data."""
@@ -142,7 +83,7 @@ def _normalize_output_format(output_format: N2KFormat | str) -> N2KFormat:
 
 
 @overload
-def create_encoder() -> EncoderInterface[str]: ...
+def create_encoder(*, units: backend.Units = ...) -> EncoderInterface[str]: ...
 
 
 @overload
@@ -156,6 +97,8 @@ def create_encoder(
         N2KFormat.PDGY,
         N2KFormat.PDGY_DEBUG,
     ],
+    *,
+    units: backend.Units = ...,
 ) -> EncoderInterface[str]: ...
 
 
@@ -168,6 +111,8 @@ def create_encoder(
         N2KFormat.CANDUMP2,
         N2KFormat.CANDUMP3,
     ],
+    *,
+    units: backend.Units = ...,
 ) -> EncoderInterface[str | list[str]]: ...
 
 
@@ -180,23 +125,36 @@ def create_encoder(
         N2KFormat.BST_D0,
         N2KFormat.BST_95,
     ],
+    *,
+    units: backend.Units = ...,
 ) -> EncoderInterface[list[bytes]]: ...
 
 
 @overload
 def create_encoder(
     output_format: Literal[N2KFormat.PYTHON_CAN],
+    *,
+    units: backend.Units = ...,
 ) -> EncoderInterface[list[can.message.Message]]: ...
 
 
 @overload
-def create_encoder(output_format: N2KFormat | str) -> EncoderInterface[N2KEncoded]: ...
+def create_encoder(
+    output_format: N2KFormat | str, *, units: backend.Units = ...
+) -> EncoderInterface[N2KEncoded]: ...
 
 
 def create_encoder(
     output_format: N2KFormat | str = N2KFormat.N2K_ASCII_RAW,
+    *,
+    units: backend.Units = "native",
 ) -> EncoderInterface[N2KEncoded]:
-    """Create an encoder bound to one output format."""
+    """Create an encoder bound to one output format.
+
+    ``units`` is the unit system of the messages' values: ``"native"`` (the
+    default, canboat.json's units), ``"si"`` or ``"metric"``; see
+    ``NMEA2000Decoder``.
+    """
     from .encoder_formats import (  # pylint: disable=import-outside-toplevel
         ENCODER_CLASSES,
     )
@@ -205,7 +163,7 @@ def create_encoder(
     encoder_cls = ENCODER_CLASSES.get(normalized_format)
     if encoder_cls is None:
         raise ValueError(f"Unsupported output format: {normalized_format}")
-    return encoder_cls()
+    return encoder_cls(units=units)
 
 
 __all__ = [

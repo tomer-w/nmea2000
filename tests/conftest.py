@@ -1,10 +1,32 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
-"""Shared pytest configuration for test logging in this suite."""
+"""Shared pytest configuration for this suite."""
 
 import logging
 import sys
+import time
 
 import pytest
+
+from nmea2000 import device as device_module
+
+# How much faster than real time the address-claim clock runs in tests
+CLAIM_CLOCK_SPEEDUP = 100
+
+
+@pytest.fixture
+def fast_claim_clock(monkeypatch):
+    """Run N2KDevice's address-claim clock 100 times faster than real time.
+
+    Claiming takes the standard's 1 s scan plus 250 ms settle; this makes
+    it about 13 ms, without changing what the claimer does.
+    """
+    start = time.monotonic_ns()
+
+    def now_ms() -> int:
+        elapsed = time.monotonic_ns() - start
+        return (start + elapsed * CLAIM_CLOCK_SPEEDUP) // 1_000_000
+
+    monkeypatch.setattr(device_module, "_now_ms", now_ms)
 
 
 @pytest.fixture(autouse=True, scope="session")

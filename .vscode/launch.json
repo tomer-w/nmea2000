@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "build pgns.py",
+            "name": "build generated files",
             "type": "debugpy",
             "request": "launch",
             "program": "canboat2python.py",

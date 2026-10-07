@@ -30,6 +30,27 @@ def _roundtrip_case_id(case: dict) -> str:
     return f"{case['pgn']}-{case['caseIndex']}"
 
 
+# Inputs that no faithful encoder can reproduce, with the reason.
+_UNREPRODUCIBLE_CASES = {
+    "126208-1": "truncated capture: declares 20 parameters but carries 3, so the "
+    "third parameter's value swallows the rest of the payload and re-encodes at "
+    "its field's full width",
+}
+
+
+def _roundtrip_params() -> list:
+    return [
+        pytest.param(
+            case,
+            id=_roundtrip_case_id(case),
+            marks=pytest.mark.xfail(reason=reason, strict=True)
+            if (reason := _UNREPRODUCIBLE_CASES.get(_roundtrip_case_id(case)))
+            else (),
+        )
+        for case in _CANBOATJS_ROUNDTRIP_CASES
+    ]
+
+
 def _assert_semantic_roundtrip(
     original: NMEA2000Message,
     decoded: NMEA2000Message,
@@ -41,6 +62,10 @@ def _assert_semantic_roundtrip(
     assert decoded.destination == original.destination
 
     for field in original.fields:
+        if field.value is None and field.raw_value is None:
+            # Absent from a truncated input: re-encoding writes the full PGN,
+            # so the field comes back with its default, not as absent.
+            continue
         other = decoded.get_field_by_id(field.id)
         abs_tol = _GNSS_PRECISION_TOLERANCES.get(field.id)
         if (
@@ -229,11 +254,7 @@ def test_python_can_roundtrip():
     assert decoded.priority == msg.priority
 
 
-@pytest.mark.parametrize(
-    "case",
-    _CANBOATJS_ROUNDTRIP_CASES,
-    ids=_roundtrip_case_id,
-)
+@pytest.mark.parametrize("case", _roundtrip_params())
 def test_canboatjs_autosense_roundtrip_cases(case: dict):
     """Each canboatjs autosense fixture should decode and re-encode without semantic drift."""
     expected = case["expected"]

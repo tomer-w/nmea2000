@@ -1,499 +1,102 @@
-# pylint: skip-file
-from typing import List
-from enum import Enum, auto
+"""Enumerations of canboat's field types, physical quantities and manufacturers.
 
-class PhysicalQuantities(Enum):
-    ELECTRICAL_CURRENT = auto(), # Ampere (A)
-    ELECTRICAL_CHARGE = auto(), # Coulomb (C)
-    ELECTRICAL_ENERGY = auto(), # Kilo Watt Hour (kWh)
-    ELECTRICAL_POWER = auto(), # Watt (W)
-    ELECTRICAL_APPARENT_POWER = auto(), # Volt Ampere (VA)
-    ELECTRICAL_REACTIVE_POWER = auto(), # Volt Ampere Reactive (VAR)
-    POTENTIAL_DIFFERENCE = auto(), # Volt (V)
-    POWER_FACTOR = auto(), # Cos(Phi) (Cos Phi)
-    LENGTH = auto(), # Meter (m)
-    DISTANCE = auto(), # meter (m)
-    SPEED = auto(), # meter per second (m/s)
-    ANGLE = auto(), # radian (rad)
-    ANGULAR_VELOCITY = auto(), # radians per second (rad/s)
-    VOLUME = auto(), # liter (L)
-    VOLUMETRIC_FLOW = auto(), # liter per hour (L/h)
-    MAGNETIC_FIELD = auto(), # Tesla (T)
-    FREQUENCY = auto(), # Hertz (Hz)
-    DATE = auto(), # days (d)
-    TIME = auto(), # Second (s)
-    DURATION = auto(), # Second (s)
-    GEOGRAPHICAL_LATITUDE = auto(), # degree (deg)
-    GEOGRAPHICAL_LONGITUDE = auto(), # degree (deg)
-    TEMPERATURE = auto(), # Kelvin (K)
-    PRESSURE = auto(), # Pascal (Pa)
-    PRESSURE_RATE = auto(), # Pascal per hour (Pa/hr)
-    CONCENTRATION = auto(), # parts per million (ppm)
-    DIMENSIONLESS_RATIO = auto(), # ratio (ratio)
-    SQUARE_ROOT_LENGTH = auto(), # sqrt(m) (sqrt(m))
-    SIGNAL_STRENGTH = auto(), # decibel (dB)
-    SIGNAL_TO_NOISE_RATIO = auto(), # decibel (dB)
+The members come from the canboat crate's PGN database. Their values are the
+numbers nmea2000 has always given them (their position in canboat.json, as a
+1-tuple), which ``NMEA2000Message.to_json`` writes, so the legacy tables below
+fix that numbering; anything newer canboat adds is numbered after them.
+"""
 
-class FieldTypes(Enum):
-    NUMBER = auto(), # Number (Binary numbers are little endian. Number fields that are at least two bits in length use the highest positive value to represent unknown. Number fields with at least 7 as maximum (3 bits unsigned, 4 bits signed) use the highest value minus one as an error indicator. This is likely also true for numbers where 3 is the maximum value, but there are few fields that have this length -- certainly as a number, there are a lot of lookup fields of two bits length.  For signed numbers the maximum values are the maximum positive value and that minus 1, not the all-ones bit encoding which is the maximum negative value.)
-    FLOAT = auto(), # 32 bit IEEE-754 floating point number ()
-    DECIMAL = auto(), # An unsigned numeric value where each byte holds the binary value of two decimal digits (0..99) (Each byte contains the binary value of two decimal digits, so 1234 is represented by 2 bytes containing 0x0c (=12) and 0x22 (=34). This is NOT BCD. A value with an odd number of digits is padded with a trailing zero, e.g. the 9-digit MMSI 512000953 is encoded as 5120009530 (5 bytes).)
-    LOOKUP = auto(), # Number value where each value encodes for a distinct meaning (Each lookup has a LookupEnumeration defining what the possible values mean)
-    INDIRECT_LOOKUP = auto(), # Number value where each value encodes for a distinct meaning but the meaning also depends on the value in another field (Each lookup has a LookupIndirectEnumeration defining what the possible values mean)
-    BITLOOKUP = auto(), # Number value where each bit value encodes for a distinct meaning (Each LookupBit has a LookupBitEnumeration defining what the possible values mean. A bitfield can have any combination of bits set.)
-    DYNAMIC_FIELD_KEY = auto(), # Number value where each value encodes for a distinct meaning including a fieldtype of the next variable field; generally followed by an optional DYNAMIC_FIELD_LENGTH and a DYNAMIC_FIELD_VALUE field; when there is no DYNAMIC_FIELD_LENGTH field the length is contained in the lookup table (Each lookup has a LookupFieldTypeEnumeration defining what the possible values mean)
-    DYNAMIC_FIELD_LENGTH = auto(), # Number value that indicates the length of the following DYNAMIC_FIELD_VALUE field ()
-    DYNAMIC_FIELD_VALUE = auto(), # Variable field whose type and length is dynamic (The type definition of the field is defined by an earlier LookupFieldTypeEnumeration field. The length is defined by the preceding length field or the length determined by the lookup value.)
-    TIME = auto(), # Time ()
-    DURATION = auto(), # Duration ()
-    DATE = auto(), # Date (The date, in days since 1 January 1970.)
-    PGN = auto(), # Parameter Group Number (A 24 bit number referring to a PGN)
-    ISO_NAME = auto(), # ISO NAME field (A 64 bit field containing the ISO name, e.g. all fields produced by PGN 60928. Use the definition of PGN 60928 to explain the subfields.)
-    STRING_FIX = auto(), # A fixed length string containing single byte codepoints. (This always takes up as many bytes as defined in the field definition. Three end-of-string characters are seen: 0xff (255), the standard NMEA 2000 "Unknown" value. '@', the standard AIS "Unknown" value for strings. 0x00, the standard C end-of-string marker. It is encouraged to stop the string at the first such character (and not make it part of the string). An empty string can be considered to make the entire field "Unknown".)
-    STRING_LZ = auto(), # A varying length string containing single byte codepoints encoded with a length byte and terminating zero. (The length of the string is determined by a starting length byte. It also contains a terminating zero byte. The length byte includes neither the zero byte or itself, and it counts bytes rather than characters, so a multi-byte character contributes more than one. For the character encoding see the comment.)
-    STRING_LAU = auto(), # A varying length string containing double or single byte codepoints encoded with a length byte. (The length of the string is determined by a starting length byte. This count includes the length and type bytes, so any empty string contains count 2. The 2nd byte contains 0 for UNICODE (UTF-16) or 1 for ASCII. In practice the ASCII encoding is not restricted to 7-bit ASCII; bytes above 0x7f do occur, and what they mean depends on the sending device. See the comment.)
-    BINARY = auto(), # Binary field (Unspecified content consisting of any number of bits.)
-    RESERVED = auto(), # Reserved field (All reserved bits shall be 1)
-    SPARE = auto(), # Spare field (All spare bits shall be 0)
-    MMSI = auto(), # MMSI (The MMSI is encoded as a 32 bit number, but is always printed as a 9 digit number and should be considered as a string. The first three or four digits are special, see the USCG link for a detailed explanation.)
-    VARIABLE = auto(), # Variable (The definition of the field is that of the reference PGN and reference field, this is totally variable.)
-    FIELD_INDEX = auto(), # Field Index (Index of the specified field in the PGN referenced.)
+from __future__ import annotations
+
+from enum import Enum
+
+from . import _canboat as canboat
+
+_DATABASE = canboat.Database()
+
+# canboat.json's order, which numbers the members
+_LEGACY_PHYSICAL_QUANTITIES = (
+    "ELECTRICAL_CURRENT",
+    "ELECTRICAL_CHARGE",
+    "ELECTRICAL_ENERGY",
+    "ELECTRICAL_POWER",
+    "ELECTRICAL_APPARENT_POWER",
+    "ELECTRICAL_REACTIVE_POWER",
+    "POTENTIAL_DIFFERENCE",
+    "POWER_FACTOR",
+    "LENGTH",
+    "DISTANCE",
+    "SPEED",
+    "ANGLE",
+    "ANGULAR_VELOCITY",
+    "VOLUME",
+    "VOLUMETRIC_FLOW",
+    "MAGNETIC_FIELD",
+    "FREQUENCY",
+    "DATE",
+    "TIME",
+    "DURATION",
+    "GEOGRAPHICAL_LATITUDE",
+    "GEOGRAPHICAL_LONGITUDE",
+    "TEMPERATURE",
+    "PRESSURE",
+    "PRESSURE_RATE",
+    "CONCENTRATION",
+    "DIMENSIONLESS_RATIO",
+    "SQUARE_ROOT_LENGTH",
+    "SIGNAL_STRENGTH",
+    "SIGNAL_TO_NOISE_RATIO",
+)
+_LEGACY_FIELD_TYPES = (
+    "NUMBER",
+    "FLOAT",
+    "DECIMAL",
+    "LOOKUP",
+    "INDIRECT_LOOKUP",
+    "BITLOOKUP",
+    "DYNAMIC_FIELD_KEY",
+    "DYNAMIC_FIELD_LENGTH",
+    "DYNAMIC_FIELD_VALUE",
+    "TIME",
+    "DURATION",
+    "DATE",
+    "PGN",
+    "ISO_NAME",
+    "STRING_FIX",
+    "STRING_LZ",
+    "STRING_LAU",
+    "BINARY",
+    "RESERVED",
+    "SPARE",
+    "MMSI",
+    "VARIABLE",
+    "FIELD_INDEX",
+    "ADDRESS",
+)
 
 
-ManufacturerCodes: List[str] = [
-    'ARKS Enterprises',
-    'FW Murphy/Enovation Controls',
-    'Twin Disc',
-    'Kohler Power Systems',
-    'Hemisphere GPS',
-    'Airmar',
-    'Maretron',
-    'Lowrance',
-    'Mercury Marine',
-    'Nautibus Electronic',
-    'Blue Water Data',
-    'Westerbeke',
-    'ISSPRO',
-    'Offshore Systems (UK)',
-    'Evinrude/BRP',
-    'CPAC Systems',
-    'Xantrex Technology',
-    'Marlin Technologies',
-    'Yanmar Marine',
-    'Volvo Penta',
-    'Carling Technologies Inc. (Moritz Aerospace)',
-    'Beede Instruments',
-    'Floscan Instrument',
-    'Nobeltec',
-    'Mystic Valley Communications',
-    'Actia',
-    'Disenos Y Technologia',
-    'Digital Switching Systems',
-    'Xintex/Atena',
-    'EMMI NETWORK',
-    'ZF',
-    'Garmin',
-    'Yacht Monitoring Solutions',
-    'Sailormade Marine Telemetry/Tetra Technology',
-    'Eride',
-    'Honda Motor',
-    'Groco',
-    'Actisense',
-    'Amphenol LTW Technology',
-    'Navico',
-    'Hamilton Jet',
-    'Sea Recovery',
-    'Coelmo SRL Italy',
-    'BEP Marine',
-    'Empir Bus',
-    'NovAtel',
-    'Sleipner Motor',
-    'MBW Technologies',
-    'ICOM',
-    'Qwerty',
-    'Dief',
-    'Boening Automationstechnologie',
-    'Korean Maritime University',
-    'Thrane and Thrane',
-    'Mastervolt',
-    'Fischer Panda Generators',
-    'Victron Energy',
-    'Rolls Royce Marine',
-    'Electronic Design',
-    'Northern Lights',
-    'Glendinning',
-    'B & G',
-    'Rose Point Navigation Systems',
-    'Johnson Outdoors Marine Electronics Inc Geonav',
-    'Capi 2',
-    'Beyond Measure',
-    'Livorsi Marine',
-    'ComNav',
-    'Chetco',
-    'Fusion Electronics',
-    'Standard Horizon',
-    'True Heading',
-    'Egersund Marine Electronics',
-    'em-trak Marine Electronics',
-    'Tohatsu Co, JP',
-    'Digital Yacht',
-    'Comar Systems Limited',
-    'Cummins',
-    'VDO (aka Continental-Corporation)',
-    'Parker Hannifin aka Village Marine Tech',
-    'Alltek Marine Electronics',
-    'SAN GIORGIO S.E.I.N',
-    'Veethree Electronics & Marine',
-    'SI-TEX Marine Electronics',
-    'Sea Cross Marine',
-    'GME aka Standard Communications',
-    'Humminbird Marine Electronics',
-    'Ocean Sat',
-    'Chetco Digital Instruments',
-    'Watcheye',
-    'Lcj Capteurs',
-    'Attwood Marine',
-    'Naviop S.R.L.',
-    'Vesper Marine',
-    'Marinesoft',
-    'Simarine',
-    'NoLand Engineering',
-    'Transas USA',
-    'National Instruments Korea',
-    'National Marine Electronics Association',
-    'Onwa Marine',
-    'Webasto',
-    'Marinecraft (South Korea)',
-    'McMurdo Group aka Orolia',
-    'Advansea',
-    'KVH',
-    'San Jose Technology',
-    'Yacht Control',
-    'Suzuki Motor',
-    'US Coast Guard',
-    'Ship Module aka Customware',
-    'Aquatic AV',
-    'Aventics',
-    'Intellian',
-    'SamwonIT',
-    'Arlt Tecnologies',
-    'Bavaria Yachts',
-    'Diverse Yacht Services',
-    'Wema U.S.A dba KUS',
-    'Shenzhen Jiuzhou Himunication',
-    'Rockford',
-    'Harman International',
-    'JL Audio',
-    'Lars Thrane',
-    'Autonnic',
-    'Yacht Devices',
-    'REAP Systems',
-    'AEM Performance Electronics',
-    'LxNav',
-    'Littelfuse, Inc (formerly Carling Technologies)',
-    'DaeMyung',
-    'Woosung',
-    'ISOTTA IFRA srl',
-    'Clarion US',
-    'HMI Systems',
-    'Ocean Signal',
-    'Seakeeper',
-    'Poly Planar',
-    'Fischer Panda DE',
-    'Broyda Industries',
-    'Canadian Automotive',
-    'Tides Marine',
-    'Lumishore',
-    'Still Water Designs and Audio',
-    'BJ Technologies (Beneteau)',
-    'Gill Sensors',
-    'Blue Water Desalination',
-    'FLIR',
-    'Undheim Systems',
-    'Lewmar',
-    'TeamSurv',
-    'Fell Marine',
-    'Oceanvolt',
-    'Prospec',
-    'Data Panel',
-    'L3 Technologies',
-    'Rhodan Marine Systems',
-    'Nexfour Solutions',
-    'ASA Electronics',
-    'Marines Co (South Korea)',
-    'Nautic-on',
-    'Sentinel',
-    'JL Marine Systems',
-    'Ecotronix',
-    'Zontisa Marine',
-    'EXOR International',
-    'Timbolier Industries',
-    'TJC Micro',
-    'Cox Powertrain',
-    'Blue Seas',
-    'Kobelt Manufacturing',
-    'Blue Ocean IOT',
-    'Xenta Systems',
-    'Signal K',
-    'Ultraflex',
-    'Lintest SmartBoat',
-    'Soundmax',
-    'Team Italia Marine (Onyx Marine Automation s.r.l)',
-    'Entratech',
-    'ITC',
-    'The Marine Guardian',
-    'Sonic',
-    'ProNav',
-    'Vetus Maxwell INC.',
-    'Lithium Pros',
-    'Boatrax',
-    'Marol Co ltd',
-    'CALYPSO Instruments',
-    'Spot Zero Water',
-    'Lithionics Battery',
-    'Quick-teck Electronics',
-    'Uniden America',
-    'Nauticoncept',
-    'Shadow-Caster LED lighting',
-    'Wet Sounds',
-    'E-T-A Circuit Breakers',
-    'Scheiber',
-    'Smart Yachts International Limited',
-    'Dockmate',
-    'Bobs Machine',
-    'L3Harris ASV',
-    'Balmar',
-    'Elettromedia',
-    'Electromaax',
-    'Across Oceans Systems',
-    'Kiwi Yachting',
-    'BSB Artificial Intelligence',
-    'Orca Technologies',
-    'TBS Electronics',
-    'Technoton Electroics',
-    'MG Energy Systems',
-    'Sea Machine Robotics',
-    'Vista Manufacturing',
-    'Zipwake',
-    'Sailmon',
-    'Airmoniq Pro Kft',
-    'Sierra Marine',
-    'Xinuo Information Technology (Xiamen)',
-    'Septentrio',
-    'NKE Marine Electronics',
-    'SuperTrack Aps',
-    'Honda Electronics',
-    'Raritan Engineering',
-    'Integrated Power Solutions AG',
-    'Interactive Technologies',
-    'LTG-Tech',
-    'Energy Solutions (UK)',
-    'WATT Fuel Cell',
-    'Pro Mainer',
-    'Dragonfly Energy',
-    'Koden Electronics',
-    'Humphree',
-    'Hinkley Yachts',
-    'Global Marine Management GmbH (GMM)',
-    'Triskel Marine',
-    'Warwick Control Technologies',
-    'Dolphin Charger',
-    'Barnacle Systems',
-    'Radian IoT',
-    'Ocean LED Marine',
-    'BluNav',
-    'OVA (Nantong Saiyang Electronics Co., Ltd)',
-    'RAD Propulsion',
-    'Electric Yacht',
-    'Elco Motor Yachts',
-    'Tecnoseal Foundry S.r.l',
-    'Pro Charging Systems',
-    'EVEX',
-    'Gobius Sensor Technology',
-    'Arco Marine',
-    'Lenco Marine',
-    'Naocontrol',
-    'Revatek',
-    'Aeolionics',
-    'PredictWind',
-    'Egis Mobile Electric',
-    'Starboard Yacht Group',
-    'Roswell Marine',
-    'ePropulsion (Guangdong ePropulsion Technology Ltd.)',
-    'Micro-Air',
-    'Vital Battery',
-    'Ride Controller',
-    'Tocaro Blue',
-    'Vanquish Yachts',
-    'FT Technologies',
-    'Alps Alpine',
-    'E-Force Marine',
-    'CMC Marine',
-    'Nanjing Sandemarine Information Technology',
-    'Teleflex Marine (SeaStar Solutions)',
-    'Raymarine',
-    'Navionics',
-    'Japan Radio',
-    'Northstar Technologies',
-    'Furuno',
-    'Trimble',
-    'Simrad',
-    'Litton',
-    'Kvasar',
-    'MMP',
-    'Vector Cantech',
-    'Yamaha Marine',
-    'Faria Instruments',]
+def _members(legacy: tuple[str, ...], names: set[str]) -> list[tuple[str, tuple[int]]]:
+    ordered = [*legacy, *sorted(names.difference(legacy))]
+    return [(name, (number,)) for number, name in enumerate(ordered, start=1)]
 
-IndirectLookupEncodeMaps = {
-    'DEVICE_FUNCTION': {
-        10: {
-            'Diagnostic': 130,
-            'Bus Traffic Logger': 140,
-        },
-        20: {
-            'Alarm Enunciator': 110,
-            'Emergency Position Indicating Radio Beacon (EPIRB)': 130,
-            'Man Overboard': 135,
-            'Voyage Data Recorder': 140,
-            'Camera': 150,
-        },
-        25: {
-            'PC Gateway': 130,
-            'NMEA 2000 to Analog Gateway': 131,
-            'Analog to NMEA 2000 Gateway': 132,
-            'NMEA 2000 to Serial Gateway': 133,
-            'NMEA 0183 Gateway': 135,
-            'NMEA Network Gateway': 136,
-            'NMEA 2000 Wireless Gateway': 137,
-            'Router': 140,
-            'Bridge': 150,
-            'Repeater': 160,
-        },
-        30: {
-            'Binary Event Monitor': 130,
-            'Load Controller': 140,
-            'AC/DC Input': 141,
-            'Function Controller': 150,
-        },
-        35: {
-            'Engine': 140,
-            'DC Generator/Alternator': 141,
-            'Solar Panel (Solar Array)': 142,
-            'Wind Generator (DC)': 143,
-            'Fuel Cell': 144,
-            'Network Power Supply': 145,
-            'AC Generator': 151,
-            'AC Bus': 152,
-            'AC Mains (Utility/Shore)': 153,
-            'AC Output': 154,
-            'Power Converter - Battery Charger': 160,
-            'Power Converter - Battery Charger+Inverter': 161,
-            'Power Converter - Inverter': 162,
-            'Power Converter - DC': 163,
-            'Battery': 170,
-            'Engine Gateway': 180,
-        },
-        40: {
-            'Follow-up Controller': 130,
-            'Mode Controller': 140,
-            'Autopilot': 150,
-            'Rudder': 155,
-            'Heading Sensors': 160,
-            'Trim (Tabs)/Interceptors': 170,
-            'Attitude (Pitch, Roll, Yaw) Control': 180,
-        },
-        50: {
-            'Engineroom Monitoring': 130,
-            'Engine': 140,
-            'DC Generator/Alternator': 141,
-            'Engine Controller': 150,
-            'AC Generator': 151,
-            'Motor': 155,
-            'Engine Gateway': 160,
-            'Transmission': 165,
-            'Throttle/Shift Control': 170,
-            'Actuator': 180,
-            'Gauge Interface': 190,
-            'Gauge Large': 200,
-            'Gauge Small': 210,
-        },
-        60: {
-            'Bottom Depth': 130,
-            'Bottom Depth/Speed': 135,
-            'Bottom Depth/Speed/Temperature': 136,
-            'Ownship Attitude': 140,
-            'Ownship Position (GNSS)': 145,
-            'Ownship Position (Loran C)': 150,
-            'Speed': 155,
-            'Turn Rate Indicator': 160,
-            'Integrated Navigation': 170,
-            'Integrated Navigation System': 175,
-            'Navigation Management': 190,
-            'Automatic Identification System (AIS)': 195,
-            'Radar': 200,
-            'Infrared Imaging': 201,
-            'ECDIS': 205,
-            'ECS': 210,
-            'Direction Finder': 220,
-            'Voyage Status': 230,
-        },
-        70: {
-            'EPIRB': 130,
-            'AIS': 140,
-            'DSC': 150,
-            'Data Receiver/Transceiver': 160,
-            'Satellite': 170,
-            'Radio-telephone (MF/HF)': 180,
-            'Radiotelephone': 190,
-        },
-        75: {
-            'Temperature': 130,
-            'Pressure': 140,
-            'Fluid Level': 150,
-            'Flow': 160,
-            'Humidity': 170,
-        },
-        80: {
-            'Time/Date Systems': 130,
-            'VDR': 140,
-            'Integrated Instrumentation': 150,
-            'General Purpose Displays': 160,
-            'General Sensor Box': 170,
-            'Weather Instruments': 180,
-            'Transducer/General': 190,
-            'NMEA 0183 Converter': 200,
-        },
-        85: {
-            'Atmospheric': 130,
-            'Aquatic': 160,
-        },
-        90: {
-            'HVAC': 130,
-        },
-        100: {
-            'Scale (Catch)': 130,
-        },
-        110: {
-            'Button Interface': 130,
-            'Switch Interface': 135,
-            'Analog Interface': 140,
-        },
-        120: {
-            'Display': 130,
-            'Alarm Enunciator': 140,
-        },
-        125: {
-            'Multimedia Player': 130,
-            'Multimedia Controller': 140,
-        },
-    },
-    'FUSION_SETTING_VALUE': {
-        7: {
-            'USA': 0,
-            'Europe': 1,
-            'Japan': 2,
-            'Australasia': 3,
-        },
-    },
-}
+
+_FIELDS = [field for pgn in _DATABASE.pgns() for field in pgn.fields]
+
+PhysicalQuantities = Enum(  # members typed in consts.pyi
+    "PhysicalQuantities",
+    _members(
+        _LEGACY_PHYSICAL_QUANTITIES,
+        {f.physical_quantity for f in _FIELDS if f.physical_quantity},
+    ),
+    module=__name__,
+)
+FieldTypes = Enum(
+    "FieldTypes",
+    _members(_LEGACY_FIELD_TYPES, {f.field_type for f in _FIELDS if f.field_type}),
+    module=__name__,
+)
+
+# Indexed by nothing in particular: the manufacturer names, in canboat's order
+ManufacturerCodes: list[str] = [
+    name for _code, name in _DATABASE.lookup("MANUFACTURER_CODE")
+]
