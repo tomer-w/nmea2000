@@ -301,14 +301,13 @@ async def test_python_can_client_raises_persistent_buffer_pressure_without_recon
 
 
 @pytest.mark.asyncio
+@pytest.mark.usefixtures("fast_claim_clock")
 async def test_python_can_device_becomes_ready_on_virtual_bus(tmp_path) -> None:
     """A python-can device on a virtual bus should become ready after startup."""
     device = N2KDevice.for_python_can(
         "virtual",
         "test-python-can-ready",
         persistence_path=tmp_path / "python-can-device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=3600,
     )
 
