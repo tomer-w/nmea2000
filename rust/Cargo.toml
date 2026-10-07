@@ -25,11 +25,11 @@ lto = "thin"
 codegen-units = 1
 strip = true
 
-# Until a release has the APIs nmea2000 uses from canboat's master branch
-# (EncodeValue::Raw, Claimer::send_address, BusProtocol) and the 126208
-# Read/Write Fields header fix (canboat/canboat#1006, not yet merged), the
-# crate comes from a fork branch holding exactly that PR on canboat master.
-# Cargo ignores this patch, with a warning, once the version above is newer
-# than the fork's, so it can then be deleted.
+# Until a release has what nmea2000 uses from canboat's master branch (the
+# EncodeValue::Raw, Claimer::send_address and BusProtocol APIs, and the 126208
+# Read/Write Fields header fix, canboat/canboat#1006), the crate comes from
+# master; Cargo.lock pins the commit. Cargo ignores this patch, with a
+# warning, once the version above is newer than master's, so it can then be
+# deleted.
 [patch.crates-io]
-canboat = { git = "https://github.com/johncharrington/canboat", branch = "fix/group-function-proprietary-header" }
+canboat = { git = "https://github.com/canboat/canboat", branch = "master" }
