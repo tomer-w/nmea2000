@@ -16660,7 +16660,7 @@ def decode_pgn_65240(_data_raw_: int, _data_length_bits_: int) -> NMEA2000Messag
 
     # 11:new_source_address | Offset: 64, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 64
-    raise ValueError("PGN 65240 FieldType (ADDRESS) not supported")
+    new_source_address = new_source_address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('newSourceAddress', 'New Source Address', None, None, new_source_address, new_source_address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -16938,7 +16938,10 @@ def encode_pgn_65240(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("newSourceAddress")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'New Source Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'New Source Address' cannot be negative")
@@ -33543,7 +33546,7 @@ def decode_pgn_65332_simnetZcKey(_data_raw_: int, _data_length_bits_: int) -> NM
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 65332 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of the target MFD', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -33661,7 +33664,10 @@ def encode_pgn_65332_simnetZcKey(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -33803,7 +33809,7 @@ def decode_pgn_65332_simnetZcKnob(_data_raw_: int, _data_length_bits_: int) -> N
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 65332 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', '254 (null address) on observed encoder frames; not a target MFD address', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -33919,7 +33925,10 @@ def encode_pgn_65332_simnetZcKnob(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -166643,7 +166652,7 @@ def decode_pgn_130840_simnetDataSourceSelection(_data_raw_: int, _data_length_bi
 
     # 7:source_address | Offset: 40, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 40
-    raise ValueError("PGN 130840 FieldType (ADDRESS) not supported")
+    source_address = source_address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('sourceAddress', 'Source Address', None, None, source_address, source_address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -166833,7 +166842,10 @@ def encode_pgn_130840_simnetDataSourceSelection(nmea2000Message: NMEA2000Message
     field = nmea2000Message.get_field_by_id("sourceAddress")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Source Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Source Address' cannot be negative")
@@ -170538,7 +170550,7 @@ def decode_pgn_130845_simnetKeyValue(_data_raw_: int, _data_length_bits_: int) -
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130845 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -170677,7 +170689,10 @@ def encode_pgn_130845_simnetKeyValue(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -170909,7 +170924,7 @@ def decode_pgn_130846_simnetParameterSet(_data_raw_: int, _data_length_bits_: in
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130846 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -171051,7 +171066,10 @@ def encode_pgn_130846_simnetParameterSet(nmea2000Message: NMEA2000Message) -> by
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -172523,7 +172541,7 @@ def decode_pgn_130850_simnetCommandApStandby(_data_raw_: int, _data_length_bits_
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -172653,7 +172671,10 @@ def encode_pgn_130850_simnetCommandApStandby(nmea2000Message: NMEA2000Message) -
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -172841,7 +172862,7 @@ def decode_pgn_130850_simnetCommandApNodrift(_data_raw_: int, _data_length_bits_
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -172971,7 +172992,10 @@ def encode_pgn_130850_simnetCommandApNodrift(nmea2000Message: NMEA2000Message) -
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -173159,7 +173183,7 @@ def decode_pgn_130850_simnetCommandApWind(_data_raw_: int, _data_length_bits_: i
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -173289,7 +173313,10 @@ def encode_pgn_130850_simnetCommandApWind(nmea2000Message: NMEA2000Message) -> b
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -173477,7 +173504,7 @@ def decode_pgn_130850_simnetCommandApNav(_data_raw_: int, _data_length_bits_: in
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -173607,7 +173634,10 @@ def encode_pgn_130850_simnetCommandApNav(nmea2000Message: NMEA2000Message) -> by
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -173795,7 +173825,7 @@ def decode_pgn_130850_simnetCommandApHeading(_data_raw_: int, _data_length_bits_
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -173925,7 +173955,10 @@ def encode_pgn_130850_simnetCommandApHeading(nmea2000Message: NMEA2000Message) -
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -174113,7 +174146,7 @@ def decode_pgn_130850_simnetCommandApTack(_data_raw_: int, _data_length_bits_: i
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -174249,7 +174282,10 @@ def encode_pgn_130850_simnetCommandApTack(nmea2000Message: NMEA2000Message) -> b
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -174465,7 +174501,7 @@ def decode_pgn_130850_simnetCommandApFollowUp(_data_raw_: int, _data_length_bits
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -174595,7 +174631,10 @@ def encode_pgn_130850_simnetCommandApFollowUp(nmea2000Message: NMEA2000Message) 
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -174783,7 +174822,7 @@ def decode_pgn_130850_simnetCommandApChangeCourse(_data_raw_: int, _data_length_
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -174926,7 +174965,10 @@ def encode_pgn_130850_simnetCommandApChangeCourse(nmea2000Message: NMEA2000Messa
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -175165,7 +175207,7 @@ def decode_pgn_130850_simnetEventCommandTimer(_data_raw_: int, _data_length_bits
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device, used for autopilot events', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -175301,7 +175343,10 @@ def encode_pgn_130850_simnetEventCommandTimer(nmea2000Message: NMEA2000Message) 
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -175519,7 +175564,7 @@ def decode_pgn_130850_simnetAlarm(_data_raw_: int, _data_length_bits_: int) -> N
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -175662,7 +175707,10 @@ def encode_pgn_130850_simnetAlarm(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -175903,7 +175951,7 @@ def decode_pgn_130850_simnetApCommand(_data_raw_: int, _data_length_bits_: int) 
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -176051,7 +176099,10 @@ def encode_pgn_130850_simnetApCommand(nmea2000Message: NMEA2000Message) -> bytes
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -176311,7 +176362,7 @@ def decode_pgn_130850_simnetEvent(_data_raw_: int, _data_length_bits_: int) -> N
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130850 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of commanded device', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -176457,7 +176508,10 @@ def encode_pgn_130850_simnetEvent(nmea2000Message: NMEA2000Message) -> bytes:
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -176743,7 +176797,7 @@ def decode_pgn_130851_simnetApCommandReplyChangeCourse(_data_raw_: int, _data_le
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130851 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of the autopilot that ran the command', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -176886,7 +176940,10 @@ def encode_pgn_130851_simnetApCommandReplyChangeCourse(nmea2000Message: NMEA2000
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
@@ -177125,7 +177182,7 @@ def decode_pgn_130851_simnetApCommandReply(_data_raw_: int, _data_length_bits_: 
 
     # 4:address | Offset: 16, Length: 8, Signed: False Resolution: 1, Field Type: ADDRESS, Match: , PartOfPrimaryKey: ,
     running_bit_offset = 16
-    raise ValueError("PGN 130851 FieldType (ADDRESS) not supported")
+    address = address_raw = decode_int(_data_raw_, running_bit_offset, 8)
     nmea2000Message.fields.append(NMEA2000Field('address', 'Address', 'NMEA 2000 address of the autopilot that ran the command', None, address, address_raw, None, FieldTypes.ADDRESS, False))
     running_bit_offset += 8
 
@@ -177267,7 +177324,10 @@ def encode_pgn_130851_simnetApCommandReply(nmea2000Message: NMEA2000Message) -> 
     field = nmea2000Message.get_field_by_id("address")
 
     advance_running_offset = True
-    raise ValueError("Encoding 'ADDRESS' not supported")
+    field_value = field.raw_value if isinstance(field.raw_value, int) else field.value
+    if not isinstance(field_value, int):
+        raise ValueError("Cant encode this message, 'Address' must be an integer")
+    field_bit_length = 8
     assert isinstance(field_value, int)
     if field_value < 0:
         raise ValueError("Cant encode this message, 'Address' cannot be negative")
