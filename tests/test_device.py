@@ -2,15 +2,20 @@
 """Device behavior tests for address claiming, startup announcements, and replies."""
 
 import asyncio
+import warnings
 from datetime import datetime
+from typing import Any
 
 import pytest
 
 from nmea2000 import backend
+from nmea2000 import device as device_module
 from nmea2000.device import N2KDevice
 from nmea2000.encoder import create_encoder
 from nmea2000.ioclient import State
 from nmea2000.message import NMEA2000Field, NMEA2000Message
+
+pytestmark = pytest.mark.usefixtures("fast_claim_clock")
 
 
 class FakeClient:
@@ -140,8 +145,6 @@ async def test_device_start_claims_address_and_filters_management_messages(tmp_p
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=3600,
     )
 
@@ -187,8 +190,6 @@ async def test_device_announces_product_information_on_startup(tmp_path):
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=3600,
     )
 
@@ -214,8 +215,6 @@ async def test_device_announces_configuration_information_on_startup_when_presen
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=3600,
         installation_description1="Autopilot demo",
         manufacturer_information="nmea2000 autopilot heading simulator",
@@ -243,8 +242,6 @@ async def test_device_conflict_increments_address_when_it_loses(tmp_path):
         client,
         unique_number=10,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=3600,
     )
 
@@ -270,8 +267,6 @@ async def test_device_conflict_keeps_address_when_it_wins(tmp_path):
         client,
         unique_number=1,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=3600,
     )
 
@@ -300,8 +295,6 @@ async def test_device_responds_with_iso_nak_and_group_function_ack(tmp_path):
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=3600,
     )
 
@@ -327,8 +320,6 @@ async def test_device_heartbeat_messages_encode(tmp_path):
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=0.01,
     )
 
@@ -363,8 +354,6 @@ async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=3600,
     )
 
@@ -392,8 +381,6 @@ async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
         client,
         persistence_path=tmp_path / "device.json",
         transmit_pgns=[127250],
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
         heartbeat_interval=3600,
     )
 
@@ -415,3 +402,52 @@ async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
     assert {59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998}.issubset(
         advertised_pgns
     )
+
+
+@pytest.mark.parametrize(
+    "option", ["address_claim_startup_delay", "address_claim_detection_time"]
+)
+def test_device_warns_that_claim_timing_options_are_ignored(tmp_path, option):
+    """The old claim timing options still construct, but warn that they are ignored."""
+    options: dict[str, Any] = {option: 0.1}
+    with pytest.warns(
+        FutureWarning, match=f"{option} is deprecated and no longer respected"
+    ):
+        N2KDevice(FakeClient(), persistence_path=tmp_path / "device.json", **options)
+
+
+def test_device_does_not_warn_by_default(tmp_path):
+    """A device built without the old options raises no warning."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        N2KDevice(FakeClient(), persistence_path=tmp_path / "device.json")
+
+
+@pytest.mark.asyncio
+async def test_device_claims_with_the_standard_timings(tmp_path, monkeypatch):
+    """A 1 s scan, then the claim, then 250 ms before the address is used."""
+    now = 0
+    monkeypatch.setattr(device_module, "_now_ms", lambda: now)
+
+    async def at(ms: int) -> None:
+        nonlocal now
+        now = ms
+        await asyncio.sleep(0.1)  # several of the claim loop's 20 ms polls
+
+    client = FakeClient()
+    device = N2KDevice(
+        client, persistence_path=tmp_path / "device.json", heartbeat_interval=3600
+    )
+    try:
+        await device.start()
+        await at(0)  # the claim loop starts, and the scan with it
+        await at(999)
+        assert [m.PGN for m in client.sent_messages] == [59904]  # still scanning
+        await at(1000)
+        assert [m.PGN for m in client.sent_messages] == [59904, 60928]  # claimed
+        await at(1249)
+        assert not device.ready
+        await at(1250)
+        assert device.ready
+    finally:
+        await device.close()

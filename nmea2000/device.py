@@ -8,6 +8,7 @@ import json
 import logging
 import random
 import time
+import warnings
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import datetime
@@ -126,8 +127,8 @@ class N2KDevice:
         installation_description2: str = "",
         manufacturer_information: str = "",
         transmit_pgns: list[int] | None = None,
-        address_claim_detection_time: float = 5.0,
-        address_claim_startup_delay: float = 1.0,
+        address_claim_detection_time: float | None = None,
+        address_claim_startup_delay: float | None = None,
         heartbeat_interval: float = 60.0,
         persistence_path: str | Path | None = None,
         persistence_key: str = "default",
@@ -135,10 +136,24 @@ class N2KDevice:
     ):
         """Create a device around an async transport client and local device identity.
 
-        ``address_claim_startup_delay`` is how long to listen for other
-        devices' claims before claiming, and ``address_claim_detection_time``
-        how long a claim must stand unchallenged before the address is used.
+        Address claiming follows the standard's timings: the device listens
+        for other devices' claims for 1 s, then uses its address once its
+        claim has stood unchallenged for 250 ms (ISO 11783-5 / J1939-81).
+        ``address_claim_startup_delay`` and ``address_claim_detection_time``
+        are deprecated and ignored.
         """
+        for name, value in (
+            ("address_claim_startup_delay", address_claim_startup_delay),
+            ("address_claim_detection_time", address_claim_detection_time),
+        ):
+            if value is not None:
+                warnings.warn(
+                    f"N2KDevice's {name} is deprecated and no longer respected: "
+                    "address claiming uses the standard's timings (a 1 s scan, "
+                    "then 250 ms for a claim to settle)",
+                    FutureWarning,
+                    stacklevel=2,
+                )
         self.client = client
         self.client.set_receive_callback(self._handle_client_message)
         self.client.set_status_callback(self._handle_client_status)
@@ -148,8 +163,6 @@ class N2KDevice:
         self._status_callback: StatusCallback | None = None
 
         self.disable_naks = disable_naks
-        self.address_claim_detection_time = address_claim_detection_time
-        self.address_claim_startup_delay = address_claim_startup_delay
         self.heartbeat_interval = heartbeat_interval
         self._started = False
         self._ready_event = asyncio.Event()
@@ -194,10 +207,6 @@ class N2KDevice:
         self._claimer = self._new_claimer()
         # Set when a claim starts outside the loop, to wake it early
         self._claimer_wake = asyncio.Event()
-        # The claimer's clock: see _claimer_now
-        self._clock = 0
-        self._phase = ""
-        self._phase_started = 0
 
         self.product_code = product_code
         self.nmea2000_version = nmea2000_version
@@ -382,38 +391,11 @@ class N2KDevice:
             self._own_name, self.preferred_address, self.arbitrary_address_capable
         )
 
-    def _claimer_now(self) -> int:
-        """The time to give canboat's claimer.
-
-        Its scan and claim timeouts are the standard's (1 s and 250 ms);
-        nmea2000 makes them configurable by holding the claimer's clock
-        still while a deadline runs, then moving it to the deadline once
-        ``address_claim_startup_delay`` (scanning) or
-        ``address_claim_detection_time`` (claiming) has passed.
-        """
-        real = _now_ms()
-        claimer = self._claimer
-        if claimer.state != self._phase:
-            self._phase = claimer.state
-            self._phase_started = real
-        if claimer.is_timing:
-            delay = (
-                self.address_claim_startup_delay
-                if claimer.state == "scanning"
-                else self.address_claim_detection_time
-            )
-            if real - self._phase_started >= delay * 1000:
-                self._clock = max(self._clock, claimer.deadline)
-        else:
-            self._clock = max(self._clock, real)
-        return self._clock
-
     async def _run_claimer(self, step: Callable[[int], list[Frame]]) -> None:
         """Run one claimer step, send what it produces, and act on the outcome."""
         was_claimed = self._claimer.state == "claimed"
-        for frame in step(self._claimer_now()):
+        for frame in step(_now_ms()):
             await self._send_frame(frame)
-        self._claimer_now()  # note a phase change
         claimed = self._claimer.state == "claimed"
         if self._claimer.is_timing:
             self._claimer_wake.set()
@@ -432,8 +414,6 @@ class N2KDevice:
     async def _claim_loop(self) -> None:
         """Start the claim, then advance it until the device stops."""
         self._claimer = self._new_claimer()
-        self._clock = _now_ms()
-        self._phase = ""
         await self._run_claimer(self._claimer.start)
         while self._started and not self._closing:
             self._claimer_wake.clear()

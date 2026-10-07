@@ -471,9 +471,16 @@ and its encoder:
 
 `N2KDevice` claims its address with canboat's ISO 11783-5 address claimer and
 builds its product information, heartbeat, ISO acknowledgement and PGN list
-messages with canboat's device module. Its options and persisted address are
-unchanged. What changes:
+messages with canboat's device module. Its persisted address is unchanged.
+What changes:
 
+- address claiming follows the standard's timings (ISO 11783-5 / SAE
+  J1939-81): the device listens for other devices' claims for 1 s, then uses
+  its address once its claim has stood unchallenged for 250 ms. The
+  `address_claim_startup_delay` and `address_claim_detection_time` options
+  are deprecated and ignored, and passing either raises a `FutureWarning`. The
+  old defaults waited 1 s and then 5 s, so a device is now ready about 5 s
+  sooner;
 - heartbeats are sent at priority 7 and report the CAN controller as
   "Error Active" (working normally) instead of not available;
 - an ISO Request for PGN 126464 is answered with both the Transmit and the
