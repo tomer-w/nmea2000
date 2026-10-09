@@ -381,7 +381,7 @@ class DecoderBase(DecoderStaticsMixin):
             return None
         if (
             len(self.include_pgns) > 0
-            and msg_id not in self.include_pgns
+            and nmea2000_message.PGN not in self.include_pgns
             and len(self.include_pgns_ids) > 0
             and msg_id not in self.include_pgns_ids
         ):

@@ -547,6 +547,13 @@ def test_include():
     _validate_65280_message(msg)
 
 
+def test_include_by_number_and_by_id():
+    """A PGN included by number is kept when the include list also names ids."""
+    decoder = _get_decoder(include_pgns=[65280, "vesselHeading"])
+    msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
+    _validate_65280_message(msg)
+
+
 def test_include_with_network_map():
     """Keeps included PGNs decodable even when excluded claims are omitted from the network map."""
     decoder = _get_decoder(
