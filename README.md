@@ -192,6 +192,31 @@ asyncio.run(main())
 
 Use `N2KDevice.for_ebyte(...)`, `N2KDevice.for_yacht_devices(...)`, `N2KDevice.for_waveshare(...)`, or `N2KDevice.for_actisense(...)` if you are connecting through one of those gateways instead of `python-can`.
 
+The device answers ISO requests for its own PGNs and NAKs the rest. An
+application that sends its own PGNs can answer requests and group functions
+for them:
+
+```python
+async def on_group_function(message):  # 126208, for this device or broadcast
+    if message.id != "nmeaCommandGroupFunction" or message.get_field_by_id("pgn").value != 127237:
+        return False  # the device NAKs it
+    for entry in message.get_field_by_id("##list##").value:
+        # each value is typed by the field of 127237 it refers to:
+        # a lookup's raw_value is its code, e.g. ('Heading Control', 4)
+        print(entry["parameter"].value, entry["value"].value, entry["value"].raw_value)
+    return True  # answered (send the acknowledgement yourself)
+
+
+async def on_iso_request(message, pgn):  # PGNs the device doesn't answer itself
+    return False
+
+
+device.set_group_function_handler(on_group_function)
+device.set_iso_request_handler(on_iso_request)
+```
+
+`device.own_name` is the 64-bit ISO NAME the device claims its address with.
+
 ### Gateway Client CLI
 
 Each gateway type has its own subcommand:
