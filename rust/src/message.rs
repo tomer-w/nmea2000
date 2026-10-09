@@ -386,7 +386,9 @@ impl MessageCodec {
             }
             Mode::Other => {
                 // A VARIABLE (group-function) value is typed by the field it
-                // refers to; its raw_value is the bytes on the wire.
+                // refers to, and presented as a field of that type would be
+                // (a lookup's raw_value is its code, a number's its value).
+                // One that is not available keeps its wire bytes.
                 let variable = f.info.field_type == Some(FieldType::Variable);
                 if absent {
                     (
@@ -398,16 +400,11 @@ impl MessageCodec {
                         },
                     )
                 } else {
-                    let (value, _) = field_value(py, f)?;
-                    let bytes = if variable {
-                        wire_bytes(py, data, f)
+                    let (value, raw) = field_value(py, f)?;
+                    let raw = if variable && !raw.is_none(py) {
+                        raw
                     } else {
-                        py.None()
-                    };
-                    let raw = if bytes.is_none(py) {
                         value.clone_ref(py)
-                    } else {
-                        bytes
                     };
                     (value, raw)
                 }
@@ -536,7 +533,7 @@ fn is_numeric_type(t: FieldType) -> bool {
 impl MessageCodec {
     /// What to write instead when canboat refuses a field's value: the wire
     /// bits of a number outside the schema's range, or a group-function
-    /// value's own bytes when its typed value does not fit.
+    /// value's own wire integer or bytes when its typed value does not fit.
     fn fallbacks(
         &self,
         field: &Bound<'_, PyAny>,
@@ -544,8 +541,20 @@ impl MessageCodec {
         value: &EncodeValue,
         error: &canboat::EncodeError,
     ) -> PyResult<Vec<EncodeValue>> {
+        let raw_value = field.getattr("raw_value")?;
         if info.field_type == Some(FieldType::Variable)
-            && let Some(b) = bytes_like(&field.getattr("raw_value")?)
+            && let Some(raw) = as_int(&raw_value)
+            && let Ok(raw) = u64::try_from(raw)
+        {
+            let candidate = EncodeValue::Raw(raw);
+            return Ok(if &candidate == value {
+                Vec::new()
+            } else {
+                vec![candidate]
+            });
+        }
+        if info.field_type == Some(FieldType::Variable)
+            && let Some(b) = bytes_like(&raw_value)
         {
             // as an integer, or as bytes for a BINARY target
             let mut candidates = Vec::new();

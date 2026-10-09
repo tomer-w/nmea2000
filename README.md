@@ -453,7 +453,9 @@ Compared with the generated decoder used before, the canboat backend:
 - returns `BINARY` and dynamic field values in wire byte order, at their full
   field width;
 - decodes a group function's `VARIABLE` parameter values with the type of the
-  field they refer to (`'Furuno'` rather than raw bytes);
+  field they refer to (`'Furuno'` rather than raw bytes), and reports them as
+  a field of that type: a lookup's `raw_value` is its code, a number's or a
+  string's is its value. A value that isn't available keeps its wire bytes;
 - reports an empty string field as `None`;
 - emits only the repeating-set entries actually present in the payload, even
   when the count field claims more;

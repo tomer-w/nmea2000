@@ -91,3 +91,28 @@ def test_proprietary_pgn_without_header_is_refused():
 def test_standard_pgn_with_header_is_refused():
     with pytest.raises(ValueError, match="only sent for a proprietary PGN"):
         backend.encode(write_fields(127508, header=True))
+
+
+def command_parameters(hex_payload: str) -> list[tuple[object, object]]:
+    message = backend.decode(126208, bytes.fromhex(hex_payload.replace(" ", "")))
+    assert message is not None
+    entries = message.get_field_by_id("##list##").value
+    assert isinstance(entries, list)
+    return [(e["value"].value, e["value"].raw_value) for e in entries]
+
+
+def test_command_parameters_take_their_field_type():
+    # 127237: steering mode (a lookup) = Heading Control, vessel heading 1.3208 rad
+    assert command_parameters("01 05f101 f8 02 05 04 12 9833") == [
+        ("Heading Control", 4),
+        (1.3208, 1.3208),
+    ]
+    # 126998: a text parameter
+    assert command_parameters("01 16f001 f8 01 01 0e01 50503a61702e6d6f6465") == [
+        ("PP:ap.mode", "PP:ap.mode")
+    ]
+
+
+def test_unusable_command_parameter_keeps_its_wire_bytes():
+    # 6 is the out-of-range value of the 3-bit steering mode
+    assert command_parameters("01 05f101 f8 01 05 06") == [(None, b"\x06")]
