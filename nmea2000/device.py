@@ -40,6 +40,8 @@ MAX_HEARTBEAT_INTERVAL = 65.532
 
 MessageCallback = Callable[[NMEA2000Message], Awaitable[None]]
 StatusCallback = Callable[[State], Awaitable[None]]
+GroupFunctionHandler = Callable[[NMEA2000Message], Awaitable[bool]]
+IsoRequestHandler = Callable[[NMEA2000Message, int], Awaitable[bool]]
 
 
 class N2KClient(Protocol):
@@ -173,6 +175,8 @@ class N2KDevice:
         self._receive_callback: MessageCallback | None = None
         self._raw_receive_callback: MessageCallback | None = None
         self._status_callback: StatusCallback | None = None
+        self._group_function_handler: GroupFunctionHandler | None = None
+        self._iso_request_handler: IsoRequestHandler | None = None
 
         self.disable_naks = disable_naks
         self.heartbeat_interval = heartbeat_interval
@@ -243,6 +247,11 @@ class N2KDevice:
         return self.client.state
 
     @property
+    def own_name(self) -> int:
+        """Return the 64-bit ISO NAME this device claims its address with."""
+        return self._own_name
+
+    @property
     def ready(self) -> bool:
         """Return ``True`` once the device has claimed an address and is ready to send."""
         return self._started and self._claimer.send_address is not None
@@ -264,6 +273,25 @@ class N2KDevice:
     def set_status_callback(self, callback: StatusCallback | None) -> None:
         """Register a callback for underlying client state changes."""
         self._status_callback = callback
+
+    def set_group_function_handler(self, handler: GroupFunctionHandler | None) -> None:
+        """Register a handler for group function messages (126208) for this device or broadcast.
+
+        The handler gets the decoded message: a command's parameters are in its
+        ``##list##`` entries, each value typed by the field of the commanded PGN it
+        refers to. It returns ``True`` if it answered the message itself, in which
+        case the device sends nothing; otherwise the device NAKs requests and
+        commands as usual.
+        """
+        self._group_function_handler = handler
+
+    def set_iso_request_handler(self, handler: IsoRequestHandler | None) -> None:
+        """Register a handler for ISO requests (59904) for PGNs the device does not answer itself.
+
+        The handler gets the request and the requested PGN. It returns ``True`` if it answered
+        the request; otherwise the device sends an ISO NAK as usual.
+        """
+        self._iso_request_handler = handler
 
     @classmethod
     def for_ebyte(
@@ -551,12 +579,24 @@ class N2KDevice:
             ):
                 await self._send_frame(frame)
             return
+        if self._iso_request_handler is not None and requested_pgn is not None:
+            try:
+                if await self._iso_request_handler(message, requested_pgn):
+                    return
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception("Error in ISO request handler")
         if not self.disable_naks and requested_pgn is not None:
             await self._send_frame(
                 canboat.iso_ack_frame(self.address, message.source, 1, requested_pgn)
             )
 
     async def _handle_group_function(self, message: NMEA2000Message) -> None:
+        if self._group_function_handler is not None:
+            try:
+                if await self._group_function_handler(message):
+                    return
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception("Error in group function handler")
         if self.disable_naks:
             return
         if message.id not in {"nmeaRequestGroupFunction", "nmeaCommandGroupFunction"}:
