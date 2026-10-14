@@ -16,6 +16,28 @@ master_dict = {
         1: 'unlocked level 1',
         2: 'unlocked level 2',
     },
+    'ACTISENSE_OPERATING_MODE': {
+        0: 'Undefined',
+        1: 'NGT Transfer Normal Mode',
+        2: 'NGT Transfer Rx All Mode',
+        3: 'NGT Transfer Raw Mode',
+        4: 'NGW Convert Normal Mode',
+        5: 'CAN Packet Mode',
+        6: 'CAN Packet ASCII Mode',
+        16: 'Buffer Mode 1',
+        17: 'Buffer Mode 2',
+        18: 'Buffer Mode 3',
+        19: 'Autoswitch Direct Mode',
+        20: 'Autoswitch Smart Mode',
+        21: 'Combine Slow Mode',
+        22: 'Combine Fast Mode',
+        23: 'Test Mode 1',
+        24: 'NSI Mode 1',
+        25: 'IEC 61162-450 Mode 1',
+        512: 'Normal',
+        40000: 'Predefined Mode 1',
+        40001: 'Predefined Mode 2',
+    },
     'AC_LINE': {
         0: 'Line 1',
         1: 'Line 2',
@@ -4162,6 +4184,34 @@ def lookup_encode_ACCESS_LEVEL(value):
     result = lookup_dict_encode_ACCESS_LEVEL.get(value, None)
     if result is None:
         raise ValueError(f"Cant encode this message, {value} is missing from ACCESS_LEVEL")
+    return result
+
+lookup_dict_encode_ACTISENSE_OPERATING_MODE = {
+    'Undefined' : 0,
+    'NGT Transfer Normal Mode' : 1,
+    'NGT Transfer Rx All Mode' : 2,
+    'NGT Transfer Raw Mode' : 3,
+    'NGW Convert Normal Mode' : 4,
+    'CAN Packet Mode' : 5,
+    'CAN Packet ASCII Mode' : 6,
+    'Buffer Mode 1' : 16,
+    'Buffer Mode 2' : 17,
+    'Buffer Mode 3' : 18,
+    'Autoswitch Direct Mode' : 19,
+    'Autoswitch Smart Mode' : 20,
+    'Combine Slow Mode' : 21,
+    'Combine Fast Mode' : 22,
+    'Test Mode 1' : 23,
+    'NSI Mode 1' : 24,
+    'IEC 61162-450 Mode 1' : 25,
+    'Normal' : 512,
+    'Predefined Mode 1' : 40000,
+    'Predefined Mode 2' : 40001,
+}
+def lookup_encode_ACTISENSE_OPERATING_MODE(value):
+    result = lookup_dict_encode_ACTISENSE_OPERATING_MODE.get(value, None)
+    if result is None:
+        raise ValueError(f"Cant encode this message, {value} is missing from ACTISENSE_OPERATING_MODE")
     return result
 
 lookup_dict_encode_AC_LINE = {
