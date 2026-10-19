@@ -76,6 +76,8 @@ class N2KClient(Protocol):
 MANAGEMENT_PGNS = frozenset(
     {59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998}
 )
+# the management PGNs the device acts on when it receives them
+MANAGEMENT_RECEIVE_PGNS = frozenset({59904, 60928, 126208})
 
 # canboat frames: (priority, pgn, source, destination, data)
 Frame = tuple[int, int, int, int, bytes]
@@ -132,6 +134,7 @@ class N2KDevice:
         installation_description2: str = "",
         manufacturer_information: str = "",
         transmit_pgns: list[int] | None = None,
+        receive_pgns: list[int] | None = None,
         address_claim_detection_time: float | None = None,
         address_claim_startup_delay: float | None = None,
         heartbeat_interval: float = 60.0,
@@ -238,6 +241,9 @@ class N2KDevice:
         self.installation_description2 = installation_description2
         self.manufacturer_information = manufacturer_information
         self.transmit_pgns = sorted(set(transmit_pgns or ()).union(MANAGEMENT_PGNS))
+        self.receive_pgns = sorted(
+            set(receive_pgns or ()).union(MANAGEMENT_RECEIVE_PGNS)
+        )
 
         self._persist(unique_number=self.unique_number)
 
@@ -575,7 +581,7 @@ class N2KDevice:
             return
         if requested_pgn == 126464:
             for frame in canboat.pgn_list_frames(
-                self.address, message.source, self.transmit_pgns, []
+                self.address, message.source, self.transmit_pgns, self.receive_pgns
             ):
                 await self._send_frame(frame)
             return

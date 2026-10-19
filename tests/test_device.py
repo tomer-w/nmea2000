@@ -377,12 +377,13 @@ async def test_device_product_information_encodes_scaled_nmea_version(tmp_path):
 
 @pytest.mark.asyncio
 async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
-    """Reported transmit PGN lists should always include required management PGNs."""
+    """Reported PGN lists should always include required management PGNs."""
     client = FakeClient()
     device = N2KDevice(
         client,
         persistence_path=tmp_path / "device.json",
         transmit_pgns=[127250],
+        receive_pgns=[130306, 127502],
         heartbeat_interval=60,
     )
 
@@ -404,6 +405,27 @@ async def test_device_pgn_list_always_includes_management_pgns(tmp_path):
     assert {59392, 59904, 60928, 126208, 126464, 126993, 126996, 126998}.issubset(
         advertised_pgns
     )
+
+    received_pgns = set(_pgns_from_message(receive_list))
+    assert received_pgns == {130306, 127502, 59904, 60928, 126208}
+
+
+@pytest.mark.asyncio
+async def test_device_receive_pgn_list_defaults_to_management_pgns(tmp_path):
+    """Without receive_pgns, the receive list names only the management PGNs it acts on."""
+    client = FakeClient()
+    device = N2KDevice(client, persistence_path=tmp_path / "device.json")
+
+    try:
+        await device.start()
+        await device.wait_ready(timeout=1)
+        await client.emit(_build_iso_request(126464, source=31, destination=255))
+    finally:
+        await device.close()
+
+    receive_list = client.sent_messages[-1]
+    assert receive_list.get_field_by_id("functionCode").value == "Receive PGN list"
+    assert set(_pgns_from_message(receive_list)) == {59904, 60928, 126208}
 
 
 @pytest.mark.parametrize(
