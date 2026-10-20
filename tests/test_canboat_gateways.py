@@ -117,11 +117,15 @@ def ngt_received(prio: int, pgn: int, src: int, dst: int, data: bytes) -> bytes:
     return ngt_message(0x93, header + data)
 
 
+# Get Product Info, then Set Operating Mode (transfer Rx all)
+NGT_STARTUP = ngt_message(0xA1, b"\x41") + ngt_message(0xA1, b"\x11\x02\x00")
+
+
 @pytest.mark.asyncio
 async def test_ngt1(serial_to_tcp):
     async def ngt1(reader, writer):
-        startup = await reader.readexactly(len(ngt_message(0xA1, b"\x11\x02\x00")))
-        assert startup == ngt_message(0xA1, b"\x11\x02\x00")
+        startup = await reader.readexactly(len(NGT_STARTUP))
+        assert startup == NGT_STARTUP
         writer.write(ngt_received(2, 130306, 35, 255, WIND))
         await writer.drain()
 
@@ -136,7 +140,7 @@ async def test_ngt1_sends_n2k_msg_send(serial_to_tcp):
     sent: asyncio.Queue[bytes] = asyncio.Queue()
 
     async def ngt1(reader, writer):
-        await reader.readexactly(len(ngt_message(0xA1, b"\x11\x02\x00")))
+        await reader.readexactly(len(NGT_STARTUP))
         writer.write(ngt_received(2, 130306, 35, 255, WIND))
         await writer.drain()
         await sent.put(await reader.readuntil(b"\x10\x03"))

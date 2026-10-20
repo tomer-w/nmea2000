@@ -397,7 +397,7 @@ class PcdinDecoder(DecoderBase, DecoderInterface):
         if len(parts) != 5:
             raise ValueError("Invalid PCDIN string format")
         timer_seconds = (int(parts[2], 32) / 1024) + 1262304000
-        frame = _parse_frame("chetco", sentence)
+        frame = _parse_frame("seasmart", sentence)
         if frame is None:
             return None
         priority, pgn_id, source_id, dest, data = frame
