@@ -595,7 +595,8 @@ fn parse_line<'py>(
         "plain" => InputFormat::PlainMixFast,
         "actisense_ascii" => InputFormat::ActisenseAscii,
         "ydwg02" => InputFormat::Ydwg02,
-        "chetco" => InputFormat::Chetco,
+        "chetco" => InputFormat::SeaSmart, // Canboat renamed chetco -> seasmart, we can easily support both names
+        "seasmart" => InputFormat::SeaSmart,
         "ikonvert" => InputFormat::Ikonvert,
         "candump" => InputFormat::Candump,
         "airmar" => InputFormat::Airmar,
