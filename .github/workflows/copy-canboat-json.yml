@@ -1,4 +1,14 @@
-name: Sync canboat.json
+name: Sync canboat release
+
+# Opens a pull request moving nmea2000 to canboat's latest release: the
+# release's canboat.json and the same version of the `canboat` crate in
+# rust/Cargo.toml (and Cargo.lock). The pull request's own workflow builds and
+# tests it; if canboat changed any units, its generated-files check asks for
+# `python canboat2python.py` to be run on the branch.
+#
+# Pull requests opened with the default GITHUB_TOKEN do not start other
+# workflows, so set the CANBOAT_SYNC_TOKEN secret (a fine-grained token with
+# contents and pull-requests write access) for the checks to run on it.
 
 on:
   schedule:
@@ -10,7 +20,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  sync-file:
+  sync-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout this repo
@@ -18,35 +28,59 @@ jobs:
         with:
           persist-credentials: false  # Don't use default GitHub credentials
 
-      - name: Fetch latest file from source repo
+      - name: Find canboat's latest release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          curl -o canboat.json.new https://raw.githubusercontent.com/canboat/canboat/refs/heads/master/docs/canboat.json
-
-      - name: Check for changes
-        id: check_changes  # Add an ID to reference this step
-        run: |
-          if cmp -s canboat.json canboat.json.new; then
-            echo "No changes detected."
+          tag=$(gh release view --repo canboat/canboat --json tagName --jq .tagName)
+          latest=${tag#v}
+          current=$(sed -nE 's/^canboat = \{ version = "([^"]+)".*/\1/p' rust/Cargo.toml)
+          if [ -z "$current" ]; then
+            echo "::error::no canboat version found in rust/Cargo.toml"
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$latest" >> "$GITHUB_OUTPUT"
+          if [ "$latest" = "$current" ]; then
+            echo "Already on canboat $current."
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
           else
-            echo "canboat.json changed, proceeding with further steps."
-            mv canboat.json.new canboat.json
+            echo "canboat $current -> $latest"
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Compile CANBoat to Python
-        if: steps.check_changes.outputs.changed == 'true'
-        run: python3 canboat2python.py
+      - name: Update canboat.json and the crate
+        if: steps.release.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          gh release download "$TAG" --repo canboat/canboat --pattern canboat.json --clobber
+          sed -i -E "s/^(canboat = \{ version = \")[^\"]+/\1$VERSION/" rust/Cargo.toml
+
+      - name: Set up Rust
+        if: steps.release.outputs.changed == 'true'
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Update Cargo.lock
+        if: steps.release.outputs.changed == 'true'
+        working-directory: rust
+        run: cargo update --package canboat
 
       - name: Create Pull Request
-        if: steps.check_changes.outputs.changed == 'true'
+        if: steps.release.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
-          branch: update-synced-file
+          token: ${{ secrets.CANBOAT_SYNC_TOKEN || github.token }}
+          branch: update-canboat
           delete-branch: true
-          title: "Sync canboat.json"
-          body: "This PR updates `canboat.json` from `canboat` repo."
-          commit-message: "Update canboat.json from source repo"
+          title: "Update canboat to ${{ steps.release.outputs.tag }}"
+          body: >-
+            Moves `canboat.json` and the `canboat` crate to canboat's
+            [${{ steps.release.outputs.tag }}](https://github.com/canboat/canboat/releases/tag/${{ steps.release.outputs.tag }})
+            release.
+          commit-message: "Update canboat to ${{ steps.release.outputs.tag }}"
           base: main
           labels: "automation"

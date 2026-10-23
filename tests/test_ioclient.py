@@ -301,15 +301,14 @@ async def test_python_can_client_raises_persistent_buffer_pressure_without_recon
 
 
 @pytest.mark.asyncio
+@pytest.mark.usefixtures("fast_claim_clock")
 async def test_python_can_device_becomes_ready_on_virtual_bus(tmp_path) -> None:
     """A python-can device on a virtual bus should become ready after startup."""
     device = N2KDevice.for_python_can(
         "virtual",
         "test-python-can-ready",
         persistence_path=tmp_path / "python-can-device.json",
-        address_claim_startup_delay=0,
-        address_claim_detection_time=0.01,
-        heartbeat_interval=3600,
+        heartbeat_interval=60,
     )
 
     try:
@@ -320,3 +319,38 @@ async def test_python_can_device_becomes_ready_on_virtual_bus(tmp_path) -> None:
         await device.close()
 
     assert device.ready is False
+
+
+class ClosableBus(FakeBus):
+    """CAN bus double that fails sends after shutdown, like a closed socket."""
+
+    def send(self, message: can.message.Message, timeout: float | None = None) -> None:
+        """Reject sends once the bus has been shut down."""
+        if self.shutdown_called:
+            raise ValueError("file descriptor cannot be a negative integer (-1)")
+        super().send(message, timeout)
+
+
+@pytest.mark.asyncio
+async def test_close_cancels_network_map_seeding() -> None:
+    """Closing right after connecting must not leave the seed task sending on a closed bus."""
+    client = PythonCanSendClient(
+        cast(can.message.Message, can.Message()), build_network_map=True
+    )
+    bus = ClosableBus()
+
+    async def connect_fake_bus() -> None:
+        client.bus = cast(can.BusABC, bus)
+
+    client._connect_impl = connect_fake_bus  # type: ignore[method-assign]
+    before = asyncio.all_tasks()
+    await client.connect()
+    tasks = asyncio.all_tasks() - before
+    assert tasks  # receiving and seeding the network map are under way
+
+    await client.close()
+
+    assert all(task.done() for task in tasks)
+    assert not bus.sent_messages
+    assert bus.shutdown_called
+    assert client.bus is None

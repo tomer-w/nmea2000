@@ -15,6 +15,9 @@ from .ioclient import (
     ActisenseBstNmea2000Gateway,
     AsyncIOClient,
     EByteNmea2000Gateway,
+    IkonvertNmea2000Gateway,
+    MaretronIpgNmea2000Gateway,
+    Ngt1Nmea2000Gateway,
     PythonCanAsyncIOClient,
     State,
     TextNmea2000Gateway,
@@ -225,6 +228,58 @@ async def async_main():
     )
     _add_common_client_args(waveshare_parser)
 
+    # Gateways driven by canboat's protocol implementations
+    def pgn_list(value: str) -> list[int]:
+        try:
+            return [int(pgn) for pgn in value.split(",") if pgn.strip()]
+        except ValueError as exc:
+            raise argparse.ArgumentTypeError(
+                f"not a comma-separated list of PGNs: {value!r}"
+            ) from exc
+
+    for name, help_text, baudrate in (
+        ("ngt1", "Connect to an Actisense NGT-1 over its USB serial port", 115200),
+        (
+            "ikonvert",
+            "Connect to a Digital Yacht iKonvert over its USB serial port",
+            230400,
+        ),
+    ):
+        serial_parser = subparsers.add_parser(name, help=help_text)
+        serial_parser.add_argument(
+            "--port",
+            type=str,
+            required=True,
+            help="Serial port (e.g. /dev/ttyUSB0 or COM3)",
+        )
+        serial_parser.add_argument(
+            "--baudrate",
+            type=int,
+            default=baudrate,
+            help=f"Serial speed (default {baudrate})",
+        )
+        serial_parser.add_argument(
+            "--tx-pgns",
+            type=pgn_list,
+            default=[],
+            help="Comma-separated PGNs to send (the gateway refuses others once any are named)",
+        )
+        _add_common_client_args(serial_parser)
+
+    maretron_parser = subparsers.add_parser(
+        "maretron", help="Connect to a Maretron IPG100/200 over TCP"
+    )
+    maretron_parser.add_argument(
+        "--server", type=str, required=True, help="Server IP address"
+    )
+    maretron_parser.add_argument(
+        "--port", type=int, required=True, help="Server port number"
+    )
+    maretron_parser.add_argument(
+        "--password", type=str, default="", help="IPG password (empty without security)"
+    )
+    _add_common_client_args(maretron_parser)
+
     # python-can generic CAN adapter
     can_parser = subparsers.add_parser(
         "can", help="Connect to a generic CAN adapter using the python-can library"
@@ -326,6 +381,35 @@ async def async_main():
         logger.info("Using WaveShareNmea2000Gateway with port: %s", args.port)
         client = WaveShareNmea2000Gateway(
             port=args.port, dump_to_file=args.dump_file, dump_pgns=args.dump_pgns
+        )
+        await interactive_client(client, json_output=args.json)
+
+    elif args.command in ("ngt1", "ikonvert"):
+        gateway_class = (
+            Ngt1Nmea2000Gateway if args.command == "ngt1" else IkonvertNmea2000Gateway
+        )
+        logger.info("Using %s with port: %s", gateway_class.__name__, args.port)
+        client = gateway_class(
+            args.port,
+            tx_pgns=args.tx_pgns,
+            baudrate=args.baudrate,
+            dump_to_file=args.dump_file,
+            dump_pgns=args.dump_pgns,
+        )
+        await interactive_client(client, json_output=args.json)
+
+    elif args.command == "maretron":
+        logger.info(
+            "Using MaretronIpgNmea2000Gateway with server: %s, port: %d",
+            args.server,
+            args.port,
+        )
+        client = MaretronIpgNmea2000Gateway(
+            args.server,
+            args.port,
+            password=args.password,
+            dump_to_file=args.dump_file,
+            dump_pgns=args.dump_pgns,
         )
         await interactive_client(client, json_output=args.json)
 

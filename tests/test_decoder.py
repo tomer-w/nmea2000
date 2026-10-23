@@ -10,17 +10,12 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from nmea2000 import decoder_formats
+from nmea2000 import decoder_formats, pgns
 from nmea2000.consts import FieldTypes, PhysicalQuantities
 from nmea2000.decoder import InvalidFrameError, NMEA2000Decoder, NMEA2000Message
 from nmea2000.encoder import create_encoder
 from nmea2000.input_formats import N2KFormat
 from nmea2000.message import IsoName, NMEA2000Field
-from nmea2000.pgns import (
-    decode_pgn_127503,
-    decode_pgn_129540,
-    encode_pgn_130823_navicoDataTypeSourceDirectory,
-)
 
 DUMP_TO_FILE = None
 # DUMP_TO_FILE = './dumps/pgn_dump.jsonl'
@@ -552,6 +547,13 @@ def test_include():
     _validate_65280_message(msg)
 
 
+def test_include_by_number_and_by_id():
+    """A PGN included by number is kept when the include list also names ids."""
+    decoder = _get_decoder(include_pgns=[65280, "vesselHeading"])
+    msg = decoder.decode("A000057.055 09FF7 0FF00 3F9FDCFFFFFFFFFF")
+    _validate_65280_message(msg)
+
+
 def test_include_with_network_map():
     """Keeps included PGNs decodable even when excluded claims are omitted from the network map."""
     decoder = _get_decoder(
@@ -914,7 +916,7 @@ def test_pgn_127503_multiple_lines():
     data_raw = int.from_bytes(payload, byteorder="little")
     data_length_bits = len(payload) * 8
 
-    msg = decode_pgn_127503(data_raw, data_length_bits)
+    msg = pgns.decode_pgn_127503(data_raw, data_length_bits)
 
     assert msg.get_list_field_size() == 2
 
@@ -982,7 +984,7 @@ def test_dynamic_field_length_overhead_decode_and_encode():
     assert msg.get_list_field_by_id(1, "dataType").value == "Current Set"
     assert msg.get_list_field_by_id(1, "value").value == b"\x00"
 
-    encoded = encode_pgn_130823_navicoDataTypeSourceDirectory(msg)
+    encoded = pgns.encode_pgn_130823_navicoDataTypeSourceDirectory(msg)
     assert encoded == bytes.fromhex(
         "13 99 ff 00 05 01 00 0a 00 55 02 bc 2f 00 96 50 c0 ff "
         "04 02 26 00 00 04 02 27 00 00 04 02 7d 00 00 "
@@ -1091,7 +1093,7 @@ def test_pgn_129540_five_sats_in_view():
     data_raw = int.from_bytes(payload, byteorder="little")
     data_length_bits = len(payload) * 8
 
-    msg = decode_pgn_129540(data_raw, data_length_bits)
+    msg = pgns.decode_pgn_129540(data_raw, data_length_bits)
 
     assert msg.PGN == 129540
     assert msg.id == "gnssSatsInView"

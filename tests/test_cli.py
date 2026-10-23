@@ -455,3 +455,87 @@ class TestCliTcpClientJson:
         finally:
             proc.terminate()
             await proc.wait()
+
+
+class TestCliCanboatGateways:
+    """The gateways driven by canboat's protocol implementations."""
+
+    @pytest.mark.asyncio
+    async def test_maretron_json(self):
+        """maretron --json logs in, switches the IPG to binary and prints frames."""
+        wind = bytes.fromhex("ff0b02983afaffff")
+        logged_in = asyncio.Event()
+
+        async def ipg(reader, writer):
+            try:
+                assert await reader.readuntil(b"\0") == b'CONNECT\t"pw"\t\tMOBILE\0'
+                writer.write(b"CONNECTED\t1234567\0")
+                await writer.drain()
+                assert await reader.readuntil(b"\0") == b"SET_MODE\tBINARY\0"
+                logged_in.set()
+                flags = 0x80 | (2 << 4) | (1 << 1) | 1  # single frame, prio 2
+                writer.write(bytes([0xA5, flags, 0xFD, 0x02, 23, len(wind)]) + wind)
+                await writer.drain()
+                await reader.read()
+            finally:
+                # Since Python 3.12.1 the server's wait_closed() waits for
+                # every connection, so ours must be closed.
+                writer.close()
+
+        server = await asyncio.start_server(ipg, "127.0.0.1", 0)
+        port = server.sockets[0].getsockname()[1]
+        proc = await asyncio.create_subprocess_exec(
+            *CLI_MODULE,
+            "maretron",
+            "--server",
+            "127.0.0.1",
+            "--port",
+            str(port),
+            "--password",
+            "pw",
+            "--json",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            stdin=asyncio.subprocess.PIPE,
+        )
+        assert proc.stdout is not None
+        try:
+            await asyncio.wait_for(logged_in.wait(), CLI_CONNECT_TIMEOUT)
+            data = None
+            while data is None:
+                line = (
+                    (await asyncio.wait_for(proc.stdout.readline(), timeout=5))
+                    .decode()
+                    .strip()
+                )
+                if line.startswith("{"):
+                    data = json.loads(line)
+            assert (data["PGN"], data["id"], data["source"]) == (130306, "windData", 23)
+        finally:
+            proc.terminate()
+            await proc.wait()
+            server.close()
+            await server.wait_closed()
+
+    @pytest.mark.parametrize("command", ["ngt1", "ikonvert"])
+    def test_serial_gateways_need_a_port(self, command):
+        result = subprocess.run(
+            [*CLI_MODULE, command, "--tx-pgns", "127250,129025"],
+            capture_output=True,
+            text=True,
+            timeout=CLI_COMMAND_TIMEOUT,
+            check=False,
+        )
+        assert result.returncode != 0
+        assert "--port" in result.stderr
+
+    def test_tx_pgns_must_be_numbers(self):
+        result = subprocess.run(
+            [*CLI_MODULE, "ngt1", "--port", "/dev/null", "--tx-pgns", "heading"],
+            capture_output=True,
+            text=True,
+            timeout=CLI_COMMAND_TIMEOUT,
+            check=False,
+        )
+        assert result.returncode != 0
+        assert "not a comma-separated list of PGNs" in result.stderr
