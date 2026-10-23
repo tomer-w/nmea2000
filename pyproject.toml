@@ -43,6 +43,7 @@ nmea2000-cli = "nmea2000.cli:main"
 manifest-path = "rust/Cargo.toml"
 module-name = "nmea2000._canboat"
 features = ["pyo3/extension-module"]
+include = ["LICENSE"]
 exclude = ["nmea2000/**/__pycache__/**"]
 
 [tool.ruff]
