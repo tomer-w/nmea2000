@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "nmea2000"
-version = "2026.8.1"
+version = "2026.10.3"
 description = "NMEA 2000 encoder and decoder"
 readme = "README.md"
 license = "Apache-2.0"
