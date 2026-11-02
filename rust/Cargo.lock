@@ -33,9 +33,9 @@ dependencies = [
 
 [[package]]
 name = "canboat"
-version = "9.0.0"
+version = "9.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5113ff05cd03ea3df91497cf6f11d00520d1f762d407f291ece911792336713"
+checksum = "db16b8668992c70121a4fcc0ec839d9d5d4d5fbe712de10930ca264f9d40dce2"
 dependencies = [
  "indexmap",
  "itoa",
