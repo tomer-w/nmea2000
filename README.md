@@ -42,6 +42,38 @@ cd nmea2000
 pip install .
 ```
 
+## Releases
+
+After checks pass on `main`, the Python package workflow calculates the next
+UTC CalVer version (`YYYY.M.PATCH`), commits it to `pyproject.toml`, and updates
+the Release Drafter draft to target that exact commit. The first release of
+each month uses patch `0`; subsequent releases increment the highest tagged
+patch. Months and patches have no leading zeroes, as required for canonical
+Python package versions (for example, `2026.11.0`).
+
+Further merges reuse the unpublished version, updating the draft's source
+commit and generated release notes rather than consuming patch numbers.
+Historical tags with or without `v`, including four-part versions, reserve
+their patch numbers. Future-dated source versions or tags fail preparation
+instead of downgrading. Version commits use the workflow token and do not
+trigger another workflow run.
+
+Publishing the draft still triggers the existing wheel/sdist checks and
+protected `pypi` environment. Publication verifies that the tag matches the
+committed source version and the publication's UTC month; builds never rewrite
+the version. Before publishing a draft left over from an earlier month, run
+the **Python package** workflow on `main` to refresh it. This manual trigger
+also recovers a draft update that failed after its version commit was pushed;
+an unpublished version is reused on retry. Runs fail if main's code or package
+configuration changed since their checks, or if a concurrent push prevents a
+fast-forward version commit; rerun on current `main`.
+
+The workflow needs permission to push version-only commits to `main`. If branch
+rules require pull requests for every change, release preparation will fail
+rather than bypass those rules. Existing tags are not moved and PyPI uploads
+do not skip existing files; a publishing retry must not overwrite an existing
+distribution. Release notes remain managed by Release Drafter.
+
 ## Usage
 
 ### Decode NMEA 2000 Frame (CLI)
