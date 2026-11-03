@@ -2,9 +2,9 @@ name: Sync canboat release
 
 # Opens a pull request moving nmea2000 to canboat's latest release: the
 # release's canboat.json and the same version of the `canboat` crate in
-# rust/Cargo.toml (and Cargo.lock). The pull request's own workflow builds and
-# tests it; if canboat changed any units, its generated-files check asks for
-# `python canboat2python.py` to be run on the branch.
+# rust/Cargo.toml (and Cargo.lock), then rebuilds the Python extension and
+# regenerates the native-unit table before opening the pull request. Every
+# schema version change needs regeneration, even if no units changed.
 #
 # Pull requests opened with the default GITHUB_TOKEN do not start other
 # workflows, so set the CANBOAT_SYNC_TOKEN secret (a fine-grained token with
@@ -69,6 +69,22 @@ jobs:
         working-directory: rust
         run: cargo update --package canboat
 
+      - name: Set up Python
+        if: steps.release.outputs.changed == 'true'
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Install updated package
+        if: steps.release.outputs.changed == 'true'
+        run: python -m pip install -e ".[dev]"
+
+      - name: Regenerate Python code
+        if: steps.release.outputs.changed == 'true'
+        run: |
+          python canboat2python.py
+          python check_generated_files.py
+
       - name: Create Pull Request
         if: steps.release.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v8
@@ -80,7 +96,7 @@ jobs:
           body: >-
             Moves `canboat.json` and the `canboat` crate to canboat's
             [${{ steps.release.outputs.tag }}](https://github.com/canboat/canboat/releases/tag/${{ steps.release.outputs.tag }})
-            release.
+            release and regenerates the Python native-unit table.
           commit-message: "Update canboat to ${{ steps.release.outputs.tag }}"
           base: main
           labels: "automation"
