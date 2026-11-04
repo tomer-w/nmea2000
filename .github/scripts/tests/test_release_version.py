@@ -4,7 +4,6 @@ import os
 import runpy
 import subprocess
 import sys
-from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -16,40 +15,45 @@ PROJECT = '[project]\nname = "nmea2000"\nversion = "2026.10.3"\n\n[tool.example]
 
 
 @pytest.mark.parametrize(
-    ("current", "tags", "timestamp", "expected"),
+    ("current", "tags", "requested", "expected"),
     [
-        ("2026.10.3", ["v2026.10.3"], "2026-10-31T23:59:59+00:00", "2026.10.4"),
-        ("2026.10.3", ["v2026.10.3"], "2026-11-01T00:00:00+00:00", "2026.11.0"),
-        ("2026.12.8", ["v2026.12.8"], "2027-01-01T00:00:00+00:00", "2027.1.0"),
-        ("2026.10.3", [], "2026-11-01T01:00:00+02:00", "2026.10.3"),
-        ("2026.10.3", ["2026.11.0", "v2026.11.4"], "2026-11-03T00:00:00Z", "2026.11.5"),
-        ("2026.10.3", ["v2026.11.9", "v2026.11.10"], "2026-11-03T00:00:00Z", "2026.11.11"),
-        ("2026.11.0", ["v2026.10.3"], "2026-11-03T00:00:00Z", "2026.11.0"),
-        ("2026.11.2", ["v2026.11.1"], "2026-11-03T00:00:00Z", "2026.11.2"),
-        ("2026.11.2", ["2026.11.2"], "2026-11-03T00:00:00Z", "2026.11.3"),
-        ("2026.10.3", ["v2026.11.1.1"], "2026-11-03T00:00:00Z", "2026.11.2"),
-        ("2026.10.3", ["v2026.11.1rc1", "untagged-abcd"], "2026-11-03T00:00:00Z", "2026.11.2"),
-        ("2026.10.3", ["v2026.11.01"], "2026-11-03T00:00:00Z", "2026.11.2"),
+        ("2026.10.3", ["v2026.10.3"], "", "2026.10.4"),
+        ("2026.12.8", ["v2026.12.8"], "", "2026.12.9"),
+        ("2026.10.3", ["v2026.10.3"], "2026.11.0", "2026.11.0"),
+        ("2026.12.8", ["v2026.12.8"], "2027.1.0", "2027.1.0"),
+        ("2026.10.3", [], "", "2026.10.3"),
+        ("2026.10.3", ["2026.11.0", "v2026.11.4"], "", "2026.11.5"),
+        ("2026.10.3", ["v2026.11.9", "v2026.11.10"], "", "2026.11.11"),
+        ("2026.11.0", ["v2026.10.3"], "", "2026.11.0"),
+        ("2026.11.0", ["v2026.10.3"], "2026.11.0", "2026.11.0"),
+        ("2026.11.2", ["v2026.11.1"], "", "2026.11.2"),
+        ("2026.11.2", ["2026.11.2"], "", "2026.11.3"),
+        ("2026.10.3", ["v2026.11.1.1"], "", "2026.11.2"),
+        ("2026.10.3", ["v2026.11.1rc1", "untagged-abcd"], "", "2026.11.2"),
+        ("2026.10.3", ["v2026.11.01"], "", "2026.11.2"),
     ],
 )
-def test_next_calver(current, tags, timestamp, expected):
+def test_next_calver(current, tags, requested, expected):
     """Reserve numeric tag versions and reuse an unpublished source version."""
-    assert RELEASE["next_version"](current, tags, datetime.fromisoformat(timestamp)) == expected
+    assert RELEASE["next_version"](current, tags, requested) == expected
 
 
 @pytest.mark.parametrize(
-    ("current", "tags", "timestamp", "message"),
+    ("current", "tags", "requested", "message"),
     [
-        ("2026.12.0", [], "2026-11-03T00:00:00Z", "ahead"),
-        ("2026.10.3", ["v2027.1.0"], "2026-11-03T00:00:00Z", "ahead"),
-        ("2026.10.3", ["v2026.13.0"], "2026-11-03T00:00:00Z", "Invalid calendar"),
-        ("2026.10.3", [], "2026-11-03T00:00:00", "timezone-aware"),
+        ("2026.12.0", [], "2026.11.0", "downgrade"),
+        ("2026.10.3", ["v2027.1.0"], "2026.11.0", "reuse"),
+        ("2026.10.3", ["v2026.13.0"], "", "Invalid calendar"),
+        ("2026.10.3", ["v2026.11.0"], "2026.11.0", "reuse"),
+        ("2026.10.3", ["2026.11.0"], "2026.11.0", "reuse"),
+        ("2026.10.3", ["v2026.11.0.1"], "2026.11.0", "reuse"),
+        ("2026.10.3", [], "2026.11.00", "canonical"),
     ],
 )
-def test_calver_fails_closed(current, tags, timestamp, message):
+def test_calver_fails_closed(current, tags, requested, message):
     """Never silently downgrade or interpret an ambiguous calendar."""
     with pytest.raises(ValueError, match=message):
-        RELEASE["next_version"](current, tags, datetime.fromisoformat(timestamp))
+        RELEASE["next_version"](current, tags, requested)
 
 
 @pytest.mark.parametrize(
@@ -73,24 +77,23 @@ def test_stamp_changes_only_project_version():
 
 
 @pytest.mark.parametrize("tag", ["v2026.10.3", "2026.10.3"])
-def test_verify_uses_publication_timestamp_for_retries(tag):
-    """Re-running a published release next month still verifies its identity."""
-    assert RELEASE["verify"](PROJECT, tag, "2026-11-01T01:00:00+02:00") == "2026.10.3"
+def test_verify_does_not_depend_on_calendar_date(tag):
+    """Publication and retries verify identity without forcing a month change."""
+    assert RELEASE["verify"](PROJECT, tag) == "2026.10.3"
 
 
 @pytest.mark.parametrize(
-    ("tag", "published_at", "message"),
+    ("tag", "message"),
     [
-        ("v2026.10.4", "2026-10-31T23:59:59Z", "does not match"),
-        ("v2026.10.3", "2026-11-01T00:00:00Z", "UTC month"),
-        ("v2026.10.3", "2026-10-31T23:59:59", "timezone"),
-        ("v2026.10.03", "2026-10-31T23:59:59Z", "canonical"),
+        ("v2026.10.4", "does not match"),
+        ("v2026.11.0", "does not match"),
+        ("v2026.10.03", "canonical"),
     ],
 )
-def test_verify_rejects_mismatched_or_stale_releases(tag, published_at, message):
+def test_verify_rejects_mismatched_releases(tag, message):
     """Building must not hide an incorrect release by rewriting its source."""
     with pytest.raises(ValueError, match=message):
-        RELEASE["verify"](PROJECT, tag, published_at)
+        RELEASE["verify"](PROJECT, tag)
 
 
 def git(directory, *args):
@@ -102,8 +105,7 @@ def git(directory, *args):
 
 def test_prepare_cli_persists_version_and_reuses_it_on_retry(tmp_path):
     """Exercise tags, source commit, retry, and publication against real Git."""
-    now = datetime.now(UTC)
-    version = f"{now.year}.{now.month}.0"
+    version = "2026.10.0"
     project = PROJECT.replace("2026.10.3", version)
     path = tmp_path / "pyproject.toml"
     path.write_text(project, encoding="utf-8")
@@ -126,7 +128,7 @@ def test_prepare_cli_persists_version_and_reuses_it_on_retry(tmp_path):
 
     prepared = run("--prepare", tested_ref)
     assert prepared.returncode == 0, prepared.stderr
-    expected = f"{now.year}.{now.month}.1"
+    expected = "2026.10.1"
     assert output.read_text(encoding="utf-8") == f"value={expected}\n"
     assert RELEASE["project_version"](path.read_text(encoding="utf-8")) == expected
     git(tmp_path, "add", "pyproject.toml")
@@ -138,15 +140,30 @@ def test_prepare_cli_persists_version_and_reuses_it_on_retry(tmp_path):
     assert output.read_text(encoding="utf-8").splitlines() == [f"value={expected}"] * 2
     git(tmp_path, "tag", f"v{expected}")
     published_env = {
-        **env, "RELEASE_TAG": f"v{expected}", "RELEASE_PUBLISHED_AT": now.isoformat(),
+        **env, "RELEASE_TAG": f"v{expected}",
     }
     published = run(environment=published_env)
     assert published.returncode == 0, published.stderr
     assert git(tmp_path, "diff") == ""
     previous_output = output.read_text(encoding="utf-8")
-    invalid = run(environment={**published_env, "RELEASE_TAG": f"v{now.year}.{now.month}.9"})
+    invalid = run(environment={**published_env, "RELEASE_TAG": "v2026.10.9"})
     assert invalid.returncode != 0
     assert "does not match" in invalid.stderr
+    assert output.read_text(encoding="utf-8") == previous_output
+    assert git(tmp_path, "diff") == ""
+
+    manual = run("--prepare", tested_ref, "--version", "2026.11.0")
+    assert manual.returncode == 0, manual.stderr
+    assert RELEASE["project_version"](path.read_text(encoding="utf-8")) == "2026.11.0"
+    git(tmp_path, "add", "pyproject.toml")
+    git(tmp_path, "commit", "--quiet", "-m", "Persist manual month change")
+    retry = run("--prepare", tested_ref, "--version", "2026.11.0")
+    assert retry.returncode == 0, retry.stderr
+    assert git(tmp_path, "diff") == ""
+    previous_output = output.read_text(encoding="utf-8")
+    collision = run("--prepare", tested_ref, "--version", expected)
+    assert collision.returncode != 0
+    assert "downgrade" in collision.stderr
     assert output.read_text(encoding="utf-8") == previous_output
     assert git(tmp_path, "diff") == ""
 
@@ -170,20 +187,22 @@ def test_workflows_prepare_before_drafting_and_verify_before_building():
     build = (ROOT / ".github" / "workflows" / "python-build.yml").read_text(encoding="utf-8")
     draft = build.split("  update_release_draft:", 1)[1]
     required = [
-        "Calculate next UTC CalVer", "Persist package version", "release-drafter/release-drafter@v7",
+        "Select release version", "Persist package version", "release-drafter/release-drafter@v7",
     ]
     positions = [draft.index(step) for step in required]
     assert positions == sorted(positions)
     assert "needs:\n      - package\n      - quality\n      - test" in draft
-    assert 'python .github/scripts/set_release_version.py --prepare "$TESTED_REF"' in draft
+    assert 'python .github/scripts/set_release_version.py --prepare "$TESTED_REF" --version "$REQUESTED_VERSION"' in draft
+    assert "REQUESTED_VERSION: ${{ inputs.release_version }}" in draft
     assert "git push origin HEAD:main" in draft
     assert "commitish: ${{ steps.source.outputs.sha }}" in draft
     for field in ("version:", "tag:", "name:"):
         assert f"{field} {'v' if field != 'version:' else ''}${{{{ steps.version.outputs.value }}}}" in draft
     assert "workflow_dispatch:" in build
+    assert "release_version:" in build
     publish = (ROOT / ".github" / "workflows" / "python-publish.yml").read_text(encoding="utf-8")
     assert publish.count("needs: [release-version]") == 2
-    assert "RELEASE_PUBLISHED_AT: ${{ github.event.release.published_at }}" in publish
+    assert "RELEASE_PUBLISHED_AT" not in publish
     assert "Apply release version" not in publish
     assert "id-token: write" in publish
     assert "name: pypi" in publish

@@ -1,11 +1,10 @@
-"""Prepare UTC CalVer drafts, or verify an immutable release's source version."""
+"""Persist a release version before drafting, or verify tagged source identity."""
 
 import argparse
 import os
 import re
 import subprocess
 import tomllib
-from datetime import UTC, datetime
 from pathlib import Path
 
 from packaging.version import InvalidVersion, Version
@@ -18,14 +17,9 @@ def calver(value: str) -> Version:
     return Version(value)
 
 
-def next_version(current: str, tags: list[str], now: datetime) -> str:
-    """Reuse an unpublished source version, otherwise advance beyond all tags."""
+def next_version(current: str, tags: list[str], requested: str = "") -> str:
+    """Reuse an unpublished version or bump its patch; month changes are manual."""
     source = calver(current)
-    if now.utcoffset() is None:
-        raise ValueError("CalVer calculation requires a timezone-aware timestamp")
-    today = now.astimezone(UTC)
-    month = (today.year, today.month)
-    versions = [source]
     tagged = []
     for tag in tags:
         try:
@@ -40,14 +34,16 @@ def next_version(current: str, tags: list[str], now: datetime) -> str:
         # Historical releases include fourth numeric components. Reserve their
         # entire patch number rather than producing a lower three-part version.
         tagged.append(version)
-        versions.append(version)
-    if any(version.release[:2] > month for version in versions):
-        raise ValueError("Source or tags are ahead of the current UTC month; refusing a downgrade")
-    monthly_tags = [version for version in tagged if version.release[:2] == month]
-    if source.release[:2] == month and all(source > version for version in monthly_tags):
+    if requested:
+        candidate = calver(requested)
+        if candidate < source or any(candidate <= version for version in tagged):
+            raise ValueError("Requested version must not downgrade source or reuse an existing tag version")
+        return str(candidate)
+    if all(source > version for version in tagged):
         return str(source)
-    patch = max((version.release[2] for version in monthly_tags), default=-1) + 1
-    return f"{today.year}.{today.month}.{patch}"
+    latest = max([source, *tagged])
+    year, month, patch = latest.release[:3]
+    return f"{year}.{month}.{patch + 1}"
 
 
 def project_version(project: str) -> str:
@@ -76,7 +72,7 @@ def git(*args: str) -> str:
     return subprocess.check_output(["git", *args], text=True, encoding="utf-8")
 
 
-def prepare(project: str, tested_ref: str) -> str:
+def prepare(project: str, tested_ref: str, requested: str = "") -> str:
     """Only prepare checked code; allow a previous run's version-only commit."""
     changed = git("diff", "--name-only", tested_ref, "HEAD").splitlines()
     if set(changed) - {"pyproject.toml"}:
@@ -85,20 +81,14 @@ def prepare(project: str, tested_ref: str) -> str:
     if with_version(tested_project, project_version(project)) != project:
         raise ValueError("Package configuration changed since CI ran; rerun on current main")
     return next_version(
-        project_version(project), git("tag", "--list").splitlines(), datetime.now(UTC)
+        project_version(project), git("tag", "--list").splitlines(), requested
     )
 
 
-def verify(project: str, tag: str, published_at: str) -> str:
+def verify(project: str, tag: str) -> str:
     """Check release identity without rewriting the tagged source."""
     version = tag.removeprefix("v")
-    parsed = calver(version)
-    published = datetime.fromisoformat(published_at)
-    if published.utcoffset() is None:
-        raise ValueError("Release publication timestamp must include a timezone")
-    published = published.astimezone(UTC)
-    if parsed.release[:2] != (published.year, published.month):
-        raise ValueError("Release tag is not in its publication's UTC month; refresh the draft before publishing")
+    calver(version)
     if project_version(project) != version:
         raise ValueError(f"Release tag {tag!r} does not match the committed package version")
     return version
@@ -108,15 +98,18 @@ def main() -> None:
     """Run release preparation or fail-closed publication verification."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--prepare", metavar="TESTED_REF")
+    parser.add_argument("--version", default="", help="Explicit YYYY.M.PATCH for a manual month/year change")
     args = parser.parse_args()
+    if args.version and not args.prepare:
+        parser.error("--version requires --prepare")
     path = Path("pyproject.toml")
     project = path.read_text(encoding="utf-8")
     try:
         if args.prepare:
-            version = prepare(project, args.prepare)
+            version = prepare(project, args.prepare, args.version)
             path.write_text(with_version(project, version), encoding="utf-8")
         else:
-            version = verify(project, os.environ["RELEASE_TAG"], os.environ["RELEASE_PUBLISHED_AT"])
+            version = verify(project, os.environ["RELEASE_TAG"])
     except ValueError as error:
         raise SystemExit(str(error)) from error
     with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:

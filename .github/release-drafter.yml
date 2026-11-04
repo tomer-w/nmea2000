@@ -1,6 +1,6 @@
 name-template: "v$RESOLVED_VERSION"
 tag-template: "v$RESOLVED_VERSION"
-# python-build.yml supplies the UTC CalVer version and immutable source commit.
+# python-build.yml supplies the persisted version and immutable source commit.
 
 change-template: "- #$NUMBER - $TITLE (@$AUTHOR)"
 categories:
