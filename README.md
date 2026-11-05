@@ -44,39 +44,54 @@ pip install .
 
 ## Releases
 
-After checks pass on `main`, the Python package workflow calculates the next
-patch version, commits it to `pyproject.toml`, and updates the Release Drafter
-draft to target that exact commit. Versions use CalVer (`YYYY.M.PATCH`), but
+Run **Actions → Release Python Package → Run workflow → main** to prepare
+and publish a release in one run. Leave `release_version` empty for automatic
+patch selection, or enter a version such as `2026.11.0` to change the month/year.
+There is no separate draft-publishing step. Normal PR/push CI does not commit
+versions or maintain release drafts.
+
+Versions use CalVer (`YYYY.M.PATCH`), but
 month/year changes are manual, not based on the workflow's date. Months and
 patches have no leading zeroes, as required for canonical Python package
 versions (for example, `2026.11.0`).
 
-Further merges reuse the unpublished version, updating the draft's source
-commit and generated release notes rather than consuming patch numbers.
+The workflow reuses an unpublished source version, otherwise increments the
+highest reserved patch number.
 Historical tags with or without `v`, including four-part versions, reserve
 their patch numbers. Version commits use the workflow token and do not trigger
 another workflow run.
 
-Publishing the draft still triggers the existing wheel/sdist checks and
-protected `pypi` environment. Publication verifies that the tag matches the
-committed source version; builds never rewrite the version. To move to a new
-month or year, run **Python package → Run workflow → main** and enter
-`release_version`, such as `2026.11.0`. After the workflow succeeds, publish
-the updated draft. Do not change only the draft's tag in GitHub: that would
-not update the committed source, and publication would fail verification.
+The workflow first commits the selected version to `main`, then runs normal
+CI and all release wheel/sdist checks against that immutable commit, including
+native ARM64 and emulated 32-bit Raspberry Pi verification. It verifies every
+distribution's version and the sdist's package configuration before creating
+the matching tag and GitHub release with generated Release Drafter notes.
+PyPI publishing then uses the existing protected `pypi` environment; approve
+its deployment if required. Builds never rewrite the source version, and
+publishing a release in GitHub does not trigger another publishing run.
 Explicit versions must not downgrade the source or collide with existing tags.
 Leaving the input empty keeps automatic patch increments without changing months.
 
-The manual trigger also recovers a draft update that failed after its version
-commit was pushed; an unpublished version is reused on retry. Runs fail if main's
-code or package configuration changed since their checks, or if a concurrent
-push prevents a fast-forward version commit; rerun on current `main`.
+Release runs are serialized. Use **Re-run failed jobs** after a build, release
+creation or deployment failure to retain the prepared SHA/version and successful
+artifacts. A retry can reuse an identical tag/release but never moves a tag or
+rewrites a published release. Before a tag exists, a new dispatch reuses the
+unpublished version. After tagging, a new dispatch (or re-running all jobs) with
+an empty input selects the next patch, while an explicit colliding version fails.
+Runs fail if main's code or package configuration changed since dispatch, or
+if a concurrent push prevents a fast-forward version commit; dispatch on current
+`main` instead.
 
 The workflow needs permission to push version-only commits to `main`. If branch
 rules require pull requests for every change, release preparation will fail
 rather than bypass those rules. Existing tags are not moved and PyPI uploads
-do not skip existing files; a publishing retry must not overwrite an existing
-distribution. Release notes remain managed by Release Drafter.
+do not skip existing files; a partial PyPI upload requires manual investigation
+rather than overwriting or silently skipping distributions. The trusted PyPI
+publisher remains configured for `python-publish.yml` and the `pypi` environment.
+Release Drafter generates notes within the release run without modifying
+unrelated existing drafts. An old untagged draft for the selected version can
+be updated only if its source is an ancestor of the prepared commit and already
+has that same version; do not manually publish stale drafts.
 
 ## Usage
 
