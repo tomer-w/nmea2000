@@ -471,11 +471,16 @@ pip install -e .[dev]
 
 ### Running Tests
 
-To run the tests, use:
+Runtime tests live in `tests/`. Repository-only generator and workflow tests
+live in `.github/scripts/tests/` and run separately in source CI. To run both:
 
 ```bash
-pytest
+python -m pytest tests .github/scripts/tests
 ```
+
+Release verification copies only `tests/` outside the checkout to exercise the
+installed wheel, including on the emulated Raspberry Pi. Keep tests requiring
+repository scripts or workflow files in `.github/scripts/tests/`.
 
 ### How decoding works
 
