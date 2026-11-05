@@ -44,54 +44,49 @@ pip install .
 
 ## Releases
 
-Run **Actions → Release Python Package → Run workflow → main** to prepare
-and publish a release in one run. Leave `release_version` empty for automatic
-patch selection, or enter a version such as `2026.11.0` to change the month/year.
-There is no separate draft-publishing step. Normal PR/push CI does not commit
-versions or maintain release drafts.
+Start from **Releases → Draft a new release**, select **main** as the target,
+create a new tag such as `v2026.11.0`, and set the release title to
+`v2026.11.0` (or `2026.11.0`). Click **Publish release** to start the entire
+release workflow. No manual Actions run is needed.
 
-Versions use CalVer (`YYYY.M.PATCH`), but
-month/year changes are manual, not based on the workflow's date. Months and
-patches have no leading zeroes, as required for canonical Python package
-versions (for example, `2026.11.0`).
+The title selects the version; the tag must match `vVERSION`. Versions use
+canonical CalVer (`YYYY.M.PATCH`), with no leading zeroes in months or patches.
+Choose each patch in the title. Month/year changes are also explicit, never
+based on the workflow's date. Versions must not downgrade the source or reuse
+another tag/release version. Historical tags with or without `v`, including
+four-part versions, reserve their patch numbers.
 
-The workflow reuses an unpublished source version, otherwise increments the
-highest reserved patch number.
-Historical tags with or without `v`, including four-part versions, reserve
-their patch numbers. Version commits use the workflow token and do not trigger
-another workflow run.
+GitHub creates the tag before Actions starts. The workflow first commits the
+title-selected version to `main`, then runs normal CI and all release
+wheel/sdist checks against that immutable commit, including native ARM64 and
+emulated 32-bit Raspberry Pi verification. After verification it moves **only
+the triggering release's tag** to that prepared commit, using an exact
+compare-and-swap lease, and updates that release's generated notes. Historical
+tags, other releases and drafts are not changed. Updating notes does not
+start another publishing run.
 
-The workflow first commits the selected version to `main`, then runs normal
-CI and all release wheel/sdist checks against that immutable commit, including
-native ARM64 and emulated 32-bit Raspberry Pi verification. It verifies every
-distribution's version and the sdist's package configuration before creating
-the matching tag and GitHub release with generated Release Drafter notes.
-PyPI publishing then uses the existing protected `pypi` environment; approve
-its deployment if required. Builds never rewrite the source version, and
-publishing a release in GitHub does not trigger another publishing run.
-Explicit versions must not downgrade the source or collide with existing tags.
-Leaving the input empty keeps automatic patch increments without changing months.
+PyPI publication uses the existing protected `pypi` environment; approve its
+deployment if required. Every distribution's version and the sdist's package
+configuration are checked against the prepared source. The GitHub release is
+already visible while checks run; its initial tag may not contain the selected
+version until verification finishes. PyPI publishing waits for all verification
+to pass.
+Normal PR/push CI does not commit versions or maintain release drafts.
 
-Release runs are serialized. Use **Re-run failed jobs** after a build, release
-creation or deployment failure to retain the prepared SHA/version and successful
-artifacts. A retry can reuse an identical tag/release but never moves a tag or
-rewrites a published release. Before a tag exists, a new dispatch reuses the
-unpublished version. After tagging, a new dispatch (or re-running all jobs) with
-an empty input selects the next patch, while an explicit colliding version fails.
-Runs fail if main's code or package configuration changed since dispatch, or
-if a concurrent push prevents a fast-forward version commit; dispatch on current
-`main` instead.
+Release runs are serialized. Use **Re-run failed jobs** after a failure to
+retain the prepared SHA/version and successful artifacts. Re-running all jobs
+also recognizes the same run's version-only commit and already-aligned tag;
+it does not consume a new patch. Changes to the release title/tag, a newer
+published release, a conflicting tag update, or unrelated changes to `main`
+during preparation stop the run rather than overwrite another release.
+Publish from current `main`, not an old tag or stale draft target.
 
-The workflow needs permission to push version-only commits to `main`. If branch
-rules require pull requests for every change, release preparation will fail
-rather than bypass those rules. Existing tags are not moved and PyPI uploads
-do not skip existing files; a partial PyPI upload requires manual investigation
-rather than overwriting or silently skipping distributions. The trusted PyPI
-publisher remains configured for `python-publish.yml` and the `pypi` environment.
-Release Drafter generates notes within the release run without modifying
-unrelated existing drafts. An old untagged draft for the selected version can
-be updated only if its source is an ancestor of the prepared commit and already
-has that same version; do not manually publish stale drafts.
+The workflow must be allowed to push version-only commits to `main` and update
+the triggering tag. Branch/tag protections are not bypassed; incompatible
+rules cause an explicit failure. PyPI uploads do not skip existing files, so a
+partial upload requires manual investigation rather than overwriting or
+silently skipping distributions. The trusted PyPI publisher remains configured
+for `python-publish.yml` and the `pypi` environment.
 
 ## Usage
 
