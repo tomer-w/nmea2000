@@ -1,6 +1,12 @@
 name: Python package
 
 on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Optional YYYY.M.PATCH version for a manual month/year change (e.g. 2026.11.0)"
+        required: false
+        type: string
   push:
     branches:
       - main
@@ -38,6 +44,10 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -e ".[dev]"
       - name: Check generated files
         run: python check_generated_files.py
+      - name: Test release version automation
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: python -m pytest -p pytest_asyncio.plugin .github/scripts/tests
       - name: Rustfmt
         working-directory: rust
         run: cargo fmt --check
@@ -45,7 +55,7 @@ jobs:
         working-directory: rust
         run: cargo clippy --all-targets -- -D warnings
       - name: Lint with Ruff
-        run: ruff check . --line-length 127
+        run: ruff check . .github/scripts --line-length 127
       - name: Lint with Pylint
         run: pylint nmea2000 tests canboat2python.py check_generated_files.py import_tests.py --reports=no
       - name: Type-check with Pyright
@@ -120,7 +130,10 @@ jobs:
           path: dist/
 
   update_release_draft:
-    if: github.event_name == 'push'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    concurrency:
+      group: calver-release
+      cancel-in-progress: false
     permissions:
       # write permission is required to create a github release
       contents: write
@@ -130,7 +143,40 @@ jobs:
       - test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Select release version
+        id: version
+        env:
+          TESTED_REF: ${{ github.sha }}
+          REQUESTED_VERSION: ${{ inputs.release_version }}
+        run: |
+          python -m pip install --upgrade packaging
+          python .github/scripts/set_release_version.py --prepare "$TESTED_REF" --version "$REQUESTED_VERSION"
+      - name: Persist package version
+        id: source
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- pyproject.toml; then
+            git add pyproject.toml
+            git commit -m "Prepare release v$VERSION"
+            git push origin HEAD:main
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       # Drafts your next Release notes as Pull Requests are merged into "main"
       - uses: release-drafter/release-drafter@v7
+        with:
+          version: ${{ steps.version.outputs.value }}
+          tag: v${{ steps.version.outputs.value }}
+          name: v${{ steps.version.outputs.value }}
+          commitish: ${{ steps.source.outputs.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

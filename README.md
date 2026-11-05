@@ -42,6 +42,42 @@ cd nmea2000
 pip install .
 ```
 
+## Releases
+
+After checks pass on `main`, the Python package workflow calculates the next
+patch version, commits it to `pyproject.toml`, and updates the Release Drafter
+draft to target that exact commit. Versions use CalVer (`YYYY.M.PATCH`), but
+month/year changes are manual, not based on the workflow's date. Months and
+patches have no leading zeroes, as required for canonical Python package
+versions (for example, `2026.11.0`).
+
+Further merges reuse the unpublished version, updating the draft's source
+commit and generated release notes rather than consuming patch numbers.
+Historical tags with or without `v`, including four-part versions, reserve
+their patch numbers. Version commits use the workflow token and do not trigger
+another workflow run.
+
+Publishing the draft still triggers the existing wheel/sdist checks and
+protected `pypi` environment. Publication verifies that the tag matches the
+committed source version; builds never rewrite the version. To move to a new
+month or year, run **Python package → Run workflow → main** and enter
+`release_version`, such as `2026.11.0`. After the workflow succeeds, publish
+the updated draft. Do not change only the draft's tag in GitHub: that would
+not update the committed source, and publication would fail verification.
+Explicit versions must not downgrade the source or collide with existing tags.
+Leaving the input empty keeps automatic patch increments without changing months.
+
+The manual trigger also recovers a draft update that failed after its version
+commit was pushed; an unpublished version is reused on retry. Runs fail if main's
+code or package configuration changed since their checks, or if a concurrent
+push prevents a fast-forward version commit; rerun on current `main`.
+
+The workflow needs permission to push version-only commits to `main`. If branch
+rules require pull requests for every change, release preparation will fail
+rather than bypass those rules. Existing tags are not moved and PyPI uploads
+do not skip existing files; a publishing retry must not overwrite an existing
+distribution. Release notes remain managed by Release Drafter.
+
 ## Usage
 
 ### Decode NMEA 2000 Frame (CLI)
