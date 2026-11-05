@@ -191,17 +191,16 @@ def test_single_release_workflow_preserves_source_and_verification_gates():
     assert "release-drafter" not in build
     assert build.count("ref: ${{ inputs.source_sha || github.sha }}") == 3
     publish = (ROOT / ".github" / "workflows" / "python-publish.yml").read_text(encoding="utf-8")
-    assert "workflow_dispatch:" in publish and "release_version:" in publish
-    assert "\n  release:" not in publish and "types: [published]" not in publish
-    assert 'python .github/scripts/set_release_version.py --prepare "$TESTED_REF" --version "$REQUESTED_VERSION"' in publish
-    assert "REQUESTED_VERSION: ${{ inputs.release_version }}" in publish
-    assert "git push origin HEAD:main" in publish
-    assert publish.index("Select release version") < publish.index("Persist package version")
+    assert "\n  release:" in publish and "types: [published]" in publish
+    assert "workflow_dispatch:" not in publish and "release_version:" not in publish
+    assert "python .github/scripts/published_release.py prepare" in publish
+    assert "python .github/scripts/published_release.py finalize" in publish
     assert "uses: ./.github/workflows/python-build.yml" in publish
     assert "source_sha: ${{ needs.prepare.outputs.sha }}" in publish
     assert publish.count("ref: ${{ needs.prepare.outputs.sha }}") == 5
     assert "needs: [prepare, ci, verify, verify-raspberry-pi]" in publish
     assert "dry-run: true" in publish
+    assert "from: ${{ needs.prepare.outputs.previous_ref }}" in publish
     assert "commitish: ${{ needs.prepare.outputs.sha }}" in publish
     assert "python .github/scripts/verify_distributions.py" in publish
     assert "--no-index --no-deps --only-binary :all:" in publish
@@ -217,4 +216,4 @@ def test_single_release_workflow_preserves_source_and_verification_gates():
     assert "skip-existing" not in publish
     assert "group: calver-release" in publish
     assert "cancel-in-progress: false" in publish
-    assert "force" not in publish
+    assert "create_release.py" not in publish

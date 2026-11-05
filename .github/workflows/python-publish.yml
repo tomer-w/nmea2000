@@ -1,4 +1,4 @@
-# Prepares, verifies and publishes a release in one manually initiated run.
+# Prepares and publishes distributions when a GitHub release is published.
 #
 # nmea2000 contains a compiled core (rust/, built with maturin), so a release
 # is a set of wheels, one per platform, plus a source distribution. The core
@@ -13,12 +13,8 @@
 name: Release Python Package
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: "Optional YYYY.M.PATCH for a manual month/year change (e.g. 2026.11.0)"
-        required: false
-        type: string
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -34,12 +30,11 @@ jobs:
       contents: write
     outputs:
       version: ${{ steps.version.outputs.value }}
-      sha: ${{ steps.source.outputs.sha }}
+      sha: ${{ steps.version.outputs.sha }}
+      tag_oid: ${{ steps.version.outputs.tag_oid }}
+      previous_ref: ${{ steps.version.outputs.previous_ref }}
     runs-on: ubuntu-latest
     steps:
-      - name: Require main
-        if: github.ref != 'refs/heads/main'
-        run: echo "Releases must be dispatched from main" >&2; exit 1
       - uses: actions/checkout@v7
         with:
           ref: main
@@ -47,28 +42,13 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
-      - name: Select release version
+      - name: Persist version from release title
         id: version
         env:
-          TESTED_REF: ${{ github.sha }}
-          REQUESTED_VERSION: ${{ inputs.release_version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python -m pip install --upgrade packaging
-          python .github/scripts/set_release_version.py --prepare "$TESTED_REF" --version "$REQUESTED_VERSION"
-      - name: Persist package version
-        id: source
-        env:
-          VERSION: ${{ steps.version.outputs.value }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- pyproject.toml; then
-            git add pyproject.toml
-            git commit -m "Prepare release v$VERSION"
-          fi
-          # A concurrent push must fail even when this version was already persisted.
-          git push origin HEAD:main
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          python .github/scripts/published_release.py prepare
 
   ci:
     needs: [prepare]
@@ -223,7 +203,7 @@ jobs:
             '
 
   github-release:
-    name: Create matching tag and release
+    name: Align triggering tag and generated notes
     needs: [prepare, ci, verify, verify-raspberry-pi]
     runs-on: ubuntu-latest
     permissions:
@@ -242,21 +222,22 @@ jobs:
         uses: release-drafter/release-drafter@v7
         with:
           dry-run: true
+          from: ${{ needs.prepare.outputs.previous_ref }}
           version: ${{ needs.prepare.outputs.version }}
           tag: v${{ needs.prepare.outputs.version }}
           name: v${{ needs.prepare.outputs.version }}
           commitish: ${{ needs.prepare.outputs.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create release without moving existing tags
+      - name: Align only the triggering release tag
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_TAG: v${{ needs.prepare.outputs.version }}
           RELEASE_SHA: ${{ needs.prepare.outputs.sha }}
+          RELEASE_TAG_OID: ${{ needs.prepare.outputs.tag_oid }}
           RELEASE_NOTES: ${{ steps.notes.outputs.body }}
         run: |
           python -m pip install --upgrade packaging
-          python .github/scripts/create_release.py
+          python .github/scripts/published_release.py finalize
 
   pypi-publish:
     runs-on: ubuntu-latest

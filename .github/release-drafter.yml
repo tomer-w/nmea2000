@@ -1,7 +1,7 @@
 name-template: "v$RESOLVED_VERSION"
 tag-template: "v$RESOLVED_VERSION"
 # python-publish.yml supplies the persisted version and immutable source commit.
-# Notes are generated in dry-run mode; merges do not create or update drafts.
+# Notes are generated from the prior release in dry-run mode; merges do not update drafts.
 
 change-template: "- #$NUMBER - $TITLE (@$AUTHOR)"
 categories:
