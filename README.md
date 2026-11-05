@@ -76,7 +76,9 @@ Normal PR/push CI does not commit versions or maintain release drafts.
 Release runs are serialized. Use **Re-run failed jobs** after a failure to
 retain the prepared SHA/version and successful artifacts. Re-running all jobs
 also recognizes the same run's version-only commit and already-aligned tag;
-it does not consume a new patch. Changes to the release title/tag, a newer
+it does not consume a new patch. Retries keep the original workflow and source:
+they do not pick up code or workflow fixes merged after the release started.
+Changes to the release title/tag, a newer
 published release, a conflicting tag update, or unrelated changes to `main`
 during preparation stop the run rather than overwrite another release.
 Publish from current `main`, not an old tag or stale draft target.

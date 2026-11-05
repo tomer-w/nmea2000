@@ -153,6 +153,9 @@ jobs:
           python -m pip install "nmea2000==${RELEASE_TAG#v}"
           # Outside the source tree, so the installed wheel is what runs.
           cp -r tests "$RUNNER_TEMP/tests"
+          cp canboat2python.py "$RUNNER_TEMP/"
+          mkdir -p "$RUNNER_TEMP/.github/workflows"
+          cp .github/workflows/copy-canboat-json.yml "$RUNNER_TEMP/.github/workflows/"
           cd "$RUNNER_TEMP"
           python - <<'PY'
           import os
@@ -193,6 +196,9 @@ jobs:
           mkdir pi
           cp dist/*_armv7l.whl pi/
           cp -r tests pi/tests
+          cp canboat2python.py pi/
+          mkdir -p pi/.github/workflows
+          cp .github/workflows/copy-canboat-json.yml pi/.github/workflows/
           docker run --rm --platform linux/arm/v7 -e QEMU_CPU=cortex-a7 -e RELEASE_VERSION \
             -v "$PWD/pi:/pi" -w /pi python:3.11-slim-bookworm sh -ec '
               python3 -m pip install --disable-pip-version-check \

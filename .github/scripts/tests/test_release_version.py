@@ -203,6 +203,13 @@ def test_single_release_workflow_preserves_source_and_verification_gates():
     assert "from: ${{ needs.prepare.outputs.previous_ref }}" in publish
     assert "commitish: ${{ needs.prepare.outputs.sha }}" in publish
     assert "python .github/scripts/verify_distributions.py" in publish
+    assert 'cp canboat2python.py "$RUNNER_TEMP/"' in publish
+    assert 'cp .github/workflows/copy-canboat-json.yml "$RUNNER_TEMP/.github/workflows/"' in publish
+    assert "cp canboat2python.py pi/" in publish
+    assert "cp .github/workflows/copy-canboat-json.yml pi/.github/workflows/" in publish
+    assert publish.index('cp canboat2python.py "$RUNNER_TEMP/"') < publish.index('cd "$RUNNER_TEMP"')
+    assert publish.index("cp canboat2python.py pi/") < publish.index("docker run --rm")
+    assert "--ignore" not in publish
     assert "--no-index --no-deps --only-binary :all:" in publish
     assert publish.count("pattern: release-*") == 2
     assert "pattern: release-wheel-*" in publish
