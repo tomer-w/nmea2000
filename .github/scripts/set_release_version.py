@@ -1,4 +1,4 @@
-"""Persist a release version before drafting, or verify tagged source identity."""
+"""Persist a release version before building, or verify tagged source identity."""
 
 import argparse
 import os
@@ -73,13 +73,13 @@ def git(*args: str) -> str:
 
 
 def prepare(project: str, tested_ref: str, requested: str = "") -> str:
-    """Only prepare checked code; allow a previous run's version-only commit."""
+    """Reject stale dispatches; allow a previous run's version-only commit."""
     changed = git("diff", "--name-only", tested_ref, "HEAD").splitlines()
     if set(changed) - {"pyproject.toml"}:
-        raise ValueError("Main changed since CI ran; rerun the workflow on current main")
+        raise ValueError("Main changed since dispatch; rerun the workflow on current main")
     tested_project = git("show", f"{tested_ref}:pyproject.toml")
     if with_version(tested_project, project_version(project)) != project:
-        raise ValueError("Package configuration changed since CI ran; rerun on current main")
+        raise ValueError("Package configuration changed since dispatch; rerun on current main")
     return next_version(
         project_version(project), git("tag", "--list").splitlines(), requested
     )

@@ -182,31 +182,39 @@ def test_prepare_cli_persists_version_and_reuses_it_on_retry(tmp_path):
     assert "Main changed" in stale.stderr
 
 
-def test_workflows_prepare_before_drafting_and_verify_before_building():
-    """Keep persistence, draft identity, and publishing gates wired together."""
+def test_single_release_workflow_preserves_source_and_verification_gates():
+    """Keep ordinary CI read-only and release artifacts pinned to prepared source."""
     build = (ROOT / ".github" / "workflows" / "python-build.yml").read_text(encoding="utf-8")
-    draft = build.split("  update_release_draft:", 1)[1]
-    required = [
-        "Select release version", "Persist package version", "release-drafter/release-drafter@v7",
-    ]
-    positions = [draft.index(step) for step in required]
-    assert positions == sorted(positions)
-    assert "needs:\n      - package\n      - quality\n      - test" in draft
-    assert 'python .github/scripts/set_release_version.py --prepare "$TESTED_REF" --version "$REQUESTED_VERSION"' in draft
-    assert "REQUESTED_VERSION: ${{ inputs.release_version }}" in draft
-    assert "git push origin HEAD:main" in draft
-    assert "commitish: ${{ steps.source.outputs.sha }}" in draft
-    for field in ("version:", "tag:", "name:"):
-        assert f"{field} {'v' if field != 'version:' else ''}${{{{ steps.version.outputs.value }}}}" in draft
-    assert "workflow_dispatch:" in build
-    assert "release_version:" in build
+    assert "push:" in build and "pull_request:" in build and "workflow_call:" in build
+    assert "release_version:" not in build
+    assert "contents: write" not in build
+    assert "release-drafter" not in build
+    assert build.count("ref: ${{ inputs.source_sha || github.sha }}") == 3
     publish = (ROOT / ".github" / "workflows" / "python-publish.yml").read_text(encoding="utf-8")
-    assert publish.count("needs: [release-version]") == 2
+    assert "workflow_dispatch:" in publish and "release_version:" in publish
+    assert "\n  release:" not in publish and "types: [published]" not in publish
+    assert 'python .github/scripts/set_release_version.py --prepare "$TESTED_REF" --version "$REQUESTED_VERSION"' in publish
+    assert "REQUESTED_VERSION: ${{ inputs.release_version }}" in publish
+    assert "git push origin HEAD:main" in publish
+    assert publish.index("Select release version") < publish.index("Persist package version")
+    assert "uses: ./.github/workflows/python-build.yml" in publish
+    assert "source_sha: ${{ needs.prepare.outputs.sha }}" in publish
+    assert publish.count("ref: ${{ needs.prepare.outputs.sha }}") == 5
+    assert "needs: [prepare, ci, verify, verify-raspberry-pi]" in publish
+    assert "dry-run: true" in publish
+    assert "commitish: ${{ needs.prepare.outputs.sha }}" in publish
+    assert "python .github/scripts/verify_distributions.py" in publish
+    assert "--no-index --no-deps --only-binary :all:" in publish
+    assert publish.count("pattern: release-*") == 2
+    assert "pattern: release-wheel-*" in publish
+    assert "python: [\"3.11\", \"3.14\"]" in publish
+    assert "target: armv7" in publish and "QEMU_CPU=cortex-a7" in publish
+    assert "RELEASE_VERSION: ${{ needs.prepare.outputs.version }}" in publish
     assert "RELEASE_PUBLISHED_AT" not in publish
     assert "Apply release version" not in publish
     assert "id-token: write" in publish
     assert "name: pypi" in publish
     assert "skip-existing" not in publish
-    for workflow in (draft, publish):
-        assert "group: calver-release" in workflow
-        assert "cancel-in-progress: false" in workflow
+    assert "group: calver-release" in publish
+    assert "cancel-in-progress: false" in publish
+    assert "force" not in publish
