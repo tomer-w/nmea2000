@@ -7,6 +7,7 @@ from pathlib import Path
 import can.message
 import pytest
 
+from nmea2000 import backend
 from nmea2000.consts import PhysicalQuantities
 from nmea2000.decoder import NMEA2000Decoder
 from nmea2000.encoder import create_encoder
@@ -28,27 +29,6 @@ _GNSS_PRECISION_TOLERANCES = {
 def _roundtrip_case_id(case: dict) -> str:
     """Build a stable pytest id from the canboatjs PGN and case index."""
     return f"{case['pgn']}-{case['caseIndex']}"
-
-
-# Inputs that no faithful encoder can reproduce, with the reason.
-_UNREPRODUCIBLE_CASES = {
-    "126208-1": "truncated capture: declares 20 parameters but carries 3, so the "
-    "third parameter's value swallows the rest of the payload and re-encodes at "
-    "its field's full width",
-}
-
-
-def _roundtrip_params() -> list:
-    return [
-        pytest.param(
-            case,
-            id=_roundtrip_case_id(case),
-            marks=pytest.mark.xfail(reason=reason, strict=True)
-            if (reason := _UNREPRODUCIBLE_CASES.get(_roundtrip_case_id(case)))
-            else (),
-        )
-        for case in _CANBOATJS_ROUNDTRIP_CASES
-    ]
 
 
 def _assert_semantic_roundtrip(
@@ -254,7 +234,7 @@ def test_python_can_roundtrip():
     assert decoded.priority == msg.priority
 
 
-@pytest.mark.parametrize("case", _roundtrip_params())
+@pytest.mark.parametrize("case", _CANBOATJS_ROUNDTRIP_CASES, ids=_roundtrip_case_id)
 def test_canboatjs_autosense_roundtrip_cases(case: dict):
     """Each canboatjs autosense fixture should decode and re-encode without semantic drift."""
     expected = case["expected"]
@@ -270,3 +250,29 @@ def test_canboatjs_autosense_roundtrip_cases(case: dict):
         msg,
         allow_basic_string_canonicalization=bool(case.get("skipEncoderTest")),
     )
+
+
+def test_airmar_calibrate_speed_repeating_parameters():
+    """canboat 9.2 resolves parameters into the target's repeating speed pairs."""
+    case = next(
+        case
+        for case in _CANBOATJS_ROUNDTRIP_CASES
+        if _roundtrip_case_id(case) == "126208-1"
+    )
+    msg = _decode_roundtrip_case(case)
+    expected_parameters = case["expected"]["fields"]["##list##"]
+    assert msg.get_field_by_id("numberOfParameters").value == 20
+    assert msg.get_list_field_size() == len(expected_parameters) == 20
+    for index, expected in enumerate(expected_parameters):
+        assert (
+            msg.get_list_field_by_id(index, "parameter").value == expected["parameter"]
+        )
+        value = msg.get_list_field_by_id(index, "value").value
+        if isinstance(expected["value"], (int, float)):
+            assert value == pytest.approx(expected["value"])
+        else:
+            assert value == expected["value"]
+
+    payload = bytes(int(byte, 16) for byte in case["input"].split(",")[6:])
+    assert len(payload) == 63
+    assert backend.encode(msg) == payload

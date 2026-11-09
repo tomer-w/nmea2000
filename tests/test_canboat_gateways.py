@@ -117,42 +117,64 @@ def ngt_received(prio: int, pgn: int, src: int, dst: int, data: bytes) -> bytes:
     return ngt_message(0x93, header + data)
 
 
-# Get Product Info, then Set Operating Mode (transfer Rx all)
-NGT_STARTUP = ngt_message(0xA1, b"\x41") + ngt_message(0xA1, b"\x11\x02\x00")
+# Get Product Info, then Get Operating Mode (set only if it differs).
+NGT_STARTUP = ngt_message(0xA1, b"\x41") + ngt_message(0xA1, b"\x11")
+
+
+async def ngt_startup(reader, writer, mode: int) -> None:
+    assert await reader.readexactly(len(NGT_STARTUP)) == NGT_STARTUP
+
+    async def report_mode(value: int) -> None:
+        # BEM header: command, sequence, model, serial, error, then mode.
+        writer.write(
+            ngt_message(0xA0, b"\x11\x01" + bytes(10) + value.to_bytes(2, "little"))
+        )
+        await writer.drain()
+
+    await report_mode(mode)
+    if mode != 2:
+        set_mode = ngt_message(0xA1, b"\x11\x02\x00")
+        assert await reader.readexactly(len(set_mode)) == set_mode
+        await report_mode(2)
 
 
 @pytest.mark.asyncio
-async def test_ngt1(serial_to_tcp):
+@pytest.mark.parametrize("mode", [1, 2], ids=["change-mode", "already-rx-all"])
+async def test_ngt1(serial_to_tcp, mode):
     async def ngt1(reader, writer):
-        startup = await reader.readexactly(len(NGT_STARTUP))
-        assert startup == NGT_STARTUP
+        await ngt_startup(reader, writer, mode)
         writer.write(ngt_received(2, 130306, 35, 255, WIND))
         await writer.drain()
 
     async with Device(ngt1) as device:
         serial_to_tcp(device.port)
-        message = await run_client(Ngt1Nmea2000Gateway("/dev/ttyUSB0"), device)
+        # Select bus data rather than the gateway's synthetic BEM status PGNs.
+        client = Ngt1Nmea2000Gateway("/dev/ttyUSB0", include_pgns=[130306])
+        message = await run_client(client, device)
     assert_wind(message, src=35)
 
 
 @pytest.mark.asyncio
-async def test_ngt1_sends_n2k_msg_send(serial_to_tcp):
+@pytest.mark.parametrize("mode", [1, 2], ids=["change-mode", "already-rx-all"])
+async def test_ngt1_sends_n2k_msg_send(serial_to_tcp, mode):
     sent: asyncio.Queue[bytes] = asyncio.Queue()
 
     async def ngt1(reader, writer):
-        await reader.readexactly(len(NGT_STARTUP))
+        await ngt_startup(reader, writer, mode)
         writer.write(ngt_received(2, 130306, 35, 255, WIND))
         await writer.drain()
         await sent.put(await reader.readuntil(b"\x10\x03"))
 
     async with Device(ngt1) as device:
         serial_to_tcp(device.port)
-        client = Ngt1Nmea2000Gateway("/dev/ttyUSB0")
+        client = Ngt1Nmea2000Gateway("/dev/ttyUSB0", include_pgns=[130306])
         message = await run_client_and_send(client, device)
         frame = await asyncio.wait_for(sent.get(), TIMEOUT)
     assert_wind(message, src=35)
-    assert frame.startswith(b"\x10\x02\x94")  # N2K_MSG_SEND
-    assert WIND in frame.replace(b"\x10\x10", b"\x10")
+    assert frame == ngt_message(
+        0x94,
+        bytes([2]) + (130306).to_bytes(3, "little") + bytes([255, len(WIND)]) + WIND,
+    )
 
 
 async def run_client_and_send(client, device: Device) -> NMEA2000Message:
