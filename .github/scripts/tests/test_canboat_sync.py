@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 
 
 @pytest.mark.parametrize("version", ["9.0.0", "9.1.0"])
@@ -64,3 +64,20 @@ def test_sync_regenerates_with_updated_package_before_creating_pr():
         "python check_generated_files.py"
     )
     assert "add-paths:" not in steps[positions[4]]
+
+
+def test_repository_automation_is_separate_from_wheel_runtime_tests():
+    """Source CI covers automation without copying it into wheel verification."""
+    assert not (ROOT / "tests" / Path(__file__).name).exists()
+    build = (ROOT / ".github" / "workflows" / "python-build.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "python -m pytest -p pytest_asyncio.plugin .github/scripts/tests" in build
+    publish = (ROOT / ".github" / "workflows" / "python-publish.yml").read_text(
+        encoding="utf-8"
+    )
+    assert 'cp -r tests "$RUNNER_TEMP/tests"' in publish
+    assert 'cd "$RUNNER_TEMP"' in publish
+    assert "cp -r tests pi/tests" in publish
+    assert "python -m pytest -o asyncio_mode=auto tests" in publish
+    assert "python3 -m pytest -o asyncio_mode=auto tests" in publish
